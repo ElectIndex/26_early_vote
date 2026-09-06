@@ -1,0 +1,22 @@
+[project]
+name = "ev"
+version = "0.1.0"
+description = "ElectIndex 2026 early vote tracker — ingest pipeline and published data"
+requires-python = ">=3.11"
+dependencies = [
+    "requests>=2.32",
+    "openpyxl>=3.1",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0"]
+
+[project.scripts]
+ev = "ev.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
