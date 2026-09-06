@@ -1,0 +1,11 @@
+cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_new,mail_returned,inperson,party_dem,party_rep,party_oth,party_npa,source_tier,source_name,retrieved_at
+2026,NC,37053,Currituck County,2026-09-04,60,1,1,1,0,1,0,0,0,1,nc-sbe,2026-09-06T01:17:35+00:00
+2026,NC,37053,Currituck County,2026-09-05,59,1,0,1,0,1,0,0,0,1,nc-sbe,2026-09-06T01:17:35+00:00
+2026,NC,37067,Forsyth County,2026-09-04,60,1,1,1,0,1,0,0,0,1,nc-sbe,2026-09-06T01:17:35+00:00
+2026,NC,37067,Forsyth County,2026-09-05,59,1,0,1,0,1,0,0,0,1,nc-sbe,2026-09-06T01:17:35+00:00
+2026,NC,37077,Granville County,2026-09-04,60,1,1,1,0,0,0,0,1,1,nc-sbe,2026-09-06T01:17:35+00:00
+2026,NC,37077,Granville County,2026-09-05,59,1,0,1,0,0,0,0,1,1,nc-sbe,2026-09-06T01:17:35+00:00
+2026,NC,37119,Mecklenburg County,2026-09-04,60,3,3,3,0,1,1,0,1,1,nc-sbe,2026-09-06T01:17:35+00:00
+2026,NC,37119,Mecklenburg County,2026-09-05,59,3,0,3,0,1,1,0,1,1,nc-sbe,2026-09-06T01:17:35+00:00
+2026,NC,37125,Moore County,2026-09-04,60,2,2,2,0,2,0,0,0,1,nc-sbe,2026-09-06T01:17:35+00:00
+2026,NC,37125,Moore County,2026-09-05,59,2,0,2,0,2,0,0,0,1,nc-sbe,2026-09-06T01:17:35+00:00

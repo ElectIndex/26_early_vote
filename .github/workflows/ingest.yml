@@ -1,0 +1,111 @@
+name: ingest
+
+# Every six hours, plus a button. The site reads output/*.csv straight off
+# raw.githubusercontent.com, so this job IS the publish step -- there is nothing
+# else to deploy.
+on:
+  schedule:
+    - cron: "0 */6 * * *"
+  workflow_dispatch:
+
+# Runs must never overlap. Two concurrent runs would each commit their own
+# output/ and the second would land on a rebase conflict (or, worse, silently
+# clobber the first). cancel-in-progress stays false: a queued run is fine, a
+# half-finished one killed between its atomic write and its commit is not.
+concurrency:
+  group: ingest
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  ingest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Full history: the push retry below rebases onto origin, and a
+          # depth-1 clone cannot.
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install
+        run: pip install -e ".[dev]"
+
+      - name: Ingest
+        # No --strict. Before October every state is `pending` (early voting has
+        # not opened), which is the expected answer and not a failure -- a red
+        # badge all September teaches everyone to ignore the badge in November.
+        # The CLI already swallows a single adapter crash per state, so a
+        # non-zero exit here means the run itself broke and should be loud.
+        run: python -m ev ingest
+
+      - name: Commit published data
+        run: |
+          set -euo pipefail
+
+          git config user.name  "electindex-bot"
+          git config user.email "electindex-bot@users.noreply.github.com"
+
+          # ONLY output/. Nothing else this job touched (the editable install
+          # drops an egg-info, pip leaves caches) may ride along.
+          git add -- output
+
+          if git diff --cached --quiet; then
+            echo "output/ unchanged -- nothing to commit."
+            exit 0
+          fi
+
+          git commit -m "data: early vote $(date -u +%F)"
+
+          # A human push or a queued sibling run can land between our fetch and
+          # our push. Rebase and try once more before giving up.
+          branch="${GITHUB_REF_NAME}"
+          for attempt in 1 2; do
+            if git pull --rebase --autostash origin "$branch" \
+               && git push origin "HEAD:$branch"; then
+              echo "pushed on attempt $attempt"
+              exit 0
+            fi
+            echo "push attempt $attempt failed; retrying in 10s"
+            sleep 10
+          done
+
+          echo "::error::could not push output/ after 2 attempts"
+          exit 1
+
+      - name: Summary
+        if: always()
+        run: |
+          set -uo pipefail
+          {
+            echo "### Early vote ingest"
+            echo
+            if [ -f output/ev_status.json ]; then
+              python - <<'PY'
+          import json, pathlib
+          s = json.loads(pathlib.Path("output/ev_status.json").read_text())
+          summary = s.get("summary", {})
+          print(f"`as_of` **{s.get('as_of')}** · "
+                f"{s.get('days_to_election')} days to election")
+          print()
+          print(f"- ok: **{summary.get('ok', 0)}**")
+          print(f"- pending: {summary.get('pending', 0)} (early voting not open yet)")
+          print(f"- failed: {summary.get('failed', 0)}")
+          bad = [k for k, v in s.get("states", {}).items()
+                 if v.get("status") not in ("ok", "pending")]
+          if bad:
+              print()
+              print("Every tier failed for: " + ", ".join(sorted(bad)))
+          PY
+            else
+              echo "No \`output/ev_status.json\` was written."
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"

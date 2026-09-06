@@ -46,6 +46,11 @@ _PARTY_MAP = {
     "l": PARTY_OTH, "lib": PARTY_OTH, "libertarian": PARTY_OTH,
     "g": PARTY_OTH, "grn": PARTY_OTH, "green": PARTY_OTH,
     "con": PARTY_OTH, "constitution": PARTY_OTH, "conservative": PARTY_OTH,
+    # North Carolina's recognised-party codes. NC gained several minor parties
+    # after 2022, so this list is longer than most states'.
+    "cst": PARTY_OTH, "gre": PARTY_OTH, "jfa": PARTY_OTH,
+    "justice for all": PARTY_OTH, "nlb": PARTY_OTH, "no labels": PARTY_OTH,
+    "wtp": PARTY_OTH, "we the people": PARTY_OTH,
     "wf": PARTY_OTH, "working families": PARTY_OTH,
     "ain": PARTY_OTH, "americans elect": PARTY_OTH, "reform": PARTY_OTH,
     "socialist": PARTY_OTH, "unity": PARTY_OTH, "forward": PARTY_OTH,
@@ -122,10 +127,13 @@ _RACE_MAP = {
     "a": "asian", "as": "asian", "asian": "asian",
     "asian american": "asian", "pacific islander": "asian",
     "asian or pacific islander": "asian", "ap": "asian",
+    "native hawaiian or pacific islander": "asian",
+    "native hawaiian or other pacific islander": "asian",
     "native american": "native", "american indian": "native", "ai": "native",
     "american indian or alaska native": "native", "in": "native",
     "o": "other", "oth": "other", "other": "other", "multi-racial": "other",
     "two or more races": "other", "m": "other", "mu": "other",
+    "two or more": "other",
     "u": "unknown", "un": "unknown", "unknown": "unknown",
     "undesignated": "unknown", "not designated": "unknown", "": "unknown",
 }
