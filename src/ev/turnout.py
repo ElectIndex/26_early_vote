@@ -1183,7 +1183,7 @@ def cmd_turnout(args) -> int:
     """`python -m ev turnout` -- static analysis, deliberately not in `ingest`.
 
     Its own subcommand for the same reason `estimate`, `regress` and
-    `counterfactual` are: the six-hourly job must not be able to publish a model
+    `counterfactual` are: the scheduled job must not be able to publish a model
     number, and `ev.turnout` is imported inside the CLI's dispatcher so `ingest`
     never loads it.
     """

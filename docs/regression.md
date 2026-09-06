@@ -42,7 +42,7 @@ python -m ev regress --state NC OH IA
 ```
 
 It is a separate subcommand and deliberately **not** part of the daily `ingest`
-walk, for the same reason `estimate` is not: keeping it out means the six-hourly
+walk, for the same reason `estimate` is not: keeping it out means the scheduled
 job cannot accidentally publish a model number, and `ev.regress` is imported
 inside the CLI's dispatcher so `ingest` never even loads it.
 

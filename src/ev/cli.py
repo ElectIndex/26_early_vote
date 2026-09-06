@@ -275,7 +275,7 @@ def build_parser() -> argparse.ArgumentParser:
     back = common(sub.add_parser("backfill", help="fetch a past cycle's daily archive"))
     back.set_defaults(func=cmd_backfill)
 
-    # Static history, NOT part of the six-hourly ingest walk: a certified return
+    # Static history, NOT part of the scheduled ingest walk: a certified return
     # cannot change, so re-fetching it every run would be pure noise. Structured
     # like cmd_backfill -- its own subcommand, its own cycles, its own file.
     res = sub.add_parser("results", help="ingest past cycles' actual election results")
@@ -312,7 +312,7 @@ def build_parser() -> argparse.ArgumentParser:
                           "and print the per-state error in percentage points")
     est.set_defaults(func=cmd_estimate)
 
-    # Static analysis over 2022 and 2024, deliberately NOT in the six-hourly
+    # Static analysis over 2022 and 2024, deliberately NOT in the scheduled
     # ingest walk -- same reasoning as `estimate`: the daily job must not be able
     # to publish a model number, and `ev.regress` is imported inside the
     # dispatcher below so `ingest` never loads it. It writes ONLY
@@ -346,7 +346,7 @@ def build_parser() -> argparse.ArgumentParser:
     # The COUNTERFACTUAL: what 2024 would have produced if the 2026 early
     # electorate had been the one that turned out, with every group's behaviour
     # frozen at 2024. Like `estimate` and `regress`, it is its own subcommand and
-    # NOT part of the six-hourly ingest walk -- the daily job must not be able to
+    # NOT part of the scheduled ingest walk -- the daily job must not be able to
     # publish a model number -- and `ev.counterfactual` is imported inside the
     # dispatcher below so `ingest` never loads it. It writes ONLY
     # output/counterfactual.csv, never a reported column of ev_state_daily.csv.
@@ -383,7 +383,7 @@ def build_parser() -> argparse.ArgumentParser:
     # TURNOUT: each state's final turnout projected from its early-vote pace,
     # by inverting the share of that state's final turnout that had been cast at
     # the same days-to-election in the last comparable election. Its own
-    # subcommand and NOT part of the six-hourly ingest walk, for the same reason
+    # subcommand and NOT part of the scheduled ingest walk, for the same reason
     # `estimate`, `regress` and `counterfactual` are not -- the daily job must
     # never be able to publish a model number -- and `ev.turnout` is imported
     # inside the dispatcher below so `ingest` never loads it. It writes ONLY

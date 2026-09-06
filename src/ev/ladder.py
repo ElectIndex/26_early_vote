@@ -20,6 +20,7 @@ import logging
 from dataclasses import dataclass, field
 from datetime import date
 
+from .adapters import _towns
 from .adapters.base import Adapter, AdapterError, FetchResult, NotYetPublished, SourceError
 
 log = logging.getLogger(__name__)
@@ -107,12 +108,25 @@ def run_state(
             log.warning("%s: %s returned no rows", state, label)
             continue
 
-        result.stamp(adapter.provenance())
+        provenance = adapter.provenance()
+        result.stamp(provenance)
+        # ...AND THE FOURTH TABLE, which `FetchResult.stamp` cannot reach.
+        # Town rows ride on the result as an ATTRIBUTE rather than a field (see
+        # the note in _towns.py: adding a field to base.py would touch the file
+        # every adapter imports), so until now each town-emitting adapter had to
+        # remember `_towns.stamp()` for itself. me.py and ct.py do. The next one
+        # to forget would have walked its whole ladder, fetched real data, and
+        # then died at WRITE time on `TownDay written without provenance` -- loud,
+        # but loud in a cron log at two in the morning rather than in a test.
+        # Stamping here costs one line and makes forgetting impossible; the
+        # adapters' own calls are now belt-and-braces rather than load-bearing.
+        _towns.stamp(result, provenance)
         outcome.status = STATUS_OK
         outcome.tier = adapter.tier
         outcome.source_name = label
         outcome.rows = (
-            len(result.state_rows) + len(result.county_rows) + len(result.demo_rows)
+            len(result.state_rows) + len(result.county_rows)
+            + len(result.demo_rows) + len(_towns.rows_of(result))
         )
         outcome.attempts.append({"tier": adapter.tier, "name": label, "result": "ok"})
         log.info("%s: %s answered with %d rows", state, label, outcome.rows)

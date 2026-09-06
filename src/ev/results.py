@@ -8,7 +8,7 @@ meant anything. This module publishes the OUTCOME next to the curve:
     rep_share,margin,winner_party,early_share_of_total,source_name,retrieved_at
 
 Results are static history. They are fetched by `python -m ev results`, NOT by
-the six-hourly `ingest` walk, and the downloads are cached because an archived
+the scheduled `ingest` walk, and the downloads are cached because an archived
 certified return cannot change.
 
 THE SOURCE — MIT Election Data + Science Lab, Harvard Dataverse, CC0 1.0. See

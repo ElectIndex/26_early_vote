@@ -999,7 +999,7 @@ def cmd_regress(args) -> int:
     """`python -m ev regress` -- static analysis over history, not the ingest walk.
 
     Deliberately its own subcommand for the same reason `estimate` is: the
-    six-hourly job must not be able to publish a model number, and `ev.regress`
+    scheduled job must not be able to publish a model number, and `ev.regress`
     is imported inside this function so `ingest` never loads it.
     """
     from .cli import OUTPUT_DIR
