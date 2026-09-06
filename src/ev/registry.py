@@ -55,6 +55,7 @@ TIER1: dict[str, str] = {
     "NH": "nh:NHScraper",
     "TN": "tn:TNScraper",
     "MN": "mn:MNScraper",
+    "CA": "ca:CAScraper",
     # Voter-level daily file: county + method + sex, no party registration.
     "WA": "wa:WAScraper",
     # Statewide only (no county breakdown published), but with party + method.

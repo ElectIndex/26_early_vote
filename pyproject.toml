@@ -15,6 +15,12 @@ dependencies = [
     # alike, regardless of headers. _net.get retries a 403 through this; without
     # it those hosts stay unreachable but nothing breaks.
     "curl_cffi>=0.7",
+    # California published its 2024 vote-by-mail workbook as legacy OLE2 .xls,
+    # which openpyxl cannot open at all. xlrd 2.x reads .xls and ONLY .xls --
+    # the mirror image of openpyxl -- so the two together cover every vintage
+    # California has shipped. Without it CA silently loses a whole cycle to the
+    # aggregator whenever the SoS reverts format.
+    "xlrd>=2.0",
 ]
 
 [project.optional-dependencies]

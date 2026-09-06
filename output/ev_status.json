@@ -2,7 +2,7 @@
  "as_of": "2026-09-06",
  "cycle": 2026,
  "days_to_election": 58,
- "generated_at": "2026-09-06T15:55:05+00:00",
+ "generated_at": "2026-09-06T16:12:12+00:00",
  "states": {
   "AK": {
    "attempts": [
@@ -29,6 +29,21 @@
     }
    ],
    "message": "AZ: 2026 election-information page carries no Sent/Accepted table yet",
+   "rows": 0,
+   "source": null,
+   "status": "pending",
+   "tier": null
+  },
+  "CA": {
+   "attempts": [
+    {
+     "detail": "CA: no readable VBM workbook for 2026 (CA: https://elections.cdn.sos.ca.gov/statewide-elections/2026-general/vbm-statistics.xlsx is not posted (HTTP 403); CA: https://elections.cdn.sos.ca.gov/statewide-elections/2026-general/vbm-statistics.xlsm is not posted (HTTP 403); CA: https://elections.cdn.sos.ca.gov/statewide-elections/2026-general/vbm-statistics.xls is not posted (HTTP 403))",
+     "name": "ca-sos",
+     "result": "not_yet_published",
+     "tier": 1
+    }
+   ],
+   "message": "CA: no readable VBM workbook for 2026 (CA: https://elections.cdn.sos.ca.gov/statewide-elections/2026-general/vbm-statistics.xlsx is not posted (HTTP 403); CA: https://elections.cdn.sos.ca.gov/statewide-elections/2026-general/vbm-statistics.xlsm is not posted (HTTP 403); CA: https://elections.cdn.sos.ca.gov/statewide-elections/2026-general/vbm-statistics.xls is not posted (HTTP 403))",
    "rows": 0,
    "source": null,
    "status": "pending",
@@ -438,6 +453,6 @@
    }
   ],
   "ok": 3,
-  "pending": 22
+  "pending": 23
  }
 }

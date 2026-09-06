@@ -1,3 +1,4 @@
 requests>=2.32
 openpyxl>=3.1
 curl_cffi>=0.7
+xlrd>=2.0
