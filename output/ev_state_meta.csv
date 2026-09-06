@@ -8,11 +8,11 @@ CO,Colorado,2026-11-03,,,true,county|party|method,,,,,,
 CT,Connecticut,2026-11-03,,,true,,,,,,,not tracked in 2026
 DC,District of Columbia,2026-11-03,,,true,,,,,,,not tracked in 2026
 DE,Delaware,2026-11-03,,,true,,,,,,,not tracked in 2026
-FL,Florida,2026-11-03,,,true,county|party|method,,9137249,,,,
+FL,Florida,2026-11-03,,,true,county|party|method,,8392165,,,,
 GA,Georgia,2026-11-03,,,false,county|method|age|race|sex,,4031303,,,,
 HI,Hawaii,2026-11-03,,,false,,,,,,,not tracked in 2026
 IA,Iowa,2026-11-03,,,true,county|party|method,,680297,,,,
-ID,Idaho,2026-11-03,,,false,,,,,,,not tracked in 2026
+ID,Idaho,2026-11-03,,,true,,,,,,,not tracked in 2026
 IL,Illinois,2026-11-03,,,false,county|method,,,,,,
 IN,Indiana,2026-11-03,,,false,,,,,,,not tracked in 2026
 KS,Kansas,2026-11-03,,,true,,,,,,,not tracked in 2026
@@ -23,7 +23,7 @@ MD,Maryland,2026-11-03,,,true,county|party|sex,,,,,,
 ME,Maine,2026-11-03,,,true,town|county|party|method,236972,378760,,,,reports by municipality; counties summed from towns
 MI,Michigan,2026-11-03,,,false,county|method,,3319560,,,,
 MN,Minnesota,2026-11-03,,,false,county|method,,,,,,
-MO,Missouri,2026-11-03,,,false,,,,,,,not tracked in 2026
+MO,Missouri,2026-11-03,,,true,,,,,,,not tracked in 2026
 MS,Mississippi,2026-11-03,,,false,,,,,,,not tracked in 2026
 MT,Montana,2026-11-03,,,false,,,,,,,not tracked in 2026
 NC,North Carolina,2026-11-03,,,true,county|party|method|age|race|sex,2187856,4520768,,,,
