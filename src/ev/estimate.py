@@ -857,7 +857,11 @@ def estimate_day(
     # that is the whole of it, which is every row today.
     half = model_error(ballots_used) * (1.0 - measured_fraction)
     lo, hi = min(lo, hi) - half, max(lo, hi) + half
-    lo, hi = max(0.0, lo), min(1.0, hi)
+    # Clamped to [0, 1] at BOTH ends, and around the point estimate. A share
+    # cannot be negative and cannot exceed one, and a band that does not contain
+    # its own centre is worse than no band.
+    lo = min(max(0.0, lo), share)
+    hi = max(min(1.0, hi), share)
 
     electorate_votes = sum(c.two_party for c in state_counties)
     covered = sum(c.two_party for c in state_counties if c.fips in seen)

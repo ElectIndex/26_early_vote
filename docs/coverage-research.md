@@ -1787,3 +1787,434 @@ One thing Louisiana cannot express through `DemoDay`: its report prints only
 2024: 38,449 + 56,293 = 94,742 against 94,908). The residual is published as the
 `unknown` sex bucket, which is exact — unlike the party residual, "neither male
 nor female" *is* the bucket our vocabulary has, so nothing is conflated.
+
+---
+
+# The West: CA · OR · UT · ID · MT · NM · HI · WY
+
+Investigated 2026-09-06. Every status below was observed live from this machine
+on that date, through the same transport `_net.get` uses (requests with TLS
+session tickets restored, retrying any 403 through `curl_cffi`'s Chrome
+fingerprint). Nothing here is a guessed URL.
+
+**Built this pass: OREGON, MONTANA, HAWAII.** All three were rejected by the
+earlier survey, and **all three were rejected for the same reason: "this
+pipeline has no PDF dependency".** That premise was already false when it was
+written — `pypdf` is declared in `pyproject.toml` and `ia.py` parses Iowa's
+absentee report with it — so the three highest-value sources in the West were
+sitting behind a library that was already installed.
+
+| State | Verdict | Source | Unit | Dims |
+|---|---|---|---|---|
+| **OR** | **BUILT** `or-sos` | SoS Daily Ballot Returns PDF | county (36) + statewide | county, party (12), **day** |
+| **MT** | **BUILT** `mt-sos` | SoS Tableau CSV + PDF | county (56) + statewide | county, mail sent/received |
+| **HI** | **BUILT** `hi-oe` | OoE Absentee Reconciliation PDF | county (4) + statewide | county, method |
+| ID | not built — see below | voteidaho.gov + Datawrapper | county (44) | county, party, age |
+| UT | **nothing during the general season** | — | — | — |
+| NM | **nothing**, confirming the earlier survey | — | — | — |
+| WY | **nothing public**; request-gated only | — | — | — |
+| CA | built elsewhere this pass (SoS VBM workbook); the county survey is below | — | — | — |
+
+---
+
+## Oregon — `src/ev/adapters/or.py` (`or-sos`)
+
+**Why:** an open governor's race *and* a Senate race, 3.1M registered voters, and
+the richest during-season file found anywhere in this project — the county-by-day
+page means **one download rebuilds the entire daily curve**, North Carolina style.
+
+Verified, with exact statuses:
+
+| URL | live | Wayback |
+|---|---|---|
+| `sos.oregon.gov/voting/Pages/current-election.aspx` | **200** | — |
+| `…/elections/Documents/statistics/G22-Daily-Ballot-Returns.pdf` | **404** | **200**, 198,966 B @ `20221110100105` |
+| `…/voting/Documents/G24-Daily-Ballot-Returns.pdf` | **404** | **200**, 206,077 B @ `20241113125733` |
+| `…/elections/Documents/november-2025-Daily-Ballot-Returns.pdf` | **404** | **200**, 189,782 B @ `20251026202619` |
+| `…/elections/Documents/May-19-2026-Daily-Ballot-Returns.pdf` | **404** | **200**, 688,555 B @ `20260514032204` |
+| `…/elections/Documents/November-3-2026-Daily-Ballot-Returns.pdf` | **404** | — (does not exist yet) |
+
+The survey's worry that "the filename convention changes every cycle" is real and
+is solved the way every adapter here solves it: `voting/Pages/current-election.aspx`
+is scraped first, and its archived captures prove it works — the October-2025
+capture links `november-2025-Daily-Ballot-Returns.pdf` and the October-2024
+capture links `G24-Daily-Ballot-Returns.pdf`, each under a *different* directory.
+Literal fallback paths are tried only afterwards and are flagged UNVERIFIED in
+`or.FALLBACK_PATHS`.
+
+`data.oregon.gov` is not a substitute and was re-checked: filtering the Socrata
+catalog to `domains=data.oregon.gov` returns exactly **two** ballot datasets, both
+called "Ballot Count History" (`rxzj-n3di`, updated 2025-05-29; `9xrd-w6my`,
+2022), both statewide and post-election. The 408 hits an unscoped search returns
+are federated from other portals — the same trap Connecticut set earlier in this
+document.
+
+### Six things the file does that a naive parser gets wrong
+
+1. **Oregon rebuilt the report between November 2025 and May 2026.** The classic
+   layout (2014-2025) is an Excel print; the new one is a Power BI export.
+   `or.py` parses **both**, dispatching on the file rather than the cycle,
+   because which one the 2026 general uses cannot be known yet.
+2. **The classic party table's column headings are rotated 90°**, and pypdf
+   emits them *after* the data rows in an order that is not the column order.
+   They are recovered from their text matrices' x coordinates and sorted. Reading
+   them in extraction order would have swapped Democrat with Constitution.
+3. **The Power BI tables have blank cells** — Gilliam has no Progressive
+   ballots and Power BI prints nothing rather than `0`, so four of Oregon's 36
+   counties have short rows. Splitting on whitespace silently shifts every column
+   after the gap. Those pages are read in pypdf's `extraction_mode="layout"` and
+   assigned by character position, then each row is reconciled against its own
+   printed `Total` — which is also what licenses reading the gaps as zeros.
+4. **An en-dash is a zero.** On 2022-10-25 Columbia and Wallowa print `–` for
+   ballots returned. Read as "no such row" that silently drops two of 36
+   counties; read as `None` it renders as "not reported" for a county that had
+   in fact returned nothing. The row's own `0.0%` return rate is checked.
+5. **Excel's `#######` occupies a column and carries no value.** The 2022
+   statewide party row renders Nonaffiliated registration that way. It must not
+   shift the columns to its right.
+6. **The daily matrix and the summary page disagree, and the summary wins.** On
+   2022-10-25 the day columns sum to 65,202 statewide against a summary of
+   65,944, and Curry County's three days sum to 991 against 1,290 — counties
+   backfill a late report into the summary without restating the day it belonged
+   to. The as-of day's cumulative figure is always the summary's. (On 2024-11-05
+   they agree exactly: 2,004,468 both ways.)
+
+### The backfill, and the trap in it
+
+`fetch_history` recovers **fourteen days for each of 2022 and 2024**:
+
+```
+2022  2022-10-21 .. 2022-11-09   1,813,994 returned   DEM 736,049
+2024  2024-10-18 .. 2024-11-06   2,137,613 returned   DEM 823,326
+```
+
+The archive stamps in `or.ARCHIVED` are deliberately **not** the newest captures.
+Oregon replaces the report with a post-canvass FINAL version weeks later, and the
+2024 final is a seven-page file whose party table gains a second, supplemental
+section: its page-2 party columns sum to 2,304,398 against a printed total of
+2,307,070, and adding the supplement overshoots to 2,317,716. Neither reading
+reconciles, so `parse` refuses all five 2024 captures from `20241123001836`
+onward — which is the right answer, and is why the stamps recorded here are the
+last captures of the *original* during-season report.
+
+### `normalize.py` gaps, reported not fixed (per the ownership rules)
+
+Oregon's twelve party labels expose one outright bug and three omissions:
+
+* **`normalize.party("independent")` returns `npa`, and in Oregon that is
+  wrong by 150,715 voters.** The Independent Party of Oregon is a
+  ballot-qualified minor party; Oregon's unaffiliated bucket is spelled
+  **`Nonaffiliated`**, which `normalize.party()` does not recognise at all.
+* `pacific green`, `progressive` and `we the people` are also unrecognised.
+
+`or.py` therefore routes every label through a documented `OR_PARTY` table and
+raises `SchemaDrift` for anything absent from it. The long-term fix is a few
+lines in `_PARTY_MAP` — but note that `"independent" -> npa` cannot simply be
+changed, because it is correct for the states that use the word to mean
+"unaffiliated". The owner of `normalize.py` should decide whether that entry
+needs a per-state escape hatch.
+
+---
+
+## Montana — `src/ev/adapters/mt.py` (`mt-sos`)
+
+The earlier survey found this source, confirmed it works with one GET, and then
+rejected it, ending: *"**Buildable the moment either a PDF parser exists or the
+CSV grows a date column.**"* A PDF parser exists. This is that build.
+
+Verified:
+
+| URL | status |
+|---|---|
+| `tableau-ext.mt.gov/t/SOS/views/AbsenteeBallots/AbsenteeDash.csv` | **200**, `text/csv`, 5,518 B, 171 rows |
+| `…/AbsenteeDash.pdf` | **200**, `application/pdf`, 285,506 B |
+| `…/views/AbsenteeBallots/Sheet1.csv` | **404** |
+| `…/views/AbsenteeBallots` (workbook index) | **404** |
+| `tableau-ext.mt.gov/api/v1/sites/SOS/workbooks` | **401** |
+
+Tableau Server renders the same view in either format from one URL stem. The CSV
+is the numbers; **the PDF is the label on them** — its first line is
+`2026 Montana Primary Election Absentee Ballot Counts` and it ends
+`Compiled On 6/15/2026 6:55:19 AM`. The adapter fetches the PDF first, refuses
+the whole run unless the title names *this cycle's general*, and dates every row
+from the compile stamp. Today Montana therefore reports `NotYetPublished`, which
+is the correct state of a dashboard still showing the June primary — precisely
+the failure mode the survey identified.
+
+The counts themselves are exact and self-checking: 56 counties plus Montana's own
+`All` row, and the county sums are verified against it on every run (2026-06-15:
+514,152 sent and 268,125 received, both ways). A short download therefore fails
+loudly instead of publishing a statewide total quietly missing a county.
+
+**A bounded, documented risk:** the two exports are separate requests, so a
+Tableau extract refresh landing between them attaches one refresh's stamp to the
+next refresh's counts. The stamps are daily, so the window is seconds wide once a
+day and the worst case is a one-day mislabel, not a wrong number. Reading both
+from one response is not possible — the CSV carries no title or timestamp and the
+workbook exposes no other sheet (404 above).
+
+Two corrections to the record: the CSV is *not* keyed by a Tableau parameter that
+can be changed to select an election (there is none), and **Montana does not
+register voters by party** — `data/meta/states.csv` has `has_party_reg=false` for
+MT and is right. Every `party_*` field is `None`.
+
+---
+
+## Hawaii — `src/ev/adapters/hi.py` (`hi-oe`)
+
+The survey found Hawaii's four **per-county** reports
+(`AbsenteeReconDP-01-20260717.pdf` and friends) and rejected them as "daily,
+dated, and PDF". There is a **fifth file it did not find**, and it is better than
+all four together:
+
+```
+https://elections.hawaii.gov/wp-content/uploads/AbsenteeReconState-{YYYYMMDD}.pdf
+```
+
+One page, one row per county, a totals row, and a footer carrying **both** the run
+timestamp **and the election's own name**:
+
+```
+County   ELECT Sent (a) | ELECT Voted (b) | ELECT Invalid (c) | EV Voted (d) |
+         MAIL Sent (e)  | MAIL Voted (f)  | MAIL Invalid (g)  |
+         VOTED (b+d+f)  | TOTAL (a+d+e)
+Hawai'i     287   51   0    804   112461   35712    325    36567   113552
+Maui        329   45   0    459    97819   25056    410    25560    98607
+Kaua'i       95    9   0    471    41720   14906    184    15386    42286
+Honolulu   1844  221   0   2303   480780  154602   1010   157126   484927
+           2555  326   0   4037   732780  230276   1929   234639   739372
+Absentee Reconcillation     8/8/2026 3:11:26 AM     2026 Primary Election
+```
+
+That last line is why Hawaii is buildable and Montana's bare CSV was not: the
+filename pattern is shared with the August primary, and the file says which
+election it is. A primary's report is refused **by name**, not by a date window
+we guessed.
+
+| URL | status |
+|---|---|
+| `elections.hawaii.gov/resources/absentee-voting-report/` | **200**, 189,727 B — an index listing every dated report |
+| `…/uploads/AbsenteeReconState-20260717.pdf` | **200**, 72,858 B |
+| `…/uploads/AbsenteeReconState-20260808.pdf` | **200**, 72,960 B |
+| `…/uploads/AbsenteeReconDP-01-20260717.pdf` | **200**, 143,942 B (Honolulu) |
+| `…/uploads/AbsenteeReconDP-{02,03,04}-20260717.pdf` | **200** (Hawaii, Kauai, Maui) |
+| `…/uploads/AbsenteeReconDP-01-20260905.pdf` | **404** — no general-election report yet |
+| `…/uploads/AbsenteeReconDP-01-20241030.pdf`, `-20241105`, `-20221101` | **404** — purged |
+
+**No archive exists.** A Wayback CDX sweep of `elections.hawaii.gov` from 2022
+(100,001 rows) returns **zero** captures of any `AbsenteeRecon*` file, so
+`fetch_history` keeps the base class's `NotYetPublished`.
+
+**Politeness matters on this host.** Walking a blind eleven-day range of dated
+URLs earns **HTTP 429** — observed during a `python -m ev probe` run. The index
+page is authoritative and is one request, so it is used alone whenever it
+answers, capped at three candidates; the constructed range is the fallback for a
+day the index is down.
+
+Judgement calls: Hawaii has no party registration, so every `party_*` is `None`;
+`ballots_total` is Hawaii's own `VOTED` column, which exceeds
+`mail_returned + inperson` because it also counts UOCAVA ballots returned by
+email or fax; the file's own arithmetic (`VOTED = b+d+f`, `TOTAL = a+d+e`, and
+the totals row against the sum of the counties) is verified on every run, which
+is what proves nine values landed in the nine fields we think they did. **Kalawao
+County (15005) has no elections division and never appears** — Hawaii's four
+county clerks are the whole state, so four rows *is* full coverage.
+
+---
+
+## Idaho — a real advance on the survey, and still not built
+
+The survey rejected Idaho because "its data is served from `datawrapper.dwcdn.net`
+under **cycle-specific chart IDs** that must be rescraped every election". Two
+things it did not have:
+
+1. **The chart ids are discoverable from a stable `.gov` page that also names the
+   election.** `https://voteidaho.gov/data-and-dashboards/absentee-tracker/`
+   (**200**, 111,366 B) carries `Absentee & Early Voting Stats – 2026 Primary
+   Election`, a `Last updated:` line, statewide `Absentee Ballots Returned` /
+   `Issued` / `Early Voting … Voted` counters — all server-rendered into the
+   HTML — and six Datawrapper embeds: `HCDQQ`, `PJZGl`, `UDG7E`, `aCECg`,
+   `hGfEl`, `jshNw`. Rescraping per cycle is exactly the index-scrape pattern
+   every adapter in this repo already does. (`/absentee-tracker-2024/` is
+   **200** too and shows the 2024 cycle used **Tableau Public**, not Datawrapper
+   — so the hosting platform really does move.)
+2. **A version trap worth recording.** `https://datawrapper.dwcdn.net/HCDQQ/dataset.csv`
+   is **404** (`NoSuchKey`); the dataset lives at `/{id}/{version}/dataset.csv`.
+   `/HCDQQ/1/dataset.csv` returns **200 with STALE data** (Ada 1,353 Republican),
+   and `/HCDQQ/17/dataset.csv` returns **200** with different, later data (Ada
+   10,644). Only `/{id}/` redirects to the current version — and it moved from 17
+   to 23 during this session. **Any pinned version number silently serves an old
+   snapshot forever.** The chart itself is genuinely county × party:
+   `ResCountyDesc,Republican,Democratic,Other`.
+
+Also found and worth knowing: `results.voteidaho.gov` is an Angular SPA over a
+plain, unauthenticated `.gov` REST API. `…/results/public/api/elections/id/may2026`
+→ **200** JSON with `electionDate`, `asOf`, `lastUpdated` and a list of published
+`.xlsx` reports; `…/vr` → **200** (registration by county); `…/localities` →
+**200**; `…/turnout` and `…/stats` → **200 but empty** for a completed election;
+`…/api/elections` → **404**. Nothing there is early-vote data today, but
+`/turnout` is the endpoint to re-check once the general opens.
+
+**Not built**, for two reasons that are about correctness, not effort:
+
+* The tracker page's counters and its `Last updated:` value are hand-maintained
+  WordPress content, and today they are all `0` with the date **blank**. There is
+  no way to verify from off-season what an as-of date looks like when it exists.
+* The page and the charts are published **independently**. A general-season page
+  reset (election name updated, counters zeroed) while the charts still hold
+  primary data would publish primary county numbers under the general — the exact
+  failure Montana was rejected for. The guard is available (require the charts'
+  county totals to reconcile against the page's own statewide counter, else
+  `SchemaDrift`), but it cannot be tested against real general-season data, and
+  an untested guard on a mis-publish path is not worth shipping.
+
+Idaho is the clear next target in this region the day its tracker goes live.
+
+Correction to `data/meta/states.csv`, for its owner: **Idaho is marked
+`has_party_reg=false` and does register by party** — its own absentee tracker
+breaks out `Republican / Democratic / Other`. (The survey's footnote that
+"Idaho's 'party' during a primary is the ballot chosen, not registration" is
+right about primaries and does not apply to a general election.) MT, HI and CA
+are all correct in that file.
+
+---
+
+## Utah — re-checked, and the 2020 page really was never revived
+
+| URL | status |
+|---|---|
+| `vote.utah.gov/ballots-processed/` | **404** |
+| `elections.utah.gov/` | **200** → 301 to `vote.utah.gov` |
+| `vote.utah.gov/wp-json/wp/v2/pages?per_page=100` | **200** — all 89 pages enumerated, none is a during-season returns page |
+| `public.tableau.com/views/August2026Dashboard/GeographicDashboard.csv` | **404** |
+
+The archived `/ballots-processed/` page (capture `20221121102806`) is a genuine
+county × ballots-processed HTML table — and it still says *"Last updated:
+November 3, 2020 … This page will be updated every day until November 3, 2020."*
+Two years after the fact. It was never revived.
+
+The only during-season artifact since is
+`vote.utah.gov/june-2024-primary-estimated-of-ballots-returned/` (capture
+`20240611222133`), and it publishes **percentages with no counts** — "Beaver –
+0.4% … Salt Lake – 5.0%" — alongside PNG images (`June-11-Estimated-Ballots.png`
+and eight more in the media library). A percentage of an unstated denominator is
+not a ballot count.
+
+`Master-Aggregated-Numbers-2023-2026.xlsx` is still there and was modified
+**2026-08-28**, which is after the June primary canvass — confirming it is a
+post-canvass aggregate, not a tracker.
+
+**Verdict unchanged: Utah publishes nothing machine-readable during the general
+election season.** For an all-mail state with a Senate race that is a real loss,
+and the thing to watch is whether `/ballots-processed/` or a
+`november-2026-…-ballots-returned/` page appears in the WordPress REST index once
+ballots go out — that index makes discovery a single request.
+
+---
+
+## New Mexico — confirmed, with the search that confirms it
+
+The earlier survey's verdict holds. Re-checked from a different angle — the SoS
+runs WordPress, so its own search API can be asked exhaustively:
+
+* `sos.nm.gov/wp-json/wp/v2/search?search=absentee` → **200**: rule-making
+  archives, "how to return your ballot" FAQs, and press releases. The only ones
+  carrying numbers are from **2018** ("Sec. Toulouse Oliver Announces Final Early
+  Voting and Current Absentee Turnout Numbers for the 2018 General Election"), as
+  prose. The practice stopped.
+* `…?search=early+voting` → **200**, same shape.
+* `…/wp-json/wp/v2/media?search=absentee` → **200**: an application form, two
+  videos and a transcript. No data file of any kind.
+* `www.sos.nm.gov/voting-and-elections/` → **200**, no data links.
+* `electionresults.sos.nm.gov/` → **200** — an election-night results SPA.
+
+**Nothing machine-readable during the season**, in a state with an open
+governorship and a Senate race. The gap is a publishing decision, not a
+transport problem.
+
+---
+
+## Wyoming — confirmed; the only daily file is request-gated
+
+`sos.wyo.gov/Elections/` → **200**. `sos.wyo.gov/Elections/Statistics.aspx` →
+**200**, and its entire contents are two links: `/Elections/VRStats.aspx` (voter
+registration) and `/Elections/Docs/VoterProfile.pdf` (post-election turnout).
+There is no absentee or early-vote file.
+
+The survey's finding stands and is the whole story: Wyoming's daily
+individual-level absentee file exists, is party-tagged, runs **September 18 –
+November 2, 2026**, and is delivered to a Google Drive folder on request via
+`DailyAbsenteeFileRequestForm.pdf`. **One email to `Elections@wyo.gov` away** —
+which is a decision for a human, not a scraper.
+
+---
+
+## California — the county survey the brief asked for
+
+California's statewide source was built this pass from a different find (the SoS
+`vbm-statistics.xlsx` workbook — see that section). The ten large counties were
+still checked properly, because a partial county source was the fallback plan.
+Recording the result so nobody repeats it:
+
+| County | site | during-season machine-readable returns? |
+|---|---|---|
+| Los Angeles | `www.lavote.gov` **200**, `results.lavote.gov` **200** (SPA) | **No.** `…/current-elections/vote-by-mail-turnout` → **404**. A Wayback CDX sweep of `lavote.gov` from 2020 finds no daily VBM-return report of any kind, in any format. |
+| **Orange** | `ocvote.gov/datacentral/` **200** | **Yes — the best county source in the state.** See below. |
+| San Diego | `www.sdvote.com` **200** | No. "Past Voter Turnout" (historical) only. |
+| Santa Clara | `vote.santaclaracounty.gov` **200** *(403 to plain requests; 200 through `curl_cffi`)* | No. "Reports and Statistics" carries no during-season returns. |
+| Alameda | `acvote.alamedacountyca.gov` **200**; `alamedacountyca.gov/rov_app/edata?page=vbm` **200** | No. The eData "Vote By Mail" tab is **registration** — the word "return" does not appear on the page. |
+| Sacramento | `elections.saccounty.gov` **200** | No. Registration totals only. |
+| Riverside | `voteinfo.net` **200** *(403 plain; 200 through `curl_cffi`)* | No data links at all. |
+| San Bernardino | `elections.sbcounty.gov` **200** | No. Historical turnout plus an ArcGIS precinct map. |
+| Contra Costa | `www.contracostavote.gov` **200** | No matching links. |
+| Fresno | `fresnocountyca.gov/…/County-ClerkRegistrar-of-Voters` **200** *(403 plain; 200 through `curl_cffi`)* | No. |
+
+**Orange County has an undocumented but unauthenticated JSON API**, and it is
+worth writing down even though it was not needed:
+
+```
+https://ocvote.gov/datacentral/bin/get.php?q=vbm-trend-returned      -> 200 JSON
+https://ocvote.gov/datacentral/bin/get.php?q=vbm-counts-returned&p=*552-1 -> 200 JSON
+https://ocvote.gov/datacentral/?tab=ballots                          -> 200 HTML
+```
+
+`vbm-trend-returned` is ballots returned **by date** — a real daily curve.
+`?tab=ballots` is server-rendered HTML naming the election ("2026 Primary
+Election") with countywide VBM issued and returned **broken out by party**
+(`DEM 311,666 · REP 324,320 · N-P 130,965 · AI · GRN · LIB · P-F`, total
+717,548 as of this check). `q=vbm-counts-issued` with no `p` → **200** with
+`{"info":{"error":"something went wrong"}}`, so the parameter shape is the whole
+contract — the same fragility that got Oklahoma's DevExpress endpoint deferred.
+
+Also checked at state level, for completeness:
+
+* `api.sos.ca.gov/returns/status` → **200** JSON, county turnout and precincts
+  reporting — **election night**, not the return period.
+* `api.sos.ca.gov/returns/unprocessed-ballots` → **500**;
+  `api.sos.ca.gov/` → **403**.
+* `elections.cdn.sos.ca.gov/` (bucket root) → **403** XML, while
+  `…/ror/15day-gen-2024/county.xlsx` → **200**, 29,979 B. The root 403 is a
+  bucket-listing denial, not a block — the same shape as Tennessee's S3.
+* `data.ca.gov/api/3/action/package_search?q=vote+by+mail` → **200**;
+  `data.lacounty.gov/api/3/action/package_search` → **404**.
+
+---
+
+## Transport: three more hosts the `curl_cffi` retry unblocked
+
+The brief asked which previously-blocked hosts the new transport opened. In this
+region the answer is three, all California county sites, all **403 to plain
+`requests` and 200 through the Chrome fingerprint**:
+
+```
+vote.santaclaracounty.gov      403 -> 200   86,876 B
+voteinfo.net (Riverside)       403 -> 200  139,590 B
+fresnocountyca.gov (Fresno)    403 -> 200  118,976 B
+```
+
+None of them turned out to publish return data, so the unblock changed no verdict
+here — but it changed those three from "unverifiable" to "checked and empty",
+which is the difference between a gap and a guess.
+
+Nothing in OR, UT, ID, MT, NM, HI or WY was ever blocked. Every 404 recorded in
+this section is an honest 404: the file does not exist yet.

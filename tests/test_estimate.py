@@ -451,10 +451,17 @@ def test_coverage_band_is_bounded_by_the_missing_counties(baseline):
     assert lo == pytest.approx(expected) and hi == pytest.approx(expected)
 
 
-def test_band_never_leaves_zero_to_one(baseline):
-    row = est.estimate_day(2026, "NC", date(2026, 10, 20),
-                           {ALLEGHANY: 100}, baseline)
-    assert 0.0 <= row.est_dem_lo <= row.est_dem_hi <= 1.0
+def test_band_never_leaves_zero_to_one_and_always_contains_its_centre(baseline):
+    """A share cannot be negative or above one, and a band that does not contain
+    its own centre is worse than no band. The mail term can push a lopsided
+    county's estimate hard against either end."""
+    for ballots, mail in (({ALLEGHANY: 100}, None), ({ALLEGHANY: 100}, 100),
+                          ({MECKLENBURG: 100}, 100), ({MECKLENBURG: 900_000}, 900_000)):
+        row = est.estimate_day(2026, "NC", date(2026, 10, 20), ballots, baseline,
+                               statewide_ballots=sum(ballots.values()),
+                               mail_returned=mail, inperson=0 if mail else None)
+        assert 0.0 <= row.est_dem_lo <= row.est_dem_hi <= 1.0
+        assert row.est_dem_lo <= row.est_dem_share <= row.est_dem_hi
 
 
 def test_confidence_is_never_high(tmp_path, full_baseline):
