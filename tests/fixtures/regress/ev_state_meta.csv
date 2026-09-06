@@ -1,5 +1,5 @@
 state,name,election_date,ev_start_2026,ev_end_2026,has_party_reg,dims_available,ev_2022_total,ev_2024_total,turnout_2022_total,turnout_2024_total,reg_voters_2026,notes
-AK,Alaska,2026-11-03,,,true,,,167263,,,,not tracked in 2026
+AK,Alaska,2026-11-03,,,true,,,,,,,not tracked in 2026
 AL,Alabama,2026-11-03,,,false,,,,,,,not tracked in 2026
 AR,Arkansas,2026-11-03,,,false,,,,,,,not tracked in 2026
 AZ,Arizona,2026-11-03,,,true,county|party|method,,,,,,
@@ -8,20 +8,20 @@ CO,Colorado,2026-11-03,,,true,county|party|method,,,,,,
 CT,Connecticut,2026-11-03,,,true,,,,,,,not tracked in 2026
 DC,District of Columbia,2026-11-03,,,true,,,,,,,not tracked in 2026
 DE,Delaware,2026-11-03,,,true,,,,,,,not tracked in 2026
-FL,Florida,2026-11-03,,,true,county|party|method,,9137249,,,,
-GA,Georgia,2026-11-03,,,false,county|method|age|race|sex,,4031303,,,,
+FL,Florida,2026-11-03,,,true,county|party|method,,,,,,
+GA,Georgia,2026-11-03,,,false,county|method|age|race|sex,,,,,,
 HI,Hawaii,2026-11-03,,,false,,,,,,,not tracked in 2026
-IA,Iowa,2026-11-03,,,true,county|party|method,,680297,,,,
+IA,Iowa,2026-11-03,,,true,county|party|method,,,,,,
 ID,Idaho,2026-11-03,,,false,,,,,,,not tracked in 2026
 IL,Illinois,2026-11-03,,,false,county|method,,,,,,
 IN,Indiana,2026-11-03,,,false,,,,,,,not tracked in 2026
 KS,Kansas,2026-11-03,,,true,,,,,,,not tracked in 2026
-KY,Kentucky,2026-11-03,,,true,county|party|method,,803596,,,,
+KY,Kentucky,2026-11-03,,,true,county|party|method,,,,,,
 LA,Louisiana,2026-11-03,,,true,,,,,,,not tracked in 2026
 MA,Massachusetts,2026-11-03,,,true,,,,,,,not tracked in 2026
 MD,Maryland,2026-11-03,,,true,county|party|sex,,,,,,
-ME,Maine,2026-11-03,,,true,town|county|party|method,236972,378760,,,,reports by municipality; counties summed from towns
-MI,Michigan,2026-11-03,,,false,county|method,,3319560,,,,
+ME,Maine,2026-11-03,,,true,town|county|party|method,,,,,,reports by municipality; counties summed from towns
+MI,Michigan,2026-11-03,,,false,county|method,,,,,,
 MN,Minnesota,2026-11-03,,,false,,,,,,,not tracked in 2026
 MO,Missouri,2026-11-03,,,false,,,,,,,not tracked in 2026
 MS,Mississippi,2026-11-03,,,false,,,,,,,not tracked in 2026
@@ -34,19 +34,19 @@ NJ,New Jersey,2026-11-03,,,true,,,,,,,not tracked in 2026
 NM,New Mexico,2026-11-03,,,true,,,,,,,not tracked in 2026
 NV,Nevada,2026-11-03,,,true,county|party|method,,,,,,
 NY,New York,2026-11-03,,,true,,,,,,,not tracked in 2026
-OH,Ohio,2026-11-03,,,false,county|method,1473983,2620750,,,,
+OH,Ohio,2026-11-03,,,false,county|method,,,,,,
 OK,Oklahoma,2026-11-03,,,true,,,,,,,not tracked in 2026
 OR,Oregon,2026-11-03,,,true,,,,,,,not tracked in 2026
-PA,Pennsylvania,2026-11-03,,,true,county|party|method,,1960226,,,,
+PA,Pennsylvania,2026-11-03,,,true,county|party|method,,,,,,
 RI,Rhode Island,2026-11-03,,,true,,,,,,,not tracked in 2026
-SC,South Carolina,2026-11-03,,,false,county|method,,1579112,,,,
+SC,South Carolina,2026-11-03,,,false,county|method,,,,,,
 SD,South Dakota,2026-11-03,,,true,party|method,,,,,,
 TN,Tennessee,2026-11-03,,,false,county|method,,,,,,
 TX,Texas,2026-11-03,,,false,county|method,,,,,,largest counties only (~30 of 254) -- never a statewide total
 UT,Utah,2026-11-03,,,true,,,,,,,not tracked in 2026
-VA,Virginia,2026-11-03,,,false,county|method,992231,2376938,,,,
+VA,Virginia,2026-11-03,,,false,county|method,,,,,,
 VT,Vermont,2026-11-03,,,false,,,,,,,not tracked in 2026
 WA,Washington,2026-11-03,,,false,,,,,,,not tracked in 2026
-WI,Wisconsin,2026-11-03,,,false,county|method,,1558257,,,,
+WI,Wisconsin,2026-11-03,,,false,county|method,,,,,,
 WV,West Virginia,2026-11-03,,,true,,,,,,,not tracked in 2026
 WY,Wyoming,2026-11-03,,,true,,,,,,,not tracked in 2026

@@ -54,8 +54,17 @@ TIER1: dict[str, str] = {
     "TX": "tx:TXScraper",
     "NH": "nh:NHScraper",
     "TN": "tn:TNScraper",
+    "MN": "mn:MNScraper",
+    # Voter-level daily file: county + method + sex, no party registration.
+    "WA": "wa:WAScraper",
     # Statewide only (no county breakdown published), but with party + method.
     "SD": "sd:SDScraper",
+    # Statewide only, method only -- Alaska's report is keyed by House district,
+    # which does not nest into boroughs, so no county rows are possible.
+    "AK": "ak:AKScraper",
+    # PARTIAL: the NYC Board covers 5 of New York's 62 counties, so this one
+    # publishes county rows and never a statewide row. See ny.py.
+    "NY": "ny:NYScraper",
 }
 
 FALLBACKS: tuple[str, ...] = (

@@ -357,6 +357,85 @@ knowing, worth keeping the code for, and worth not shipping.
 
 ---
 
+## What shipped, and on what terms
+
+The recommendation above was made, and **overruled: the estimate is on the site.**
+That is recorded here rather than quietly edited out, because the argument
+against it is the reason the presentation looks the way it does, and anyone
+changing that presentation later needs to be able to read what it was defending
+against.
+
+It ships under six conditions, and every one of them is enforced in code with a
+test behind it rather than left to a style guide.
+
+1. **It is labelled an estimate everywhere it appears.** The badge reads
+   `Estimate`, the heading says the state "publishes no party split — this is a
+   model of one", and the word *reported* never appears next to one of these
+   figures. There is no surface on which the modelled number sits in a column,
+   chart or legend that also carries a reported split.
+
+2. **The band ships with the number, always, and it is the headline.** The card
+   leads with the interval (`33% – 53%`) set large; the central estimate is
+   underneath it in small italic type. `ev-estimate.js`'s `range()` returns
+   `null` unless the row carries *both* bounds, and `card()` refuses to draw
+   without a range — there is no code path that renders a bare point estimate.
+
+3. **The measured error is beside it, in plain words, at full size.**
+   `ERROR_NOTE`, printed verbatim on every surface that shows an estimate, on
+   the same red rule the party caption uses:
+
+   > This is a model, not a count. Tested against the states that do report party
+   > registration, it lands about 5 points off on average and leans Republican by
+   > about 4. Most of what it knows is the state's own 2024 presidential result:
+   > weighting by county buys under a point of accuracy over simply quoting that
+   > result and stopping.
+
+   It is not a tooltip, not a footnote and not a link. A reader who sees the
+   number sees this.
+
+4. **It cannot be mistaken for a reported split without reading.** A reported
+   split on this page is a solid stacked navy/red bar in which every pixel of the
+   track is filled and the boundary between the two colours *is* the number. The
+   estimate is the opposite by construction: a hatched **interval on an axis**,
+   in neutral graphite rather than a party colour, on a dashed card, where most
+   of the track is empty and the empty part is the point. Flip between North
+   Carolina's panel and Ohio's and the difference is visible from across the
+   room.
+
+5. **Arizona is excluded from the UI.** `estimate.py` still writes it — the CSV
+   is the audit trail, and it flags the row with `state_has_party_reg=true` — but
+   `ev-estimate.js`'s `showable()` refuses to draw any row carrying that flag.
+   The test is made against the column, not against the string `"AZ"`, so a
+   future state in the same position is excluded for the same reason with no code
+   change. Arizona's own panel says the split is not reported, and says why we
+   will not model it either: the real figure exists at its county recorders, so
+   an estimate there stands in for a fact that can be collected and would be
+   contradicted the moment somebody collects it.
+
+6. **`lean_vs_baseline` is published alongside, framed as what it is.** Every
+   card carries the sentence this document argued was the only defensible output
+   — *"the counties that have returned ballots so far are 1.7 points more
+   Democratic than Wisconsin as a whole in 2024 presidential terms"* — under the
+   heading **What the geography does say**, kept visually apart from the estimate
+   so it does not read as a caveat on it.
+
+The Info tab carries the method, the full error table above, the summary
+statistics, the "when it is most wrong" list and the Arizona reasoning. Its
+numbers are read from `EIEV.estimate.ERROR_TABLE`, the same constant that backs
+the note in condition 3, so the published error bar and the sentence describing
+it cannot drift apart. `assets/earlyvote/tests/party-estimate.test.mjs`
+recomputes the headline error claims from the per-series rows rather than
+trusting them, and pins the gate: no band means no card, a reporting state never
+gets the model beside its real split, and Arizona is never drawn.
+
+**Nothing about the pipeline's guarantee changed.** The estimate is still written
+to `output/party_estimate.csv` and nowhere else, still never to
+`party_dem`/`party_rep`/`party_oth`/`party_npa`, and
+`test_write_never_touches_the_reported_party_columns` still hashes the whole
+output tree on every write to prove it.
+
+---
+
 ## Where the code is
 
 | | |
