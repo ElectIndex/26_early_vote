@@ -112,7 +112,7 @@ def cmd_ingest(args) -> int:
                 "ok": len(ok), "pending": len(pending), "failed": len(failed),
                 "files": files,
             },
-        })
+        }, partial=bool(args.state))
 
     print(f"ok={len(ok)} pending={len(pending)} failed={len(failed)} "
           f"state_rows={len(combined.state_rows)} "

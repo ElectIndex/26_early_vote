@@ -286,3 +286,53 @@ def test_hand_entered_total_is_never_overwritten(tmp_path):
         rows = {r["state"]: r for r in csv.DictReader(fh)}
     assert rows["NC"]["ev_2022_total"] == "999"   # hand-entered survives
     assert rows["GA"]["ev_2022_total"] == "222"   # blank gets filled
+
+
+# --------------------------------------------------------------------------
+# publish.write_status: a scoped run must not erase the other states
+# --------------------------------------------------------------------------
+def test_scoped_run_merges_status_instead_of_replacing(tmp_path):
+    """`ingest --state NC` knows nothing about the other twenty.
+
+    Writing its payload wholesale dropped them from the file the page reads, and
+    the site showed nineteen tracked states as "not tracked". A scoped run must
+    merge.
+    """
+    import json
+    from ev.publish import write_status
+
+    full = {
+        "generated_at": "2026-09-06T00:00:00+00:00",
+        "states": {s: {"status": "pending", "tier": None} for s in
+                   ("NC", "FL", "IL", "GA", "TX")},
+        "summary": {"ok": 0, "pending": 5, "failed": 0},
+    }
+    write_status(tmp_path, full)
+
+    scoped = {
+        "generated_at": "2026-09-06T06:00:00+00:00",
+        "states": {"NC": {"status": "ok", "tier": 1}},
+        "summary": {"ok": 1, "pending": 0, "failed": 0},
+    }
+    write_status(tmp_path, scoped, partial=True)
+
+    out = json.loads((tmp_path / "ev_status.json").read_text())
+    assert set(out["states"]) == {"NC", "FL", "IL", "GA", "TX"}
+    assert out["states"]["NC"]["status"] == "ok"      # the scoped state updated
+    assert out["states"]["TX"]["status"] == "pending"  # the others survived
+    # The summary describes the whole file, not the slice that was run.
+    assert out["summary"]["ok"] == 1 and out["summary"]["pending"] == 4
+    assert out["summary"]["partial_run"] is True
+
+
+def test_unscoped_run_replaces_status_wholesale(tmp_path):
+    """The daily job IS the whole picture, so a state it no longer tracks must
+    disappear rather than linger from an older file."""
+    import json
+    from ev.publish import write_status
+
+    write_status(tmp_path, {"states": {"NC": {"status": "ok"}, "ZZ": {"status": "ok"}},
+                            "summary": {}})
+    write_status(tmp_path, {"states": {"NC": {"status": "ok"}}, "summary": {}})
+    out = json.loads((tmp_path / "ev_status.json").read_text())
+    assert set(out["states"]) == {"NC"}

@@ -352,13 +352,45 @@ def publish_state_meta(out_dir: Path, meta_path: Path,
     return {"file": "ev_state_meta.csv", "rows": len(rows)}
 
 
-def write_status(out_dir: Path, payload: dict) -> None:
+def write_status(out_dir: Path, payload: dict, *, partial: bool = False) -> None:
     """ev_status.json -- the page's honesty layer.
 
     Written even when every state failed, because a status file that stops
     updating is itself the signal the page needs to show a stale badge.
+
+    `partial=True` MERGES into whatever is already on disk instead of replacing
+    it. A `--state NC ME` run knows nothing about the other nineteen, and writing
+    its two-state payload wholesale silently dropped them from the file the page
+    reads -- which is how the site came to show nineteen tracked states as "not
+    tracked". The daily job is never scoped, so it keeps replacing.
     """
     out_dir.mkdir(parents=True, exist_ok=True)
+
+    if partial:
+        existing_path = out_dir / "ev_status.json"
+        if existing_path.exists():
+            try:
+                existing = json.loads(existing_path.read_text(encoding="utf-8"))
+            except (ValueError, OSError):
+                existing = {}
+            merged_states = dict(existing.get("states") or {})
+            merged_states.update(payload.get("states") or {})
+            payload = dict(payload)
+            payload["states"] = merged_states
+            # The summary describes the whole file, not just this run's slice.
+            counts = {"ok": 0, "pending": 0, "failed": 0}
+            for entry in merged_states.values():
+                status = entry.get("status")
+                if status == "ok":
+                    counts["ok"] += 1
+                elif status == "pending":
+                    counts["pending"] += 1
+                else:
+                    counts["failed"] += 1
+            summary = dict(payload.get("summary") or {})
+            summary.update(counts)
+            summary["partial_run"] = True
+            payload["summary"] = summary
     fd, tmp = tempfile.mkstemp(dir=str(out_dir), prefix="ev_status", suffix=".tmp")
     with os.fdopen(fd, "w", encoding="utf-8") as fh:
         json.dump(payload, fh, indent=1, sort_keys=True)
