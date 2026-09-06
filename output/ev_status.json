@@ -2,113 +2,18 @@
  "as_of": "2026-09-06",
  "cycle": 2026,
  "days_to_election": 58,
- "generated_at": "2026-09-06T02:16:23+00:00",
+ "generated_at": "2026-09-06T15:00:24+00:00",
  "states": {
-  "AZ": {
-   "attempts": [
-    {
-     "detail": "UF tracker reports no ballots cast in AZ as of 2026-08-12",
-     "name": "uf-election-lab",
-     "result": "not_yet_published",
-     "tier": 2
-    }
-   ],
-   "message": "UF tracker reports no ballots cast in AZ as of 2026-08-12",
-   "rows": 0,
-   "source": null,
-   "status": "pending",
-   "tier": null
-  },
-  "CO": {
-   "attempts": [
-    {
-     "detail": "UF tracker reports no ballots cast in CO as of 2026-08-12",
-     "name": "uf-election-lab",
-     "result": "not_yet_published",
-     "tier": 2
-    }
-   ],
-   "message": "UF tracker reports no ballots cast in CO as of 2026-08-12",
-   "rows": 0,
-   "source": null,
-   "status": "pending",
-   "tier": null
-  },
-  "FL": {
-   "attempts": [
-    {
-     "name": "fl-doe",
-     "result": "ok",
-     "tier": 1
-    }
-   ],
-   "message": "",
-   "rows": 2,
-   "source": "fl-doe",
-   "status": "ok",
-   "tier": 1
-  },
-  "GA": {
-   "attempts": [
-    {
-     "detail": "UF tracker reports no ballots cast in GA as of 2026-08-12",
-     "name": "uf-election-lab",
-     "result": "not_yet_published",
-     "tier": 2
-    }
-   ],
-   "message": "UF tracker reports no ballots cast in GA as of 2026-08-12",
-   "rows": 0,
-   "source": null,
-   "status": "pending",
-   "tier": null
-  },
-  "IA": {
-   "attempts": [
-    {
-     "detail": "UF tracker reports no ballots cast in IA as of 2026-08-12",
-     "name": "uf-election-lab",
-     "result": "not_yet_published",
-     "tier": 2
-    }
-   ],
-   "message": "UF tracker reports no ballots cast in IA as of 2026-08-12",
-   "rows": 0,
-   "source": null,
-   "status": "pending",
-   "tier": null
-  },
   "ME": {
    "attempts": [
     {
-     "detail": "UF tracker reports no ballots cast in ME as of 2026-08-12",
-     "name": "uf-election-lab",
+     "detail": "ME: the posted absentee file is for another election (request dates run 2024-01-01..2026-06-09, not the 2026 general)",
+     "name": "me-sos",
      "result": "not_yet_published",
-     "tier": 2
-    }
-   ],
-   "message": "UF tracker reports no ballots cast in ME as of 2026-08-12",
-   "rows": 0,
-   "source": null,
-   "status": "pending",
-   "tier": null
-  },
-  "MI": {
-   "attempts": [
-    {
-     "detail": "MI: https://www.michigan.gov/sos/-/media/Project/Websites/sos/05mcdaniel/General_Election_Data_by_Jurisdiction.xlsx returned HTTP 403",
-     "name": "mi-sos",
-     "result": "SourceError",
      "tier": 1
-    },
-    {
-     "detail": "UF tracker reports no ballots cast in MI as of 2026-08-12",
-     "name": "uf-election-lab",
-     "result": "not_yet_published",
-     "tier": 2
     }
    ],
-   "message": "UF tracker reports no ballots cast in MI as of 2026-08-12",
+   "message": "ME: the posted absentee file is for another election (request dates run 2024-01-01..2026-06-09, not the 2026 general)",
    "rows": 0,
    "source": null,
    "status": "pending",
@@ -127,130 +32,13 @@
    "source": "nc-sbe",
    "status": "ok",
    "tier": 1
-  },
-  "NH": {
-   "attempts": [
-    {
-     "detail": "UF tracker 2026 has no row for NH",
-     "name": "uf-election-lab",
-     "result": "SourceError",
-     "tier": 2
-    },
-    {
-     "detail": "no manual rows for NH in 2026",
-     "name": "manual",
-     "result": "not_yet_published",
-     "tier": 3
-    }
-   ],
-   "message": "no manual rows for NH in 2026",
-   "rows": 0,
-   "source": null,
-   "status": "pending",
-   "tier": null
-  },
-  "NV": {
-   "attempts": [
-    {
-     "detail": "UF tracker reports no ballots cast in NV as of 2026-08-12",
-     "name": "uf-election-lab",
-     "result": "not_yet_published",
-     "tier": 2
-    }
-   ],
-   "message": "UF tracker reports no ballots cast in NV as of 2026-08-12",
-   "rows": 0,
-   "source": null,
-   "status": "pending",
-   "tier": null
-  },
-  "OH": {
-   "attempts": [
-    {
-     "detail": "OH: https://www.ohiosos.gov/globalassets/elections/2026/gen/absentee/2026gen_absentee_report_web.xlsx returned HTTP 403",
-     "name": "oh-sos",
-     "result": "SourceError",
-     "tier": 1
-    },
-    {
-     "detail": "UF tracker reports no ballots cast in OH as of 2026-08-12",
-     "name": "uf-election-lab",
-     "result": "not_yet_published",
-     "tier": 2
-    }
-   ],
-   "message": "UF tracker reports no ballots cast in OH as of 2026-08-12",
-   "rows": 0,
-   "source": null,
-   "status": "pending",
-   "tier": null
-  },
-  "PA": {
-   "attempts": [
-    {
-     "detail": "UF tracker reports no ballots cast in PA as of 2026-08-12",
-     "name": "uf-election-lab",
-     "result": "not_yet_published",
-     "tier": 2
-    }
-   ],
-   "message": "UF tracker reports no ballots cast in PA as of 2026-08-12",
-   "rows": 0,
-   "source": null,
-   "status": "pending",
-   "tier": null
-  },
-  "TX": {
-   "attempts": [
-    {
-     "detail": "UF tracker reports no ballots cast in TX as of 2026-08-12",
-     "name": "uf-election-lab",
-     "result": "not_yet_published",
-     "tier": 2
-    }
-   ],
-   "message": "UF tracker reports no ballots cast in TX as of 2026-08-12",
-   "rows": 0,
-   "source": null,
-   "status": "pending",
-   "tier": null
-  },
-  "VA": {
-   "attempts": [
-    {
-     "detail": "UF tracker reports no ballots cast in VA as of 2026-08-12",
-     "name": "uf-election-lab",
-     "result": "not_yet_published",
-     "tier": 2
-    }
-   ],
-   "message": "UF tracker reports no ballots cast in VA as of 2026-08-12",
-   "rows": 0,
-   "source": null,
-   "status": "pending",
-   "tier": null
-  },
-  "WI": {
-   "attempts": [
-    {
-     "detail": "UF tracker reports no ballots cast in WI as of 2026-08-12",
-     "name": "uf-election-lab",
-     "result": "not_yet_published",
-     "tier": 2
-    }
-   ],
-   "message": "UF tracker reports no ballots cast in WI as of 2026-08-12",
-   "rows": 0,
-   "source": null,
-   "status": "pending",
-   "tier": null
   }
  },
  "summary": {
   "failed": 0,
   "files": [
    {
-    "added": 1,
+    "added": 0,
     "file": "ev_state_daily.csv",
     "kept_better_tier": 0,
     "kept_richer": 0,
@@ -259,26 +47,18 @@
    },
    {
     "added": 0,
-    "file": "fl.csv",
-    "kept_better_tier": 0,
-    "kept_richer": 0,
-    "replaced": 1,
-    "rows": 1
-   },
-   {
-    "added": 5,
     "file": "nc.csv",
     "kept_better_tier": 0,
     "kept_richer": 0,
-    "replaced": 10,
+    "replaced": 15,
     "rows": 9826
    },
    {
-    "added": 11,
+    "added": 0,
     "file": "nc.csv",
     "kept_better_tier": 0,
     "kept_richer": 0,
-    "replaced": 22,
+    "replaced": 33,
     "rows": 1645
    },
    {
@@ -286,7 +66,7 @@
     "rows": 51
    }
   ],
-  "ok": 2,
-  "pending": 13
+  "ok": 1,
+  "pending": 1
  }
 }

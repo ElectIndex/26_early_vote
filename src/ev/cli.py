@@ -19,6 +19,7 @@ from datetime import date, datetime, timezone
 from pathlib import Path
 
 from . import publish, results
+from .adapters import _towns
 from .adapters.base import FetchResult, NotYetPublished
 from .calendar import CURRENT_CYCLE, CYCLES, days_to_election
 from .ladder import STATUS_OK, STATUS_PENDING, run_state
