@@ -1,8 +1,8 @@
 {
- "as_of": "2026-09-05",
+ "as_of": "2026-09-06",
  "cycle": 2026,
- "days_to_election": 59,
- "generated_at": "2026-09-06T02:15:26+00:00",
+ "days_to_election": 58,
+ "generated_at": "2026-09-06T02:16:23+00:00",
  "states": {
   "AZ": {
    "attempts": [
@@ -123,7 +123,7 @@
     }
    ],
    "message": "",
-   "rows": 34,
+   "rows": 51,
    "source": "nc-sbe",
    "status": "ok",
    "tier": 1
@@ -250,12 +250,12 @@
   "failed": 0,
   "files": [
    {
-    "added": 0,
+    "added": 1,
     "file": "ev_state_daily.csv",
     "kept_better_tier": 0,
     "kept_richer": 0,
     "replaced": 3,
-    "rows": 111
+    "rows": 112
    },
    {
     "added": 0,
@@ -266,20 +266,20 @@
     "rows": 1
    },
    {
-    "added": 0,
+    "added": 5,
     "file": "nc.csv",
     "kept_better_tier": 0,
     "kept_richer": 0,
     "replaced": 10,
-    "rows": 9821
+    "rows": 9826
    },
    {
-    "added": 0,
+    "added": 11,
     "file": "nc.csv",
     "kept_better_tier": 0,
     "kept_richer": 0,
     "replaced": 22,
-    "rows": 1634
+    "rows": 1645
    },
    {
     "file": "ev_state_meta.csv",
