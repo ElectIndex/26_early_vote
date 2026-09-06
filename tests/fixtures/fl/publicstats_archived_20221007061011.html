@@ -1,0 +1,855 @@
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width" />
+        <title>Statistics - County Vote-by-Mail and Early Voting Reports</title>
+        <link href="/Content/themes/base/jquery-ui.css" rel="stylesheet"/>
+<link href="/Content/site.css" rel="stylesheet"/>
+
+        <link href="/Scripts/modernizr-2.8.3.js" rel="stylesheet"/>
+
+        <link href="/Content/DataTables/css/dataTables.jqueryui.css" rel="stylesheet"/>
+<link href="/Content/DataTables/css/select.dataTables.css" rel="stylesheet"/>
+<link href="/Content/DataTables/css/responsive.jqueryui.css" rel="stylesheet"/>
+
+        <script src="/Scripts/jquery-3.3.1.js"></script>
+<script src="/Scripts/jquery-ui-1.12.1.js"></script>
+
+        
+        <script src="/Scripts/respond.js"></script>
+
+        <script src="/Scripts/DataTables/jquery.dataTables.js"></script>
+<script src="/Scripts/DataTables/dataTables.select.js"></script>
+
+
+        
+                
+        
+        
+    </head>
+    <body>
+        
+        <div class="contentHolder">
+            <div class="headerRight">
+                <div class="headerLeft">
+                    <div id="title">Vote-by-Mail Request and Early Voting Reports</div>
+                    
+                </div>
+            </div>
+            <menu>
+                <style>
+    * {
+        box-sizing: border-box;
+    }
+
+    .leftdiv {
+        float: left;
+        width: 20%;
+       
+    }
+
+    .rightdiv {
+        float: right;
+        width: 80%;
+        padding: 5px;
+    }
+
+    .row:after {
+        content: "";
+        display: table;
+        clear: both;
+    }
+    /*Responsive layout*/
+    @media screen and (max-width: 600px) {
+        .leftdiv {
+            width: 50%;
+        }
+
+        .rightdiv {
+            width: 50%;
+        }
+    }
+</style>
+
+<div class="row">
+    <div class="leftdiv">
+        <ul id="menu" style="margin:-18px 0 0 -20px">
+        </ul>
+
+    </div>
+    <div class="rightdiv">
+        <ul id="menu" style="padding-right: 5px">
+           
+            <li><a href="/" title="Home">Home</a></li>
+
+            <li><a href="/VoteByMailEarlyVotingReports/VoteByMailHome" title="Absentee Requests">Vote-by-Mail</a></li>
+            <li><a href="/VoteByMailEarlyVotingReports/EarlyVotingHome" title="Early Voting">Early Voting</a></li>
+
+            <li><a href="/VoteByMailEarlyVotingReports/PublicStats" title="Statistics">Statistics</a></li>
+
+
+
+            
+
+
+        </ul>
+
+
+    </div>
+
+</div>
+
+            </menu>
+            <div id="main">
+                <div id="content">
+                   
+
+<script>
+    $(document).ready(function() {
+
+        $('#statewideTotal').tabs({
+            collapsible: false,
+            show: function() {
+                var selectedTab = $('#statewideTotal').tabs('option', 'selected');
+
+            }
+        });
+
+        $('#countyTotal').tabs({
+            collapsible: false,
+            show: function() {
+                var selectedTab = $('#countyTotal').tabs('option', 'selected');
+            }
+        });
+    });
+
+</script>
+
+
+
+<div >
+
+
+<H2>Vote-by-Mail Request & Early Voting Statistics</H2>The following information reflects statewide statistics compiled directly from the individual county daily reports 
+for vote-by-mail and early voting activity as last filed by the county. For county-by-county breakdown, scroll down to tabs.
+</br></br>
+<b>Frequency</b>: Daily reporting of early voting activity starts the day after early voting begins and ends on the Monday 
+after the end of early voting. Early voting schedules may vary county by county. Daily reporting of vote-by-mail activity 
+starts 60 days before the applicable election and ends on the 15th day after the election.
+</br></br>
+While a county is only required to report once a day by 8 a.m., in the event of technical difficulties, the website is refreshed 
+at noon, 3 p.m., and 6 p.m. so that all county reports will be available by 6 p.m. The reports are cumulative up through the prior 
+day’s vote-by-mail and early voting activity.
+</br></br>
+<b>Inquiries</b>: Any media inquiries regarding these statistics should be directed to the Department of State’s Communications 
+Office at 850.245.6522. Please contact the respective supervisor of elections directly for questions about county-specific reports. 
+</br></br>
+Reference Material: • <a href="http://dos.myflorida.com/elections/data-statistics/elections-data/absentee-and-early-voting/" 
+title="Archived statistical reports" target=”_blank"> Archived statistical reports</a>    
+</div>
+
+<h2>Statewide Totals</h2>
+
+<div id="statewideTotal" style="font-family: Arial;
+                                      font-size: 1em;
+                                      margin: 0;">
+    
+    
+    
+    <div>
+        
+        
+<br />
+                         <span style="font-size: medium"><b> 2022 General </b> </span>
+                         <br />
+                         <span><b>Election Number - 26906  &nbsp;&nbsp; &nbsp; Election Date - 11/08/2022 </b></span>
+                     <table>
+                         <tr>
+                            
+                             <th style="text-align: left;">
+                                 Stats Type
+                             </th>
+                             <th class="statsCenter">
+                                 Republican
+                             </th>
+                             <th class="statsCenter">
+                                 Democrat
+                             </th>
+                             <th class="statsCenter">
+                                 Other
+                             </th>
+                             <th class="statsCenter">
+                                 No Party Affiliation
+                             </th>
+                             <th class="statsCenter">
+                                 Total
+                             </th>
+                
+                             <th class="statsCenter">
+                                 Compiled
+                             </th>
+                             <th >
+                                
+                             </th>
+                         </tr>
+             
+
+                             <tr>
+                                 
+                                 <td style="text-align: left;">
+                                     Vote-by-Mail Provided (Not Yet Returned)
+                                 </td>
+                                 <td class="statsCenter">
+1,261,737                        
+                       
+                                 </td>
+                                 <td class="statsCenter">
+1,687,054                       
+                                 </td>
+                                 <td class="statsCenter">
+60,460                       
+                                 </td>
+                                 <td class="statsCenter">
+822,908                       
+
+                                 </td>
+                                 <td class="statsCenter">
+                        
+3,832,159                                 </td>
+                                 <td class="statsCenter" >10/06/2022
+8:13AM                                 </td>
+                                 
+                                 
+                                 <td class="statsCenter" >
+                                     
+                                 </td>
+                             </tr>
+                             <tr>
+                                 
+                                 <td style="text-align: left;">
+                                     Voted Vote-by-Mail
+                                 </td>
+                                 <td class="statsCenter">
+9,407                        
+                       
+                                 </td>
+                                 <td class="statsCenter">
+11,948                       
+                                 </td>
+                                 <td class="statsCenter">
+527                       
+                                 </td>
+                                 <td class="statsCenter">
+5,305                       
+
+                                 </td>
+                                 <td class="statsCenter">
+                        
+27,187                                 </td>
+                                 <td class="statsCenter" >10/06/2022
+8:13AM                                 </td>
+                                 
+                                 
+                                 <td class="statsCenter" >
+                                     
+                                 </td>
+                             </tr>
+                             <tr>
+                                 
+                                 <td style="text-align: left;">
+                                     Voted Early
+                                 </td>
+                                 <td class="statsCenter">
+                                         0
+                        
+                       
+                                 </td>
+                                 <td class="statsCenter">
+                                         0
+                       
+                                 </td>
+                                 <td class="statsCenter">
+                                         0
+                       
+                                 </td>
+                                 <td class="statsCenter">
+                                         0
+                       
+
+                                 </td>
+                                 <td class="statsCenter">
+                        
+                                         0
+                                 </td>
+                                 <td class="statsCenter" >
+                                 </td>
+                                 
+                                 
+                                 <td class="statsCenter" >
+                                     
+                                 </td>
+                             </tr>
+                     </table>
+<br />
+                         <span style="font-size: medium"><b> 2022 Primary </b> </span>
+                         <br />
+                         <span><b>Election Number - 26905  &nbsp;&nbsp; &nbsp; Election Date - 08/23/2022 </b></span>
+                     <table>
+                         <tr>
+                            
+                             <th style="text-align: left;">
+                                 Stats Type
+                             </th>
+                             <th class="statsCenter">
+                                 Republican
+                             </th>
+                             <th class="statsCenter">
+                                 Democrat
+                             </th>
+                             <th class="statsCenter">
+                                 Other
+                             </th>
+                             <th class="statsCenter">
+                                 No Party Affiliation
+                             </th>
+                             <th class="statsCenter">
+                                 Total
+                             </th>
+                
+                             <th class="statsCenter">
+                                 Compiled
+                             </th>
+                             <th >
+                                
+                             </th>
+                         </tr>
+             
+
+                             <tr>
+                                 
+                                 <td style="text-align: left;">
+                                     Vote-by-Mail Provided (Not Yet Returned)
+                                 </td>
+                                 <td class="statsCenter">
+686,207                        
+                       
+                                 </td>
+                                 <td class="statsCenter">
+960,499                       
+                                 </td>
+                                 <td class="statsCenter">
+45,015                       
+                                 </td>
+                                 <td class="statsCenter">
+630,044                       
+
+                                 </td>
+                                 <td class="statsCenter">
+                        
+2,321,765                                 </td>
+                                 <td class="statsCenter" >09/07/2022
+11:02AM                                 </td>
+                                 
+                                 
+                                 <td class="statsCenter" >
+                                     
+                                 </td>
+                             </tr>
+                             <tr>
+                                 
+                                 <td style="text-align: left;">
+                                     Voted Vote-by-Mail
+                                 </td>
+                                 <td class="statsCenter">
+646,148                        
+                       
+                                 </td>
+                                 <td class="statsCenter">
+843,687                       
+                                 </td>
+                                 <td class="statsCenter">
+18,158                       
+                                 </td>
+                                 <td class="statsCenter">
+237,393                       
+
+                                 </td>
+                                 <td class="statsCenter">
+                        
+1,745,386                                 </td>
+                                 <td class="statsCenter" >09/07/2022
+11:02AM                                 </td>
+                                 
+                                 
+                                 <td class="statsCenter" >
+                                     
+                                 </td>
+                             </tr>
+                             <tr>
+                                 
+                                 <td style="text-align: left;">
+                                     Voted Early
+                                 </td>
+                                 <td class="statsCenter">
+314,137                        
+                       
+                                 </td>
+                                 <td class="statsCenter">
+251,386                       
+                                 </td>
+                                 <td class="statsCenter">
+3,747                       
+                                 </td>
+                                 <td class="statsCenter">
+44,594                       
+
+                                 </td>
+                                 <td class="statsCenter">
+                        
+613,864                                 </td>
+                                 <td class="statsCenter" >08/23/2022
+8:34AM                                 </td>
+                                 
+                                 
+                                 <td class="statsCenter" >
+                                     
+                                 </td>
+                             </tr>
+                     </table>
+        </div>
+    
+    
+    
+</div>
+
+
+<div>
+
+</div>
+
+<h2>County Totals</h2>
+
+<div id="countyTotal" style="font-family: Arial;
+                                                                                                                                                                                                                font-size: 1em;
+                                                                                                                                                                                                                margin: 0;">
+    <ul>
+        <li><a href="#county_ablnotyet">Vote-By-Mail Provided (Not Yet Returned)</a></li>
+        <li><a href="#county_abl">Voted Vote-by-Mail</a></li>
+        <li><a href="#county_evs">Voted Early</a></li>
+    </ul>
+    
+    
+    <div id="county_ablnotyet">
+         <table>
+            <tr>
+                <th>
+                    County
+                </th>
+                <th class="statsCenter">
+                    Election
+                </th>
+                <th class="statsRight">
+                    Republican
+                </th>
+                <th class="statsRight">
+                    Democrat
+                </th>
+                <th class="statsRight">
+                    Other
+                </th>
+                <th class="statsRight">
+                    No Party Affiliation
+                </th>
+                <th class="statsRight">
+                    Total
+                </th>
+
+                <th class="statsCenter">
+                    Compiled
+                </th>
+            </tr><tr>
+                            <td >Alachua                  </td>
+                            <td style="text-align: Center;">
+                                26906  - General
+                            </td>
+                            <td class="statsRight">
+9,556                            </td>
+                            <td class="statsRight">
+28,039                      
+                            </td>
+                            <td class="statsRight">
+643                            </td>
+                            <td class="statsRight" style="padding-right:30px; ">
+8,011                            </td>
+                            <td class="statsRight">
+46,249                            </td>
+                            <td class="statsCenter">
+                                10/06/2022
+8:13AM                            </td>
+                        </tr><tr>
+                            <td >Baker                    </td>
+                            <td style="text-align: Center;">
+                                26906  - General
+                            </td>
+                            <td class="statsRight">
+1,160                            </td>
+                            <td class="statsRight">
+605                      
+                            </td>
+                            <td class="statsRight">
+18                            </td>
+                            <td class="statsRight" style="padding-right:30px; ">
+156                            </td>
+                            <td class="statsRight">
+1,939                            </td>
+                            <td class="statsCenter">
+                                10/06/2022
+8:13AM                            </td>
+                        </tr><tr>
+                            <td >Bay                      </td>
+                            <td style="text-align: Center;">
+                                26906  - General
+                            </td>
+                            <td class="statsRight">
+11,166                            </td>
+                            <td class="statsRight">
+7,924                      
+                            </td>
+                            <td class="statsRight">
+373                            </td>
+                            <td class="statsRight" style="padding-right:30px; ">
+3,593                            </td>
+                            <td class="statsRight">
+23,056                            </td>
+                            <td class="statsCenter">
+                                10/06/2022
+8:13AM                            </td>
+                        </tr><tr>
+                            <td >Alachua                  </td>
+                            <td style="text-align: Center;">
+                                26905  - Primary
+                            </td>
+                            <td class="statsRight">
+4,512                            </td>
+                            <td class="statsRight">
+13,401                      
+                            </td>
+                            <td class="statsRight">
+392                            </td>
+                            <td class="statsRight" style="padding-right:30px; ">
+5,304                            </td>
+                            <td class="statsRight">
+23,609                            </td>
+                            <td class="statsCenter">
+                                09/07/2022
+8:09AM                            </td>
+                        </tr><tr>
+                            <td >Baker                    </td>
+                            <td style="text-align: Center;">
+                                26905  - Primary
+                            </td>
+                            <td class="statsRight">
+419                            </td>
+                            <td class="statsRight">
+334                      
+                            </td>
+                            <td class="statsRight">
+14                            </td>
+                            <td class="statsRight" style="padding-right:30px; ">
+100                            </td>
+                            <td class="statsRight">
+867                            </td>
+                            <td class="statsCenter">
+                                09/07/2022
+8:09AM                            </td>
+                        </tr><tr>
+                            <td >Bay                      </td>
+                            <td style="text-align: Center;">
+                                26905  - Primary
+                            </td>
+                            <td class="statsRight">
+5,295                            </td>
+                            <td class="statsRight">
+4,394                      
+                            </td>
+                            <td class="statsRight">
+263                            </td>
+                            <td class="statsRight" style="padding-right:30px; ">
+2,594                            </td>
+                            <td class="statsRight">
+12,546                            </td>
+                            <td class="statsCenter">
+                                09/07/2022
+8:09AM                            </td>
+                        </tr>
+        </table>
+        
+        
+
+    </div>
+
+    <div id="county_abl">
+        
+        <table>
+            <tr>
+                <th>
+                    County
+                </th>
+                <th class="statsCenter">
+                    Election
+                </th>
+                <th class="statsRight">
+                    Republican
+                </th>
+                <th class="statsRight">
+                    Democrat
+                </th>
+                <th class="statsRight">
+                    Other
+                </th>
+                <th class="statsRight">
+                    No Party Affiliation
+                </th>
+                <th class="statsRight">
+                    Total
+                </th>
+
+                <th class="statsCenter">
+                    Compiled
+                </th>
+            </tr><tr>
+                            <td >Alachua                  </td>
+                            <td style="text-align: Center;">
+                                26906  - General
+                            </td>
+                            <td class="statsRight">
+16                            </td>
+                            <td class="statsRight">
+23                      
+                            </td>
+                            <td class="statsRight">
+01                            </td>
+                            <td class="statsRight" style="padding-right:30px; ">
+06                            </td>
+                            <td class="statsRight">
+46                            </td>
+                            <td class="statsCenter">
+                                10/06/2022
+8:13AM                            </td>
+                        </tr><tr>
+                            <td >Baker                    </td>
+                            <td style="text-align: Center;">
+                                26906  - General
+                            </td>
+                            <td class="statsRight">
+02                            </td>
+                            <td class="statsRight">
+01                      
+                            </td>
+                            <td class="statsRight">
+0                            </td>
+                            <td class="statsRight" style="padding-right:30px; ">
+0                            </td>
+                            <td class="statsRight">
+03                            </td>
+                            <td class="statsCenter">
+                                10/06/2022
+8:13AM                            </td>
+                        </tr><tr>
+                            <td >Bay                      </td>
+                            <td style="text-align: Center;">
+                                26906  - General
+                            </td>
+                            <td class="statsRight">
+184                            </td>
+                            <td class="statsRight">
+84                      
+                            </td>
+                            <td class="statsRight">
+03                            </td>
+                            <td class="statsRight" style="padding-right:30px; ">
+33                            </td>
+                            <td class="statsRight">
+304                            </td>
+                            <td class="statsCenter">
+                                10/06/2022
+8:13AM                            </td>
+                        </tr><tr>
+                            <td >Alachua                  </td>
+                            <td style="text-align: Center;">
+                                26905  - Primary
+                            </td>
+                            <td class="statsRight">
+4,613                            </td>
+                            <td class="statsRight">
+13,637                      
+                            </td>
+                            <td class="statsRight">
+210                            </td>
+                            <td class="statsRight" style="padding-right:30px; ">
+2,309                            </td>
+                            <td class="statsRight">
+20,769                            </td>
+                            <td class="statsCenter">
+                                09/07/2022
+8:09AM                            </td>
+                        </tr><tr>
+                            <td >Baker                    </td>
+                            <td style="text-align: Center;">
+                                26905  - Primary
+                            </td>
+                            <td class="statsRight">
+713                            </td>
+                            <td class="statsRight">
+282                      
+                            </td>
+                            <td class="statsRight">
+04                            </td>
+                            <td class="statsRight" style="padding-right:30px; ">
+50                            </td>
+                            <td class="statsRight">
+1,049                            </td>
+                            <td class="statsCenter">
+                                09/07/2022
+8:09AM                            </td>
+                        </tr><tr>
+                            <td >Bay                      </td>
+                            <td style="text-align: Center;">
+                                26905  - Primary
+                            </td>
+                            <td class="statsRight">
+5,591                            </td>
+                            <td class="statsRight">
+3,395                      
+                            </td>
+                            <td class="statsRight">
+92                            </td>
+                            <td class="statsRight" style="padding-right:30px; ">
+866                            </td>
+                            <td class="statsRight">
+9,944                            </td>
+                            <td class="statsCenter">
+                                09/07/2022
+8:09AM                            </td>
+                        </tr>
+        </table>
+    </div>
+
+    <div id="county_evs">
+       
+        <table>
+            <tr>
+                <th>
+                    County
+                </th>
+                <th class="statsCenter">
+                    Election
+                </th>
+                <th class="statsRight">
+                    Republican
+                </th>
+                <th class="statsRight">
+                    Democrat
+                </th>
+                <th class="statsRight">
+                    Other
+                </th>
+                <th class="statsRight">
+                    No Party Affiliation
+                </th>
+                <th class="statsRight">
+                    Total
+                </th>
+
+                <th class="statsCenter">
+                    Compiled
+                </th>
+            </tr><tr>
+                            <td >Alachua                  </td>
+                            <td style="text-align: Center;">
+                                26905  - Primary
+                            </td>
+                            <td class="statsRight">
+3,701                            </td>
+                            <td class="statsRight">
+6,260                      
+                            </td>
+                            <td class="statsRight">
+85                            </td>
+                            <td class="statsRight" style="padding-right:30px; ">
+879                            </td>
+                            <td class="statsRight">
+10,925                            </td>
+                            <td class="statsCenter">
+                                08/23/2022
+8:34AM                            </td>
+                        </tr><tr>
+                            <td >Baker                    </td>
+                            <td style="text-align: Center;">
+                                26905  - Primary
+                            </td>
+                            <td class="statsRight">
+1,761                            </td>
+                            <td class="statsRight">
+328                      
+                            </td>
+                            <td class="statsRight">
+09                            </td>
+                            <td class="statsRight" style="padding-right:30px; ">
+68                            </td>
+                            <td class="statsRight">
+2,166                            </td>
+                            <td class="statsCenter">
+                                08/23/2022
+8:34AM                            </td>
+                        </tr><tr>
+                            <td >Bay                      </td>
+                            <td style="text-align: Center;">
+                                26905  - Primary
+                            </td>
+                            <td class="statsRight">
+6,731                            </td>
+                            <td class="statsRight">
+1,484                      
+                            </td>
+                            <td class="statsRight">
+65                            </td>
+                            <td class="statsRight" style="padding-right:30px; ">
+541                            </td>
+                            <td class="statsRight">
+8,821                            </td>
+                            <td class="statsCenter">
+                                08/23/2022
+8:34AM                            </td>
+                        </tr>
+        </table>
+        
+    </div>
+</div>
+    
+    
+
+
+
+                </div>
+                <br/>
+                <div id="help-info">If you are experiencing a problem with this web site please contact the <a href="/cdn-cgi/l/email-protection#25414c5340494046514c4a4b5665414a560b485c43494a574c41440b464a48" title="Need to add contact email">Division of Elections</a>.</div>
+                <div id="help-info">County Ballot Reports - Version 1.0.1.0</div>
+            </div>
+            <div id="footer">
+                <a href="http://dos.myflorida.com/">Florida Department of State</a><img src='/Content/images/greystar.gif' alt="" />
+                <a href="http://election.dos.state.fl.us/">Division of Elections</a><img src='/Content/images/greystar.gif' alt="" />
+                <a href="http://dos.myflorida.com/accessibility.aspx">Accessibility</a><img src='/Content/images/greystar.gif' alt="" />
+                <a href="http://dos.myflorida.com/privacy-policy.aspx">Privacy Policy</a><img src='/Content/images/greystar.gif' alt="" />
+                <a href="http://election.dos.state.fl.us/contact-us/contact.shtml">Contact Us</a></div>
+        </div>
+
+        <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="https://www.google.com/recaptcha/api.js"></script>
+
+        
+
+    </body>
+
+</html>

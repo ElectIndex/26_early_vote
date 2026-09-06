@@ -39,9 +39,53 @@ separately from `Early` rather than inside it (in the March 2026 primary, 4,550
 against 430,000). Both are ballots cast in person before Election Day, so
 `inperson` is their sum.
 
-The page has no archive: its dropdown lists only the current cycle's elections,
-so there is no `fetch_history` to write. The export is generated on demand and
-carries no as-of date of its own, so a run's rows are dated `as_of`.
+The page has no archive: its dropdown lists only the current cycle's elections.
+The export is generated on demand and carries no as-of date of its own, so a
+run's rows are dated `as_of`.
+
+## Why there is no 2024 or 2022 county series, and how hard that was looked for
+
+Florida's PublicStats page has the same "snapshot, overwritten in place" shape
+and its 2022 and 2024 county curves came straight out of the Wayback Machine
+(see `fl.py`). The same sweep against Illinois finds nothing, and the reason is
+structural rather than bad luck: **the counts live behind an ASP.NET postback,
+and a crawler only ever sees the page before the button is pressed.**
+
+VERIFIED 2026-09-06 from this network, via the CDX API and by fetching captures:
+
+* `elections.il.gov/VotingAndRegistrationSystems/PreElectionCounts.aspx` has
+  **21 distinct captures of the bare URL in its whole history**, of which
+  exactly **two are 200s in 2024** (2024-11-05 15:46 and 2024-11-06 04:42 UTC)
+  and **one in 2022** (2022-03-20). Counting its `?MID=...&T=...` variants
+  brings 2024 to thirteen 200s. Five of those were fetched, spanning 2024-11-01
+  to 2024-11-18, plus the 2022 one: every single one carries the dropdown with
+  `<option selected>Please Select an Election</option>`, **zero `<table>`
+  elements and zero `NewDocDisplay.aspx` links**. The archive holds the form,
+  never the answer.
+* `elections.il.gov/NewDocDisplay.aspx?<token>` — the export links themselves —
+  has **149 distinct 2024 captures**, none of them these counts: every one is
+  `application/pdf` or `application/octet-stream` from the campaign-disclosure
+  and voting-equipment trees. The three whose encrypted token shares the longest
+  prefix with the 2026 counts export were downloaded and read; they are the
+  Vote-By-Mail FAQ and two voting-equipment inventories. A crawler could not
+  have reached the counts export, because no archived page ever linked it.
+* **No archived `text/csv` or `text/plain` under any `Counts/` path in 2024 or
+  2022** except `Counts/Registration/Active and Inactive totals.txt`, which is
+  registration, not voting.
+* There *was* a static path once:
+  `DocDisplay.aspx?Doc=Downloads/VotingAndRegistrationSystems/Counts/PreElection/
+  Pre-election Ballot Requests.pdf` is archived **once, 2021-11-02**, and it
+  holds exactly this file's columns for the 2021 Consolidated Election
+  (`JID / Name / ElectionDate / By-Mail / By-Mail Returned / Early / Grace`,
+  STATEWIDE COUNTS 186,724 / 145,952 / 189,380 / 3,660). It has no 2022 or 2024
+  capture, and today it serves an HTML not-found page rather than a PDF. Every
+  extension of the bare download path — `.csv`, `.txt`, `.pdf`, `.xlsx` under
+  `/Downloads/VotingAndRegistrationSystems/Counts/PreElection/` — returns **404
+  live today**, so there is no static file to walk backwards either.
+
+`fetch_history` therefore refuses, loudly and by name, rather than inheriting a
+generic "no archive" from the base class: the refusal is a finding, and if
+Illinois ever restores the static path the failing test is the reminder.
 """
 
 from __future__ import annotations
@@ -346,3 +390,20 @@ class ILScraper(Adapter):
         value = election_option(page, cycle)
         posted = self._postback(session, page, value)
         return parse(self._download(session, download_url(posted), cycle), cycle, as_of)
+
+    def fetch_history(self, cycle: int) -> FetchResult:
+        """There is no archived Illinois series. See the module docstring.
+
+        This is not the base class's "no archive available" shrug: the Internet
+        Archive was swept for this page, for its export links, and for the static
+        download path that carried the same file in 2021, and the answer is that
+        a postback page archives as the form and never as the answer. Saying so
+        here keeps the next reader from repeating the search.
+        """
+        raise NotYetPublished(
+            f"IL: no {cycle} pre-election counts exist to fetch — the SBE purges "
+            f"past elections from the dropdown, and every Wayback capture of "
+            f"{INDEX} carries only the unselected form (no tables, no export "
+            f"links). The static path that held this file in 2021 has no {cycle} "
+            f"capture and 404s today."
+        )
