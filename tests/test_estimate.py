@@ -801,11 +801,66 @@ def test_a_degenerate_series_never_trains_the_constants(tmp_path, full_baseline)
         fh.write("2026,ME,23005,2026-09-10,8\n2026,ME,23005,2026-09-11,8\n")
 
     scored = {v.state: v for v in est.validate(out, full_baseline)}
-    # Maine is still SCORED -- hiding what September looks like would be its own
-    # dishonesty -- but North Carolina's constants are unchanged by it.
+    # Maine is still SHOWN -- hiding what September looks like would be its own
+    # dishonesty -- but it neither trains the constants nor counts as a fold.
     assert "ME" in scored
+    assert scored["ME"].scored is False
     without = est.validate(_two_state_tree(tmp_path / "clean", 0.70), full_baseline)
     assert scored["NC"].fitted == {v.state: v for v in without}["NC"].fitted
+
+
+def test_a_series_too_thin_to_fit_is_too_thin_to_average(tmp_path, full_baseline):
+    """The same sentence, applied twice, and it took a second look to see it.
+
+    North Carolina 2026 -- three days, EIGHT ballots -- was excluded from
+    fitting the constants with a comment saying why, and then averaged into the
+    headline error as a full fold. It scored an MAE of 13.6 against a mean of
+    3.9 over twelve real series, moving this model's published accuracy by
+    nearly a point on the strength of eight ballots.
+
+    `mature_days()` cannot catch it: it normalises by the SERIES' OWN maximum,
+    so all three of those days are 100% of "the eventual vote" when the eventual
+    vote so far is eight. A running series is not a yardstick for itself.
+    """
+    out = _two_state_tree(tmp_path, 0.70)
+    with (out / "ev_state_daily.csv").open("a", newline="") as fh:
+        fh.write("2026,ME,2026-09-10,54,8,,,8,0,6,1,0,1,0,1,test,x\n")
+        fh.write("2026,ME,2026-09-11,53,8,,,8,0,6,1,0,1,0,1,test,x\n")
+    with (out / "counties" / "me.csv").open("w", newline="") as fh:
+        fh.write("cycle,state,county_fips,date,ballots_total\n")
+        fh.write("2026,ME,23005,2026-09-10,8\n2026,ME,23005,2026-09-11,8\n")
+
+    results = est.validate(out, full_baseline)
+    thin = [r for r in results if not r.scored]
+    assert [r.state for r in thin] == ["ME"]
+
+    # The row is printed, and printed with the reason.
+    lines = list(est.format_validation(results))
+    assert any("SHOWN, NOT SCORED" in line for line in lines)
+    # ...and the averages are over the folds that survived, and say so.
+    kept = sum(1 for r in results if r.scored)
+    assert any(f"Averages are over the {kept} series" in line for line in lines)
+
+    # The headline is the same one the thin series was never part of.
+    alone = est.validate(_two_state_tree(tmp_path / "clean", 0.70), full_baseline)
+    def mae(rs):
+        keep = [r for r in rs if r.scored]
+        return sum(r.mean_abs_error for r in keep) / len(keep)
+    assert mae(results) == pytest.approx(mae(alone))
+
+
+def test_every_published_fold_is_thick_enough_to_be_one(full_baseline):
+    """Against the real output/ tree, so a new thin state cannot slip in."""
+    out = Path(__file__).resolve().parents[1] / "output"
+    if not (out / "ev_state_daily.csv").exists():
+        pytest.skip("no published output/ tree in this checkout")
+    results = est.validate(out, full_baseline)
+    if not results:
+        pytest.skip("nothing scoreable yet")
+    panel = est.observations(out, full_baseline)
+    for r in results:
+        peak = max(o.ballots for o in panel[(r.cycle, r.state)])
+        assert r.scored == (peak >= est.THIN_BALLOTS), (r.state, r.cycle, peak)
 
 
 def test_validate_ignores_state_days_with_no_reported_party(tmp_path, baseline):

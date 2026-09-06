@@ -1075,6 +1075,11 @@ class Validation:
     #: False when there was no other state to fit on and the shipped constants
     #: were used instead. Then the row is in-sample and says so.
     held_out: bool = True
+    #: False for a series too thin to be a fold. THE ROW IS STILL PRINTED --
+    #: hiding what the tracker looks like in September would be its own
+    #: dishonesty -- but it is not one twelfth of the headline error. See
+    #: `validate` for why the two are different questions.
+    scored: bool = True
 
     @property
     def gain(self) -> float:
@@ -1181,9 +1186,22 @@ def validate(
     # A series is fittable only if it ever got past THIN_BALLOTS. North Carolina
     # 2026 is three days and EIGHT ballots, six of them from registered
     # Democrats; as a training series it would count for as much as
-    # Pennsylvania's seventy days. It is still SCORED below -- hiding what the
-    # tracker looks like in September would be its own dishonesty -- but it does
-    # not get a vote in the constants.
+    # Pennsylvania's seventy days, so it gets no vote in the constants.
+    #
+    # ⚠️ AND, SINCE 2026-09-06, NO VOTE IN THE HEADLINE ERROR EITHER -- which is
+    # the same sentence, and it took a second look to notice it applies twice.
+    # The row was being averaged in as a full fold: it contributed an MAE of
+    # 13.6 to a mean of 3.9 across twelve other series, and moved the reported
+    # accuracy of this model by nearly a point on the strength of eight ballots.
+    #
+    # `mature_days()` could not catch it, because it normalises by the SERIES'
+    # OWN maximum: all three of those days are 100% of "the eventual vote" when
+    # the eventual vote so far is eight. A running series cannot be its own
+    # yardstick -- the identical trap counterfactual.py had, found the same week.
+    #
+    # The row is still PRINTED. "What does this look like in September" and
+    # "how accurate is this model" are different questions and only the second
+    # one is a mean.
     trainable = {
         k: mature_days(v) for k, v in scoreable.items()
         if max(o.ballots for o in v) >= THIN_BALLOTS
@@ -1218,6 +1236,7 @@ def validate(
             final_truth=last.truth * 100,
             baseline=last.baseline_dem_share * 100,
             fitted=(alpha, decay), held_out=held_out,
+            scored=(cycle, state) in trainable,
         ))
     return results
 
@@ -1232,18 +1251,27 @@ def format_validation(results: Sequence[Validation]) -> Iterator[str]:
                f"{r.mean_abs_error:6.1f} {r.geo_mean_abs_error:6.1f} "
                f"{r.null_mean_abs_error:6.1f} {r.gain_vs_geography:+6.1f} "
                f"{r.gain:+6.1f} {r.est_range:6.1f} {r.truth_range:7.1f}"
-               + ("" if r.held_out else "  (in sample: no other state to fit on)"))
+               + ("" if r.held_out else "  (in sample: no other state to fit on)")
+               + ("" if r.scored else
+                  f"  (SHOWN, NOT SCORED: peaks at under "
+                  f"{THIN_BALLOTS:,} ballots)"))
     if not results:
         yield "(no state-cycle in output/ both reports party and has county rows)"
         return
-    n = len(results)
+    scored = [r for r in results if r.scored] or list(results)
+    n = len(scored)
     yield ""
-    yield (f"mean |final error| = {sum(abs(r.final_error) for r in results) / n:.1f} pp   "
-           f"mean MAE = {sum(r.mean_abs_error for r in results) / n:.1f} pp   "
-           f"geography-only MAE = {sum(r.geo_mean_abs_error for r in results) / n:.1f} pp   "
-           f"null model MAE = {sum(r.null_mean_abs_error for r in results) / n:.1f} pp")
-    yield (f"gain vs geography-only = {sum(r.gain_vs_geography for r in results) / n:+.1f} pp   "
-           f"gain vs null = {sum(r.gain for r in results) / n:+.1f} pp")
+    if len(scored) != len(results):
+        skipped = ", ".join(f"{r.state} {r.cycle}" for r in results if not r.scored)
+        yield (f"Averages are over the {n} series thick enough to be a fold. "
+               f"{skipped} shown above and left out: a series that cannot fit "
+               f"the constants cannot be 1/{n + 1} of their error either.")
+    yield (f"mean |final error| = {sum(abs(r.final_error) for r in scored) / n:.1f} pp   "
+           f"mean MAE = {sum(r.mean_abs_error for r in scored) / n:.1f} pp   "
+           f"geography-only MAE = {sum(r.geo_mean_abs_error for r in scored) / n:.1f} pp   "
+           f"null model MAE = {sum(r.null_mean_abs_error for r in scored) / n:.1f} pp")
+    yield (f"gain vs geography-only = {sum(r.gain_vs_geography for r in scored) / n:+.1f} pp   "
+           f"gain vs null = {sum(r.gain for r in scored) / n:+.1f} pp")
     if all(r.held_out for r in results):
         yield ("Every row is LEAVE-ONE-STATE-OUT: the constants scoring a state "
                "were fitted without it, and without that state's other cycles.")
