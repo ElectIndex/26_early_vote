@@ -583,9 +583,15 @@ about 2026 rather than about 2024. Last day of each backfilled cycle:
 
 Texas and Tennessee barely move, because almost nobody in either state votes by
 mail. Ohio, Virginia and Wisconsin move five to seven points, because a large
-minority of their early vote is mail that a voter had to request. South Carolina
-2022 is not in this table: its series stops eighteen days out at 17,000 all-mail
-ballots and reads 63% ±15, which is the band doing its job.
+minority of their early vote is mail that a voter had to request.
+
+Three backfilled rows are missing from the table and each is missing for a
+reason. **South Carolina 2022** stops eighteen days out at 17,000 all-mail
+ballots and reads 63% ±15 — the band doing its job. **Tennessee 2022** and
+**Arizona 2024** report no method split at all, so they get no mail term and are
+unchanged from the geography-only model: 37.0 and 47.1. That is the fallback
+working as specified — a state that does not say how its ballots arrived does not
+get guessed at.
 
 There is no ground truth for any of these and there never will be, so the table
 is a description of the model's behaviour and not evidence about it. The evidence
