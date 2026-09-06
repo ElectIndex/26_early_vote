@@ -13,14 +13,14 @@ GA,Georgia,2026-11-03,,,false,county|method|age|race|sex,,,,,,
 HI,Hawaii,2026-11-03,,,false,,,,,,,not tracked in 2026
 IA,Iowa,2026-11-03,,,true,county|party|method,,,,,,
 ID,Idaho,2026-11-03,,,false,,,,,,,not tracked in 2026
-IL,Illinois,2026-11-03,,,false,,,,,,,not tracked in 2026
+IL,Illinois,2026-11-03,,,false,county|method,,,,,,
 IN,Indiana,2026-11-03,,,false,,,,,,,not tracked in 2026
 KS,Kansas,2026-11-03,,,true,,,,,,,not tracked in 2026
 KY,Kentucky,2026-11-03,,,true,county|party|method,,,,,,
 LA,Louisiana,2026-11-03,,,true,,,,,,,not tracked in 2026
 MA,Massachusetts,2026-11-03,,,true,,,,,,,not tracked in 2026
 MD,Maryland,2026-11-03,,,true,county|party|sex,,,,,,
-ME,Maine,2026-11-03,,,true,county|party|method,,,,,,
+ME,Maine,2026-11-03,,,true,town|county|party|method,,,,,,reports by municipality; counties summed from towns
 MI,Michigan,2026-11-03,,,false,county|method,,,,,,
 MN,Minnesota,2026-11-03,,,false,,,,,,,not tracked in 2026
 MO,Missouri,2026-11-03,,,false,,,,,,,not tracked in 2026
@@ -29,7 +29,7 @@ MT,Montana,2026-11-03,,,false,,,,,,,not tracked in 2026
 NC,North Carolina,2026-11-03,,,true,county|party|method|age|race|sex,,,,,,
 ND,North Dakota,2026-11-03,,,false,,,,,,,not tracked in 2026
 NE,Nebraska,2026-11-03,,,true,,,,,,,not tracked in 2026
-NH,New Hampshire,2026-11-03,,,true,method,,,,,,
+NH,New Hampshire,2026-11-03,,,true,method,,,,,,publishes no machine-readable absentee data
 NJ,New Jersey,2026-11-03,,,true,,,,,,,not tracked in 2026
 NM,New Mexico,2026-11-03,,,true,,,,,,,not tracked in 2026
 NV,Nevada,2026-11-03,,,true,county|party|method,,,,,,
@@ -39,10 +39,10 @@ OK,Oklahoma,2026-11-03,,,true,,,,,,,not tracked in 2026
 OR,Oregon,2026-11-03,,,true,,,,,,,not tracked in 2026
 PA,Pennsylvania,2026-11-03,,,true,county|party|method,,,,,,
 RI,Rhode Island,2026-11-03,,,true,,,,,,,not tracked in 2026
-SC,South Carolina,2026-11-03,,,false,,,,,,,not tracked in 2026
-SD,South Dakota,2026-11-03,,,true,,,,,,,not tracked in 2026
+SC,South Carolina,2026-11-03,,,false,county|method,,,,,,
+SD,South Dakota,2026-11-03,,,true,party|method,,,,,,
 TN,Tennessee,2026-11-03,,,false,county|method,,,,,,
-TX,Texas,2026-11-03,,,false,county|method,,,,,,
+TX,Texas,2026-11-03,,,false,county|method,,,,,,largest counties only (~30 of 254) -- never a statewide total
 UT,Utah,2026-11-03,,,true,,,,,,,not tracked in 2026
 VA,Virginia,2026-11-03,,,false,county|method,,,,,,
 VT,Vermont,2026-11-03,,,false,,,,,,,not tracked in 2026
