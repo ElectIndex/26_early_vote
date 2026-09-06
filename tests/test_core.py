@@ -7,6 +7,8 @@ than any individual parser test.
 
 from __future__ import annotations
 
+import csv
+
 from datetime import date
 
 import pytest
@@ -360,3 +362,85 @@ def test_prior_final_needs_a_REPORTED_election_day_row(tmp_path):
     rows[-1]["ballots_total"] = "845000"
     _write_daily(tmp_path, rows)
     assert derive_prior_finals(tmp_path) == {("2022", "SC"): "845000"}
+
+
+# --------------------------------------------------------------------------
+# A DERIVED table replaces rather than merges -- and does not churn
+# --------------------------------------------------------------------------
+COLS = ["cycle", "state", "date", "value", "retrieved_at"]
+KEY = ("cycle", "state", "date")
+
+
+def _row(value, stamp, date="2026-10-20"):
+    return {"cycle": "2026", "state": "NC", "date": date,
+            "value": value, "retrieved_at": stamp}
+
+
+def test_a_full_rebuild_drops_rows_the_model_no_longer_produces(tmp_path):
+    """The merge cannot forget, and for a derived table that is wrong.
+
+    `counterfactual.py` learned to refuse immature days and the 182 rows it had
+    already published had nothing to replace them, so they outlived the bug that
+    made them. A scraped table must never behave this way -- a state that fails
+    today must not delete yesterday -- which is why only the caller may ask.
+    """
+    from ev.publish import publish_table
+
+    path = tmp_path / "derived.csv"
+    publish_table(path, COLS, KEY,
+                  [_row("1", "t0", "2026-10-19"), _row("2", "t0", "2026-10-20")],
+                  guard=False, replace=True)
+    info = publish_table(path, COLS, KEY, [_row("2", "t1", "2026-10-20")],
+                         guard=False, replace=True)
+    assert info["rows"] == 1
+    rows = list(csv.DictReader(path.open()))
+    assert [r["date"] for r in rows] == ["2026-10-20"]
+
+    # ...and a MERGE keeps both, which is the behaviour a scraped table needs.
+    publish_table(path, COLS, KEY,
+                  [_row("1", "t0", "2026-10-19"), _row("2", "t0", "2026-10-20")],
+                  guard=False, replace=True)
+    publish_table(path, COLS, KEY, [_row("2", "t1", "2026-10-20")], guard=False)
+    assert len(list(csv.DictReader(path.open()))) == 2
+
+
+def test_a_row_that_says_the_same_thing_keeps_its_original_timestamp(tmp_path):
+    """⚠️ Otherwise the scheduled job commits 246 lines of nothing every run.
+
+    A derived table is a pure function of data already on disk, so a run with no
+    new input produces byte-identical numbers -- and used to rewrite every row
+    anyway to bump `retrieved_at`. That made `git diff --cached --quiet`
+    permanently false, so the two-hourly job committed on every run and the log
+    stopped meaning "the data moved". Keeping the old stamp is also truer: it
+    reads "this has been the answer since then" rather than "a model ran".
+    """
+    from ev.publish import publish_table
+
+    path = tmp_path / "derived.csv"
+    publish_table(path, COLS, KEY, [_row("42", "first")], guard=False, replace=True)
+    before = path.read_bytes()
+
+    # Same answer, later run: byte-identical file, so nothing to commit.
+    publish_table(path, COLS, KEY, [_row("42", "second")], guard=False, replace=True)
+    assert path.read_bytes() == before
+
+    # A row whose CONTENT moved takes the new stamp, because it is new.
+    publish_table(path, COLS, KEY, [_row("43", "third")], guard=False, replace=True)
+    row = list(csv.DictReader(path.open()))[0]
+    assert (row["value"], row["retrieved_at"]) == ("43", "third")
+
+
+def test_the_timestamp_rule_is_per_row_not_per_file(tmp_path):
+    """One row moving must not restamp the rows that did not."""
+    from ev.publish import publish_table
+
+    path = tmp_path / "derived.csv"
+    publish_table(path, COLS, KEY,
+                  [_row("1", "first", "2026-10-19"), _row("2", "first", "2026-10-20")],
+                  guard=False, replace=True)
+    publish_table(path, COLS, KEY,
+                  [_row("1", "second", "2026-10-19"), _row("9", "second", "2026-10-20")],
+                  guard=False, replace=True)
+    stamps = {r["date"]: r["retrieved_at"] for r in csv.DictReader(path.open())}
+    assert stamps["2026-10-19"] == "first", "unchanged row was restamped"
+    assert stamps["2026-10-20"] == "second", "changed row kept a stale stamp"
