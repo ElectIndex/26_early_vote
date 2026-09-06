@@ -2,8 +2,132 @@
  "as_of": "2026-09-06",
  "cycle": 2026,
  "days_to_election": 58,
- "generated_at": "2026-09-06T15:00:24+00:00",
+ "generated_at": "2026-09-06T15:10:17+00:00",
  "states": {
+  "AZ": {
+   "attempts": [
+    {
+     "detail": "AZ: 2026 election-information page carries no Sent/Accepted table yet",
+     "name": "az-sos",
+     "result": "not_yet_published",
+     "tier": 1
+    }
+   ],
+   "message": "AZ: 2026 election-information page carries no Sent/Accepted table yet",
+   "rows": 0,
+   "source": null,
+   "status": "pending",
+   "tier": null
+  },
+  "CO": {
+   "attempts": [
+    {
+     "detail": "CO: no election activity workbook posted for 2026-09-06",
+     "name": "co-sos",
+     "result": "not_yet_published",
+     "tier": 1
+    }
+   ],
+   "message": "CO: no election activity workbook posted for 2026-09-06",
+   "rows": 0,
+   "source": null,
+   "status": "pending",
+   "tier": null
+  },
+  "FL": {
+   "attempts": [
+    {
+     "name": "fl-doe",
+     "result": "ok",
+     "tier": 1
+    }
+   ],
+   "message": "",
+   "rows": 2,
+   "source": "fl-doe",
+   "status": "ok",
+   "tier": 1
+  },
+  "GA": {
+   "attempts": [
+    {
+     "detail": "GA: Georgia cannot be collected unattended. The Secretary of State's only machine-readable absentee/advance-voting file is gated by reCAPTCHA Enterprise on https://mvp.sos.ga.gov/s/voter-absentee-files: the presign action refuses every request without a live browser-minted token, the S3 bucket behind it is private, and no unprotected sibling or alternative statewide feed exists (see docs/georgia-source.md for what was checked). Export GA_SOS_RECAPTCHA_TOKEN from a browser step to collect Georgia by hand; otherwise this must fall through to the aggregator, which does carry Georgia.",
+     "name": "ga-sos",
+     "result": "SourceError",
+     "tier": 1
+    },
+    {
+     "detail": "UF tracker reports no ballots cast in GA as of 2026-08-12",
+     "name": "uf-election-lab",
+     "result": "not_yet_published",
+     "tier": 2
+    }
+   ],
+   "message": "UF tracker reports no ballots cast in GA as of 2026-08-12",
+   "rows": 0,
+   "source": null,
+   "status": "pending",
+   "tier": null
+  },
+  "IA": {
+   "attempts": [
+    {
+     "detail": "IA: no 2026 general-election absentee report posted yet (https://sos.iowa.gov/elections/pdf/2026/general/AbsenteeCounty2026.pdf came back as HTML, not a PDF; IA: https://sos.iowa.gov/sites/default/files/2026-11/ABS%20Counties%202026.pdf returned 404; IA: https://sos.iowa.gov/sites/default/files/2026-10/ABS%20Counties%202026.pdf returned 404; IA: https://sos.iowa.gov/sites/default/files/2026-09/ABS%20Counties%202026.pdf returned 404)",
+     "name": "ia-sos",
+     "result": "not_yet_published",
+     "tier": 1
+    }
+   ],
+   "message": "IA: no 2026 general-election absentee report posted yet (https://sos.iowa.gov/elections/pdf/2026/general/AbsenteeCounty2026.pdf came back as HTML, not a PDF; IA: https://sos.iowa.gov/sites/default/files/2026-11/ABS%20Counties%202026.pdf returned 404; IA: https://sos.iowa.gov/sites/default/files/2026-10/ABS%20Counties%202026.pdf returned 404; IA: https://sos.iowa.gov/sites/default/files/2026-09/ABS%20Counties%202026.pdf returned 404)",
+   "rows": 0,
+   "source": null,
+   "status": "pending",
+   "tier": null
+  },
+  "IL": {
+   "attempts": [
+    {
+     "name": "il-sbe",
+     "result": "ok",
+     "tier": 1
+    }
+   ],
+   "message": "",
+   "rows": 103,
+   "source": "il-sbe",
+   "status": "ok",
+   "tier": 1
+  },
+  "KY": {
+   "attempts": [
+    {
+     "detail": "KY: no absentee workbook posted in the 7 days to 2026-09-06",
+     "name": "ky-sbe",
+     "result": "not_yet_published",
+     "tier": 1
+    }
+   ],
+   "message": "KY: no absentee workbook posted in the 7 days to 2026-09-06",
+   "rows": 0,
+   "source": null,
+   "status": "pending",
+   "tier": null
+  },
+  "MD": {
+   "attempts": [
+    {
+     "detail": "MD: no general-election early-voting file posted for 2026 yet (https://elections.maryland.gov/press_room/2026_stats/GG26/EarlyVoting%20RAW%20data.csv came back as HTML, not CSV; https://elections.maryland.gov/press_room/2026_stats/PG26/EarlyVoting%20RAW%20data.csv came back as HTML, not CSV)",
+     "name": "md-sbe",
+     "result": "not_yet_published",
+     "tier": 1
+    }
+   ],
+   "message": "MD: no general-election early-voting file posted for 2026 yet (https://elections.maryland.gov/press_room/2026_stats/GG26/EarlyVoting%20RAW%20data.csv came back as HTML, not CSV; https://elections.maryland.gov/press_room/2026_stats/PG26/EarlyVoting%20RAW%20data.csv came back as HTML, not CSV)",
+   "rows": 0,
+   "source": null,
+   "status": "pending",
+   "tier": null
+  },
   "ME": {
    "attempts": [
     {
@@ -14,6 +138,21 @@
     }
    ],
    "message": "ME: the posted absentee file is for another election (request dates run 2024-01-01..2026-06-09, not the 2026 general)",
+   "rows": 0,
+   "source": null,
+   "status": "pending",
+   "tier": null
+  },
+  "MI": {
+   "attempts": [
+    {
+     "detail": "MI: no absentee workbook posted for 2026 yet (MI: https://www.michigan.gov/sos/-/media/Project/Websites/sos/05mcdaniel/General_Election_Data_by_Jurisdiction.xlsx returned 404; MI: https://www.michigan.gov/sos/-/media/Project/Websites/sos/Elections/General-Election-Data-by-Jurisdiction.xlsx returned 404)",
+     "name": "mi-sos",
+     "result": "not_yet_published",
+     "tier": 1
+    }
+   ],
+   "message": "MI: no absentee workbook posted for 2026 yet (MI: https://www.michigan.gov/sos/-/media/Project/Websites/sos/05mcdaniel/General_Election_Data_by_Jurisdiction.xlsx returned 404; MI: https://www.michigan.gov/sos/-/media/Project/Websites/sos/Elections/General-Election-Data-by-Jurisdiction.xlsx returned 404)",
    "rows": 0,
    "source": null,
    "status": "pending",
@@ -32,6 +171,162 @@
    "source": "nc-sbe",
    "status": "ok",
    "tier": 1
+  },
+  "NH": {
+   "attempts": [
+    {
+     "detail": "NH: no source for 2026. NH has no early voting and its Secretary of State publishes no statewide absentee request or return file during the voting period; the only counts ever posted were weekly statewide prose in 2020, discontinued after that cycle. There is no machine-readable source to scrape.",
+     "name": "nh-sos",
+     "result": "not_yet_published",
+     "tier": 1
+    }
+   ],
+   "message": "NH: no source for 2026. NH has no early voting and its Secretary of State publishes no statewide absentee request or return file during the voting period; the only counts ever posted were weekly statewide prose in 2020, discontinued after that cycle. There is no machine-readable source to scrape.",
+   "rows": 0,
+   "source": null,
+   "status": "pending",
+   "tier": null
+  },
+  "NV": {
+   "attempts": [
+    {
+     "detail": "NV: https://www.nvsos.gov/sos/elections/election-information/2026-election-information/2026-turnout-reporting answered with the Incapsula bot wall, not the page",
+     "name": "nv-sos",
+     "result": "SourceError",
+     "tier": 1
+    },
+    {
+     "detail": "UF tracker reports no ballots cast in NV as of 2026-08-12",
+     "name": "uf-election-lab",
+     "result": "not_yet_published",
+     "tier": 2
+    }
+   ],
+   "message": "UF tracker reports no ballots cast in NV as of 2026-08-12",
+   "rows": 0,
+   "source": null,
+   "status": "pending",
+   "tier": null
+  },
+  "OH": {
+   "attempts": [
+    {
+     "detail": "OH: no absentee data for 2026 on any route (globalassets: OH: no legacy workbook for 2026 (OH: https://www.ohiosos.gov/globalassets/elections/2026/gen/absentee/2026gen_absentee_report_web.xlsx returned 404; OH: https://www.ohiosos.gov/globalassets/elections/2026/gen/absentee/2026gen_official_absentee_report_web.xlsx returned 404); publicfiles: OH: publicfiles index carries no 2026 November general absentee report; dashboard: OH: absentee dashboard has no 2026 November general yet (it carries ['2023 NOV GENERAL', '2024 JUNE CD 6 SPECIAL GENERAL', '2024 MAR PRIMARY', '2024 NOV GENERAL', '2025 MAY PRIMARY/SPECIAL', '2025 NOV GENERAL', '2026 MAY PRIMARY/SPECIAL']))",
+     "name": "oh-sos",
+     "result": "not_yet_published",
+     "tier": 1
+    }
+   ],
+   "message": "OH: no absentee data for 2026 on any route (globalassets: OH: no legacy workbook for 2026 (OH: https://www.ohiosos.gov/globalassets/elections/2026/gen/absentee/2026gen_absentee_report_web.xlsx returned 404; OH: https://www.ohiosos.gov/globalassets/elections/2026/gen/absentee/2026gen_official_absentee_report_web.xlsx returned 404); publicfiles: OH: publicfiles index carries no 2026 November general absentee report; dashboard: OH: absentee dashboard has no 2026 November general yet (it carries ['2023 NOV GENERAL', '2024 JUNE CD 6 SPECIAL GENERAL', '2024 MAR PRIMARY', '2024 NOV GENERAL', '2025 MAY PRIMARY/SPECIAL', '2025 NOV GENERAL', '2026 MAY PRIMARY/SPECIAL']))",
+   "rows": 0,
+   "source": null,
+   "status": "pending",
+   "tier": null
+  },
+  "PA": {
+   "attempts": [
+    {
+     "detail": "PA: data.pa.gov has no '2026 General Election Mail Ballot Requests' dataset yet",
+     "name": "pa-dos",
+     "result": "not_yet_published",
+     "tier": 1
+    }
+   ],
+   "message": "PA: data.pa.gov has no '2026 General Election Mail Ballot Requests' dataset yet",
+   "rows": 0,
+   "source": null,
+   "status": "pending",
+   "tier": null
+  },
+  "SC": {
+   "attempts": [
+    {
+     "detail": "SC: no 2026 general-election absentee workbook posted by 2026-09-06 (SC: 'RP00010 Absentee Statistics by Race for Primary 08/11/2026  22760  US Senate Special Repub' is a primary, not the general)",
+     "name": "sc-sec",
+     "result": "not_yet_published",
+     "tier": 1
+    }
+   ],
+   "message": "SC: no 2026 general-election absentee workbook posted by 2026-09-06 (SC: 'RP00010 Absentee Statistics by Race for Primary 08/11/2026  22760  US Senate Special Repub' is a primary, not the general)",
+   "rows": 0,
+   "source": null,
+   "status": "pending",
+   "tier": null
+  },
+  "SD": {
+   "attempts": [
+    {
+     "detail": "SD: the absentee statistics page has no 2026 general-election section yet (it has ['Pistol Permit Statistics', '2026 Election Absentee Ballot Statistics', 'South Dakota 2026 Run-off Election Absentee Ballot Weekly Statistics', 'Party Breakout on Absentee Ballot Statistics as of 7/28/26', 'South Dakota 2026 Primary Election Absentee Ballot Weekly Statistics', 'Party Breakout on Absentee Ballot Statistics as of 6/2/26'])",
+     "name": "sd-sos",
+     "result": "not_yet_published",
+     "tier": 1
+    }
+   ],
+   "message": "SD: the absentee statistics page has no 2026 general-election section yet (it has ['Pistol Permit Statistics', '2026 Election Absentee Ballot Statistics', 'South Dakota 2026 Run-off Election Absentee Ballot Weekly Statistics', 'Party Breakout on Absentee Ballot Statistics as of 7/28/26', 'South Dakota 2026 Primary Election Absentee Ballot Weekly Statistics', 'Party Breakout on Absentee Ballot Statistics as of 6/2/26'])",
+   "rows": 0,
+   "source": null,
+   "status": "pending",
+   "tier": null
+  },
+  "TN": {
+   "attempts": [
+    {
+     "detail": "TN: no early-voting workbook posted for 2026 in the 10 days to 2026-09-06",
+     "name": "tn-sos",
+     "result": "not_yet_published",
+     "tier": 1
+    }
+   ],
+   "message": "TN: no early-voting workbook posted for 2026 in the 10 days to 2026-09-06",
+   "rows": 0,
+   "source": null,
+   "status": "pending",
+   "tier": null
+  },
+  "TX": {
+   "attempts": [
+    {
+     "detail": "TX: the SoS has not listed a 2026 November general yet",
+     "name": "tx-sos",
+     "result": "not_yet_published",
+     "tier": 1
+    }
+   ],
+   "message": "TX: the SoS has not listed a 2026 November general yet",
+   "rows": 0,
+   "source": null,
+   "status": "pending",
+   "tier": null
+  },
+  "VA": {
+   "attempts": [
+    {
+     "detail": "VA: ELECT has not stood up the 2026-11-03 general yet",
+     "name": "va-elect",
+     "result": "not_yet_published",
+     "tier": 1
+    }
+   ],
+   "message": "VA: ELECT has not stood up the 2026-11-03 general yet",
+   "rows": 0,
+   "source": null,
+   "status": "pending",
+   "tier": null
+  },
+  "WI": {
+   "attempts": [
+    {
+     "detail": "WI: no absentee export posted for the 2026 general as of 2026-09-06",
+     "name": "wi-wec",
+     "result": "not_yet_published",
+     "tier": 1
+    }
+   ],
+   "message": "WI: no absentee export posted for the 2026 general as of 2026-09-06",
+   "rows": 0,
+   "source": null,
+   "status": "pending",
+   "tier": null
   }
  },
  "summary": {
@@ -43,7 +338,7 @@
     "kept_better_tier": 0,
     "kept_richer": 0,
     "replaced": 3,
-    "rows": 112
+    "rows": 114
    },
    {
     "added": 0,
@@ -66,7 +361,8 @@
     "rows": 51
    }
   ],
-  "ok": 1,
-  "pending": 1
+  "ok": 3,
+  "partial_run": true,
+  "pending": 18
  }
 }
