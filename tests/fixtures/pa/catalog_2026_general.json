@@ -1,0 +1,494 @@
+{
+  "results" :
+    [
+      {
+        "resource" :
+          {
+            "name" : "2020 General Election Mail Ballot Requests Department of State NO FURTHER UPDATES",
+            "id" : "mcba-yywm",
+            "resource_name" : null,
+            "parent_fxf" : [],
+            "description" : "The dataset describes a current state of mail ballot requests for the 2020 General Election. It’s a snapshot in time of the current volume of ballot requests across the Commonwealth.\nThe reason some birth dates will display as 1/1/1800 is due to confidentiality reasons of the registered voters. \nUsually this is for victims of domestic violence.\n\n<B> The following are considered UOCAVA: </B>\n<B> Application Type</B>\n<B> CRI</B> - Civilian - Remote/Isolated\n<B> CVO</B> - Civilian Overseas\n<B> F</B> - Federal (Unregistered)\n<B> M</B> - Military\n<B> MRI</B> - Military - Remote/Isolated\n<B> V</B> - Veteran\n<B> BV</B> - Bedridden Veteran\n<B> BVRI</B> - Bedridden Veteran - Remote/Isolated \n\nWe may not have all types in the file for every election.",
+            "attribution" : "Department of State",
+            "attribution_link" : null,
+            "contact_email" : null,
+            "type" : "dataset",
+            "updatedAt" : "2025-07-03T14:57:01.000Z",
+            "createdAt" : "2020-07-13T12:02:26.000Z",
+            "metadata_updated_at" : "2025-07-03T14:57:01.000Z",
+            "data_updated_at" : "2021-02-23T21:00:47.000Z",
+            "page_views" :
+              {
+                "page_views_last_week" : 51,
+                "page_views_last_month" : 356,
+                "page_views_total" : 624314,
+                "page_views_last_week_log" : 5.700439718141093,
+                "page_views_last_month_log" : 8.479780264029099,
+                "page_views_total_log" : 19.2519146033189
+              },
+            "columns_name" :
+              [
+                "County Name",
+                "Applicant Party Designation",
+                "Date of Birth",
+                "Mail Application Type",
+                "Application Approved Date",
+                "Application Return Date",
+                "Ballot Returned Date",
+                "Ballot Mailed Date",
+                "State House District",
+                "State Senate District",
+                "Congressional District"
+              ],
+            "columns_field_name" :
+              [
+                "countyname",
+                "party",
+                "dateofbirth",
+                "mailapplicationtype",
+                "appissuedate",
+                "appreturndate",
+                "ballotreturneddate",
+                "ballotsentdate",
+                "legislative",
+                "senate",
+                "congressional"
+              ],
+            "columns_datatype" :
+              [
+                "Text",
+                "Text",
+                "Calendar date",
+                "Text",
+                "Calendar date",
+                "Calendar date",
+                "Calendar date",
+                "Calendar date",
+                "Text",
+                "Text",
+                "Text"
+              ],
+            "columns_description" :
+              [
+                "This identifies the county of the voter when submitting an application to vote by mail ballot in the upcoming election. ",
+                "This identifies the voter's party when submitting their application. Applicant party code definitions are listed in a text file on the primer or metadata page under attachments.  ",
+                "This is the voter's date of birth. The reason some birth dates will display as 1/1/1800 is due to confidentiality reasons of the registered votes.  Usually this is for victims of domestic violence.",
+                "This identifies the type of mail ballot requested by the voter.   Alt - This is an alternative ballot application where voters who are 65 years of age and the polling place may not be fully accessible.  BV - Bedridden Veteran. BVRI - Bedridden Veteran - Remote/Isolated C- This is an absentee ballot application issued during the emergency absentee period.  CIV- This is a civilian absentee ballot application that was submitted via paper. CRI- This is an absentee ballot application for an overseas civilian voter in a remote/isolated location.  CVO- This is an absentee ballot application for an overseas civilian voter. F- This is an absentee application for an individual who qualifies to vote for federal offices in federal election years. OLMAILV-This is a mail ballot application that was submitted online.  M-This is an absentee ballot application for a military voter.  MAILIN-This is a mail-in ballot application.  MRI-This is an absentee ballot application for a military voter in a remote/isolated location.  OLREGV-This is a civilian absentee ballot application that was submitted online. PER-This is an absentee ballot application where a voter has requested permanent status.  PMI- This is a mail ballot application where the voter has requested permanent status.  REG-This is an absentee ballot application that was submitted via paper.  OLMAILNV: Online Mail-In Ballot Application. Not Verified OLREGNV: Online Regular Absentee Ballot Application. V - Veteran. Not Verified BV: Bedridden Veteran (which is a form of Absentee Ballot Application)",
+                "This is the date the application was submitted by the voter.",
+                "This is the date the application was processed by the county election office. ",
+                "This is the date the county marked the ballot as received after the voter mailed the voted ballot back to the county.",
+                "This is the date the county confirmed the application to queue a ballot label to mail the ballot materials to the voter.",
+                "This is the voter's state house district. ",
+                "This is the voter's state senate district.",
+                "This is the voter's congressional district. "
+              ],
+            "columns_format" :
+              [
+                {},
+                {},
+                { "view" : "date" },
+                {},
+                { "view" : "date" },
+                { "view" : "date" },
+                { "view" : "date" },
+                { "view" : "date" },
+                {},
+                {},
+                {}
+              ],
+            "download_count" : 14708,
+            "provenance" : "official",
+            "lens_view_type" : "tabular",
+            "lens_display_type" : "table",
+            "locked" : false,
+            "backend" : "nbe",
+            "blob_mime_type" : null,
+            "hide_from_data_json" : false,
+            "publication_date" : "2020-09-25T13:37:42.000Z"
+          },
+        "classification" :
+          {
+            "categories" : [],
+            "tags" : [],
+            "domain_category" : "Government Efficiency & Citizen Engagement",
+            "domain_tags" :
+              [
+                "dos",
+                "election",
+                "ballot",
+                "state",
+                "registration",
+                "mail",
+                "general",
+                "vote"
+              ],
+            "domain_metadata" :
+              [
+                {
+                  "key" : "Data-Management_Business-Owner",
+                  "value" : "Department of State (DOS)"
+                },
+                {
+                  "key" : "Data-Management_Update-Frequency",
+                  "value" : "Weekly"
+                }
+              ]
+          },
+        "metadata" :
+          {
+            "domain" : "data.pa.gov",
+            "license" : "Public Domain U.S. Government"
+          },
+        "permalink" : "https://data.pa.gov/d/mcba-yywm",
+        "link" : "https://data.pa.gov/Government-Efficiency-Citizen-Engagement/2020-General-Election-Mail-Ballot-Requests-Departm/mcba-yywm",
+        "owner" :
+          {
+            "id" : "6jh9-ydjy",
+            "user_type" : "interactive",
+            "display_name" : "Jere Matthews"
+          },
+        "creator" :
+          {
+            "id" : "6jh9-ydjy",
+            "user_type" : "interactive",
+            "display_name" : "Jere Matthews"
+          }
+      },
+      {
+        "resource" :
+          {
+            "name" : "2020 Primary Election Mail Ballot Requests Department of State NO FURTHER UPDATES",
+            "id" : "853w-ecfz",
+            "resource_name" : null,
+            "parent_fxf" : [],
+            "description" : "This dataset describes a current state of mail ballot requests for the 2020 primary election. It’s a snapshot in time of the current volume of ballot requests across the Commonwealth.\nThe reason some birth dates will display as 1/1/1800 is due to confidentiality reasons of the registered voters. \nUsually this is for victims of domestic violence.\n\n<B> The following are considered UOCAVA: </B>\n<B> Application Type</B>\n<B> CRI</B> - Civilian - Remote/Isolated\n<B> CVO</B> - Civilian Overseas\n<B> F</B> - Federal (Unregistered)\n<B> M</B> - Military\n<B> MRI</B> - Military - Remote/Isolated\n<B> V</B> - Veteran\n<B> BV</B> - Bedridden Veteran\n<B> BVRI</B> - Bedridden Veteran - Remote/Isolated \n\nWe may not have all types in the file for every election.",
+            "attribution" : "Department of State",
+            "attribution_link" : null,
+            "contact_email" : null,
+            "type" : "dataset",
+            "updatedAt" : "2025-07-02T13:36:29.000Z",
+            "createdAt" : "2020-04-10T17:59:03.000Z",
+            "metadata_updated_at" : "2025-07-02T13:36:29.000Z",
+            "data_updated_at" : "2020-08-03T18:56:05.000Z",
+            "page_views" :
+              {
+                "page_views_last_week" : 22,
+                "page_views_last_month" : 122,
+                "page_views_total" : 89293,
+                "page_views_last_week_log" : 4.523561956057013,
+                "page_views_last_month_log" : 6.94251450533924,
+                "page_views_total_log" : 16.446275618041984
+              },
+            "columns_name" :
+              [
+                "Date of Birth",
+                "Ballot Returned Date",
+                "Ballot Mailed Date",
+                "Application Approved Date",
+                "State House District",
+                "State Senate District",
+                "Congressional District",
+                "Application Request Date",
+                "Mail Application Type",
+                "County Name",
+                "Applicant Party Designation"
+              ],
+            "columns_field_name" :
+              [
+                "dateofbirth",
+                "ballotreturneddate",
+                "ballotsentdate",
+                "appreturndate",
+                "legislative",
+                "senate",
+                "congressional",
+                "appissuedate",
+                "mailapplicationtype",
+                "countyname",
+                "party"
+              ],
+            "columns_datatype" :
+              [
+                "Calendar date",
+                "Calendar date",
+                "Calendar date",
+                "Calendar date",
+                "Text",
+                "Text",
+                "Text",
+                "Calendar date",
+                "Text",
+                "Text",
+                "Text"
+              ],
+            "columns_description" :
+              [
+                "This is the voter's date of birth. ",
+                "This is the date the county marked the ballot as received after the voter mailed the voted ballot back to the county.",
+                "This is the date the county confirmed the application to queue a ballot label to mail the ballot materials to the voter.",
+                "This is the date the application was processed by the county election office. ",
+                "This is the voter's state house district. ",
+                "This is the voter's state senate district.",
+                "This is the voter's congressional district. ",
+                "This is the date the application was submitted by the voter.",
+                "This identifies the type of mail ballot requested by the voter.   Alt - This is an alternative ballot application where voters who are 65 years of age and the polling place may not be fully accessible.  BV - Bedridden Veteran. BVRI - Bedridden Veteran - Remote/Isolated C- This is an absentee ballot application issued during the emergency absentee period.  CIV- This is a civilian absentee ballot application that was submitted via paper. CRI- This is an absentee ballot application for an overseas civilian voter in a remote/isolated location.  CVO- This is an absentee ballot application for an overseas civilian voter. F- This is an absentee application for an individual who qualifies to vote for federal offices in federal election years. OLMAILV-This is a mail ballot application that was submitted online.  M-This is an absentee ballot application for a military voter.  MAILIN-This is a mail-in ballot application.  MRI-This is an absentee ballot application for a military voter in a remote/isolated location.  OLREGV-This is a civilian absentee ballot application that was submitted online. PER-This is an absentee ballot application where a voter has requested permanent status.  PMI- This is a mail ballot application where the voter has requested permanent status.  REG-This is an absentee ballot application that was submitted via paper.  OLMAILNV: Online Mail-In Ballot Application. Not Verified OLREGNV: Online Regular Absentee Ballot Application. V - Veteran. Not Verified BV: Bedridden Veteran (which is a form of Absentee Ballot Application)",
+                "This identifys the county of the voter when submitting an application to vote by mail ballot in the upcoming election. ",
+                "This identifies the voter's party when submitting their application."
+              ],
+            "columns_format" :
+              [
+                { "view" : "date" },
+                { "view" : "date" },
+                { "view" : "date" },
+                { "view" : "date" },
+                {},
+                {},
+                {},
+                { "view" : "date" },
+                {},
+                {},
+                {}
+              ],
+            "download_count" : 3910,
+            "provenance" : "official",
+            "lens_view_type" : "tabular",
+            "lens_display_type" : "table",
+            "locked" : false,
+            "backend" : "nbe",
+            "blob_mime_type" : null,
+            "hide_from_data_json" : false,
+            "publication_date" : "2020-04-29T22:44:29.000Z"
+          },
+        "classification" :
+          {
+            "categories" : [],
+            "tags" : [],
+            "domain_category" : "Government Efficiency & Citizen Engagement",
+            "domain_tags" :
+              [
+                "vote",
+                "state",
+                "primary",
+                "election",
+                "dos",
+                "ballot",
+                "application",
+                "voting"
+              ],
+            "domain_metadata" :
+              [
+                {
+                  "key" : "Data-Management_Business-Owner",
+                  "value" : "Department of State (DOS)"
+                },
+                {
+                  "key" : "Data-Management_Update-Frequency",
+                  "value" : "Daily"
+                }
+              ]
+          },
+        "metadata" :
+          {
+            "domain" : "data.pa.gov",
+            "license" : "Public Domain U.S. Government"
+          },
+        "permalink" : "https://data.pa.gov/d/853w-ecfz",
+        "link" : "https://data.pa.gov/Government-Efficiency-Citizen-Engagement/2020-Primary-Election-Mail-Ballot-Requests-Departm/853w-ecfz",
+        "owner" :
+          {
+            "id" : "s9q8-jynp",
+            "user_type" : "interactive",
+            "display_name" : "John Long"
+          },
+        "creator" :
+          {
+            "id" : "s9q8-jynp",
+            "user_type" : "interactive",
+            "display_name" : "John Long"
+          }
+      },
+      {
+        "resource" :
+          {
+            "name" : "2022 General Election Mail Ballot Requests Department of State NO FURTHER UPDATES",
+            "id" : "uhfm-zhus",
+            "resource_name" : null,
+            "parent_fxf" : [],
+            "description" : "This dataset describes a current state of mail ballot requests for the 2022 General Election. It’s a snapshot in time of the current volume of ballot requests across the Commonwealth.\nThe reason some birth dates will display as 1/1/1800 is due to confidentiality reasons of the registered voters.\nUsually this is for victims of domestic violence.\n\n<B> The following are considered UOCAVA: </B>\n<B> Application Type</B>\n<B> CRI</B> - Civilian - Remote/Isolated\n<B> CVO</B> - Civilian Overseas\n<B> F</B> - Federal (Unregistered)\n<B> M</B> - Military\n<B> MRI</B> - Military - Remote/Isolated\n<B> V</B> - Veteran\n<B> BV</B> - Bedridden Veteran\n<B> BVRI</B> - Bedridden Veteran - Remote/Isolated \n\nWe may not have all types in the file for every election.",
+            "attribution" : "Department of State",
+            "attribution_link" : null,
+            "contact_email" : null,
+            "type" : "dataset",
+            "updatedAt" : "2025-07-03T14:57:29.000Z",
+            "createdAt" : "2022-08-31T17:26:46.000Z",
+            "metadata_updated_at" : "2025-07-03T14:57:29.000Z",
+            "data_updated_at" : "2022-11-28T18:23:45.000Z",
+            "page_views" :
+              {
+                "page_views_last_week" : 16,
+                "page_views_last_month" : 51,
+                "page_views_total" : 7398,
+                "page_views_last_week_log" : 4.08746284125034,
+                "page_views_last_month_log" : 5.700439718141093,
+                "page_views_total_log" : 12.853114583440286
+              },
+            "columns_name" :
+              [
+                "US House Districts for PA 2019",
+                "State House District",
+                "Latitude",
+                "Georeference",
+                "Date of Birth",
+                "County Name",
+                "Congressional District",
+                "Ballot Mailed Date",
+                "Ballot Returned Date",
+                "Application Return Date",
+                "Application Approved Date",
+                "PA County Boundaries Spatial Data Current Transportation",
+                "Mail Application Type",
+                "State Senate District",
+                "Applicant Party Designation",
+                "Longitude"
+              ],
+            "columns_field_name" :
+              [
+                ":@computed_region_3x3q_vpda",
+                "legislative",
+                "latitude",
+                "georeference",
+                "dateofbirth",
+                "countyname",
+                "congressional",
+                "ballotsentdate",
+                "ballotreturneddate",
+                "appreturndate",
+                "appissuedate",
+                ":@computed_region_4fjn_fq7k",
+                "mailapplicationtype",
+                "senate",
+                "party",
+                "longitude"
+              ],
+            "columns_datatype" :
+              [
+                "Number",
+                "Text",
+                "Number",
+                "Point",
+                "Calendar date",
+                "Text",
+                "Text",
+                "Calendar date",
+                "Text",
+                "Calendar date",
+                "Calendar date",
+                "Number",
+                "Text",
+                "Text",
+                "Text",
+                "Number"
+              ],
+            "columns_description" :
+              [
+                "This column was automatically created in order to record in what polygon from the dataset 'US House Districts for PA 2019' (3x3q-vpda) the point in column 'georeference' is located.  This enables the creation of region maps (choropleths) in the visualization canvas and data lens.",
+                "This is the voter's state house district.",
+                "Generic Latitude for the County(centroid)",
+                "Georeferenced Latitude & Longitude to be used for creating visualizations such as maps. ",
+                "This is the voter's date of birth. The reason some birth dates will display as 1/1/1800 is due to confidentiality reasons of the registered votes. Usually this is for victims of domestic violence.",
+                "This identifies the county of the voter when submitting an application to vote by mail ballot in the upcoming election.",
+                "This is the voter's congressional district.",
+                "This is the date the county confirmed the application to queue a ballot label to mail the ballot materials to the voter.",
+                "This is the date the county marked the ballot as received after the voter mailed the voted ballot back to the county.",
+                "This is the date the application was processed by the county election office.",
+                "his is the date the application was submitted by the voter.",
+                "This column was automatically created in order to record in what polygon from the dataset 'PA County Boundaries Spatial Data Current Transportation' (4fjn-fq7k) the point in column 'georeference' is located.  This enables the creation of region maps (choropleths) in the visualization canvas and data lens.",
+                "This identifies the type of mail ballot requested by the voter.   Alt - This is an alternative ballot application where voters who are 65 years of age and the polling place may not be fully accessible.  BV - Bedridden Veteran. BVRI - Bedridden Veteran - Remote/Isolated C- This is an absentee ballot application issued during the emergency absentee period.  CIV- This is a civilian absentee ballot application that was submitted via paper. CRI- This is an absentee ballot application for an overseas civilian voter in a remote/isolated location.  CVO- This is an absentee ballot application for an overseas civilian voter. F- This is an absentee application for an individual who qualifies to vote for federal offices in federal election years. OLMAILV-This is a mail ballot application that was submitted online.  M-This is an absentee ballot application for a military voter.  MAILIN-This is a mail-in ballot application.  MRI-This is an absentee ballot application for a military voter in a remote/isolated location.  OLREGV-This is a civilian absentee ballot application that was submitted online. PER-This is an absentee ballot application where a voter has requested permanent status.  PMI- This is a mail ballot application where the voter has requested permanent status.  REG-This is an absentee ballot application that was submitted via paper.  OLMAILNV: Online Mail-In Ballot Application. Not Verified OLREGNV: Online Regular Absentee Ballot Application. V - Veteran. Not Verified BV: Bedridden Veteran (which is a form of Absentee Ballot Application)",
+                "This is the voter's state senate district.",
+                "This identifies the voter's party when submitting their application. Applicant party code definitions are listed in a text file on the primer or metadata page under attachments.",
+                "Generic Longitude for the County(centroid)"
+              ],
+            "columns_format" :
+              [
+                {},
+                {},
+                {},
+                {},
+                { "view" : "date" },
+                {},
+                {},
+                { "view" : "date" },
+                {},
+                { "view" : "date" },
+                { "view" : "date" },
+                {},
+                {},
+                {},
+                {},
+                {}
+              ],
+            "download_count" : 960,
+            "provenance" : "official",
+            "lens_view_type" : "tabular",
+            "lens_display_type" : "table",
+            "locked" : false,
+            "backend" : "nbe",
+            "blob_mime_type" : null,
+            "hide_from_data_json" : false,
+            "publication_date" : "2022-09-29T16:26:00.000Z"
+          },
+        "classification" :
+          {
+            "categories" : [],
+            "tags" : [],
+            "domain_category" : "Government Efficiency & Citizen Engagement",
+            "domain_tags" :
+              [
+                "mail",
+                "election",
+                "2022",
+                "ballot",
+                "codes",
+                "dos",
+                "voting",
+                "vote",
+                "state",
+                "geo"
+              ],
+            "domain_metadata" :
+              [
+                {
+                  "key" : "Data-Management_Business-Owner",
+                  "value" : "Department of State (DOS)"
+                },
+                {
+                  "key" : "Data-Management_Update-Frequency",
+                  "value" : "Daily"
+                }
+              ]
+          },
+        "metadata" :
+          {
+            "domain" : "data.pa.gov",
+            "license" : "Public Domain U.S. Government"
+          },
+        "permalink" : "https://data.pa.gov/d/uhfm-zhus",
+        "link" : "https://data.pa.gov/Government-Efficiency-Citizen-Engagement/2022-General-Election-Mail-Ballot-Requests-Departm/uhfm-zhus",
+        "owner" :
+          {
+            "id" : "6jh9-ydjy",
+            "user_type" : "interactive",
+            "display_name" : "Jere Matthews"
+          },
+        "creator" :
+          {
+            "id" : "6jh9-ydjy",
+            "user_type" : "interactive",
+            "display_name" : "Jere Matthews"
+          }
+      }
+    ],
+  "resultSetSize" : 16,
+  "timings" : { "serviceMillis" : 21, "searchMillis" : [ 2, 10 ] },
+  "warnings" : []
+}

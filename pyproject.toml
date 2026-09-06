@@ -6,6 +6,9 @@ requires-python = ">=3.11"
 dependencies = [
     "requests>=2.32",
     "openpyxl>=3.1",
+    # Iowa publishes its absentee request/return report only as a PDF -- there is
+    # no CSV or XLSX of it anywhere on sos.iowa.gov. Text-layer extraction only.
+    "pypdf>=5.0",
 ]
 
 [project.optional-dependencies]

@@ -1,0 +1,49 @@
+﻿COUNTY_CODE,COUNTY_NAME,congressional_district_code,legislative_district_code,councilmanic_district_code,Precinct,VOTER_STATUS,GENDER_CODE,AgeGroup,PARTY_CODE,EARLY_VOTE_CENTER,Day1,Day2,Day3,Day4,Day5,Day6,Day7,Day8
+1,Allegany,06,01A,,007-002,A,F,18-24,REP,Allegany County Office Complex,,,,,,,,2
+1,Allegany,06,01A,,007-002,A,F,25-44,REP,Allegany County Office Complex,,,,,,,,1
+1,Allegany,06,01A,,007-002,A,F,45-64,OTH,Allegany County Office Complex,,,,,,,,1
+1,Allegany,06,01A,,007-002,A,F,45-64,REP,Allegany County Office Complex,,,,,,,,5
+1,Allegany,06,01A,,007-002,A,F,65 and older,REP,Allegany County Office Complex,,,,,,,,3
+1,Allegany,06,01A,,007-002,A,F,65 and older,UNA,Allegany County Office Complex,,,,,,,,1
+1,Allegany,06,01A,,007-002,A,M,18-24,UNA,Allegany County Office Complex,,,,,,,,1
+1,Allegany,06,01A,,007-002,A,M,25-44,REP,Allegany County Office Complex,,,,,,,,2
+1,Allegany,06,01A,,007-002,A,M,25-44,UNA,Allegany County Office Complex,,,,,,,,1
+1,Allegany,06,01A,,007-002,A,M,45-64,REP,Allegany County Office Complex,,,,,,,,5
+1,Allegany,06,01A,,007-002,A,M,65 and older,DEM,Allegany County Office Complex,,,,,,,,1
+1,Allegany,06,01A,,007-002,A,M,65 and older,REP,Allegany County Office Complex,,,,,,,,3
+1,Allegany,06,01A,,007-002,E,F,18-24,REP,Allegany County Office Complex,1,2,1,1,2,,1,
+1,Allegany,06,01A,,007-002,E,F,18-24,UNA,Allegany County Office Complex,,,,,,1,,
+1,Allegany,06,01A,,007-002,E,F,25-44,DEM,Allegany County Office Complex,1,1,,,1,,2,3
+1,Allegany,06,01A,,007-002,E,F,25-44,REP,Allegany County Office Complex,2,1,1,,1,1,,2
+1,Allegany,06,01A,,007-002,E,F,45-64,DEM,Allegany County Office Complex,2,,,,1,1,2,1
+1,Allegany,06,01A,,007-002,E,F,45-64,REP,Allegany County Office Complex,6,5,1,5,2,9,2,1
+1,Allegany,06,01A,,007-002,E,F,45-64,UNA,Allegany County Office Complex,1,,,,,4,2,
+1,Allegany,06,01A,,007-002,E,F,65 and older,DEM,Allegany County Office Complex,3,3,2,2,1,1,3,2
+1,Allegany,06,01A,,007-002,E,F,65 and older,OTH,Allegany County Office Complex,,,,,,1,,
+1,Allegany,06,01A,,007-002,E,M,25-44,OTH,Allegany County Office Complex,,,,,,,1,
+1,Allegany,06,01A,,007-002,E,M,65 and older,GRN,Allegany County Office Complex,,,1,,,,,
+1,Allegany,06,01A,,008-000,E,F,65 and older,LIB,Allegany County Office Complex,,1,,,,,,
+1,Allegany,06,01A,,009-000,E,M,45-64,LIB,Allegany County Office Complex,,,,,,,,1
+1,Allegany,06,01B,,004-000,A,F,25-44,NLM,Allegany County Office Complex,,,,,,,,1
+1,Allegany,06,01B,,004-000,E,F,18-24,NLM,Allegany County Office Complex,,1,,,,,,
+1,Allegany,06,01B,,004-000,E,M,25-44,NLM,Allegany County Office Complex,,,,,,,,1
+1,Allegany,06,01B,,006-005,E,M,25-44,GRN,Allegany County Office Complex,,,,,,1,,
+2,Anne Arundel,03,12B,001,001-004,A,F,25-44,NLM,Anne Arundel County Board of Elections,,,,,,,,1
+14,Howard,03,12A,002,001-012,E,F,25-44,DEM,Meadowbrook Athletic Complex - Gym,2,7,3,5,2,6,11,6
+14,Howard,03,12A,002,001-012,E,F,25-44,DEM,North Laurel Community Ctr-Gym,,,,,,,1,
+14,Howard,03,12A,002,001-012,E,F,25-44,DEM,St John Baptist Church-Comm Ctr,1,2,,1,3,1,3,2
+14,Howard,03,12A,002,001-012,E,F,25-44,REP,Meadowbrook Athletic Complex - Gym,3,,,2,2,3,1,1
+14,Howard,03,12A,002,001-012,E,F,25-44,REP,North Laurel Community Ctr-Gym,,,,1,,,,
+14,Howard,03,12A,002,001-012,E,F,25-44,REP,St John Baptist Church-Comm Ctr,,1,1,,,1,2,
+14,Howard,03,12A,002,001-012,E,F,25-44,UNA,Meadowbrook Athletic Complex - Gym,,3,1,,,2,2,1
+14,Howard,03,12A,002,001-012,E,F,25-44,UNA,St John Baptist Church-Comm Ctr,,1,1,,4,,1,
+14,Howard,03,12A,002,001-012,E,F,45-64,DEM,Meadowbrook Athletic Complex - Gym,12,15,5,9,9,10,8,2
+14,Howard,03,12A,002,001-012,E,F,45-64,DEM,St John Baptist Church-Comm Ctr,4,4,2,1,4,1,1,2
+24,Worcester,01,38A,,001-001,A,F,25-44,DEM,Ev Roland E. Powell Convention Center,,,,,,,,1
+24,Worcester,01,38A,,001-001,A,F,25-44,REP,Ev Roland E. Powell Convention Center,,,,,,,,2
+24,Worcester,01,38A,,001-001,A,F,25-44,UNA,Ev Roland E. Powell Convention Center,,,,,,,,1
+24,Worcester,01,38A,,001-001,A,F,45-64,DEM,Ev Roland E. Powell Convention Center,,,,,,,,2
+24,Worcester,01,38A,,001-001,A,F,45-64,REP,Ev Roland E. Powell Convention Center,,,,,,,,5
+24,Worcester,01,38A,,001-001,A,F,45-64,UNA,Ev Roland E. Powell Convention Center,,,,,,,,2
+24,Worcester,01,38A,,001-001,A,F,65 and older,DEM,Ev Roland E. Powell Convention Center,,,,,,,,3
+24,Worcester,01,38A,,001-001,A,F,65 and older,REP,Ev Roland E. Powell Convention Center,,,,,,,,5
