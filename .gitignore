@@ -1,0 +1,10 @@
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.DS_Store
+*.tmp
+# Raw downloads are re-fetchable and can be hundreds of MB (NC's voter-level
+# absentee zip alone). Only parsed output/ is tracked.
+cache/
