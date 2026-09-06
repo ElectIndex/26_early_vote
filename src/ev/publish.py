@@ -27,6 +27,9 @@ from .schema import (
 
 log = logging.getLogger(__name__)
 
+#: Never derive a "final" for the cycle still in progress.
+CURRENT_CYCLE_HINT = 2026
+
 #: Columns that are provenance/identity rather than data. Everything else counts
 #: toward a row's "richness" for the content-loss guard below.
 _NON_DATA_COLUMNS = frozenset({
@@ -240,7 +243,46 @@ STATE_META_COLUMNS = [
 ]
 
 
-def publish_state_meta(out_dir: Path, meta_path: Path) -> dict | None:
+def derive_prior_finals(out_dir: Path) -> dict[tuple[str, str], str]:
+    """Each state's FINAL early-vote total for a past cycle, from our own data.
+
+    Returns {(cycle, state): total} — but ONLY for a series that actually reaches
+    Election Day (`days_to_election == 0`). That condition is the whole safety of
+    this function: it is the denominator behind "share of that state's final early
+    vote", so a series that stops a week early would understate the final and
+    inflate every percentage computed against it. A partial backfill therefore
+    yields nothing here and the column stays a dash, which is the honest answer.
+    """
+    rows = _read(out_dir / "ev_state_daily.csv")
+    finals: dict[tuple[str, str], str] = {}
+    reaches_election_day: set[tuple[str, str]] = set()
+    best: dict[tuple[str, str], int] = {}
+
+    for row in rows:
+        cycle, state = row.get("cycle", ""), row.get("state", "")
+        if not cycle or not state or cycle == str(CURRENT_CYCLE_HINT):
+            continue
+        key = (cycle, state)
+        if (row.get("days_to_election") or "").strip() == "0":
+            reaches_election_day.add(key)
+        raw = (row.get("ballots_total") or "").strip()
+        if not raw:
+            continue
+        try:
+            value = int(raw)
+        except ValueError:
+            continue
+        if value > best.get(key, -1):
+            best[key] = value
+
+    for key, value in best.items():
+        if key in reaches_election_day:
+            finals[key] = str(value)
+    return finals
+
+
+def publish_state_meta(out_dir: Path, meta_path: Path,
+                       derived: dict[tuple[str, str], str] | None = None) -> dict | None:
     """Copy data/meta/states.csv to output/ev_state_meta.csv, validating columns.
 
     Missing is not an error -- the table is hand-maintained and the daily job must
@@ -259,6 +301,23 @@ def publish_state_meta(out_dir: Path, meta_path: Path) -> dict | None:
     missing = set(STATE_META_COLUMNS) - set(rows[0])
     if missing:
         raise PublishRefused(f"{meta_path.name} is missing columns: {sorted(missing)}")
+
+    # Fill blank prior-cycle finals from our own completed backfills. A cell that
+    # someone typed by hand ALWAYS wins -- an official canvass figure beats our
+    # scrape, and silently overwriting it would make the hand-maintained file a
+    # lie. We only ever fill blanks.
+    filled = 0
+    for row in rows:
+        state = (row.get("state") or "").strip().upper()
+        for cycle, column in (("2022", "ev_2022_total"), ("2024", "ev_2024_total")):
+            if (row.get(column) or "").strip():
+                continue
+            value = (derived or {}).get((cycle, state))
+            if value:
+                row[column] = value
+                filled += 1
+    if filled:
+        log.info("ev_state_meta.csv: filled %d prior-cycle total(s) from our data", filled)
 
     _atomic_write(out_dir / "ev_state_meta.csv", STATE_META_COLUMNS, rows)
     log.info("ev_state_meta.csv: %d states", len(rows))

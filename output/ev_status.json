@@ -2,7 +2,7 @@
  "as_of": "2026-09-05",
  "cycle": 2026,
  "days_to_election": 59,
- "generated_at": "2026-09-06T01:19:56+00:00",
+ "generated_at": "2026-09-06T02:14:37+00:00",
  "states": {
   "AZ": {
    "attempts": [
@@ -255,7 +255,7 @@
     "kept_better_tier": 0,
     "kept_richer": 0,
     "replaced": 3,
-    "rows": 3
+    "rows": 111
    },
    {
     "added": 0,
@@ -271,7 +271,7 @@
     "kept_better_tier": 0,
     "kept_richer": 0,
     "replaced": 10,
-    "rows": 10
+    "rows": 9821
    },
    {
     "added": 0,
@@ -279,7 +279,7 @@
     "kept_better_tier": 0,
     "kept_richer": 0,
     "replaced": 22,
-    "rows": 22
+    "rows": 1634
    },
    {
     "file": "ev_state_meta.csv",

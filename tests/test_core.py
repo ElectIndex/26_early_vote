@@ -223,3 +223,66 @@ def test_blank_totals_do_not_trigger_restatement():
                "ballots_total": t, "restated": "0"}
               for i, t in enumerate(["100", "", "150"])]
     assert mark_restatements(series) == 0
+
+
+# --------------------------------------------------------------------------
+# publish.derive_prior_finals: the denominator behind "% of final"
+# --------------------------------------------------------------------------
+def _series(cycle, state, pairs):
+    """pairs = [(days_to_election, ballots_total), ...]"""
+    return [{"cycle": cycle, "state": state, "date": f"2022-11-0{i+1}",
+             "days_to_election": str(d), "ballots_total": str(t),
+             "source_tier": "1", "source_name": "x", "retrieved_at": "z"}
+            for i, (d, t) in enumerate(pairs)]
+
+
+def _write_daily(tmp_path, rows):
+    from ev.publish import _atomic_write
+    from ev.schema import STATE_DAILY_COLUMNS
+    _atomic_write(tmp_path / "ev_state_daily.csv", STATE_DAILY_COLUMNS, rows)
+    return tmp_path
+
+
+def test_prior_final_requires_reaching_election_day(tmp_path):
+    """A series that stops early would understate the final and inflate every
+    percentage computed against it, so it yields nothing at all."""
+    from ev.publish import derive_prior_finals
+    _write_daily(tmp_path, _series("2022", "NC", [(5, 900), (3, 1000)]))
+    assert derive_prior_finals(tmp_path) == {}
+
+
+def test_prior_final_taken_when_series_completes(tmp_path):
+    from ev.publish import derive_prior_finals
+    _write_daily(tmp_path, _series("2022", "NC", [(2, 900), (0, 1200)]))
+    assert derive_prior_finals(tmp_path) == {("2022", "NC"): "1200"}
+
+
+def test_prior_final_ignores_the_cycle_in_progress(tmp_path):
+    """2026 has no final yet; deriving one would divide by a moving target."""
+    from ev.publish import derive_prior_finals
+    _write_daily(tmp_path, _series("2026", "NC", [(0, 50)]))
+    assert derive_prior_finals(tmp_path) == {}
+
+
+def test_hand_entered_total_is_never_overwritten(tmp_path):
+    """An official canvass figure beats our scrape; we only fill blanks."""
+    import csv
+    from ev.publish import STATE_META_COLUMNS, publish_state_meta
+
+    meta = tmp_path / "states.csv"
+    with meta.open("w", newline="", encoding="utf-8") as fh:
+        w = csv.DictWriter(fh, fieldnames=STATE_META_COLUMNS)
+        w.writeheader()
+        w.writerow({c: "" for c in STATE_META_COLUMNS}
+                   | {"state": "NC", "name": "North Carolina", "ev_2022_total": "999"})
+        w.writerow({c: "" for c in STATE_META_COLUMNS}
+                   | {"state": "GA", "name": "Georgia"})
+
+    out = tmp_path / "out"
+    out.mkdir()
+    publish_state_meta(out, meta, {("2022", "NC"): "111", ("2022", "GA"): "222"})
+
+    with (out / "ev_state_meta.csv").open(newline="", encoding="utf-8") as fh:
+        rows = {r["state"]: r for r in csv.DictReader(fh)}
+    assert rows["NC"]["ev_2022_total"] == "999"   # hand-entered survives
+    assert rows["GA"]["ev_2022_total"] == "222"   # blank gets filled
