@@ -19,13 +19,14 @@ from pathlib import Path
 
 import pytest
 
-from ev.adapters import me
+from ev.adapters import _towns, me
 from ev.adapters._net import Missing
 from ev.adapters.base import NotYetPublished, SchemaDrift, SourceError
 
 FIXTURES = Path(__file__).parent / "fixtures" / "me"
 GENERAL_2024 = FIXTURES / "2024-11-05_ab_voter_file_sample.txt"
 PRIMARY_2026 = FIXTURES / "2026-06-09_ab_voter_file_primary_sample.txt"
+TOWNS_2024 = FIXTURES / "2024-11-05_ab_voter_file_towns_sample.txt"
 INDEX_EXCERPT = FIXTURES / "voter-data-index-excerpt.html"
 
 ELECTION_DAY_2024 = date(2024, 11, 5)
@@ -39,6 +40,15 @@ def body():
 @pytest.fixture(scope="module")
 def gen2024(body):
     return me.parse(body, 2024, ELECTION_DAY_2024)
+
+
+@pytest.fixture(scope="module")
+def towns2024():
+    """Five real municipalities chosen to exercise the geography, not the totals:
+    two towns in one county (so the rollup has something to sum), a plantation in
+    a second county written the way Maine abbreviates it, one ambiguous name and
+    one unorganized township."""
+    return me.parse(TOWNS_2024.read_bytes(), 2024, ELECTION_DAY_2024)
 
 
 @pytest.fixture(scope="module")
@@ -61,6 +71,20 @@ def _mutate(raw: bytes, record: int, role: str, value: str) -> bytes:
             lines[position] = "|".join(cells)
             break
         seen += 1
+    return "\n".join(lines).encode("utf-8")
+
+
+def _rename_every_municipality(raw: bytes, value: str) -> bytes:
+    """Rewrite the municipality on every record -- the shape of a column that
+    moved, rather than of one bad row."""
+    lines = raw.decode("utf-8").split("\n")
+    index, width = me._header(lines[0])
+    for position, line in enumerate(lines):
+        cells = line.split("|")
+        if position == 0 or len(cells) != width:
+            continue
+        cells[index["municipality"]] = value
+        lines[position] = "|".join(cells)
     return "\n".join(lines).encode("utf-8")
 
 
@@ -104,15 +128,158 @@ def test_unknown_party_code_raises_drift(body):
 
 
 # --------------------------------------------------------------------------
-# Maine reports by municipality, so there are no county rows
+# Maine reports by municipality, and the municipality is the unit
 # --------------------------------------------------------------------------
-def test_no_county_rows_are_emitted(gen2024):
-    """The file's geography is "MUNICIPALITY" and 66 of Maine's 533 of them are
-    unorganized-territory townships no crosswalk resolves. Publishing a guessed
-    county would put real ballots in the wrong place on the map, so Maine is a
-    statewide line only."""
-    assert gen2024.county_rows == []
-    assert gen2024.state_rows  # ... but it is not an empty adapter
+def _on(rows, day=ELECTION_DAY_2024):
+    return {getattr(r, "town_geoid", None) or r.county_fips: r
+            for r in rows if r.day == day}
+
+
+def test_towns_are_keyed_by_census_geoid_and_never_by_name(gen2024):
+    """"Lincoln" is two different Maine places, so a town row keyed by name would
+    be a bug waiting for October. The key is the 10-digit county-subdivision
+    GEOID, and the published name is the Census spelling that goes with it."""
+    towns = _on(_towns.rows_of(gen2024))
+    assert set(towns) == {"2301501010", "2301901115"}
+    assert towns["2301501010"].town_name == "Alna town"
+    assert towns["2301501010"].ballots_total == 163
+    assert towns["2301901115"].town_name == "Alton town"
+    assert towns["2301901115"].ballots_total == 154
+
+
+def test_the_county_is_read_out_of_the_towns_own_geoid(gen2024):
+    """Not looked up, not inferred -- sliced. Alna is in Lincoln County because
+    its GEOID says 23015 in digits 3-5, which is a fact about the key rather than
+    a crosswalk that can rot."""
+    towns = _on(_towns.rows_of(gen2024))
+    assert towns["2301501010"].county_fips == "23015"
+    assert towns["2301901115"].county_fips == "23019"
+
+
+def test_counties_are_the_sum_of_their_towns(towns2024):
+    """Maine's file has no county column at all. Penobscot County's row exists
+    only because Burlington's 64 and Chester's 76 both carry 23019 in their
+    GEOIDs -- which is the aggregation that a name-based crosswalk could not do
+    and this one does exactly."""
+    towns, counties = _on(_towns.rows_of(towns2024)), _on(towns2024.county_rows)
+    assert set(counties) == {"23007", "23019"}
+    assert towns["2301909200"].ballots_total == 64      # Burlington
+    assert towns["2301912525"].ballots_total == 76      # Chester
+    assert counties["23019"].ballots_total == 140
+    assert counties["23019"].county_name == "Penobscot County"
+
+
+def test_every_county_column_is_the_sum_of_its_towns_on_every_day(towns2024):
+    """The rollup holds for method and party too, on every day of the curve --
+    not just for the total on the last one."""
+    fields = ("ballots_total", "ballots_new", "mail_returned", "inperson",
+              "party_dem", "party_rep", "party_oth", "party_npa")
+    summed = {}
+    for row in _towns.rows_of(towns2024):
+        into = summed.setdefault((row.county_fips, row.day), dict.fromkeys(fields, 0))
+        for field in fields:
+            into[field] += getattr(row, field)
+    assert summed, "no town rows to roll up"
+    for row in towns2024.county_rows:
+        assert summed[(row.county_fips, row.day)] == {
+            field: getattr(row, field) for field in fields
+        }
+
+
+def test_a_plantation_resolves_through_the_abbreviation_maine_writes(towns2024):
+    """Maine writes "COPLIN PLT"; the Census writes "Coplin plantation"."""
+    towns = _on(_towns.rows_of(towns2024))
+    assert towns["2300714205"].town_name == "Coplin plantation"
+    assert towns["2300714205"].county_fips == "23007"
+
+
+def test_an_unmappable_municipality_is_excluded_from_BOTH_tables(towns2024, caplog):
+    """"LINCOLN" is ambiguous and "KINGMAN TWP" is unorganized territory the
+    Census does not name at township level. Neither may be guessed into a county,
+    so neither appears in the town table OR the county table -- consistently, so
+    the two views never disagree about a place."""
+    with caplog.at_level("WARNING", logger="ev.adapters.me"):
+        me.parse(TOWNS_2024.read_bytes(), 2024, ELECTION_DAY_2024)
+    message = caplog.text
+    assert "LINCOLN (8)" in message and "KINGMAN TWP (4)" in message
+    assert "excluded from the town and county tables" in message
+
+    # Kingman's ballots are in Penobscot County in real life. They are not in
+    # Penobscot County here, because the file does not say so and we do not guess.
+    counties = _on(towns2024.county_rows)
+    assert counties["23019"].ballots_total == 64 + 76
+
+
+def test_the_excluded_ballots_are_still_in_the_statewide_row(towns2024):
+    """Nothing is dropped from Maine's total -- the exclusion is from the MAP, not
+    from the count. Which is also why Maine's county rows do not sum to its
+    statewide row, and are not meant to."""
+    state = towns2024.state_rows[-1].ballots_total
+    counties = sum(r.ballots_total for r in _on(towns2024.county_rows).values())
+    assert state == 199
+    assert counties == 187
+    assert state - counties == 12   # LINCOLN 8 + KINGMAN TWP 4
+
+
+def test_a_town_series_starts_the_day_that_town_starts_voting(towns2024):
+    """A month of leading zeros per town is 500 towns of noise in a file the page
+    fetches. The curve starts where the town does."""
+    rows = sorted(_towns.rows_of(towns2024), key=lambda r: (r.town_geoid, r.day))
+    first = {}
+    for row in rows:
+        first.setdefault(row.town_geoid, row)
+    assert all(row.ballots_total > 0 for row in first.values())
+    assert first["2300714205"].day == date(2024, 10, 3)
+    assert first["2301909200"].day == date(2024, 9, 20)
+
+
+def test_town_curves_are_cumulative_and_fully_attributed(towns2024):
+    """Same two invariants the statewide curve has: never goes backwards, and
+    every accepted ballot lands in exactly one party bucket and one method
+    bucket, because Maine registers by party and reports both."""
+    by_town = {}
+    for row in sorted(_towns.rows_of(towns2024), key=lambda r: r.day):
+        by_town.setdefault(row.town_geoid, []).append(row)
+    for series in by_town.values():
+        totals = [r.ballots_total for r in series]
+        assert totals == sorted(totals)
+        for row in series:
+            assert row.mail_returned + row.inperson == row.ballots_total
+            assert (row.party_dem + row.party_rep + row.party_oth
+                    + row.party_npa) == row.ballots_total
+
+
+def test_wholesale_municipality_drift_raises_rather_than_thinning_the_map(body):
+    """If the column moves or the vocabulary changes, every name stops resolving
+    and the honest signal is a blank map. Publishing that quietly is the failure
+    mode this floor exists to prevent; SchemaDrift falls through to the
+    aggregator, so Maine still gets a statewide line that day."""
+    with pytest.raises(SchemaDrift, match="map to a census county-subdivision"):
+        me.parse(_rename_every_municipality(body, "SOMEWHERE"), 2024, ELECTION_DAY_2024)
+
+
+def test_a_file_with_no_municipality_column_still_publishes_statewide(body):
+    """One archived file (the 2-24-2026 special) has no municipality column at
+    all. That is a thinner file, not a broken one: statewide rows, no towns, no
+    counties, no exception."""
+    lines = body.decode("utf-8").split("\n")
+    lines[0] = lines[0].replace("MUNICIPALITY|", "RESIDENCE|", 1)
+    result = me.parse("\n".join(lines).encode("utf-8"), 2024, ELECTION_DAY_2024)
+    assert result.state_rows[-1].ballots_total == 317
+    assert result.county_rows == []
+    assert _towns.rows_of(result) == []
+
+
+def test_town_rows_are_stamped_with_provenance():
+    """FetchResult.stamp() covers the three tables base.py knows about and the
+    ladder calls it for us; town rows ride as an attribute and need the adapter's
+    own line. Forgetting it publishes rows with no provenance, so it is pinned."""
+    scraper = me.MEScraper()
+    result = scraper._stamped(me.parse(TOWNS_2024.read_bytes(), 2024, ELECTION_DAY_2024))
+    rows = _towns.rows_of(result)
+    assert rows and all(r.provenance is not None for r in rows)
+    assert {r.provenance.name for r in rows} == {"me-sos"}
+    assert {r.provenance.tier for r in rows} == {1}
 
 
 # --------------------------------------------------------------------------
