@@ -748,3 +748,788 @@ clients. `elections.ri.gov` is 200 and carries nothing during the season.
    published to `output/ev_state_meta.csv` and the site reads it. The
    `has_party_reg` flags there are already right (AK/CA/NY true, MN/WA false).
    Left for that file's owner rather than edited here.
+
+---
+
+# Midwest & Plains pass — IN, MO, KS, NE, ND
+
+Investigated 2026-09-06. Every status code below was observed live, from this
+machine, on that date. Nothing here is a guessed URL.
+
+**Built: 2 (KS, ND). Rejected with evidence: IN, NE — and both rejections are
+firmer than the earlier rows they replace.**
+
+Two of this batch's rows in the summary table above were wrong, and both were
+wrong in the direction of underestimating the source:
+
+| State | Old verdict | Corrected |
+|---|---|---|
+| **KS** | "partial — Power BI model, statewide only … rejected: no county" | Statewide-only is right; rejecting it was not. South Dakota and Alaska are already tracked statewide-only, and Kansas's model is a **cumulative daily series with a mail/in-person split** that one request reconstructs end to end. **BUILT** `ks-sos`. |
+| **ND** | "partial — one HTML page, ASP.NET postback per county … rejected: cadence + stakes" | The postbacks are **stateless** — 53 of them replay one token pair with no session — and the county numbers **reconcile to the state's own totals to the ballot**. Also: the survey's `eid=329` is the 2024 *primary*. The 2026 **general is 348**, and it is already live. **BUILT** `nd-sos`. |
+
+---
+
+## Kansas — `src/ev/adapters/ks.py` (`ks-sos`)
+
+**The Ohio Power BI recipe transfers whole.** `docs/ohio-source.md` Part 4 was
+followed step for step and Kansas answered at every one, on a plain
+`requests` call with no browser fingerprint needed:
+
+| step | endpoint | result |
+|---|---|---|
+| 1 | `https://sos.ks.gov/elections/advance-voting-data.html` | **200**, 31,891 b, `text/html` — carries one `app.powerbigov.us/view?r=…` iframe |
+| 2 | that token, base64-decoded | `{"k":"de3b6e3c-b94e-419a-8d9c-9435eba72780","t":"dcae8101-…"}` |
+| 3 | `https://app.powerbigov.us/view?r=<token>` | **200**, 29,106 b — `FixedClusterUri: https://wabi-us-gov-virginia-redirect.analysis.usgovcloudapi.net/` |
+| 4 | `…-redirect…/public/reports/<key>/modelsAndExploration` | **403**, 0 b |
+| 4′ | `…-api…/public/reports/<key>/modelsAndExploration?preferReadOnlySession=true` + `X-PowerBI-ResourceKey` | **200**, 82,782 b |
+| 5 | `…-api…/public/reports/querydata?synchronous=true` (POST) | **200**, 2,598 b, 16 rows |
+| — | `…-api…/public/reports/<key>/conceptualschema` (POST) | **200**, 7,256 b — the whole model, three tables |
+
+The `-redirect` → `-api` substitution is not folklore: the embed page ships its
+own `getAPIMUrl()` (strip `-redirect`, strip `global-`, append `-api`), and
+`ks.api_host()` implements exactly that rather than a hand-rolled replace.
+
+**What the model holds, from `conceptualschema` — this is the whole of it:**
+
+```
+ENTITY: ADVANCE VOTE COUNTS 2026
+    DATE
+    ADVANCE VOTING BALLOTS SENT
+    ADVANCE VOTING BALLOTS RETURNED
+    IN PERSON ADVANCE
+    Percentage of Total Ballots Returned   (measure)
+    Total Number of Ballots Voted          (measure)
+```
+
+No county. No precinct. No party. No age. Two date tables Power BI generates for
+itself. So `county_rows` is empty and all four `party_*` fields are None —
+noting that Kansas **does** register by party (its own
+`vr-statistics/<yyyy>/<mm>-<yyyy>-Voter-Registration-Numbers-by-County.xlsx`
+series is county × party, verified 200), so this blank means "this source does
+not report it", not "the state has none".
+
+Judgement calls, all locked by tests:
+
+1. **The table is named for the CYCLE, not the election, and today it holds the
+   AUGUST PRIMARY.** Sixteen rows, 2026-07-15 → 2026-08-04, ending at 40,446
+   mail returned + 161,785 in person. Publishing that as the general's advance
+   vote is the Montana failure with a different mechanism. Every row is
+   therefore gated on `[Election Day − 22, Election Day]`, and a table with
+   nothing in that window raises `NotYetPublished` — which is what
+   `python -m ev probe --state KS` returns today, naming the span it did find.
+   Kansas's window is statutory (K.S.A. 25-1122, 20 days), and the primary
+   series confirms it to the day: 2026-08-04 − 20 = 2026-07-15.
+2. **`ballots_total` is Kansas's own definition, proved rather than assumed.**
+   The report's headline card is a measure called `Total Number of Ballots
+   Voted`; queried, it returns **202,231**, which is exactly the final row's
+   `RETURNED + IN PERSON` (40,446 + 161,785). It is a whole-table aggregate — it
+   returns 202,231 against *every* date — so it is not read per row; the
+   arithmetic it proves is what the adapter computes. `Percentage of Total
+   Ballots Returned` = 0.63184 = 40,446 / 64,013 confirms `SENT` is the mail
+   denominator.
+3. **`ballots_new` stays None.** The series is cumulative and skips weekends
+   (no 2026-07-18 or -19 row), so a difference between snapshots would book
+   three days of ballots on Monday. Same call as `tx.py`.
+4. **A blank component blanks the total.** Kansas writes a real `0` when it
+   means one — in-person advance on day one of the primary is `0`, not empty —
+   so a missing cell would be a model change, and half a total is not a total.
+5. **The chain is discovered, not hardcoded.** The entity name carries the cycle
+   (`ADVANCE VOTE COUNTS 2026`), so it is guaranteed to change; the adapter
+   scrapes page → token → cluster → model/report/dataset/entity, with each step
+   falling back to the literal verified above. If two tables ever carry the four
+   columns, each is queried and the election window decides.
+
+**No archive.** The Wayback CDX index has no capture of
+`sos.ks.gov/elections/advance-voting-data.html` before **2026-08-05**, and all
+17 captures since carry one digest — the page was created for this cycle, and
+the model holds exactly one table. `fetch_history` says so rather than
+inventing a route. Kansas's only archived artefact is post-election:
+`https://sos.ks.gov/elections/22elec/2022-General-Election-Turnout-Information.xlsx`
+(**200**, 13,851 b), county-level but carrying only `ADVANCE BALLOTS RETURNED BY
+MAIL` and `TOTAL BALLOTS CAST` — no in-person advance, no series, and no 2024
+equivalent is published (`…/24elec/2024-General-Election-Turnout-Information.xlsx`
+returns the CMS's 200-with-HTML shell, 30,815 b).
+
+Two other Power BI reports were found and are not early-vote sources:
+`b2e8009d-04b7-4a41-8771-895d6fba9014` on the voter-registration-statistics page
+(a registration denominator) and `fdbdbdb1-07ce-4840-afaf-72b930f2f8d6` on
+election-results.
+
+## North Dakota — `src/ev/adapters/nd.py` (`nd-sos`)
+
+`https://vip.sos.nd.gov/abev.aspx?eid=<id>` — a WebForms page with a statewide
+Category/Value table and a county panel behind a dropdown. The earlier
+rejection ("53 ASP.NET postbacks … opaque election id … only one election
+currently linked") described it accurately and drew the wrong conclusion.
+
+**The postbacks are stateless.** One `__VIEWSTATE` / `__EVENTVALIDATION` pair
+scraped from the GET validates for every county, with no cookies and no session.
+A 53-county harvest is one GET plus 53 POSTs, about 34 s sequentially. Verified
+with plain `requests` — no `curl_cffi` needed anywhere on this host.
+
+**The county rows reconcile to the state's own totals exactly.** Full harvests:
+
+```
+2024 general (eid 333):  Σcounty = 95,908 sent / 91,556 returned / 99,007 early
+                         page    = 95,908       / 91,556         / 99,007
+2022 general (eid 326):  Σcounty = 76,034       / 70,064         / 36,513   (page identical)
+```
+
+and North Dakota's own `Total Ballots Cast prior to Election Day` is
+`returned + early` in both cycles (91,556 + 99,007 = 190,563; 70,064 + 36,513 =
+106,577), which is what `ballots_total` uses.
+
+**The election id was the survey's real error.** `eid` is a plain GET parameter
+with no dropdown, and the page renders *any* integer, zeroed, rather than
+refusing — so a wrong id fails silently. Verified by reading
+`candidatelist.aspx?eid=<id>`'s own `lblFormHeader`:
+
+```
+326 -> "2022 General Election Contest/Candidate List"        200, 119,251 b
+333 -> "2024 General Election Contest/Candidate List"        200,  81,979 b
+346 -> "2026 Primary Election Contest/Candidate List"        200, 311,689 b   <- NOT this one
+348 -> "2026 General Election Contest/Candidate List"        200, 115,542 b   <- the target
+349 -> 302 (does not exist)                                  166 b
+```
+
+The 2026 general is **already live**: `abev.aspx?eid=348` returns 200 (22,857 b)
+with 63 absentee/VBM ballots sent, 0 returned, and all 53 counties in its
+dropdown. The only `abev` link on `sos.nd.gov` still points at the 2026
+*primary* (346) — two ids away — so the adapter never trusts a pinned id: it
+verifies the id names that cycle's general and otherwise walks upward, and
+refuses rather than guessing.
+
+Judgement calls:
+
+- **An absent early-vote block is not automatically a zero.** North Dakota
+  counties choose whether to run early voting, and the county panel simply omits
+  `lblEarlyVotes` for one that does not — 46 of 53 counties in the 2024 general.
+  The seven that do report sum to 99,007 against a statewide 99,007, which
+  proves the silent 46 are zero. That proof is **re-run on every fetch**: if the
+  reporting counties add up, the silent ones publish a real `0`; if they do not,
+  they publish None and so does their `ballots_total`.
+- **All-zero means not yet.** The portal renders a zeroed page for an election it
+  has not begun loading, which is indistinguishable from one where nothing has
+  happened; either way there is nothing to plot, so a statewide row of zeros
+  raises `NotYetPublished` before any county POST is made.
+- **The page carries no date.** Grepping the abev captures for `as of` /
+  `last updat` / `refreshed` finds nothing. The `Export to Excel` button does
+  produce a real workbook (**200**, 2,513 b,
+  `Content-Disposition: attachment; filename=ABEV.xlsx`, 17 rows) whose cell A1
+  is stamped — and that stamp is useless twice over, verified both ways against
+  `eid=333`, the 2024 general:
+
+  ```
+  no county selected  ->  "...(as of 9/6/2026 11:42:28 AM)"   Total Absentee Ballots Sent 49,210
+  Cass selected       ->  "...(as of 9/6/2026 11:42:29 AM)"   Total Absentee Ballots Sent 49,210
+  ```
+
+  One second apart, tracking the request clock rather than the data (which
+  settled in November 2024) — and the Cass-selected export carries the STATEWIDE
+  49,210 rather than Cass's 12,358, so it ignores the county selection
+  entirely. Rows are therefore stamped with the run's own date, and a backfill
+  with Election Day.
+- **`fetch_history` returns a final, not a curve.** An archived `eid` still
+  serves county detail, but it serves the settled numbers. (Wayback does hold
+  dated captures of `abev.aspx` through October 2022 and October 2024 — a real
+  curve for whoever wants to build it.)
+- **No party fields, ever.** North Dakota has no voter registration at all.
+- `CountyDay` has no `mail_requested` column, so the county panel's `Ballots
+  Sent` is read, range-checked and dropped; only the statewide figure is
+  published.
+
+**No JSON anywhere.** `abev.aspx/GetData` and `abev.asmx` were tried and answer
+the portal's error page or a 401; the page's `PageRequestManager` initialises
+with empty UpdatePanel arrays, so there are no async postbacks to intercept.
+
+## Indiana — rejected: everything is post-election, confirmed
+
+The earlier row ("`statewideTurnout_A.json` (200, verified) is post-election
+only") is right, and this pass makes it firmer rather than changing it.
+
+Indiana **does** collect what we want and publishes it — afterwards, once per
+election. `https://www.in.gov/sos/elections/voter-information/files/2026-Primary-Registration-and-Turnout-Data.xlsx`
+(**200**, 15,615 b, real xlsx) is county × `Registered Voters | Total Voters |
+Turnout | Election Day | Absentee | Absentee %` for all 92 counties — a genuine
+absentee split, dated after the canvass. The same page
+(`.../register-to-vote/voter-registration-and-turnout-statistics`, **200**,
+43,262 b) carries one such file per election back to 1990, xlsx since 2023 and
+PDF before.
+
+Nothing during the season, from any direction:
+
+- `https://www.in.gov/sos/elections/` (**200**, 39,317 b) and
+  `.../statistics-and-maps` (**200**, 37,612 b) link no absentee-count file of
+  any kind; every data link is a district map PDF or a voter-count PDF.
+- `.../voter-information/ways-to-vote/absentee-voting` (**200**, 64,806 b) is
+  instructions and application forms only.
+- **No dashboard exists.** `in.gov/sos/elections/*`, `.../voter-information/`,
+  `.../election-results/` and `https://indianavoters.in.gov/` (**200**,
+  149,490 b) were each grepped for `app.powerbi*`, `public.tableau.com`,
+  `datawrapper` and `arcgis.com`: **zero hits on all four pages.**
+- `https://enr.indianavoters.in.gov/` (**200**, 16,688 b) is an Angular
+  election-night app on Azure Blob storage; its asset paths answer Azure's own
+  `OutOfRangeInput` (**400**, 226 b) or `ResourceNotFound` (**404**, 223 b)
+  rather than serving, and it carries results, not absentee counts.
+- `https://hub.mph.in.gov/api/3/action/package_search?q=voter&rows=50` — **200**,
+  214 b, `"count": 0`. Indiana's open-data portal has no voter datasets at all.
+- A Wayback CDX sweep of **13,677 unique `www.in.gov/sos/elections/*` URLs**
+  found exactly **four** machine-readable files whose name mentions absentee,
+  and all four are administrative rosters, not counts:
+  `2014_Absentee_Central_Count_Counties-1.xls` (200, 7,289 b),
+  `Absentee_Central_Count_Counties.xls` (200, 6,937 b) and two copies of a
+  county absentee **email address list** (200, 12,939 b).
+
+**Verdict: nothing machine-readable during the season, at any point in the
+archive.** Indiana is a documented "no", not an unexplored one. The 2022/2024
+turnout workbooks are worth having as `ev_state_meta.csv` finals, which is that
+file's owner's call.
+
+## Nebraska — rejected this pass, but the target is now precise
+
+The state half of the earlier row is confirmed and the "never as data" half is
+wrong — though not in a way that is buildable today.
+
+- **The SoS publishes nothing during the season, and it is not a 403.**
+  `https://sos.nebraska.gov/elections/voter-registration-statistics` (**200**,
+  116,267 b) is PDF-only registration — county × party, monthly. Party
+  registration confirmed from `…/vrstats/2026VR/Statewide-September-2026.pdf`
+  (**200**, 595,214 b, processed 09/01/2026): R 619,984 / D 327,935 /
+  Nonpartisan 282,473 of 1,258,669. So `has_party_reg` for NE is true — but no
+  source breaks the early vote down by it.
+- `https://electionresults.nebraska.gov/resultsCSV.aspx?text=All&type=SW&map=CTY`
+  (**200**, 3,931 b, `Media.csv`) is a real live CSV API — of **contest
+  results**, with no vote-mode column, and dark between elections.
+- **Douglas County (Omaha) is the prize, and it is empty today.**
+  `https://www.votedouglascounty-ne.gov/earlyvotinglist/index.aspx` (**200**,
+  27,073 b) says in its own words: *"The Douglas County Election Commission
+  provides a list each night of the next working day's early voting ballots that
+  will be sent and early voting ballots that have been voted and returned."*
+  Douglas is ~25 % of Nebraska's vote and is NE-02.
+
+  Why it is not built: **the files are purged after each election, so there is no
+  sample to fixture and no format to verify.** The page's own commented-out
+  markup carries one real 2026 filename —
+  `/earlyvotinglist/2026_Primary_Election_Requests_Enetered_Party_List_3-27-2026.txt`
+  (sic, "Enetered") — and it returns **404, 1,245 b** today, as does a 2024
+  general return-list name. No `.txt` href is present on the live page at all;
+  the visible list is empty and the template in the comments is the only
+  evidence of the shape. Writing a voter-level aggregator against a format
+  nobody in this repo has seen, keyed to filenames nobody can confirm, is
+  exactly the speculative build the quality bar rules out.
+
+  **Revisit from 2026-09-28**, which is when Douglas begins mailing. The right
+  shape is a `ny.py`-style PARTIAL — county rows for Douglas (31055) and never a
+  statewide row — that scrapes the index page for `.txt` hrefs rather than
+  constructing them. Lancaster and Sarpy publish nothing during the season
+  (`lancaster.ne.gov/331/EarlyAbsentee-Ballot` **200**, 128,802 b;
+  `sarpy.gov/861/Early-Voting` **200**, 108,904 b — both instructional), so a
+  Nebraska partial is one county of 93.
+
+## Missouri — rejected: nothing, anywhere, ever, and there is a statute saying so
+
+The earlier row ("Missouri publishes nothing about absentee volume in any format
+at any time") is confirmed, and the reason is now on the record.
+
+- `https://www.sos.mo.gov/elections/results` — **200**, 40,489 b. Counted its
+  own links: **83 `.pdf`, 3 `.aspx`, zero CSV / XLSX / JSON.** The official
+  post-election turnout report
+  (`…/ElectionResultsStatistics/Nov2024OfficialVoterTurnout.pdf`, **200**,
+  134,488 b) is `County | Registered | Active | Inactive | Actual Voters |
+  Turnout %` — **no absentee or early column even after the fact.**
+- **No dashboard to attach the Kansas/Ohio recipe to.** Every fetched
+  `sos.mo.gov` page was grepped for `app.powerbi*`, `public.tableau`,
+  `datawrapper`, `arcgis.com` and `<iframe`: **zero matches.**
+- `https://www.sos.mo.gov/cmsimages/countyinfo.json` — **200**, 48,821 b,
+  `application/json` — is the only JSON the elections section serves: 117 rows
+  of local-election-authority contacts (`COUNTY_NAME, CLERK, STREET_ADDRESS,
+  EMAIL, WORK_PHONE, WEBSITE…`). A roster, not counts — but the right starting
+  point if anyone ever builds the county-by-county version.
+- `data.mo.gov` has no elections data: the Socrata catalog scoped to the domain
+  (`api.us.socrata.com/api/catalog/v1?domains=data.mo.gov&only=dataset&limit=400`,
+  **200**) returns **263 datasets, 0** matching `elect|vote|ballot|absentee`.
+  Note the same federation trap Connecticut had — an *unscoped* `q=absentee`
+  search returns King County WA, NYC, Oregon and Edmonton rows.
+- **Wayback: never.** CDX over `sos.mo.gov/elections*` (3,600 rows) and
+  `sos.mo.gov/CMSImages/Election*` (2,363 rows) finds no absentee CSV/XLSX/JSON
+  in any year, and a domain-wide `filter=mimetype:text/csv` returns **0 rows** —
+  the Internet Archive has never captured a single CSV from `sos.mo.gov`. The
+  one promising filename, `Absentee-MailinBallotSummaries.pdf` (~247 KB,
+  captured ~20× across Sept–Nov 2020, now **404**), is a voter-facing
+  eligibility explainer, not counts.
+- **The statutory reason.** RSMo **115.157.4** (revisor.mo.gov, **200**,
+  39,699 b) makes the statewide absentee-applicant file available only to "a
+  candidate, a duly authorized representative of a campaign committee, or a
+  political party committee", for a fee, and says verbatim: *"Nothing in this
+  section shall require such voter information to be released to the public over
+  the internet."* 115.157.2 has election authorities forward voter history "not
+  more than three months after the election". The pipe is post-hoc by design.
+- **Independent corroboration.** UF's own 2024 file
+  (`election.lab.ufl.edu/data-downloads/earlyvote/2024/US.csv`, **200**,
+  15,539 b) carries Missouri as
+  `279,918 requested / 303,843 returned`, `data_source = "St. Louis, St.
+  Charles, Greene, Jefferson, and Jasper Counties"` — the best-resourced
+  aggregator in the country hand-assembles Missouri from five county clerks
+  because there is no state file. The 2026 file (**200**, 11,353 b) has MO at
+  `data_source = TBD`, all zeros, `last_update 8/12/2026`.
+
+**One correction that outlives this row: Missouri now records party
+affiliation.** RSMo **115.155** (**200**, 43,045 b), effective 2022-08-28 via
+H.B. 1878, puts on the registration form: *"Political Party Affiliation
+(OPTIONAL: You shall be unaffiliated unless you designate an affiliation.)"*,
+and 115.157.1(20) makes it a required field of the statewide system. So the
+common shorthand "Missouri does not register by party" is no longer legally
+accurate. In practice it is close to useless — the field is optional with
+unaffiliated as the default, primaries stay open under RSMo 115.397 so there is
+no incentive to fill it in, and the SoS publishes no party-breakdown statistics
+at all. Flagging it for the owner of `data/meta/states.csv` rather than editing
+that file: `has_party_reg` for MO is now a judgement call, not a fact.
+
+---
+
+## Carried forward from this pass
+
+1. **"Statewide only" is not a rejection reason, and it should stop being used
+   as one.** Kansas was passed over for having no county dimension while South
+   Dakota and Alaska — equally statewide-only — were built. What actually
+   matters is whether the source carries a *series*: Kansas's does, and one
+   request rebuilds the whole curve.
+
+2. **A dashboard embed is a lead, not a wall.** Kansas took about twenty minutes
+   from "an `app.powerbigov.us` iframe the survey called a black box" to a
+   working query API, entirely by following `docs/ohio-source.md` Part 4. The
+   generalisable steps: the token on the page decodes to `{"k": resourceKey}`;
+   the embed page names its cluster AND ships the `getAPIMUrl()` function that
+   converts it to the API host; `modelsAndExploration` hands over model, report,
+   dataset and every table and column; `conceptualschema` proves what is *not*
+   in the model, which is how "there is no county column" became a fact instead
+   of an assumption. **Oklahoma's DevExpress dashboard is the remaining one of
+   this shape and should get the same treatment.**
+
+3. **Re-check every "opaque id" rejection.** North Dakota's `eid` was called
+   opaque and it is — but `candidatelist.aspx?eid=<id>` names the election in
+   English, which turns an opaque id into a *verifiable* one. The survey's
+   `eid=329` was the 2024 primary, and the 2026 general (348) has been live and
+   unlinked the whole time. Where a state has an id nobody can read, look for a
+   sibling page that reads it.
+
+4. **Two live traps of the same shape, in two different states.** Kansas's
+   dashboard table is named for the CYCLE and currently holds the AUGUST
+   PRIMARY; North Dakota's 2026 primary and general are `eid` 346 and 348. Both
+   would publish a primary's turnout as the general's, confidently, and neither
+   is detectable from the data alone. Every adapter in this batch therefore
+   pins the election by something the source itself says — a date window against
+   the statutory advance period, or an election name in words — and refuses
+   rather than guessing. This is now the third state (after Montana and
+   Maryland) where the primary/general confusion was the single largest risk in
+   the build.
+
+5. **The blank-vs-zero call got a new wrinkle worth naming: a zero that the
+   source proves by arithmetic.** North Dakota omits a county's early-vote block
+   entirely when the county runs no early voting, which is normally "not
+   reported". But the page's own statewide early-vote total equals the sum of
+   the counties that *do* print one, which proves the silent ones are zero. The
+   adapter re-runs that proof on every fetch and only writes `0` when it holds —
+   blank otherwise. An inference that the source itself can be made to confirm,
+   every time, is a different thing from an assumption.
+
+---
+
+# Pass 4 — New England and the Mid-Atlantic: MA, CT, RI, VT, NJ, DE, DC
+
+Seven jurisdictions, all of which register voters by party and four of which run
+elections by TOWN rather than by county. **Built: 2** (CT, DE). **Rejected: 5**
+(MA, NJ, DC, RI, VT), each with the exact status of every endpoint below.
+
+Every URL in this section was fetched from this machine on 2026-09-06 and the
+status recorded is the status observed. Nothing here is constructed and unchecked;
+where a URL is a pattern that could not be exercised, it says so.
+
+**The headline is uncomfortable and worth saying first:** the two states this
+pass was told to prioritise, **Massachusetts and New Jersey**, publish nothing
+machine-readable during the season, and that verdict survived a much harder look
+than the original survey gave them. What turned up instead was **Connecticut**,
+which the survey had listed as "no" — and which in fact publishes a
+**per-ballot** file, by town, with party, refreshed on most business days --
+the richest New England source in this repo after Maine's.
+
+---
+
+## Summary
+
+| State | During-season machine-readable? | Format | Unit | Dims | Outcome |
+|---|---|---|---|---|---|
+| **CT** | **yes** — SOTS per-ballot early-voting + absentee workbooks | XLSX | **town** (169) | town, party, method, day | **BUILT** `ct-sots` |
+| **DE** | **yes** — DOE "Voter Counts by Voting Method" | PDF | county (3) | county, method | **BUILT** `de-doe` |
+| MA | no — post-election only, and no during-season feed since 2018 | — | municipality (351) | — | rejected |
+| NJ | no — first per-county file every cycle is election night | PDF | county (21) | — | rejected |
+| DC | no — monthly registration PDFs; the only API is authenticated | — | — | — | rejected |
+| RI | no — post-election Count Books; the SoS site is Cloudflare-gated | PDF | — | — | rejected |
+| VT | no — post-election canvass; the portal's report API is a form, not a feed | — | — | — | rejected |
+
+---
+
+## Built
+
+### Connecticut — `src/ev/adapters/ct.py` (`ct-sots`)
+
+**The find of this pass, and it was invisible from the navigation.** The
+Secretary of the State publishes two workbooks with **one row per ballot** —
+`early_voting_<date>.xlsx` and `absentee_ballot_<date>.xlsx` — on a page that is
+not linked from the Elections landing page, the Statistics and Data page or the
+Early Voting page. It is reachable only at a per-cycle slug:
+
+```
+https://portal.ct.gov/sots/election-services/2026-voter-data     200   27,056 B  real page
+https://portal.ct.gov/sots/election-services/2024-voter-data     200   22,076 B  <title>404 Error Page</title>
+https://portal.ct.gov/sots/election-services/2022-voter-data     200   22,076 B  <title>404 Error Page</title>
+```
+
+**portal.ct.gov never sends a 404.** A missing page and a missing file both come
+back HTTP 200 with a Sitecore error shell titled `404 Error Page`, which the
+adapter has to detect by title — and which is why a missing *index* is read as
+`SourceError` ("we could not look") while a missing *file* is read as absence.
+
+**Verified files** (all 200; XLSX unless noted):
+
+```
+.../2026_absentee_ballot_data/early_voting_09032026.xlsx        81,797 B  real xlsx
+.../2026_absentee_ballot_data/absentee_ballot_09032026.xlsx     47,911 B  real xlsx
+.../2026_absentee_ballot_data/early_voting_08252026.xlsx        31,924 B  first early file
+.../2026_absentee_ballot_data/absentee_ballot_08142026.xlsx     24,508 B  first absentee file
+.../2026_absentee_ballot_data/early_voting_09042026.xlsx        21,880 B  soft-404 HTML
+.../2024_absentee_ballot_data/early_voting_11052024.xlsx        21,880 B  soft-404 HTML
+.../2022_absentee_ballot_data/absentee_ballot_11072022.xlsx     21,880 B  soft-404 HTML
+```
+
+A day-by-day sweep of **2026-07-20 through 2026-09-06** (49 days x both
+filename kinds, 98 requests) returns **22 real workbooks, dated 2026-08-14 to 2026-09-03**, with
+no file on 08/15, 08/16, 08/18, 08/20–08/23 or 09/02. Nothing before 08/14 —
+the August 11 statewide primary's files have been **deleted**. The same sweep
+over `2024_absentee_ballot_data/` (2024-10-18..2024-11-08) and
+`2025_absentee_ballot_data/` (2025-10-15..2025-11-10) returns **zero** files.
+Connecticut keeps the current election's data and nothing else, so
+`fetch_history` refuses by design rather than guessing at a URL.
+
+The header, verbatim, 33 columns, identical in both workbooks:
+
+```
+VOTER ID | TID | FIRST NAME | MIDDLE NAME | LAST  NAME | SUFFX | AD NUM | AD UNIT |
+RESIDENCE ADDRESS | RESIDENCE ADDRESS CITY | ZIP5 | ZIP4 | ST | ROUT | MAL NM |
+MAIL UNT | MAIL ADDRESS | MAIL ADDRESS2 | MAIL CITY | MS | MAIL ZIP | MRTE |
+MAIL COUNTRY | YOB | DST | PR | PARTY | SERIAL | DT MAILED | DT RETURNED |
+TM RETURN | RETURN_TYPE | ISSUE_TYPE
+```
+
+Because every ballot carries `DT MAILED` and `DT RETURNED`, **one download
+rebuilds the whole daily curve**, exactly like North Carolina's and Maine's
+files: a missed run costs nothing. `RESIDENCE ADDRESS CITY` is the town of
+registration, so Connecticut is published as **town rows keyed by the 10-digit
+census cousub GEOID**, with the county rows summed out of digits 3–5 of that key
+— the Maine pattern, and exact rather than a crosswalk.
+
+Judgement calls, all locked by tests:
+
+1. **The filename convention is not stable, so the index page is scraped.**
+   Inside the 2026 cycle alone Connecticut has used two: the Wayback capture of
+   the Voter Data page from **2026-08-01** links `abs_detail_073126.xlsx`
+   (MMDDYY) while the same page today links `absentee_ballot_09032026.xlsx`
+   (MMDDYYYY). Both are parsed and both are in the constructed fallback, but the
+   page is the entry point. (The archived `abs_detail_073126.xlsx` itself is
+   **404 in the Wayback Machine** — only the link survives.)
+2. **Which election a file belongs to is checked twice.** The folder is shared
+   by every election in a cycle. The filename's date must fall inside the
+   general's own window (45 days before Election Day through 20 after) *and*
+   ≥75% of the ballots' own dates must fall within 60 days of it. The live
+   fixture — the September 1 special primary, ballots dated 08/14–09/01 — fails
+   both, which is why today's probe says `pending` for Connecticut rather than
+   publishing a special primary in Enfield as statewide general-election early
+   voting. That case is a test.
+3. **The two files ARE the method split**, so no method label is ever
+   interpreted. `RETURN_TYPE` is read for one word, `Void`; everything else it
+   can say (`Mail`, `Drop Box 3`, `In Person By Voter`,
+   `In Person by Designee or Family`, `Supervised`, and blank for a ballot still
+   out) is ignored, and an unfamiliar value is therefore **not** drift. A voided
+   ballot is dropped from every count, issued and returned alike.
+4. **The absentee file counts ballots ISSUED**, with `DT RETURNED` blank until
+   they come back, which gives Connecticut a real `mail_requested` as well as
+   `mail_returned`. On 2026-09-03 in Enfield: 36 issued, 30 back, 28 early votes.
+5. **The series ends at the OLDER of the two files' dates.** Publishing the
+   newer file's extra days would freeze the other method and render as a day on
+   which nobody voted by mail. Likewise, before early voting opens there is no
+   early-voting file at all, and `inperson` is then `None` — not `0`.
+6. **A blank `PARTY` cell suppresses the party columns entirely.** Four party
+   numbers that quietly add up to well under the total are worse than no party
+   breakdown; below 95% enrolment coverage the adapter publishes `None` for all
+   four and says why in the log.
+
+### Delaware — `src/ev/adapters/de.py` (`de-doe`)
+
+Delaware publishes one PDF per election at an election-stamped URL and
+**overwrites it in place while voting is happening**:
+
+```
+.../reports/pdfs/GE2024_GeneralElectionVoterCountsByVotingMethod.pdf   200   97,330 B  application/pdf
+.../reports/pdfs/PR2024_VoterCountsByVotingMethod.pdf                  200   96,161 B  (primary)
+.../reports/pdfs/PR2026_PrimaryElectionVoterCountsByVotingMethod.pdf   200  198,768 B  (primary, LIVE today)
+.../reports/pdfs/GE2026_GeneralElectionVoterCountsByVotingMethod.pdf   404              <- NotYetPublished today
+.../reports/pdfs/GE2022_GeneralElectionVoterCountsByVotingMethod.pdf   404
+.../reports/pdfs/GE2022_VoterCountsByVotingMethod.pdf                  404
+.../reports/pdfs/PR2022_VoterCountsByVotingMethod.pdf                  404
+https://elections.delaware.gov/index.html                              200  440,566 B
+```
+
+(host: `https://elections.delaware.gov/voter/registrationtotals/`)
+
+That the file is genuinely refreshed *during* the window is not an assumption:
+the Wayback CDX index lists **14 captures of the 2024 general's report, 6 with
+distinct digests**, and running the finished adapter against them recovers a
+real six-day curve:
+
+```
+2024-10-28   86,907    absentee 29,926   early  56,981
+2024-10-29  112,206    absentee 30,891   early  81,315
+2024-11-01  187,338    absentee 34,207   early 153,131
+2024-11-03  229,492    absentee 35,990   early 193,502
+2024-11-04  245,920    absentee 36,403   early 209,517
+2024-11-05  247,172    absentee 37,656   early 209,516   (+ 179,005 polling place)
+```
+
+Judgement calls:
+
+- **`ballots_total` is absentee + early voting, NOT Delaware's own `Total`.**
+  Their Total is every ballot cast; on the final report it is 426,177 against
+  247,172 of early and absentee voting. This is the one place in the repo where
+  "publish the source's own total" is the wrong rule, because the source's total
+  answers a different question. Both directions of Delaware's arithmetic are
+  still checked (each row sums across counties, each column sums across methods)
+  and any mismatch is `SchemaDrift`.
+- **The election is pinned by the report's own words**, not by a date window:
+  the PDF says `2024 General Election`, and a report that does not name the
+  cycle's general is `NotYetPublished`. The primary's file sits beside it under
+  an almost identical name and is live right now showing 16,559 primary ballots
+  — publishing those as general-election early voting is exactly the Montana /
+  Kansas / North Dakota trap this repo keeps meeting.
+- **The polling-place row is simply absent until Election Day** and absence is
+  published as absence.
+- **The report carries its own as-of stamp** ("Monday, October 28, 2024,
+  8:54:15 AM") and rows are dated by it, never by the date of the run: Delaware
+  refreshes on business mornings, so a weekend run legitimately re-reads
+  Friday's report and dating it "today" would invent a flat day.
+- **No party breakdown.** Delaware registers by party; this report does not
+  split it, so every `party_*` field is blank rather than zero.
+- **`fetch_history` reads the Internet Archive**, because Delaware keeps no
+  dated copies of its own and there is nothing else to read. It runs only in
+  `backfill`. 2022 is refused outright: no report exists under any name.
+
+---
+
+## Rejected, with the exact status of every endpoint
+
+### Massachusetts — reachable now, and still publishes nothing during the season
+
+The previous survey's reason ("`sec.state.ma.us` blocks automation with
+Incapsula, 403 to curl") is **obsolete**: with `_net`'s browser-fingerprint retry
+the whole site answers.
+
+```
+https://www.sec.state.ma.us/                                                     200   36,292 B
+https://www.sec.state.ma.us/divisions/elections/elections-and-voting.htm         200   51,646 B
+https://www.sec.state.ma.us/divisions/elections/research-and-statistics/statistics-hub.htm      200   55,213 B
+https://www.sec.state.ma.us/divisions/elections/research-and-statistics/early-voting-statistics.htm  200   42,833 B
+https://www.sec.state.ma.us/divisions/elections/research-and-statistics/hub-content/2024-State-Election-Ballot-Statistics.xlsx                 200  135,736 B
+https://www.sec.state.ma.us/divisions/elections/research-and-statistics/hub-content/2022-State-Election-Early-and-Vote-by-Mail-Statistics.xlsx 200  112,809 B
+https://www.sec.state.ma.us/divisions/elections/research-and-statistics/hub-content/2026-state-primary.xlsx                                    200  151,594 B  (registration, not turnout)
+https://www.sec.state.ma.us/divisions/elections/research-and-statistics/hub-content/2026-State-Election-Ballot-Statistics.xlsx                 404
+https://www.sec.state.ma.us/ele/ele18/early-voting_18/EV-stats-18.xml    200 but 302s to elections-and-voting.htm — dead
+```
+
+So the block is gone and the answer did not change. The Election Data &
+Statistics Hub says of itself that registration statistics are published "after
+the deadline for registration" and turnout statistics are "detailed statistical
+information on voter turnout by municipality and method of voting" — both
+post-election. The separate **Early & Mail Voting Statistics** page, which is in
+the sitemap but linked from nowhere, carries three percentages per election
+(2024 State Election: mail 34.2%, early 17.0%, Election Day 48.8%, 3,512,866
+ballots) and is written after the canvass.
+
+Two exhaustive checks, so this is not "we did not find it":
+
+* **Wayback CDX, prefix sweeps.** `sec.state.ma.us/ele/` → 2,807 URLs, of which
+  **12** are `.xml/.csv/.xlsx/.xls/.json/.txt`; the newest during-season one is
+  `ele18/early-voting_18/EV-stats-18.xml` (2018). `sec.state.ma.us/divisions/elections/`
+  → 1,404 URLs, **14** data files, every one of them post-election.
+* **`sitemap.xml`** (200, 346,868 B): 1,782 URLs, 392 of them election-related,
+  and not one is a during-season data page.
+
+Massachusetts remains the biggest gap in the country by electorate: 351
+municipalities, a Senate race, a governor's race, an excellent post-election
+municipality × method workbook, and no file to scrape while it matters.
+
+### New Jersey — the prior survey was right, and here is the proof
+
+```
+https://www.nj.gov/state/elections/election-information.shtml            200   42,296 B
+https://www.nj.gov/state/elections/vote-by-mail.shtml                    200   81,970 B
+https://www.nj.gov/state/elections/vote-early-voting.shtml               200  114,886 B
+https://www.nj.gov/state/elections/election-results-information.shtml    200  174,540 B  (2026 Periodic Election Reporting)
+https://www.nj.gov/state/elections/election-results-information-2024.shtml  200
+https://www.nj.gov/state/elections/election-information-svrs.shtml       200  176,204 B
+https://www.njelections.org/                                             200 -> nj.gov/state/elections (Incapsula)
+```
+
+The Periodic Election Reporting pages are the only per-county series, and the
+dates settle it. **2026: the first file for every one of the 21 counties is
+`2026-1103-…-periodic-report-election-night.pdf`**, then `1104` through `1117`.
+2024: `2024-1105-…-election-night.pdf` then `1106`–`1121`. The 2026 page already
+has all fifteen dates linked, pre-built, none of them before Election Day. There
+is no such thing as a New Jersey VBM file published while vote-by-mail is
+happening.
+
+`election-information-svrs.shtml` carries only registration: three PDFs a month
+(by county, by congressional district, by legislative district), plus an
+Election-Day snapshot. The Socrata catalog for `data.nj.gov` returns **0**
+results for "election".
+
+The task brief's premise that "its Division of Elections publishes VBM data" is
+true only of the post-election periodic reports, which do carry VBM issued and
+received — a week too late to be a tracker.
+
+### Washington DC — a single jurisdiction, and no turnout endpoint
+
+```
+https://www.dcboe.org/                                                       200   51,659 B
+https://www.dcboe.org/data,-maps,-forms/voter-registration-statistics        200   75,820 B
+https://www.dcboe.org/elections/2026-elections                                200   63,072 B
+https://www.dcboe.org/open-government,-reports,-foia                          200   42,740 B
+https://www.dcboe.org/Voters/Absentee-Voting/Early-Voting                     404
+https://earlyvoting.dcboe.org/                                                200    3,154 B  (React SPA)
+https://earlyvoting.dcboe.org/api/ev_center                                   401  "Authorization has been denied for this request."
+https://earlyvoting.dcboe.org/api/ev_client                                   401  same
+https://earlyvoting.dcboe.org/api/states                                      500
+https://earlyvoting.dcboe.org/api/VoteCenters                                 404
+https://electionresults.dcboe.org/                                            200    4,811 B  (React SPA, election-night only)
+```
+
+The Data, Maps & Forms page is a monthly `Data-Statistics-Report-<M>_<YYYY>.pdf`
+series — registration by ward and party, back to 2024, current through
+2026-07-31. Nothing about ballots cast. A Wayback CDX sweep of `dcboe.org`
+(12,943 URLs) finds **14** `.xls/.xlsx` files, all of them 2008 certified
+results, and three "turnout" hits, all 2004 PDFs. `opendata.dc.gov`'s search API
+returns three DCBOE datasets — Early Vote Center, Election Day Vote Center, Mail
+Ballot Drop Boxes — which are **locations, not counts**.
+
+The early-voting app is a poll-worker admin tool: its `/api/` is real but every
+data route is `401`. The brief's premise that DCBOE "publishes daily early-vote
+counts during the window" could not be confirmed anywhere machine-readable.
+
+### Rhode Island — and a live `_net.py` finding, reported not fixed
+
+```
+https://elections.ri.gov/                                    200   82,673 B   (Board of Elections)
+https://elections.ri.gov/elections/publications              200  213,677 B
+https://vote.sos.ri.gov/                                     403 / 200        <- see below
+https://www.sos.ri.gov/divisions/elections                   200 -> vote.sos.ri.gov
+https://datahub.sos.ri.gov/RegisteredVoter.aspx              200    8,285 B
+https://ri-voter-turnout-tracker-ridos.hub.arcgis.com/       200   38,014 B
+  .../api/feed/dcat-us/1.1.json                              200      266 B   "dataset": []
+  .../data.json                                              200      266 B   "dataset": []
+http://api.us.socrata.com/api/catalog/v1?domains=data.ri.gov 404             (no such Socrata domain)
+```
+
+The Board of Elections' Publications page is **Count Books**, biennial
+post-election PDFs from 1950 to 2018. The ArcGIS "Voter Turnout Tracker" hub
+site publishes an **empty** DCAT catalogue, and an ArcGIS Online search finds
+only historical feature services (`2020 Rhode Island Voter Turnout_WFL1`,
+`Voter Turnout 50/75_WFL1`, owner `kdunham_agol`) plus two StoryMaps. No
+during-season feed.
+
+**Worth passing to whoever owns `_net.py`:** `vote.sos.ri.gov` is Cloudflare-
+gated and the outcome depends on *which browser* curl_cffi impersonates, from
+the same machine in the same second:
+
+```
+impersonate="chrome"     403   5,939 B   "Just a moment..."
+impersonate="chrome131"  403   5,939 B   "Just a moment..."
+impersonate="edge"       403   5,960 B   "Just a moment..."
+impersonate="safari"     200  41,415 B   the real page
+impersonate="firefox"    200  41,415 B   the real page
+```
+
+`_net.IMPERSONATE` is hard-coded to `"chrome"`. Nothing in this pass depends on
+it — Rhode Island has no file worth reaching — but a *second* impersonation
+attempt, or a per-call override, would be a cheap way to convert this class of
+403 into an honest answer, exactly as the curl_cffi retry already did for Ohio
+and Arizona. That is a `_net.py` change and `_net.py` is not this agent's file.
+
+### Vermont — an all-mail general with no public counts
+
+```
+https://sos.vermont.gov/elections                                          200   32,005 B
+https://sos.vermont.gov/elections/election-info-resources/elections-results-data/   200   61,786 B
+https://sos.vermont.gov/elections/voters/early-absentee-voting              200   42,871 B
+https://electionresults.vermont.gov/                                        200    1,223 B  (Angular, election night)
+https://vote.vermont.gov/public/dashboard                                   200   70,477 B  (Angular)
+https://api.vote.vermont.gov/api                                            404
+POST https://api.vote.vermont.gov/api/Report/GetPublicReport                400
+     {"errors":{"Code":["The Code field is required."],"Type":[...],
+                "Criteria":[...],"Description":[...],"RequestedBy":[...]}}
+```
+
+Vermont mails a ballot to every active voter by October 1 of each even year, so
+it *has* the data; it publishes only after the canvass. The Elections Results &
+Data page carries `2024_general_election_voter_turnout.pdf`,
+`2026-august-primary-voter-turnout-report-by-party.pdf` and winner-listing
+`.xlsx` files — all post-election. The Voter Portal's `Report/GetPublicReport`
+is a **form**, not a feed: it is a POST that requires `Code`, `Type`, `Criteria`,
+`Description` and `RequestedBy`, is invoked in the bundle through a
+recaptcha-header path (`postSecurity`), and returns a blob. `data.vermont.gov`'s
+Socrata catalogue returns 5 results for "election", none of them electoral.
+
+---
+
+## Three things this pass adds to the two carried forward above
+
+1. **A "no" in an earlier survey is a claim about a search, not about a state.**
+   Connecticut was listed as publishing nothing. It publishes per-ballot files
+   with party and town — on a page linked from no navigation anywhere on
+   `portal.ct.gov`, findable only by searching the open web for the phrase a
+   newspaper used. Every state whose rejection reads "we looked at the elections
+   pages and found nothing" deserves one search engine query against the
+   filename patterns before it is believed.
+
+2. **A 200 is not a success and a 403 is not a refusal.** `portal.ct.gov`
+   answers every missing page and every missing file with HTTP 200 and a
+   Sitecore shell titled `404 Error Page`, so Connecticut's adapter has to read a
+   `<title>` to tell "not posted yet" (stop the ladder) from "the index moved"
+   (fall through). In the other direction, `vote.sos.ri.gov` returns 403 to a
+   Chrome fingerprint and 200 to a Safari one. Both of these are the same bug
+   class the CO/MI investigation found, one level up: the status code is not the
+   answer.
+
+3. **The primary/general trap has now bitten in five states, and New England
+   makes it worse.** Maryland, Montana, Kansas and North Dakota each hide a
+   primary behind the general's URL. Connecticut goes further: every election in
+   a cycle — including a single-town special primary — shares one folder and one
+   filename convention, and only the current one's files exist. There is no
+   election identifier anywhere in the file. The only defence is the ballots'
+   own dates, which is why `ct.py` checks the filename's date *and* the ballot
+   dates and refuses on either. Delaware, by contrast, prints
+   `2024 General Election` inside the PDF, which is the cheapest and strongest
+   provenance any source in this repo offers. **A source that names its own
+   election in words should be preferred over one that does not, all else equal.**
+
+### A `normalize.py` gap, reported not fixed (per the ownership rules)
+
+`party()` maps `"independent"` to `PARTY_NPA`. That is right in most of the
+country and **wrong in Connecticut**, where the *Independent Party* is a
+state-recognised party with its own ballot line and unaffiliated voters are
+called "Unaffiliated" — the Secretary of the State's own Minor Party Key (page 8
+of `.../2025/registration-and-enrollment/nov25re.pdf`, 200, 174,325 B) lists
+Independent, Independence, Green, Libertarian, Working Families, Bottom Line,
+Concerned Citizens, We The People, Reform and Open as registered minor parties.
+`ct.py` therefore consults a documented `PARTY_ALIASES` table **before**
+`normalize.party()` rather than after, which is the opposite of what `md.py`
+does, and it is the only adapter that needs to. Anything in neither table still
+raises `SchemaDrift`. The owner of `normalize.py` should decide whether
+`"independent"` deserves a per-state override rather than a global bucket.
