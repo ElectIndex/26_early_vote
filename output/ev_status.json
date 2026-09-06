@@ -2,7 +2,7 @@
  "as_of": "2026-09-06",
  "cycle": 2026,
  "days_to_election": 58,
- "generated_at": "2026-09-06T16:12:12+00:00",
+ "generated_at": "2026-09-06T19:48:08+00:00",
  "states": {
   "AK": {
    "attempts": [
@@ -64,6 +64,36 @@
    "status": "pending",
    "tier": null
   },
+  "CT": {
+   "attempts": [
+    {
+     "detail": "CT: 2026-09-06 is outside the 2026 general's reporting window (opens 45 days out)",
+     "name": "ct-sots",
+     "result": "not_yet_published",
+     "tier": 1
+    }
+   ],
+   "message": "CT: 2026-09-06 is outside the 2026 general's reporting window (opens 45 days out)",
+   "rows": 0,
+   "source": null,
+   "status": "pending",
+   "tier": null
+  },
+  "DE": {
+   "attempts": [
+    {
+     "detail": "DE: no 2026 general voting-method report posted yet (DE: https://elections.delaware.gov/voter/registrationtotals/reports/pdfs/GE2026_GeneralElectionVoterCountsByVotingMethod.pdf returned 404)",
+     "name": "de-doe",
+     "result": "not_yet_published",
+     "tier": 1
+    }
+   ],
+   "message": "DE: no 2026 general voting-method report posted yet (DE: https://elections.delaware.gov/voter/registrationtotals/reports/pdfs/GE2026_GeneralElectionVoterCountsByVotingMethod.pdf returned 404)",
+   "rows": 0,
+   "source": null,
+   "status": "pending",
+   "tier": null
+  },
   "FL": {
    "attempts": [
     {
@@ -87,13 +117,34 @@
      "tier": 1
     },
     {
-     "detail": "UF tracker reports no ballots cast in GA as of 2026-08-12",
+     "detail": "civicAPI does not carry GA: no capabilities document",
+     "name": "civicapi",
+     "result": "SourceError",
+     "tier": 2
+    },
+    {
+     "detail": "UF tracker reports no ballots cast in GA as of 2026-09-06",
      "name": "uf-election-lab",
      "result": "not_yet_published",
      "tier": 3
     }
    ],
-   "message": "UF tracker reports no ballots cast in GA as of 2026-08-12",
+   "message": "UF tracker reports no ballots cast in GA as of 2026-09-06",
+   "rows": 0,
+   "source": null,
+   "status": "pending",
+   "tier": null
+  },
+  "HI": {
+   "attempts": [
+    {
+     "detail": "HI: no 2026 general absentee report yet (HI: this report is the 2026 primary election, not the 2026 general)",
+     "name": "hi-oe",
+     "result": "not_yet_published",
+     "tier": 1
+    }
+   ],
+   "message": "HI: no 2026 general absentee report yet (HI: this report is the 2026 primary election, not the 2026 general)",
    "rows": 0,
    "source": null,
    "status": "pending",
@@ -117,16 +168,37 @@
   "IL": {
    "attempts": [
     {
+     "detail": "IL: https://elections.il.gov/VotingAndRegistrationSystems/PreElectionCounts.aspx returned HTTP 403",
      "name": "il-sbe",
-     "result": "ok",
+     "result": "SourceError",
      "tier": 1
+    },
+    {
+     "name": "civicapi",
+     "result": "ok",
+     "tier": 2
     }
    ],
    "message": "",
-   "rows": 103,
-   "source": "il-sbe",
+   "rows": 1,
+   "source": "civicapi",
    "status": "ok",
-   "tier": 1
+   "tier": 2
+  },
+  "KS": {
+   "attempts": [
+    {
+     "detail": "KS: the advance-voting dashboard carries no rows inside the 2026 general's window (2026-10-12..2026-11-03); it carries 2026-07-15..2026-08-04",
+     "name": "ks-sos",
+     "result": "not_yet_published",
+     "tier": 1
+    }
+   ],
+   "message": "KS: the advance-voting dashboard carries no rows inside the 2026 general's window (2026-10-12..2026-11-03); it carries 2026-07-15..2026-08-04",
+   "rows": 0,
+   "source": null,
+   "status": "pending",
+   "tier": null
   },
   "KY": {
    "attempts": [
@@ -138,6 +210,21 @@
     }
    ],
    "message": "KY: no absentee workbook posted in the 7 days to 2026-09-06",
+   "rows": 0,
+   "source": null,
+   "status": "pending",
+   "tier": null
+  },
+  "LA": {
+   "attempts": [
+    {
+     "detail": "LA: no absentee/early voter roster posted for the 2026 general as of 2026-09-06",
+     "name": "la-sos",
+     "result": "not_yet_published",
+     "tier": 1
+    }
+   ],
+   "message": "LA: no absentee/early voter roster posted for the 2026 general as of 2026-09-06",
    "rows": 0,
    "source": null,
    "status": "pending",
@@ -203,6 +290,33 @@
    "status": "pending",
    "tier": null
   },
+  "MT": {
+   "attempts": [
+    {
+     "detail": "MT: the dashboard PDF carries no '<year> Montana <type> Election' title, which is the only thing that says which election it holds",
+     "name": "mt-sos",
+     "result": "SchemaDrift",
+     "tier": 1
+    },
+    {
+     "detail": "civicAPI does not carry MT: no capabilities document",
+     "name": "civicapi",
+     "result": "SourceError",
+     "tier": 2
+    },
+    {
+     "detail": "UF tracker reports no ballots cast in MT as of 2026-08-12",
+     "name": "uf-election-lab",
+     "result": "not_yet_published",
+     "tier": 3
+    }
+   ],
+   "message": "UF tracker reports no ballots cast in MT as of 2026-08-12",
+   "rows": 0,
+   "source": null,
+   "status": "pending",
+   "tier": null
+  },
   "NC": {
    "attempts": [
     {
@@ -214,6 +328,20 @@
    "message": "",
    "rows": 51,
    "source": "nc-sbe",
+   "status": "ok",
+   "tier": 1
+  },
+  "ND": {
+   "attempts": [
+    {
+     "name": "nd-sos",
+     "result": "ok",
+     "tier": 1
+    }
+   ],
+   "message": "",
+   "rows": 54,
+   "source": "nd-sos",
    "status": "ok",
    "tier": 1
   },
@@ -235,10 +363,16 @@
   "NV": {
    "attempts": [
     {
-     "detail": "NV: https://www.nvsos.gov/sos/elections/election-information/2026-election-information/2026-turnout-reporting answered with the Incapsula bot wall, not the page",
+     "detail": "NV: https://www.nvsos.gov/sos/elections/election-information/2026-election-information/2026-turnout-reporting returned HTTP 403",
      "name": "nv-sos",
      "result": "SourceError",
      "tier": 1
+    },
+    {
+     "detail": "civicAPI does not carry NV: no capabilities document",
+     "name": "civicapi",
+     "result": "SourceError",
+     "tier": 2
     },
     {
      "detail": "UF tracker reports no ballots cast in NV as of 2026-08-12",
@@ -278,6 +412,36 @@
     }
    ],
    "message": "OH: no absentee data for 2026 on any route (globalassets: OH: no legacy workbook for 2026 (OH: https://www.ohiosos.gov/globalassets/elections/2026/gen/absentee/2026gen_absentee_report_web.xlsx returned 404; OH: https://www.ohiosos.gov/globalassets/elections/2026/gen/absentee/2026gen_official_absentee_report_web.xlsx returned 404); publicfiles: OH: publicfiles index carries no 2026 November general absentee report; dashboard: OH: absentee dashboard has no 2026 November general yet (it carries ['2023 NOV GENERAL', '2024 JUNE CD 6 SPECIAL GENERAL', '2024 MAR PRIMARY', '2024 NOV GENERAL', '2025 MAY PRIMARY/SPECIAL', '2025 NOV GENERAL', '2026 MAY PRIMARY/SPECIAL']))",
+   "rows": 0,
+   "source": null,
+   "status": "pending",
+   "tier": null
+  },
+  "OK": {
+   "attempts": [
+    {
+     "detail": "OK: the 2026 general is on the absentee dashboard but no ballot has been returned yet",
+     "name": "ok-seb",
+     "result": "not_yet_published",
+     "tier": 1
+    }
+   ],
+   "message": "OK: the 2026 general is on the absentee dashboard but no ballot has been returned yet",
+   "rows": 0,
+   "source": null,
+   "status": "pending",
+   "tier": null
+  },
+  "OR": {
+   "attempts": [
+    {
+     "detail": "OR: the SoS has not posted a 2026 Daily Ballot Returns report yet",
+     "name": "or-sos",
+     "result": "not_yet_published",
+     "tier": 1
+    }
+   ],
+   "message": "OR: the SoS has not posted a 2026 Daily Ballot Returns report yet",
    "rows": 0,
    "source": null,
    "status": "pending",
@@ -408,12 +572,12 @@
   "failed": 0,
   "files": [
    {
-    "added": 0,
+    "added": 1,
     "file": "ev_state_daily.csv",
-    "kept_better_tier": 0,
+    "kept_better_tier": 1,
     "kept_richer": 0,
-    "replaced": 5,
-    "rows": 720
+    "replaced": 4,
+    "rows": 778
    },
    {
     "added": 0,
@@ -421,15 +585,7 @@
     "kept_better_tier": 0,
     "kept_richer": 0,
     "replaced": 1,
-    "rows": 2
-   },
-   {
-    "added": 0,
-    "file": "il.csv",
-    "kept_better_tier": 0,
-    "kept_richer": 0,
-    "replaced": 102,
-    "rows": 102
+    "rows": 3590
    },
    {
     "added": 0,
@@ -438,6 +594,14 @@
     "kept_richer": 0,
     "replaced": 15,
     "rows": 9826
+   },
+   {
+    "added": 53,
+    "file": "nd.csv",
+    "kept_better_tier": 0,
+    "kept_richer": 0,
+    "replaced": 0,
+    "rows": 53
    },
    {
     "added": 0,
@@ -452,7 +616,7 @@
     "rows": 51
    }
   ],
-  "ok": 3,
-  "pending": 23
+  "ok": 4,
+  "pending": 31
  }
 }
