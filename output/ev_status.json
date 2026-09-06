@@ -2,7 +2,7 @@
  "as_of": "2026-09-06",
  "cycle": 2026,
  "days_to_election": 58,
- "generated_at": "2026-09-06T19:48:08+00:00",
+ "generated_at": "2026-09-06T22:20:04+00:00",
  "states": {
   "AK": {
    "attempts": [
@@ -168,22 +168,16 @@
   "IL": {
    "attempts": [
     {
-     "detail": "IL: https://elections.il.gov/VotingAndRegistrationSystems/PreElectionCounts.aspx returned HTTP 403",
      "name": "il-sbe",
-     "result": "SourceError",
-     "tier": 1
-    },
-    {
-     "name": "civicapi",
      "result": "ok",
-     "tier": 2
+     "tier": 1
     }
    ],
    "message": "",
-   "rows": 1,
-   "source": "civicapi",
+   "rows": 103,
+   "source": "il-sbe",
    "status": "ok",
-   "tier": 2
+   "tier": 1
   },
   "KS": {
    "attempts": [
@@ -572,11 +566,11 @@
   "failed": 0,
   "files": [
    {
-    "added": 1,
+    "added": 0,
     "file": "ev_state_daily.csv",
-    "kept_better_tier": 1,
+    "kept_better_tier": 0,
     "kept_richer": 0,
-    "replaced": 4,
+    "replaced": 6,
     "rows": 778
    },
    {
@@ -589,6 +583,14 @@
    },
    {
     "added": 0,
+    "file": "il.csv",
+    "kept_better_tier": 0,
+    "kept_richer": 0,
+    "replaced": 102,
+    "rows": 102
+   },
+   {
+    "added": 0,
     "file": "nc.csv",
     "kept_better_tier": 0,
     "kept_richer": 0,
@@ -596,11 +598,11 @@
     "rows": 9826
    },
    {
-    "added": 53,
+    "added": 0,
     "file": "nd.csv",
     "kept_better_tier": 0,
     "kept_richer": 0,
-    "replaced": 0,
+    "replaced": 53,
     "rows": 53
    },
    {
