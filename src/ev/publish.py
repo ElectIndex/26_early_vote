@@ -189,6 +189,18 @@ def mark_restatements(rows: list[dict[str, str]]) -> int:
     return flagged
 
 
+#: The one column that is not CONTENT. It records when a row was produced, so
+#: two rows that differ only here are the same answer arrived at twice.
+STAMP_COLUMN = "retrieved_at"
+
+
+def _same_but_for_stamp(a: dict[str, str], b: dict[str, str]) -> bool:
+    """Do these two rows say the same thing, ignoring when they were written?"""
+    keys = set(a) | set(b)
+    keys.discard(STAMP_COLUMN)
+    return all(a.get(k, "") == b.get(k, "") for k in keys)
+
+
 def publish_table(
     path: Path,
     columns: Sequence[str],
@@ -215,13 +227,35 @@ def publish_table(
     existing = _read(path)
     if replace:
         merged, replaced, kept_better, kept_richer = list(incoming), 0, 0, 0
-        removed = len(existing) - len(
-            {tuple(r.get(k, "") for k in key_cols) for r in existing}
-            & {tuple(r.get(k, "") for k in key_cols) for r in incoming}
-        )
+        prior = {tuple(r.get(k, "") for k in key_cols): r for r in existing}
+        unchanged = 0
+        for row in merged:
+            was = prior.get(tuple(row.get(k, "") for k in key_cols))
+            if was is not None and _same_but_for_stamp(was, row):
+                # ⚠️ A ROW THAT SAYS THE SAME THING KEEPS ITS OLD TIMESTAMP.
+                #
+                # A derived table is a pure function of data already on disk, so
+                # a run that changes no input produces byte-identical numbers --
+                # and then rewrote every row anyway to bump `retrieved_at`. That
+                # made `git diff --cached --quiet` permanently false, so the
+                # scheduled job committed 246 lines of nothing every two hours
+                # and the commit log stopped meaning "the data moved".
+                #
+                # Keeping the old stamp also says something truer: `retrieved_at`
+                # on an unchanged row now reads "this number has been the answer
+                # since then" rather than "a model ran". Whether the job is still
+                # alive is `ev_status.json`'s `generated_at`, which is written
+                # unconditionally on every run precisely so this does not have to be.
+                row[STAMP_COLUMN] = was.get(STAMP_COLUMN, row.get(STAMP_COLUMN, ""))
+                unchanged += 1
+        removed = len(existing) - len(prior.keys() & {
+            tuple(r.get(k, "") for k in key_cols) for r in incoming})
         if removed:
             log.info("%s: rebuilt from scratch, %d stale row(s) dropped",
                      path.name, removed)
+        if unchanged:
+            log.info("%s: %d row(s) unchanged, keeping their original timestamps",
+                     path.name, unchanged)
     else:
         merged, replaced, kept_better, kept_richer = merge_rows(
             existing, incoming, key_cols, guard=guard
