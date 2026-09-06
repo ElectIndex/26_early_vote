@@ -1,0 +1,22 @@
+{
+  "_captured": "2026-09-06",
+  "_what": "VrMvpUtility.getPublicDownloadPresignedContent answering a real reCAPTCHA Enterprise token minted by headless Playwright Chromium on mvp.sos.ga.gov, sent in the page's own payload shape.",
+  "_token_length": 2318,
+  "_request_params": {
+    "fileName": "GAVR/ABSENTEE_ZIP/2026/A-12601/A-12601.zip",
+    "recaptchaResponse": "<the page shape, token elided>",
+    "version": "V3"
+  },
+  "action": {
+    "id": "1;a",
+    "state": "ERROR",
+    "returnValue": {
+      "cacheable": false
+    },
+    "error": [
+      {
+        "message": "V3 Recaptcha Failed"
+      }
+    ]
+  }
+}

@@ -1,13 +1,21 @@
 # Georgia — is there a headless early-vote source?
 
-Investigated 2026-09-06. Every URL, status code and payload below was observed
-live, from this machine, on that date.
+Investigated 2026-09-06, twice: a first pass over every Georgia-published
+surface, then a second pass specifically hunting a workaround (a scripted
+browser, third-party mirrors, the ENR feeds, media distribution). Every URL,
+status code and payload below was observed live, from this machine, on that date.
 
 **Headline: no. Georgia has exactly one machine-readable statewide early-vote
-file, it is gated by reCAPTCHA Enterprise, the gate has no unprotected sibling,
-and nothing else the state publishes carries ballots cast. `ga.py` therefore
-raises `SourceError` and the ladder falls through to the aggregator — which is
-the correct outcome, not a gap waiting to be filled.**
+file; it is gated by a server-side reCAPTCHA Enterprise assessment that a
+scripted browser does not pass; no third party mirrors it daily; and nothing
+else the state publishes carries ballots cast. `ga.py` therefore raises
+`SourceError` and the ladder falls through to the aggregator — which is the
+correct outcome, not a gap waiting to be filled.**
+
+**Recommendation: run Georgia on tier 2 (UF Election Lab).** [What that costs
+us](#what-tier-2-actually-costs-us) is spelled out below, and it is a smaller
+loss than it sounds — on demographics tier 2 is strictly *better* than our own
+scraper could be.
 
 Verified end state:
 
@@ -25,163 +33,279 @@ INFO    ev.ladder: GA: not yet published (uf-election-lab)
 | # | Source | What it is | Result |
 |---|---|---|---|
 | 1 | `mvp.sos.ga.gov` `getPublicDownloadPresignedContent` | The absentee/advance file. The only statewide ballot-level feed. | **Gated.** reCAPTCHA Enterprise, no bypass |
-| 2 | `prod-ga-sos-vr-data-processing-bucket.s3.amazonaws.com` | The bucket the presigned URL points at | **403** on object GET *and* on bucket listing |
-| 3 | `elections.sos.ga.gov/Elections/*.do` | The legacy Java portal | **Gone.** 301 to the gated page, or 403 |
-| 4 | `results.sos.ga.gov` (Enhanced Voting ENR) | Election-night reporting | **Live and open, but has no turnout data** |
-| 5 | `enr.clarityelections.com` / `results.enr.clarityelections.com` | Clarity ENR | **403 to every non-browser client**, and GA no longer uses it statewide |
-| 6 | `sos.ga.gov` CMS pages | Where a daily statistics file would be linked | **403** — Cloudflare bot challenge, unsolvable headlessly |
-| 7 | Georgia open-data portals | `data.georgia.gov`, `opendata.georgia.gov`, `gis.georgia.gov` | **NXDOMAIN.** They do not exist |
-| 8 | Other `*.sos.ga.gov` hosts | `data`, `api`, `files`, `vote`, `absentee`, `turnout`, `reports`, `ballotstatus` | **NXDOMAIN.** Only `elections`, `mvp`, `results` resolve |
-| 9 | Fulton / DeKalb / Cobb / Gwinnett county sites | The partial-coverage fallback | **No data files published**, and see the note below |
+| 2 | A scripted browser minting its own token | The obvious workaround | **Token mints, assessment refuses it.** See §1 |
+| 3 | `prod-ga-sos-vr-data-processing-bucket.s3.amazonaws.com` | The bucket the presigned URL points at | **403** on object GET *and* on bucket listing |
+| 4 | `elections.sos.ga.gov/Elections/*.do` | The legacy Java portal | **Gone.** 301 to the gated page, or 403 |
+| 5 | `results.sos.ga.gov` (Enhanced Voting ENR) | Election-night reporting | **Live and open, but has no turnout data** |
+| 6 | `enr.clarityelections.com` | Clarity ENR | **403 to every non-browser client**, and GA no longer uses it statewide |
+| 7 | `sos.ga.gov` CMS pages | Where a daily statistics file would be linked | **403** — Cloudflare challenge on *every* path, `robots.txt` included |
+| 8 | Georgia open-data portals | `data.georgia.gov`, `opendata.georgia.gov`, `gis.georgia.gov` | **NXDOMAIN.** They do not exist |
+| 9 | Other `*.sos.ga.gov` hosts | `data`, `api`, `files`, `vote`, `absentee`, `turnout`, `reports`, `ballotstatus` | **NXDOMAIN.** Only `elections`, `mvp`, `results` resolve |
+| 10 | `gaonestop.my.site.com/electionportal` | The Experience Cloud site's other front door | **200, but 301s to `mvp.sos.ga.gov/s/`** — same app |
+| 11 | Fulton / DeKalb / Cobb / Gwinnett county sites | The partial-coverage fallback | **No data files published** |
+| 12 | Third-party redistributors | OpenElections, Dataverse, RDH, Kaggle, data.world, archive.org | **No daily 2026 mirror.** Good BACKFILL only — see §6 |
 
 ---
 
-## 1. The gate is real, and it is Enterprise
+## 1. A scripted browser mints a token — and the assessment refuses it
 
-The Submit button on `https://mvp.sos.ga.gov/s/voter-absentee-files` calls one
-public Apex action, `VrMvpUtility.getPublicDownloadPresignedContent`, which
-trades an S3 object key for a presigned `download_url`. Four probes of that
-action, with the object key for the 2026 general
-(`GAVR/ABSENTEE_ZIP/2026/A-12601/A-12601.zip`):
+This is the avenue worth the most effort and it is now closed, with evidence.
 
-| `recaptchaResponse` sent | `version` | Response |
+The Submit button calls one public Apex action,
+`VrMvpUtility.getPublicDownloadPresignedContent`, which trades an S3 object key
+for a presigned `download_url`. Reading the page's own inline script settles
+exactly what it posts:
+
+```js
+document.addEventListener('grecaptchaExecute', function(e) {
+  grecaptcha.enterprise.ready(function() {
+    grecaptcha.enterprise.execute(
+      '6LdUOgYfAAAAAGDYBY939FbeWV3bL-Ktw2EKMoua', {action: 'Submit'}
+    ).then(function(token) {
+      document.dispatchEvent(new CustomEvent('grecaptchaVerified',
+        {'detail': {response: token, action: 'Submit'}}));
+    });
+  });
+});
+```
+
+and, in `c/vrWiVoterAbsenteeFiles`:
+
+```js
+handleZipFile(e, t, i) {
+  getPublicDownloadPresignedContent({
+    fileName: i, recaptchaResponse: JSON.stringify(e), version: t })
+}
+```
+
+So the wire shape is `recaptchaResponse = '{"response":"<token>","action":"Submit"}'`
+with `version = "V3"`. **That is exactly what `ga.py` already sent**, which is
+worth stating plainly: our request was never malformed. `ga.recaptcha_params()`
+now derives both branches from this reading, and `tests/test_ga.py` pins them.
+
+Driving a real browser to the page then produces:
+
+| Browser | Token minted? | Presign answered |
 |---|---|---|
-| field omitted entirely | `V3` | `ERROR` — `"No Recaptcha Response"` |
-| `{"response": "", ...}` | `V3` | `ERROR` — `"V3 Recaptcha Failed"` |
-| `{"response": "junk", ...}` | `V3` | `ERROR` — `"V3 Recaptcha Failed"` |
-| `{"response": "junk", ...}` | `V2` | `ERROR` — `"V2 Recaptcha Failed"` |
-| `{"response": "junk", ...}` | `""` | `ERROR` — `"Missing necessary information to handle the request."` |
+| Playwright Chromium, **headless** | yes — 2,276 chars, 0.3 s | `ERROR "V3 Recaptcha Failed"` |
+| Playwright Chromium, **headed** | yes — 2,318 chars, 0.7 s | `ERROR "V3 Recaptcha Failed"` |
 
-The check is server-side and it is not a formality: there is no parameter
-combination that skips it, and the V2 branch exists too, so switching version
-buys nothing.
+Captured verbatim as `tests/fixtures/ga/presign_refusal_browser_token.json`.
 
-Loading the page in a real browser shows what mints the token:
+The read: **minting is not the hard part.** `grecaptcha.enterprise.execute()`
+hands any caller a token; the token is then graded server-side by an Enterprise
+assessment, and a fresh, profile-less, automated browser scores below Georgia's
+threshold. Headed scored no better than headless, so this is not a
+`--headless` flag away from working.
 
+**Why this rules out GitHub Actions specifically.** The score inputs that hurt
+here — no browsing history, no persistent profile, an automated-control signal —
+are all *worse* on a CI runner, and a runner adds a datacenter IP, which is the
+single heaviest negative signal reCAPTCHA applies. A path that already fails on
+a residential IP with a real desktop Chrome does not start working on Actions.
+Playwright installs fine there; that was never the obstacle.
+
+**What was deliberately not tried.** The remaining move is to defeat the score
+itself — mask the automation signal, age a profile, proxy off a residential IP.
+That is circumventing an access control a state election authority chose to put
+up, it risks getting our IP blocked from a state election site during an
+election, and it would still be fragile. Not built, not recommended.
+
+### The page's "automation check" is theatre, and unrelated
+
+Worth recording so nobody mistakes it for the blocker. `Bot_Check_Active__c`
+drives this, in the same inline script:
+
+```js
+document.addEventListener('checkAutomation', function() {
+  document.dispatchEvent(new CustomEvent('automationDetected',
+    {'detail': window.navigator.webdriver}));
+});
 ```
-GET https://www.google.com/recaptcha/enterprise.js?render=6LdUOgYfAAAAAGDYBY939FbeWV3bL-Ktw2EKMoua
-```
 
-That is reCAPTCHA **Enterprise**, not classic v3 — worth recording, because the
-module docstring previously said v3 and the two behave differently under
-assessment. The site key is kept in `ga.RECAPTCHA_SITE_KEY` as evidence; the
-adapter never calls Google.
+It is a single `navigator.webdriver` read, evaluated in the browser, and when it
+trips the page merely refuses to submit ("Seems like you are trying to use
+automated scripts to fill this form"). It never reaches the server — which is
+why our plain `requests` calls have never seen it, and why defeating it would
+buy nothing.
 
-## 2. There is no unprotected sibling
+## 2. Georgia's kill switch is client-side only — a correction
 
-The brief asked specifically whether the protection sits on the HTML form rather
-than on the file. It does not.
+The first pass called `getRecaptchaDetails` "the one automatic way out". That was
+too optimistic and is now corrected.
 
-* The file URL the page fetches *after* the check is a **presigned** S3 URL —
-  signed, expiring, and unguessable. It is not a stable address we could fetch
-  on our own.
-* The bucket behind it is private in both directions:
-  * `GET .../GAVR/ABSENTEE_ZIP/2026/A-12601/A-12601.zip` → **403 AccessDenied**
-  * `GET .../GAVR/ABSENTEE_BALLOT/2026/A-12601/APPLING.csv` → **403 AccessDenied**
-  * `GET .../?list-type=2` (bucket listing) → **403 AccessDenied**
-  * No CloudFront alias: the host resolves straight to `s3-w.us-east-1.amazonaws.com`.
-* No Salesforce guest REST surface is exposed: `/services/apexrest/` → 404,
-  `/services/data/v60.0/` → 401.
-* The Experience Cloud site has only two file pages at all. Probing 20 plausible
-  slugs under `/s/` returned 200 for exactly `voter-absentee-files` and
-  `voter-history-files`; everything else 404s.
-
-### Everything on that page that *is* open
-
-Worth stating plainly, because it is what `ga.py` already uses and it is the
-reason the adapter can still resolve an election headlessly. These Apex actions
-answer a plain unauthenticated POST with no cookies and no captcha:
-
-| Action | Returns |
-|---|---|
-| `vrWebIntegrationController.getElectionOptions` | Every election for a year with its auto-number and per-election county list |
-| `vrWebIntegrationController.getElectionDetails` | Election dates — for `A-12601`: advance voting opens **10/13/2026**, last day 10/23/2026, registration deadline 10/05/2026 |
-| `vrWebIntegrationController.electionEndYear` | `2026` |
-| `VrMvpUtility.getPicklistValues` | The 159 county names, the election categories |
-| `VrMvpUtility.getRecaptchaDetails` | **The SoS's own switch for the gate** |
-
-None of them carries a single ballot count. Every route to a count runs through
-the presign.
-
-## 3. Georgia's own kill switch — the one automatic way out
-
-The page asks `VrMvpUtility.getRecaptchaDetails` on every load. Captured
-verbatim on 2026-09-06 and saved as `tests/fixtures/ga/recaptcha_details.json`:
+The flags are real and readable without a captcha (saved verbatim as
+`tests/fixtures/ga/recaptcha_details.json`):
 
 ```json
 {"Id": "m093d000000028HAAQ", "Active__c": true, "Bot_Check_Active__c": true}
 ```
 
-Those are the Secretary of State's own toggles for the gate, readable without a
-captcha. `ga.GAScraper.bot_check_active()` reads them, and `_download()` uses the
-answer: with no `$GA_SOS_RECAPTCHA_TOKEN` and the switch **on**, it raises
-`SourceError` immediately without touching the presign; with the switch **off**
-it tries the presign with no token, and Georgia becomes headless with no code
-change.
+But they only steer the **page**. `verifyRecaptcha()` skips to
+`handleZipFile("", "", fileName)` when `Active__c` is false — i.e. it posts
+`recaptchaResponse: '""'`, `version: ""`. Replaying that exact tokenless shape
+against the live action, five ways:
 
-That branch is marked UNVERIFIED in the source and is written as an *attempt*,
-never an assumption — it cannot be exercised against the live site while the
-switch is on. If the tokenless presign still refuses, the adapter lands on the
-same `SourceError` with the refusal appended. Every uncertain answer from the
-probe (call failed, action errored, unfamiliar shape, a flag we have not seen)
-is read as "the gate is up", so an unknown never turns into traffic against a
-state election site.
+| `recaptchaResponse` sent | `version` | Response |
+|---|---|---|
+| `'""'` — **the page's own gate-down shape** | `""` | `ERROR` — `"Missing necessary information to handle the request."` |
+| `'""'` | omitted | `ERROR` — `"Missing necessary information to handle the request."` |
+| omitted entirely | `""` | `ERROR` — `"No Recaptcha Response"` |
+| `""` (bare, unquoted) | `""` | `ERROR` — `"No Recaptcha Response"` |
+| `'""'` | `"V2"` | `ERROR` — `"V2 Recaptcha Failed"` |
+
+The Apex does not consult the switch; it checks the token unconditionally. So
+`Active__c` going false is **necessary but not demonstrably sufficient**.
+`_download` still tries — one request, and the alternative is never noticing —
+but it is written as an attempt and a refusal lands on the same `SourceError`.
+
+The one thing this second pass *did* change: the tokenless branch now sends the
+page's shape rather than one we invented, so if the gate ever comes down we are
+already speaking Georgia's language.
+
+## 3. There is no unprotected sibling
+
+* The URL the page fetches after the check is a **presigned** S3 URL — signed,
+  expiring, unguessable. Not a stable address.
+* The bucket is private in both directions:
+  * `GET .../GAVR/ABSENTEE_ZIP/2026/A-12601/A-12601.zip` → **403 AccessDenied**
+  * `GET .../GAVR/ABSENTEE_BALLOT/2026/A-12601/APPLING.csv` → **403 AccessDenied**
+  * `GET .../?list-type=2` (bucket listing) → **403 AccessDenied**
+  * No CloudFront alias: resolves straight to `s3-w.us-east-1.amazonaws.com`.
+* No Salesforce guest REST surface: `/services/apexrest/` → 404,
+  `/services/data/v60.0/` → 401.
+* Only two file pages exist at all; 20 plausible `/s/` slugs returned 200 for
+  exactly `voter-absentee-files` and `voter-history-files`.
+* `gaonestop.my.site.com/electionportal/s/` and `/s/mvp-landing-page` — the
+  alternate hostnames named in the page's own JS — both **200 but redirect to
+  `mvp.sos.ga.gov/s/`**. Same app, same gate.
+
+### Everything on that page that *is* open
+
+These Apex actions answer a plain unauthenticated POST, no cookies, no captcha:
+
+| Action | Returns |
+|---|---|
+| `vrWebIntegrationController.getElectionOptions` | Every election for a year with its auto-number and per-election county list |
+| `vrWebIntegrationController.getElectionDetails` | Election dates — for `A-12601`: advance voting opens **10/13/2026**, last day 10/23/2026 |
+| `vrWebIntegrationController.electionEndYear` | `2026` |
+| `VrMvpUtility.getPicklistValues` | The 159 county names, the election categories |
+| `VrMvpUtility.getRecaptchaDetails` | The SoS's own switch for the gate |
+
+None carries a single ballot count. Every route to a count runs through the presign.
 
 ## 4. `results.sos.ga.gov` — open, modern, and empty of turnout
 
-Georgia's election-night reporting moved to Enhanced Voting. It is an Angular app
-over a genuinely open JSON API at `/results/public/api`, no key and no captcha:
+Georgia's ENR moved to Enhanced Voting: an Angular app over a genuinely open
+JSON API at `/results/public/api`, no key and no captcha.
 
-* `GET /api/jurisdictions/Georgia` → the jurisdiction plus **117 elections**,
-  each with a `publicElectionId` such as `2024NovGen`, `GeneralPrimary51926`.
-* `GET /api/elections/{jurisdiction}/{publicElectionId}/{stats,turnout,vr,localities,closeraces,data}`
+* `GET /api/jurisdictions/Georgia` → **200**, the jurisdiction plus **117
+  elections**, each with a `publicElectionId`.
+* `GET /api/elections/Georgia/{id}/{stats,turnout,vr}`
 
-The two that would have mattered are empty for every election tried:
+Re-probed this pass, including every 2026 election id the listing carries:
 
-| Endpoint | 2024 general (`2024NovGen`) | 2026 primary (`GeneralPrimary51926`) |
-|---|---|---|
-| `/stats` | `{"data": [], "totalRecordCount": 0}` | `{"data": [], "totalRecordCount": 0}` |
-| `/turnout` | `{"data": [], "totalRecordCount": 0}` | `{"data": [], "totalRecordCount": 0}` |
-| `/vr` | populated | populated — registered voters by county |
+| id | `/stats` | `/turnout` | `/vr` |
+|---|---|---|---|
+| `2024NovGen` | `{"data":[],…}` | `{"data":[],…}` | populated (24.9 kB) |
+| `GeneralPrimary51926` | `{"data":[],…}` | `{"data":[],…}` | populated (24.9 kB) |
+| `2026NovGen` / `2026Gen` | `{"data":null,…}` | `{"data":null,…}` | `{"data":null,…}` |
 
-So the only populated series is **voter registration by county**, a denominator,
-not ballots cast. And the November 3, 2026 general is not listed on the ENR site
-at all yet: this system switches on at election time. It cannot produce a daily
+Note the difference: `[]` is a real election with no turnout series; `null` is
+an election id that does not exist. The November 2026 general **is not listed at
+all** — this system switches on at election time. `/advancevoting` and
+`/earlyvoting` are **404** on every id tried.
+
+So the only populated series is **voter registration by county** — a
+denominator, not ballots cast. Avenue closed: it cannot produce a daily
 early-vote curve because it never holds one.
 
-Clarity (`results.enr.clarityelections.com/GA/…`) answers **403** to every
-non-browser client, and Georgia's statewide reporting no longer runs on it.
+## 5. No RSS, media or FTP distribution
 
-## 5. Counties — nothing to scrape, and it would not be worth it
+`sos.ga.gov` is behind a Cloudflare managed challenge on **every** path, and
+that now includes the machine-readable ones — so there is nothing to subscribe
+to even in principle:
 
-`sos.ga.gov` — the CMS, not the Aura API — is behind a Cloudflare **managed
-challenge**: plain `curl`, `WebFetch` and a real automated Chrome all sat on
-"Performing security verification" and never cleared. So the CMS pages that would
-link a statistics file cannot be read headlessly either. (Note the split:
-`mvp.sos.ga.gov` is served through Cloudflare too, but its `/s/sfsites/aura`
-endpoint answers a plain cookieless POST without challenge. What blocks us there
-is the reCAPTCHA assessment inside the Apex action, not the edge.)
+| URL | Status |
+|---|---|
+| `sos.ga.gov/robots.txt` | **403** (Cloudflare "Just a moment") |
+| `sos.ga.gov/sitemap.xml` | **403** |
+| `sos.ga.gov/rss.xml` | **403** |
+| `sos.ga.gov/news` | **403** |
+| `sos.ga.gov/page/advance-voting-statistics` | **403** |
+| `elections.sos.ga.gov/Elections/voterabsenteefile.do` | **301** to the gated page |
+| `media.sos.ga.gov` | connection failure |
 
-The four big counties were checked directly:
+Note the split that still holds: `mvp.sos.ga.gov` is served through Cloudflare
+too, but its `/s/sfsites/aura` endpoint answers a plain cookieless POST without
+challenge. What blocks us there is the reCAPTCHA assessment inside the Apex
+action, not the edge.
 
-* `fultoncountyga.gov/…/registration-and-elections` — 200, no data links
-* `cobbcounty.gov/elections` — 200, no data links (only a `mailto:`)
-* `gwinnettcounty.com/government/departments/elections` — 200, no data links
-* `dekalbvotes.com` — connection failure; `dekalbcountyga.gov/departments/voter-registration-and-elections`
-  is 200 with no data links
+## 6. Third-party redistributors — nothing daily, but real backfill
 
-All four are JavaScript-rendered CMSes that publish no file. Two further reasons
-not to build this even if files appeared in October:
+No one mirrors the 2026 file daily. Two sources are genuinely useful for
+**backfill**, both verified by fetch:
 
-1. **Timing.** Advance voting for the 2026 general does not open until
-   **2026-10-13** (from `getElectionDetails`), so nothing any county might post
-   exists yet to verify a parser against. Writing four scrapers now would mean
-   inventing four URLs, which rule 1 of this repo forbids.
-2. **Shape.** Fulton, DeKalb, Cobb and Gwinnett are ~25% of Georgia's electorate
-   and among its most Democratic counties. County rows from those four alone,
-   with no statewide row, would be a partial series that is easy to misread as
-   a statewide one and is skewed in a specific direction. The aggregator's
-   statewide number is a better answer than four blue metro counties.
+| URL | Status | What it is |
+|---|---|---|
+| `election.lab.ufl.edu/data-downloads/earlyvote/2024/county_data_GA.csv` | **200**, 37,663 B, `text/csv` | UF's **county-level** GA file: 159 counties × request / accept / in-person, each split by age, race and gender |
+| same path, `/2020/`, `/2022/`, `/2026/` | **404** | 2024 is the only cycle with a GA county file |
+| `georgiavotesvisual.com/static/absentee/absenteeSummary-2024_general-{state,county}.json` | **200**, `application/json`, 8.0 kB / 346 kB | Daily cumulative **accepted ballots by return date**, derived from this same SoS file |
+| same, `-2022_general-` | **200**, `application/json`, 4.7 kB / 280 kB | 2022 equivalent |
+| same, `-2026_general-` / `-2026_primary-` | **200 but `text/html`, 2,036 B** | **Soft-404** — the SPA shell. The project is frozen at 2024; a fetcher must check `content-type`, not status |
+
+Also probed and empty for Georgia absentee data: `openelections-data-ga` and
+`openelections-sources-ga` repo trees (**200**, no absentee/early file — the
+"early" hits are Early County), Harvard Dataverse search API (**200**, 0 exact
+hits), Redistricting Data Hub GA catalog (**200**, zero occurrences of
+"absentee" or "early vot"), Kaggle dataset search (**200**, `[]`), data.world
+(**redirects to a shutdown notice**), archive.org (**200**, `numFound 0` for
+`mediatype:data`), and the Wayback CDX index for the old
+`elections.sos.ga.gov/Elections/voterabsenteefile.do` (**200** — captures exist
+but every one is the ~2.3 kB form/error HTML, **no archived file bodies**).
+
+None of this is wired into `ga.py`. It is recorded so a backfill task does not
+have to rediscover it, and because two of these carry county-level Georgia
+history that our own tier 1 has never once managed to fetch.
+
+---
+
+## What tier 2 actually costs us
+
+The honest accounting, from the real UF rows (`.../earlyvote/2024/US.csv`,
+**200**, and `.../2026/US.csv`, **200**). Georgia's 2024 row is fully populated:
+
+```
+request_all 316,968   accept_all 265,648   inperson_all 3,765,655   voted_all 4,031,303
+```
+
+| Dimension | Tier 1 (if we could fetch it) | Tier 2 (UF) | Verdict |
+|---|---|---|---|
+| Statewide ballots cast | ✅ | ✅ `voted_all` | **no loss** |
+| Mail requested / returned | ✅ | ✅ `request_all` / `accept_all` | **no loss** |
+| In-person | ✅ | ✅ `inperson_all` | **no loss** |
+| Party | n/a — Georgia has none | n/a (`voted_dem` etc. are `0`, read as blank) | **no loss** |
+| **Race** | ❌ not in the 38-column file | ✅ 6 buckets | **tier 2 is BETTER** |
+| **Sex** | ❌ not in the file | ✅ 3 buckets | **tier 2 is BETTER** |
+| Age | ❌ not in the file | published, but UF's 18‑25/26‑40/41‑65/65+ bands do not map to ours — `aggregator.py` correctly emits none | neither has it |
+| **County rows** | ✅ all 159 | ❌ statewide only in `US.csv` | **the real loss** |
+| **Daily curve** | ✅ one download rebuilds the whole series from `Ballot Return Date` | ❌ one snapshot per fetch, dated by `last_update` | **the other real loss** |
+
+So the cost is **two things, not ten**: per-county Georgia, and the ability to
+reconstruct history from a single download. The second is largely mitigated in
+practice — the nightly job accumulates a series as it runs, it just cannot
+*rebuild* one after an outage. And on demographics the trade actually runs in
+tier 2's favour, because Georgia's absentee file carries no race, sex or age at
+all while UF joins its counts to the voter file.
+
+Two footnotes worth carrying:
+
+* **Timing.** The 2026 GA row exists but is all zeros (`last_update 8/12/2026`),
+  which `aggregator.py` correctly reads as blank rather than as zero ballots.
+  Advance voting opens **2026-10-13**; expect it to populate then.
+* **Licence.** UF publishes these under CC BY-NC-ND 4.0 — attribution required,
+  no commercial use without permission. Worth a decision before Georgia's
+  numbers go on a page that carries advertising.
 
 ---
 
@@ -194,9 +318,9 @@ not to build this even if files appeared in October:
 2. The error text says so in words — "Georgia cannot be collected unattended" —
    because it is what a maintainer reads in the CI log every night and it must
    not look like a bug in the run.
-3. `$GA_SOS_RECAPTCHA_TOKEN` remains the manual path: mint a token in a browser,
-   export it, run within ~2 minutes. Useful for a one-off backfill; useless for
-   an unattended nightly job.
+3. `$GA_SOS_RECAPTCHA_TOKEN` remains the manual path: mint a token in a real
+   browser, export it, run within ~2 minutes. Useful for a one-off backfill;
+   useless for an unattended nightly job.
 4. `fetch_history()` still works without a token off a cached archive, and the
    cache is consulted **before** the switch probe, so a backfill touches no
    network at all.
@@ -210,19 +334,27 @@ not to build this even if files appeared in October:
 
 ## If this needs revisiting
 
-Re-run the two cheap probes; both are unauthenticated and captcha-free:
+Three cheap probes, all unauthenticated and captcha-free:
 
 ```bash
-# Has Georgia turned its own gate off?
+# 1. Has Georgia turned its own gate off? (necessary, maybe not sufficient)
 python3 -c "
 import sys; sys.path.insert(0,'src')
 from ev.adapters.ga import GAScraper
 print('bot check active:', GAScraper().bot_check_active())"
 
-# Has the ENR site started carrying turnout?
+# 2. Has the ENR site started carrying turnout?
 curl -s 'https://results.sos.ga.gov/results/public/api/elections/Georgia/2024NovGen/turnout'
+
+# 3. Has UF published a 2026 GA county file? (404 today; 2024 is 200)
+curl -sI 'https://election.lab.ufl.edu/data-downloads/earlyvote/2026/county_data_GA.csv'
 ```
 
-If the first prints `False`, `ga.py` will already be trying the tokenless
-download on its own. If the second stops returning an empty `data` array,
-Enhanced Voting has become a real second source and is worth an adapter.
+If (1) prints `False`, `ga.py` is already trying the tokenless presign in the
+page's own shape. If (2) stops returning an empty `data` array, Enhanced Voting
+has become a real second source. If (3) turns 200, tier 2 gains county rows and
+the largest remaining cost of running Georgia on the aggregator disappears.
+
+Do **not** re-run the scripted-browser experiment expecting a different answer
+without first checking (1) — §1 records both headless and headed attempts and
+the fixture pins the refusal.
