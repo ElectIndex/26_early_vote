@@ -7,6 +7,8 @@
     python -m ev probe                  # which adapters exist and answer today
     python -m ev estimate               # MODELLED party split -> party_estimate.csv
     python -m ev estimate --validate    # ...and how wrong it is. Read the docs.
+    python -m ev regress                # early vote -> result, scored against the
+                                        # null model. Read docs/regression.md.
 """
 
 from __future__ import annotations
@@ -241,6 +243,16 @@ def cmd_estimate(args) -> int:
     return 0
 
 
+def regress_cycles() -> list[int]:
+    """Cycles `regress` can fit: the ones with a published result.
+
+    Spelled out here rather than imported from `ev.regress` so that building the
+    parser does not load the model module -- the same lazy-import guarantee the
+    `estimate` subcommand keeps.
+    """
+    return list(results.RESULT_CYCLES)
+
+
 def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(prog="ev", description="ElectIndex early vote ingest")
     p.add_argument("-v", "--verbose", action="store_true")
@@ -298,6 +310,37 @@ def build_parser() -> argparse.ArgumentParser:
                      help="score the method against states that DO report party "
                           "and print the per-state error in percentage points")
     est.set_defaults(func=cmd_estimate)
+
+    # Static analysis over 2022 and 2024, deliberately NOT in the six-hourly
+    # ingest walk -- same reasoning as `estimate`: the daily job must not be able
+    # to publish a model number, and `ev.regress` is imported inside the
+    # dispatcher below so `ingest` never loads it. It writes ONLY
+    # output/regression.csv and output/regression_fit.csv.
+    reg = sub.add_parser(
+        "regress",
+        help="fit early-vote features to actual 2022/2024 outcomes and score "
+             "the fit OUT OF SAMPLE against the null model -> "
+             "output/regression.csv (never a reported column)",
+    )
+    reg.add_argument("--state", nargs="+", help="limit to these states")
+    # Every fittable cycle by default: the table is re-derived from output/ on
+    # each run, so restricting it would freeze one cycle under an older fit.
+    reg.add_argument("--cycle", type=int, nargs="+", default=None,
+                     choices=regress_cycles(),
+                     help="cycles to fit (default: every cycle with a result)")
+    reg.add_argument("--dry-run", action="store_true")
+    reg.add_argument("--refresh", action="store_true",
+                     help="re-download the prior-cycle result files instead of "
+                          "reading the cached copies")
+    reg.add_argument("--cross-cycle", action="store_true",
+                     help="also fit on one cycle and test on the other")
+
+    def _regress(args):
+        from . import regress as regression
+
+        return regression.cmd_regress(args)
+
+    reg.set_defaults(func=_regress)
     return p
 
 

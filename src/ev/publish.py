@@ -275,7 +275,7 @@ def derive_prior_finals(out_dir: Path) -> dict[tuple[str, str], str]:
     """Each state's FINAL early-vote total for a past cycle, from our own data.
 
     Returns {(cycle, state): total} — but ONLY for a series that actually reaches
-    Election Day (`days_to_election == 0`). That condition is the whole safety of
+    Election Day AND reports a figure on it. That condition is the whole safety of
     this function: it is the denominator behind "share of that state's final early
     vote", so a series that stops a week early would understate the final and
     inflate every percentage computed against it. A partial backfill therefore
@@ -291,9 +291,15 @@ def derive_prior_finals(out_dir: Path) -> dict[tuple[str, str], str]:
         if not cycle or not state or cycle == str(CURRENT_CYCLE_HINT):
             continue
         key = (cycle, state)
-        if (row.get("days_to_election") or "").strip() == "0":
-            reaches_election_day.add(key)
         raw = (row.get("ballots_total") or "").strip()
+        # A day-0 row only completes the series if it REPORTED something. Marking
+        # completeness from the date alone accepted a blank Election Day row as
+        # proof, so South Carolina 2022 -- which has such a row and otherwise
+        # stops 18 days out at 16,975 ballots -- published that partial figure as
+        # its final. The site then showed a 1.0% "share of its 2022 early vote"
+        # for a state that early-voted in the hundreds of thousands.
+        if raw and (row.get("days_to_election") or "").strip() == "0":
+            reaches_election_day.add(key)
         if not raw:
             continue
         try:

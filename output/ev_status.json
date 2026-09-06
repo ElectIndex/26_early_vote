@@ -2,8 +2,23 @@
  "as_of": "2026-09-06",
  "cycle": 2026,
  "days_to_election": 58,
- "generated_at": "2026-09-06T15:10:17+00:00",
+ "generated_at": "2026-09-06T15:55:05+00:00",
  "states": {
+  "AK": {
+   "attempts": [
+    {
+     "detail": "AK: the results page carries no Election Statistics block yet",
+     "name": "ak-doe",
+     "result": "not_yet_published",
+     "tier": 1
+    }
+   ],
+   "message": "AK: the results page carries no Election Statistics block yet",
+   "rows": 0,
+   "source": null,
+   "status": "pending",
+   "tier": null
+  },
   "AZ": {
    "attempts": [
     {
@@ -158,6 +173,21 @@
    "status": "pending",
    "tier": null
   },
+  "MN": {
+   "attempts": [
+    {
+     "detail": "MN: the absentee data page has no general-election section yet (its headings are ['Data & Maps', 'Upcoming Elections', 'Historical Statistics', 'Voter Data', 'Maps and Geodata', 'State Primary Absentee Counts', 'Page footer'])",
+     "name": "mn-sos",
+     "result": "not_yet_published",
+     "tier": 1
+    }
+   ],
+   "message": "MN: the absentee data page has no general-election section yet (its headings are ['Data & Maps', 'Upcoming Elections', 'Historical Statistics', 'Voter Data', 'Maps and Geodata', 'State Primary Absentee Counts', 'Page footer'])",
+   "rows": 0,
+   "source": null,
+   "status": "pending",
+   "tier": null
+  },
   "NC": {
    "attempts": [
     {
@@ -203,6 +233,21 @@
     }
    ],
    "message": "UF tracker reports no ballots cast in NV as of 2026-08-12",
+   "rows": 0,
+   "source": null,
+   "status": "pending",
+   "tier": null
+  },
+  "NY": {
+   "attempts": [
+    {
+     "detail": "NY: the NYC Board's check-in page has no 2026 general-election section yet (its headings are ['Unofficial Election Night Results Unofficial Rank Choice Results', 'Register', 'Vote', 'NYC Elections', 'Poll Workers', 'Run for Office', 'NYC Board of Elections', 'Meetings', 'Information', 'Contact Us', 'Primary Election 2026', 'Executive Office', 'Queens', 'Bronx', 'Manhattan', 'Brooklyn', 'Staten Island'])",
+     "name": "ny-nycboe",
+     "result": "not_yet_published",
+     "tier": 1
+    }
+   ],
+   "message": "NY: the NYC Board's check-in page has no 2026 general-election section yet (its headings are ['Unofficial Election Night Results Unofficial Rank Choice Results', 'Register', 'Vote', 'NYC Elections', 'Poll Workers', 'Run for Office', 'NYC Board of Elections', 'Meetings', 'Information', 'Contact Us', 'Primary Election 2026', 'Executive Office', 'Queens', 'Bronx', 'Manhattan', 'Brooklyn', 'Staten Island'])",
    "rows": 0,
    "source": null,
    "status": "pending",
@@ -313,6 +358,21 @@
    "status": "pending",
    "tier": null
   },
+  "WA": {
+   "attempts": [
+    {
+     "detail": "WA: no daily ballot status report posted in the 7 days to 2026-09-06 (WA: https://www.sos.wa.gov/sites/default/files/current_election/Statewide2026-09-06.zip returned 404)",
+     "name": "wa-sos",
+     "result": "not_yet_published",
+     "tier": 1
+    }
+   ],
+   "message": "WA: no daily ballot status report posted in the 7 days to 2026-09-06 (WA: https://www.sos.wa.gov/sites/default/files/current_election/Statewide2026-09-06.zip returned 404)",
+   "rows": 0,
+   "source": null,
+   "status": "pending",
+   "tier": null
+  },
   "WI": {
    "attempts": [
     {
@@ -337,8 +397,24 @@
     "file": "ev_state_daily.csv",
     "kept_better_tier": 0,
     "kept_richer": 0,
-    "replaced": 3,
-    "rows": 114
+    "replaced": 5,
+    "rows": 720
+   },
+   {
+    "added": 0,
+    "file": "fl.csv",
+    "kept_better_tier": 0,
+    "kept_richer": 0,
+    "replaced": 1,
+    "rows": 2
+   },
+   {
+    "added": 0,
+    "file": "il.csv",
+    "kept_better_tier": 0,
+    "kept_richer": 0,
+    "replaced": 102,
+    "rows": 102
    },
    {
     "added": 0,
@@ -362,7 +438,6 @@
    }
   ],
   "ok": 3,
-  "partial_run": true,
-  "pending": 18
+  "pending": 22
  }
 }

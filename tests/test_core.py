@@ -336,3 +336,27 @@ def test_unscoped_run_replaces_status_wholesale(tmp_path):
     write_status(tmp_path, {"states": {"NC": {"status": "ok"}}, "summary": {}})
     out = json.loads((tmp_path / "ev_status.json").read_text())
     assert set(out["states"]) == {"NC"}
+
+
+def test_prior_final_needs_a_REPORTED_election_day_row(tmp_path):
+    """A blank Election Day row is not proof the series finished.
+
+    South Carolina 2022 has exactly that shape: a day-0 row with no total, the
+    rest of the series stopping 18 days out. Accepting it published a partial
+    count as the cycle's final, and the site divided by it — showing a 1.0%
+    "share of its 2022 early vote" for a state that early-voted in the hundreds
+    of thousands.
+    """
+    from ev.publish import derive_prior_finals
+
+    rows = _series("2022", "SC", [(18, 16975)])
+    rows.append({"cycle": "2022", "state": "SC", "date": "2022-11-08",
+                 "days_to_election": "0", "ballots_total": "",
+                 "source_tier": "1", "source_name": "x", "retrieved_at": "z"})
+    _write_daily(tmp_path, rows)
+    assert derive_prior_finals(tmp_path) == {}
+
+    # The same series WITH a reported Election Day figure does complete.
+    rows[-1]["ballots_total"] = "845000"
+    _write_daily(tmp_path, rows)
+    assert derive_prior_finals(tmp_path) == {("2022", "SC"): "845000"}
