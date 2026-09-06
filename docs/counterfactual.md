@@ -15,22 +15,33 @@ table, never into the reported columns of `ev_state_daily.csv`.
 
 **The headline finding, before anything else.** Measured against the only
 compositional change anyone can actually observe — the party registration those
-same states reported for those same ballots — the method is off by **11.2
+same states reported for those same ballots — the method is off by **9.09
 percentage points of margin** and the null model *"the composition has not
-changed at all"* is off by **11.1**. It buys **−0.10 points**. County geography
-moves **1.2 points** across a window while the composition it is standing in for
-moves **11.1**. Fitting a scale factor to close the gap, leave-one-state-out,
-makes every state worse and produces scales of **+4.1, +4.1, −1.3 and −1.6** —
-both signs, on four states.
+changed at all"* is off by **9.16**. It buys **+0.07 points**, against a bar of
++1.00. County geography moves **0.95 points** across a window while the
+composition it is standing in for moves **9.16**. Fitting a scale factor to close
+the gap, leave-one-state-out, makes three of the five states worse and produces
+multipliers of **+0.24, +0.40, +2.30, +4.20 and +7.28** — a thirty-fold spread.
+A signal in the wrong unit would be fixed by one number. Nothing here is one
+number.
 
 For comparison, `docs/party-estimate.md` recommended **against** shipping a model
 that bought 0.79 points, and `docs/regression.md` declined one at +0.17.
 
 **And a second finding that matters as much.** On the day this was written —
-2026-09-06, 58 days out — the command produces **zero 2026 rows**, because not
-one 2026 state-day yet has a like-for-like 2024 early electorate to be compared
-against. That is the feature working, not failing. It is also the honest state of
-the evidence.
+2026-09-06, 58 days out — the command produces **zero 2026 rows**, because no
+2026 state has yet returned enough ballots to be compared with anything. That is
+the feature working, not failing. It is also the honest state of the evidence.
+
+**A third, added 2026-09-06, and it was a bug rather than a finding.** This model
+is *validated* on mature days and, until that date, *published* on every day.
+**181 of the 260 rows in `output/counterfactual.csv` sat outside the domain it
+had ever been scored on** — mean |shift| **6.39** points against **1.20** for the
+mature rows, as far as **26.2**, and 24 of them carrying the top `confidence`
+label, because completeness was not one of the things `confidence` looked at.
+Maine published an **11.7-point** compositional shift computed off **two
+ballots**. None of that was composition; it was phase. See
+[The maturity gate](#the-maturity-gate).
 
 **Recommendation: do not ship the modelled margin.** Ship the thing underneath
 it, which is a count rather than a model: the like-for-like *party-registration*
@@ -242,76 +253,101 @@ from rescuing the method:
 ## The result
 
 All figures are **mean absolute error in percentage points of margin**, over days
-on which at least 25% of each series' eventual early vote was in. Before that
-threshold the returns are mail-dominated and every method looks terrible.
+that clear [the maturity gate](#the-maturity-gate) on both sides.
 
 | cycle | state | days | shift (final) | truth (final) | **MAE** | **null** | **gain** | mean \|shift\| | mean \|truth\| | r | sign | LOO k | k-MAE | k-gain |
 | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| 2024 | KY | 3 | +1.43 | −13.22 | 13.50 | 12.43 | **−1.06** | 1.06 | 12.43 | −1.00 | 0% | +3.89 | 16.58 | −4.15 |
-| 2024 | MD | 6 | +0.70 | −6.28 | 7.16 | 5.60 | **−1.56** | 1.56 | 5.60 | +0.97 | 0% | +4.13 | 12.07 | −6.47 |
-| 2024 | ME | 21 | −1.18 | −13.99 | 13.39 | 14.37 | **+0.98** | 0.98 | 14.37 | −0.62 | 100% | −1.28 | 15.62 | −1.25 |
-| 2024 | NC | 15 | −1.25 | −11.42 | 10.91 | 12.14 | **+1.23** | 1.23 | 12.14 | +0.60 | 100% | −1.61 | 14.12 | −1.98 |
+| 2024 | FL | 8 | +0.04 | −4.94 | 6.89 | 7.15 | **+0.26** | 0.29 | 7.15 | +0.89 | 62% | +2.30 | 6.55 | +0.60 |
+| 2024 | KY | 6 | +1.43 | −13.22 | 7.10 | 6.54 | **−0.56** | 0.70 | 6.54 | −0.84 | 17% | +4.20 | 9.34 | −2.80 |
+| 2024 | MD | 6 | +0.70 | −6.28 | 7.16 | 5.60 | **−1.56** | 1.56 | 5.60 | +0.97 | 0% | +7.28 | 16.99 | −11.39 |
+| 2024 | ME | 21 | −1.18 | −13.99 | 13.39 | 14.37 | **+0.98** | 0.98 | 14.37 | −0.62 | 100% | +0.40 | 13.98 | +0.39 |
+| 2024 | NC | 15 | −1.25 | −11.42 | 10.91 | 12.14 | **+1.23** | 1.23 | 12.14 | +0.60 | 100% | +0.24 | 11.84 | +0.30 |
 
 | | |
 | --- | ---: |
-| mean MAE | **11.24 pp** |
-| mean MAE of the null (composition unchanged) | **11.14 pp** |
-| **what county geography buys** | **−0.10 pp** |
-| pooled by day rather than by series (45 days) | +0.59 pp |
-| how far the modelled shift moves | **1.21 pp** |
-| how far the composition it stands in for moves | **11.14 pp** |
-| leave-one-state-out fitted scale, mean gain | **−3.46 pp** |
+| mean MAE | **9.09 pp** |
+| mean MAE of the null (composition unchanged) | **9.16 pp** |
+| **what county geography buys** | **+0.07 pp** |
+| pooled by day rather than by series (56 days) | +0.51 pp |
+| how far the modelled shift moves | **0.95 pp** |
+| how far the composition it stands in for moves | **9.16 pp** |
+| leave-one-state-out fitted scale, mean gain | **−2.58 pp** |
 
 `--validate` prints its own verdict rather than leaving it to this page:
 
 ```
-VERDICT: NOTHING SHIPS (bar is +1.00 pp of gain over the no-change null; measured -0.10)
+VERDICT: NOTHING SHIPS (bar is +1.00 pp of gain over the no-change null; measured +0.07)
 ```
 
 The bar, `MIN_GAIN = 1.0`, is in code. It is the same bar `regress.py` sets.
 
 ### The three things in that table that decide it
 
-**1. It does not beat the null.** −0.10 points on four states, and it is negative
-on two of them. `docs/party-estimate.md` declined at +0.79 and
-`docs/regression.md` declined at +0.17.
+**1. It does not beat the null.** +0.07 points on five states against a bar of
++1.00, and it is negative on two of them. `docs/party-estimate.md` declined at
++0.79 and `docs/regression.md` declined at +0.17.
 
-**2. It barely moves.** The modelled shift travels 1.2 points while the measured
-composition travels 11.1. This is the same mechanism `docs/party-estimate.md`
+**2. It barely moves.** The modelled shift travels 0.95 points while the measured
+composition travels 9.16. This is the same mechanism `docs/party-estimate.md`
 found for `lean_vs_baseline`: **every state we track publishes every one of its
 counties**, so once coverage is complete the ballot weights are close to
 proportional to county size and the weighted mean is arithmetically pinned near
 the state's own last result. A difference of two numbers that are each pinned to
-the same place is a small number by construction. The naive "vs the whole state"
-version runs −2.0 to +3.4 points at the close across the thirteen 2024 series we
-have — just as small, and for the same reason.
+the same place is a small number by construction.
 
 **3. A fitted scale makes it worse, and cannot agree with itself.** The
-leave-one-state-out multipliers are **+3.89, +4.13, −1.28, −1.61**. Both signs.
-Every fold scores worse than doing nothing, by 1.25 to 6.47 points. If county
-geography were measuring the right thing in the wrong unit, one number would
-convert it; instead the number that fits Kentucky and Maryland is the *negative*
-of the one that fits Maine and North Carolina. There is no unit gap to close,
-because there is no signal to rescale.
+leave-one-state-out multipliers are **+0.24, +0.40, +2.30, +4.20, +7.28** — a
+thirty-fold spread — and applying the one fitted on the other states makes three
+of the five folds worse, by up to 11.4 points, and lifts none of them over the
+bar. If county geography were measuring the right thing in the wrong unit, ONE
+number would convert it.
 
-The sign column says it plainly: on Kentucky and Maryland the modelled shift
-points the **wrong way on every single mature day**.
+> ⚠️ **Half of this argument used to be stronger, and it is worth recording which
+> half was real.** Before the maturity gate the multipliers were **+3.89, +4.13,
+> −1.28, −1.61** — *both signs*, which is about as clean a "there is no signal
+> here" as a fitted constant can give. Every one of them is positive now. What
+> the immature days were contributing was noise with a sign, and removing them
+> removed the sign disagreement along with it. The magnitude disagreement is what
+> survives, and it is the part that was ever load-bearing.
+
+### Seven specifications, none of which rescue it
+
+Before concluding that the dimension is blind rather than miscalibrated, the
+knobs were swept rather than argued about. Gain over the null, on the same folds:
+
+| what was varied | range tried | best gain |
+| --- | --- | ---: |
+| day-match tolerance | ±0 to ±7 | +0.05 |
+| maturity threshold | 0% to 80% | +0.13 |
+| county-coverage floor | 0% to 99% | +0.00 (no effect at all) |
+| state-coverage floor | 0% to 95% | +0.00 (no effect at all) |
+| matching axis (days-out / mail mix / progress) | three | +0.01 |
+| stage gate on progress | ±5% to ±50% | +0.06 |
+| truth-column denominator (two-party / all-party / all ballots) | three | ±0.00 |
+
+That last row is the one that settles it. Changing the denominator moves how far
+the truth travels (10.34 → 8.57 points) and leaves **every per-state gain
+identical to two decimals**, because the modelled shift is too small to interact
+with it either way. There is no unit to fix and no threshold to tune. The
+dimension is blind; `docs/regression.md` reports the same shape of result from
+seven specifications of its own.
 
 ### What the counterfactual says about 2024, for the record
 
-`output/counterfactual.csv` today holds 245 rows, all of them 2024-vs-2022. This
-is the whole final-day picture:
+`output/counterfactual.csv` today holds **78 rows**, all of them 2024-vs-2022.
+(It held 260 before the maturity gate; the 182 it lost were the ones outside the
+domain the model had ever been scored on.) This is the whole final-day picture:
 
 | state | days | window (d-out) | `shift_pp` | party shift | age tv | race tv | sex tv |
 | --- | ---: | --- | ---: | ---: | ---: | ---: | ---: |
+| FL | 8 | 13 → 0 | +0.04 | −4.94 | — | — | — |
 | KY | 6 | 7 → 2 | +1.43 | −13.22 | — | — | — |
-| MD | 8 | 12 → 5 | +0.70 | −6.28 | — | — | 0.7 |
-| ME | 121 | 120 → 0 | −1.18 | −13.99 | — | — | — |
-| NC | 47 | 46 → 0 | −1.25 | −11.42 | 12.6 | 4.2 | 2.4 |
+| MD | 6 | 10 → 5 | +0.70 | −6.28 | — | — | 0.7 |
+| ME | 21 | 20 → 0 | −1.18 | −13.99 | — | — | — |
+| NC | 15 | 14 → 0 | −1.25 | −11.42 | 12.6 | 4.2 | 2.4 |
 | OH | 1 | 0 | −2.22 | — | — | — | — |
-| SC | 13 | 35 → 15 | −2.35 | — | — | — | — |
-| TN | 14 | 20 → 5 | −2.33 | — | — | — | — |
-| TX | 34 | 37 → 4 | −1.30 | — | — | — | — |
+| TN | 10 | 15 → 5 | −2.33 | — | — | — | — |
+| TX | 10 | 13 → 4 | −1.30 | — | — | — | — |
 | VA | 1 | 0 | −1.31 | — | — | — | — |
 
 Read the North Carolina row across. County geography says the 2024 early
@@ -320,55 +356,118 @@ registration of those very same ballots moved **11.42 points** (registration
 points, a count, not a vote). The age mix moved **12.6 points** of total
 variation. **The one dimension we can price is the one that barely moved.**
 
+South Carolina used to be a tenth row here. It is gone, and its absence is the
+maturity gate's clearest single case: SC's 2022 county series tops out at
+**16,975 ballots** against **1,579,112** in 2024, so thirteen published rows were
+measuring a state against a rounding error.
+
+---
+
+## The maturity gate
+
+**Three refusals, all computable while a cycle is still running**, in
+`is_comparable()`:
+
+1. the reference curve is a real early electorate, not a stub
+   (≥ `MIN_REFERENCE_BALLOTS`, 50,000);
+2. the reference day is itself mature within that curve (≥ `MATURE_FRACTION`);
+3. this cycle's day has reached the same share of it.
+
+Both shares are published, as `completeness` and `reference_completeness`, so a
+reader can check the gate rather than take it on trust.
+
+### The denominator is the reference cycle's final, and that is the whole point
+
+`mature_days()` divides by `final_ballots()` — the largest a series has *ever*
+reached. That is correct for a completed cycle and catastrophically wrong for a
+live one: **North Carolina's eight 2026 ballots are 100% of what 2026 has reached
+so far**, so a self-referential rule calls them a mature electorate. The
+reference cycle's curve is finished, which is exactly why it can be the yardstick
+for both sides. It is deliberately not capped at 1.0 — a cycle whose early vote
+outruns the last one reads above 100%, which is true and worth seeing.
+
+### What it changed
+
+| | before | after |
+| --- | ---: | ---: |
+| published rows | 260 | **78** |
+| mean \|shift_pp\| | 4.80 | **1.09** |
+| max \|shift_pp\| | **26.16** | **3.65** |
+| rows above 5 points | 94 | **0** |
+| rows labelled `confidence: low` | 157 | **0** |
+| validation MAE | 10.37 | **9.09** |
+| gain over the null | −0.03 | **+0.07** |
+
+Not one of the 94 rows above five points survived, and the model's honest range
+turns out to be **±3.65 points**. The `confidence: low` rows went to zero for the
+same reason: almost every one of them was low *because* it was immature, and
+`confidence` had no way to say so.
+
+### And a merge that could not forget
+
+Fixing the model was only half of it. `publish_table()` merges by key, which is
+correct for a scraped table — a state that fails to answer today must not delete
+what it published yesterday — and **wrong for a derived one**. When the gate
+landed, the 182 rows it retired had nothing to replace them and would have
+outlived the bug that made them. Derived tables (`counterfactual.csv`,
+`party_estimate.csv`, `turnout.csv`) are pure functions of data already on disk,
+so a full rebuild now passes `replace=True` and rewrites the file. A **filtered**
+run (`--state NC`) still merges, because it knows only part of the table.
+
 ---
 
 ## Which states can have a counterfactual at all
 
-A 2026 state-day gets a row only when the same state has a **2024 county early
-series at the same days-to-election, ±3**. Fourteen of the thirty-five tracked
-states have a 2024 county series at all:
+**Two bars, not one.** A 2026 state-day needs (1) the same state's **2024 county
+early series at the same days-to-election, ±3**, and (2) both sides through
+[the maturity gate](#the-maturity-gate). Sixteen of the thirty-five tracked
+states clear the first:
 
-| state | 2024 county days | window (days out) |
-| --- | ---: | --- |
-| ME | 121 | 120 → 0 |
-| PA | 70 | 69 → 0 |
-| NC | 47 | 46 → 0 |
-| SC | 31 | 42 → 0 |
-| TX | 34 | 37 → 4 |
-| WI | 26 | 34 → 0 |
-| KY | 16 | 43 → 0 |
-| TN | 14 | 20 → 5 |
-| IA | 15 | 19 → 0 |
-| MD | 8 | 12 → 5 |
-| CO | 4 | 8 → 5 |
-| OH | 1 | 0 |
-| VA | 1 | 0 |
-| AZ | 1 | 99 (a July snapshot; nothing will ever match it but a July day) |
+| state | 2024 county days | window (days out) | 2022 series? |
+| --- | ---: | --- | --- |
+| ME | 121 | 120 → 0 | 121 days |
+| PA | 70 | 69 → 0 | — |
+| NC | 47 | 46 → 0 | 61 days |
+| TX | 34 | 37 → 4 | 34 days |
+| SC | 31 | 42 → 0 | 8 days, 16,975 ballots — **a stub** |
+| WI | 26 | 34 → 0 | — |
+| FL | 24 | 58 → 0 | 17 days |
+| KY | 16 | 43 → 0 | 1 day |
+| IA | 15 | 19 → 0 | — |
+| TN | 14 | 20 → 5 | 14 days |
+| MD | 8 | 12 → 5 | 8 days |
+| CO | 4 | 8 → 5 | — |
+| OH | 1 | 0 | 1 day |
+| VA | 1 | 0 | 1 day |
+| AZ | 1 | 99 (a July snapshot; nothing will ever match it but a July day) | — |
 
-The other twenty-one — AK, CA, CT, DE, FL, GA, HI, IL, KS, LA, MI, MN, MT, ND,
-NH, NV, NY, OK, OR, SD, WA — **can never get a counterfactual** until a 2024
-county backfill exists for them, no matter how much 2026 data arrives. Florida
-and Illinois are the live examples: both have real 2026 county rows today and
-neither gets a row, because neither has a 2024 county series to be compared
-against.
+Florida is on that list because its 2022 and 2024 county curves were recovered
+from the Internet Archive (136 captures in 2024, 78 in 2022 — see
+`src/ev/adapters/fl.py`). **The same sweep found Illinois genuinely
+unrecoverable**: its counts page archives as the empty form and never as the
+answer, so IL is one of the nineteen — AK, CA, CT, DE, GA, HI, IL, KS, LA, MI,
+MN, MT, ND, NH, NV, NY, OK, OR, SD, WA — that **can never get a counterfactual**
+until a 2024 county backfill exists for them, no matter how much 2026 data
+arrives.
 
 ### Why the table has zero 2026 rows today
 
-2026-09-06 is **58 days out**. The three states with any 2026 county data are:
+2026-09-06 is **58 days out**, and the three states with any 2026 county data are
+nowhere near an electorate:
 
-* **NC** — 3 days at 60, 59 and 58 days out. Its 2024 county series starts at 46
-  days out. No match, and none until NC 2026 reaches day 49.
-* **FL** — 2 days, and no 2024 county series.
-* **IL** — 1 day, and no 2024 county series.
+* **NC** — 3 days, and **eight ballots in five counties**. Against North
+  Carolina's finished 2024 early vote of 4,520,768 that is 0.0002%. The maturity
+  gate refuses it; the naive "vs the whole state" comparison would happily report
+  **D+2.79** off those eight ballots, which is exactly the number this module
+  exists not to publish.
+* **FL** — 2 days, one ballot.
+* **IL** — 947,926 mail ballots *requested* and none returned. A request is not a
+  vote.
 
-North Carolina's 2026 early vote is **eight ballots in five counties**. The naive
-"vs the whole state" comparison would happily report **D+2.79** off those eight
-ballots — five counties, one of them Mecklenburg — which is the number this
-module refuses to publish and the reason the like-for-like rule exists.
-
-As 2026 windows open, ME and PA can produce rows immediately (their 2024 series
-cover 58 days out), NC from 49 days out, KY from 46, SC from 45, TX from 40, WI
-from 37.
+As 2026 windows open, a state gets its first row when it has returned about a
+quarter of its own 2024 early vote **and** its 2024 series reaches back that far.
+For North Carolina that is roughly 1.13 million ballots; on 2024's curve it
+crossed that around 12 days out.
 
 ---
 
@@ -386,20 +485,21 @@ arithmetic:
    the other, so the two bounds are subtracted crosswise. It collapses to zero at
    complete coverage on both sides. This is a bound, not a confidence interval.
 
-2. **A flat ±11.5 points of model error**, `MODEL_ERROR_PP`. That is the measured
-   mean absolute error above (11.24), rounded up. It is empirical, not
+2. **A flat ±9.5 points of model error**, `MODEL_ERROR_PP`. That is the measured
+   mean absolute error above (9.09), rounded up. It is empirical, not
    statistical, and it does **not** shrink as more ballots come in, because the
    error is structural rather than sampling noise. Read it as *the size of the
    compositional change county geography does not see*, because that is what it
-   is: the geography moves a point and the registration moves eleven.
+   is: the geography moves a point and the registration moves nine.
    `test_model_error_matches_the_measured_validation` refits it from `output/`
-   and fails if the data moves away from it.
+   and fails if the data moves away from it. It has moved twice already —
+   11.5 → 10.5 when Florida became a fifth scoreable state, 10.5 → 9.5 when the
+   maturity gate corrected the domain — and it is a measurement, not a constant.
 
-**A ±11.5-point band on a shift that runs −2.3 to +7.3 points across every row
-with more than 50,000 ballots on both sides is not a caveat on the number. It is
-the number.** (Across all 245 rows the shift runs −26 to +15, but that range is
-entirely the thin early-window days, where a few hundred ballots in a handful of
-counties are the whole electorate.)
+**A ±9.5-point band on a shift that runs −3.65 to +2.34 points across every
+published row is not a caveat on the number. It is the number.** That range is
+now the honest one: before the maturity gate the file also carried shifts out to
+±26, and every one of them was a phase artefact off a sliver of an electorate.
 
 `confidence` is a label about whether the *inputs* are complete enough for the
 band to mean anything — `low` when either side is under 85% coverage, or under
@@ -407,6 +507,11 @@ band to mean anything — `low` when either side is under 85% coverage, or under
 the ballots we cannot see could move the answer by more than the model's own
 error. Otherwise `medium`. **It is never `high`, and there is a test that says
 so.** No amount of coverage repairs a method that does not beat the null.
+
+⚠️ **`confidence` does not, and did not, look at completeness** — which is how 24
+rows off immature days carried its top label. That is now the maturity gate's job
+and it is a refusal rather than a label, because a day that is 1% of an
+electorate does not need grading, it needs leaving out.
 
 ---
 
@@ -450,13 +555,21 @@ the thing being held fixed.
   registered-Democratic at 45 days out and 49% at the close — a 33-point
   compositional swing *within one window*, none of which was a change in the
   electorate, all of which was mail being counted before in-person.
-* **County geography is nearly blind to composition.** Measured at −0.10 points
-  against the no-change null. This is the finding, not a caveat.
+* **County geography is nearly blind to composition.** Measured at +0.07 points
+  against the no-change null, on a bar of +1.00, after seven specifications were
+  swept looking for a knob that would change it. This is the finding, not a
+  caveat.
 * **The dimensions that carry the signal are the ones that cannot be priced
   here.** Party registration moved 5.6 to 14.4 points in the same electorates
   where geography moved 1. Age moved 12.6 points of total variation in North
   Carolina. Pricing either needs group-level 2024 presidential behaviour that
   this repo does not have and that was not sourced for this feature.
+
+  ⚠️ **And pricing party registration would destroy the only validation there
+  is.** The truth column IS the party-registration shift; a model that predicted
+  it from the same registration numbers would score beautifully and mean nothing.
+  Any future attempt at that dimension needs a different measured compositional
+  change to be scored against first.
 * **In a midterm.** The weights are 2024 *presidential*. A 2026 midterm
   electorate is a different one, and the county-level relationship between "who
   showed up" and "how the county voted for president" is not the same object in
@@ -466,9 +579,10 @@ the thing being held fixed.
   subset of counties, the band opens up properly and `confidence` drops — but the
   point estimate would then be badly *biased*, not merely uncertain, because the
   counties a state publishes first are not a random sample of it.
-* **On a handful of ballots.** North Carolina 2026 is eight ballots. `confidence`
-  is `low` under 50,000, but low confidence has never once stopped a number from
-  being quoted.
+* **On a handful of ballots.** North Carolina 2026 is eight ballots. This used to
+  read "`confidence` is `low` under 50,000, but low confidence has never once
+  stopped a number from being quoted" — and it was right, which is why the
+  maturity gate refuses the row outright rather than grading it.
 
 ---
 
@@ -478,10 +592,10 @@ the thing being held fixed.
 
 1. **Do not publish `implied_margin_2024`, `shift_pp` or "the early electorate is
    N points more Republican" as a modelled figure in any state.** It is worth
-   −0.10 points against "assume nothing changed", it moves 1.2 points while the
-   thing it describes moves 11.1, and its honest band is ±11.5 points on a
-   quantity that spans under ten points once the thin days are excluded. A band
-   that contains every plausible answer says nothing.
+   +0.07 points against "assume nothing changed" on a bar of +1.00, it moves 0.95
+   points while the thing it describes moves 9.16, and its honest band is ±9.5
+   points on a quantity that spans **six** points across every published row. A
+   band that contains every plausible answer says nothing.
 
 2. **`party_margin_shift_pp` is defensible and should ship**, framed as what it
    is — a **count**, not a model:

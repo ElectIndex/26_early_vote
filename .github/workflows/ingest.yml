@@ -47,6 +47,33 @@ jobs:
         # non-zero exit here means the run itself broke and should be loud.
         run: python -m ev ingest
 
+      - name: Refresh the derived models
+        # The page fetches output/party_estimate.csv and output/counterfactual.csv
+        # live, and both are pure functions of the tables the step above just
+        # rewrote. Until 2026-09-06 nothing re-derived them on a schedule, so the
+        # modelled party registration and the 2024 estimate were only ever as
+        # current as the last time somebody ran the command by hand -- stale by
+        # construction, on a page whose whole point is that it is not.
+        #
+        # ⚠️ THIS DOES NOT WEAKEN THE RULE THAT `ev ingest` CANNOT PUBLISH A MODEL
+        # NUMBER. That rule is about which command may write which columns, and it
+        # is unchanged: these are separate commands, they write only their own
+        # files, and `ingest` still never imports either module (cli.py defers the
+        # import into the subcommand's dispatcher precisely so it cannot).
+        #
+        # Unfiltered on purpose -- no --state, no --cycle. Both writers replace
+        # rather than merge on a full rebuild, and a filtered run would merge and
+        # leave rows the model no longer produces sitting in the file forever.
+        #
+        # `|| true` is deliberately NOT here: a model that crashes should be loud.
+        # A model with nothing to say is not a crash -- both commands exit 0 and
+        # print a note when there is no like-for-like data, which is the normal
+        # answer for most of the year.
+        run: |
+          set -euo pipefail
+          python -m ev estimate
+          python -m ev counterfactual
+
       - name: Commit published data
         run: |
           set -euo pipefail

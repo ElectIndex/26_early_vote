@@ -238,7 +238,8 @@ def cmd_estimate(args) -> int:
         print("no estimable state-days; party_estimate.csv left untouched")
         return 0
 
-    info = estimator.write(out_dir, rows)
+    # A filtered run knows only part of the table and may only merge into it.
+    info = estimator.write(out_dir, rows, rebuild=not args.state and not args.cycle)
     print(f"party_estimate.csv: {info['rows']} rows ({len(rows)} estimated this run)")
     return 0
 
