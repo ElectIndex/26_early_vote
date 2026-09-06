@@ -251,3 +251,102 @@ def test_no_roster_for_the_cycle_is_not_yet_published(monkeypatch):
     monkeypatch.setattr(scraper, "_listings", lambda election: {})
     with pytest.raises(NotYetPublished):
         scraper.fetch(2026, date(2026, 9, 6))
+
+
+# --------------------------------------------------------------------------
+# The host's WAF
+# --------------------------------------------------------------------------
+def test_a_random_403_is_retried_not_surrendered_to(monkeypatch):
+    """`electionstatistics.sos.la.gov` answers the odd request with a 408-byte
+    "Access Denied / Reference #18...." page. One of those anywhere in a
+    thousand-file window rebuild would drop Louisiana to the aggregator for the
+    day, so it is retried rather than raised."""
+    from ev.adapters.base import SourceError
+
+    monkeypatch.setattr(la, "_BACKOFF", 0)
+    calls = []
+
+    def flaky():
+        calls.append(1)
+        if len(calls) < 3:
+            raise SourceError("LA: returned HTTP 403")
+        return "recovered"
+
+    assert la._retrying(flaky) == "recovered"
+    assert len(calls) == 3
+
+
+def test_a_404_is_never_retried(monkeypatch):
+    """A missing file is an answer, not a fault -- Louisiana skips Sundays."""
+    from ev.adapters import _net
+
+    monkeypatch.setattr(la, "_BACKOFF", 0)
+    calls = []
+
+    def gone():
+        calls.append(1)
+        raise _net.Missing("LA: returned 404")
+
+    with pytest.raises(_net.Missing):
+        la._retrying(gone)
+    assert len(calls) == 1
+
+
+def test_a_persistent_403_still_falls_through(monkeypatch):
+    """A wall that does not clear is "we could not look", which must fall
+    through to a weaker tier -- never be recorded as "Louisiana has nothing"."""
+    from ev.adapters.base import NotYetPublished, SourceError
+
+    monkeypatch.setattr(la, "_BACKOFF", 0)
+
+    def blocked():
+        raise SourceError("LA: returned HTTP 403")
+
+    with pytest.raises(SourceError) as caught:
+        la._retrying(blocked)
+    assert not isinstance(caught.value, NotYetPublished)
+
+
+def test_the_statewide_row_waits_until_every_parish_has_started():
+    """A parish contributes nothing before its own first file, so a statewide
+    sum taken earlier than the LAST parish's first file is short by whatever the
+    late parishes had already recorded."""
+    from ev.adapters import _fips
+
+    daily = {name: {date(2024, 10, 17): 100} for name in _fips.names("LA")}
+    daily["Orleans Parish"] = {date(2024, 10, 19): 500}
+    result = la.build_series(daily, 2024, date(2024, 10, 19))
+    assert [r.day for r in result.state_rows] == [date(2024, 10, 19)]
+    assert result.state_rows[0].ballots_total == 63 * 100 + 500
+    # The parishes that did start on 10/17 still get their own rows.
+    assert any(r.day == date(2024, 10, 17) for r in result.county_rows)
+
+
+def test_statewide_ballots_new_is_blank_unless_every_parish_filed():
+    """Otherwise the day's figure silently omits whichever parishes did not
+    post -- their new ballots are unknown, not zero."""
+    from ev.adapters import _fips
+
+    daily = {name: {date(2024, 10, 17): 100, date(2024, 10, 18): 10}
+             for name in _fips.names("LA")}
+    daily["Orleans Parish"] = {date(2024, 10, 17): 100}
+    rows = {r.day: r for r in la.build_series(daily, 2024, date(2024, 10, 18)).state_rows}
+    assert rows[date(2024, 10, 17)].ballots_new == 64 * 100
+    assert rows[date(2024, 10, 18)].ballots_new is None
+    assert rows[date(2024, 10, 18)].ballots_total == 64 * 100 + 63 * 10
+
+
+def test_a_persistent_403_names_the_rate_ban(monkeypatch):
+    """"HTTP 403" in ev_status.json reads like something to retry. This one is a
+    per-IP ban that outlives the run, and the status file should say so."""
+    from ev.adapters.base import SourceError
+
+    monkeypatch.setattr(la, "_BACKOFF", 0)
+    monkeypatch.setattr(la, "_MIN_INTERVAL", 0)
+
+    def blocked():
+        raise SourceError("LA: https://electionstatistics.sos.la.gov/ returned HTTP 403")
+
+    with pytest.raises(SourceError) as caught:
+        la._retrying(blocked)
+    assert "refusing this IP" in str(caught.value)

@@ -1533,3 +1533,257 @@ Concerned Citizens, We The People, Reform and Open as registered minor parties.
 does, and it is the only adapter that needs to. Anything in neither table still
 raises `SchemaDrift`. The owner of `normalize.py` should decide whether
 `"independent"` deserves a per-state override rather than a global bucket.
+
+---
+
+# The South: LA, OK, AL, MS, AR, WV
+
+Investigated 2026-09-06. **Every status code below was observed live from this
+machine on that date.** Two states were built (`la-sos`, `ok-seb`); four
+publish nothing a daily job can use, and the reasons differ enough to be worth
+writing down. Two rows in the summary table at the top of this file are
+superseded: **Louisiana** ("no — early-vote stats are post-election only") and
+**Oklahoma** ("rejected: fragility"), and Mississippi's `unverified` row is now
+verified.
+
+## Built
+
+### Louisiana — `src/ev/adapters/la.py` (`la-sos`)
+
+**Why:** a US Senate race in 2026, and the only parish-level number Louisiana
+publishes while people are voting.
+
+The earlier verdict was right about the headline product and wrong about the
+state. Re-walked the year dropdown on
+`https://electionstatistics.sos.la.gov/default.aspx?Stats=Early_Voting_Statistics&Type=Parish`
+(200) for 2022, 2024 and 2026: the **Early Voting Statistical Report** really is
+posted only after the election, every time.
+
+```
+2024_1105_ParishStats.pdf   election 11/05/2024   created 11/12/2024
+2022_1108_ParishStats.pdf   election 11/08/2022   created 11/16/2022
+2026_0627_ParishStats.xls   election 06/27/2026   created 07/04/2026
+```
+
+But the same host publishes a **second, daily** artefact that the earlier survey
+did not reach, because it is behind an ASP.NET postback rather than a link:
+`https://electionstatistics.sos.la.gov/EarlyVoterList.aspx` (200), the
+**Absentee by Mail and Early Voters** roster, one PDF per parish per day at
+
+```
+https://electionstatistics.sos.la.gov/Data/Absentee_Voter_List/{YYYYMMDD}_{PARISH}_{Daily_MMDD|PreEV|Cumulative}.pdf
+```
+
+**Verified 200 + real PDF:** `20241105_EBTR_Daily_1018.pdf` (783,801 b, 179 pp),
+`…_1019`, `…_1021` … `…_1104`, `20241105_EBTR_PreEV.pdf` (701,736 b),
+`20241105_ACAD_PreEV.pdf` (154,084 b), `20241105_ACAD_Daily_1102.pdf` (78,625 b).
+**Verified 404** (1,245 b): `…_Daily_1020`, `…_1027`, `…_1103`, `…_1105` — the
+Sundays Louisiana does not early-vote, and the day after the election.
+
+Each file is a ward-and-precinct roster of names ending in a single
+`Total Voters: N` trailer on its last page, which is the only line the adapter
+reads. It carries **no party, no method, no race, no sex** — every one of those
+fields comes out `None`, in a state that registers by party.
+
+Judgement calls, all locked by tests:
+
+- **The dailies are increments; the curve is a running sum.** Validated against
+  Louisiana's own published figures: East Baton Rouge's 2024 general sums to
+  **94,928** against the post-election report's **94,908** (0.02%), and the whole
+  state rebuilds to **970,313** by 11/04 against **975,019**. The residue is
+  Election Day mail and registrar corrections — which the SoS's own page warns
+  about in as many words.
+- **`fetch_history` lets the report REPLACE Election Day** rather than add to it,
+  and marks that row `restated = 1`. That is where Louisiana's party, race, sex
+  and in-person/absentee split come from: 2024 statewide 849,796 in-person +
+  125,223 absentee; DEM 351,863 / REP 434,871; white 682,487 / black 248,757 /
+  other 43,775.
+- **DEM and REP are published; the residual is not.** The report collapses
+  everything that is neither into one `OTH` column, mixing no-party voters with
+  minor parties. Same call as `ky.py`, for the same reason.
+- **A missing trailer means zero, not drift.** `20241105_ACAD_Daily_1102.pdf` is
+  one banner page with no voters and no total. The report banner is what
+  separates "nobody voted" from "this is not the file we think it is".
+- **`Cumulative` is never counted** — it restates the dailies and is 8 MB per
+  parish.
+- **`.xls` is unreadable.** The 2026 files are real OLE2/BIFF (body starts
+  `D0 CF 11 E0`), not an HTML table with an `.xls` name; `openpyxl` cannot read
+  them and `xlrd` is not a dependency. Only the PDF form is parsed, which is what
+  2022 and 2024 are anyway.
+- **It is the most expensive adapter in the repo.** A full 2024 window rebuild
+  measured **1,026 files, 168 MB, 150 seconds**. Every day before `as_of` is
+  served from `cache/`, because a dated roster never changes.
+- **The host's WAF bites, twice over — and this is the one thing to watch.**
+  It answers with a ~400-byte "Access Denied / Reference #18.…" page and HTTP
+  403, in two distinct modes:
+  1. *Flapping* — the same URL 403ing to one client and 200ing to the next in
+     the same second, while the 1,026-file rebuild itself ran clean.
+  2. *A rate ban* — shortly after that rebuild (1,026 requests in 150 s, ≈7/s)
+     **every URL on the host, including its root, began answering 403 from this
+     IP**, to plain `requests` and to a full Chrome TLS fingerprint alike. It is
+     per-IP and volume-triggered, not a fingerprint rule. It cleared on its
+     own after roughly half an hour.
+
+  `la.py` therefore throttles itself to `_MIN_INTERVAL = 0.35 s` (≈6 minutes for
+  a full late-October run, under 3 req/s) and retries a 403 three times with
+  backoff. **That interval is UNVERIFIED against the ban** — it was chosen after
+  the ban was already in force — and it is flagged as such in the module. A wall
+  it cannot get past raises `SourceError`, so the ladder falls through to the
+  aggregator rather than recording "Louisiana has nothing"; whoever runs the
+  first live October ingest should watch for a host-wide 403 and raise the
+  interval if one appears.
+
+Not used, and why: `voterportal.sos.la.gov/Graphical` (200) is live *results*, not
+turnout; `www.sos.la.gov/robots.txt` is `Disallow: /` for `*`, which is why
+nothing on that host is fetched beyond the one page that names the iframe.
+
+### Oklahoma — `src/ev/adapters/ok.py` (`ok-seb`)
+
+**The earlier finding was wrong, and the correction is one word: GET.** This file
+recorded that `DashboardItemGetAction` "answers HTTP 500 to every reconstructed
+query shape … it needs the DevExpress client's internal state blob". There is no
+state blob. Captured from the live page and replayed from plain `requests`:
+
+```
+GET https://stats.okelections.gov/dashboardControl/data/DashboardItemGetAction
+    ?dashboardId=AbsStatsByCounty
+    &itemId=pivotDashboardItem1
+    &query={"Filter":[{"dimensions":[{"@ItemType":"Dimension",
+             "@DataMember":"ElectionDate","@DefaultId":"DataItem0",
+             "@DateTimeGroupInterval":"DayMonthYear","@SortOrder":"Descending"}],
+             "values":[["2024-11-05T00:00:00.000"]]}]}
+-> 200, application/json, 13,247 b
+```
+
+No cookie, no token, no session, and `stats.okelections.gov` is behind no bot
+protection at all (plain `requests` and `curl_cffi` return byte-identical
+answers, 200/265,653 b at the root). The 500s came from POSTing. Also verified
+200: `/dashboardControl/dashboards` (1,226 b, 18 dashboards) and
+`/dashboardControl/dashboards/AbsStatsByCounty` (11,131 b). Verified **500**:
+`/dashboardControl/dataSources` (70 b, `"Callback request failed due to an
+internal server error."`) — not needed.
+
+Two dashboards, measuring different things:
+
+| | `AbsStatsByCounty` (`StatAbsentee`) | `VHCountsByCounty` (`StatVoterHistory`) |
+|---|---|---|
+| unit | county × party × ballot type × source × delivery | county × precinct × party × **VotingMethod** |
+| measures | Sent / Received / Rejected | HistoryCount |
+| 2024 general | 130,640 sent, 107,874 received | 107,549 absentee + 293,918 early in-person |
+| 2022 general | — | 71,680 absentee + 132,402 early in-person |
+| 2026 general | **live today** — 428 applications, 19 sent, 0 returned | absent (newest election is 2026-08-25) |
+
+The absentee table is **mail only**; Oklahoma's early in-person voting exists
+solely in voter history. So the adapter prefers voter history when the election
+is in it and falls back to absentee-only, where `inperson` stays `None` — never
+`0`, in a state where 293,918 people voted early in person in 2024.
+
+Oklahoma registers by party and both dashboards carry all four registrations, so
+every party field is a real count and an empty bucket is a genuine `0`. The four
+buckets partition the total exactly: 2024 DEM 113,521 + REP 236,011 + NPA 49,886
++ OTH 2,049 = 401,467.
+
+`Election Day` credits are excluded, and so is `Protected` — Oklahoma's
+address-confidential voters, whose method the table does not state. It has never
+appeared in a November general (2022, 2024 and the 2026-08-25 runoff each return
+exactly three methods), and an unrecognised method label raises `SchemaDrift`
+rather than silently vanishing out of the total.
+
+Neither dashboard has a within-election date dimension — there is no received
+date anywhere in either table — so rows are stamped with the run's `as_of`, and
+`fetch_history` returns one dated row per county on Election Day rather than
+inventing an archived daily curve.
+
+## Nothing machine-readable during the season
+
+### Mississippi — now VERIFIED, and the answer is no
+
+The `unverified` row is closed. `www.sos.ms.gov` **403s plain `requests` (370 b)
+and returns 200 to `curl_cffi` (145,760 b)** — the same fingerprint rule as Ohio
+and Arizona, which `_net.get` already retries through. So the site is readable,
+and what it publishes is:
+
+- `/elections-voting/active-voter-count-reports` (200): a monthly **PDF** of the
+  ACTIVE voter count per county, back to 2021. A denominator, not turnout.
+- `/yall-vote/absentee-voting-information` (200): Mississippi has **no
+  no-excuse early voting**. Absentee is excuse-required, in person at the circuit
+  clerk's office or by mail, under an enumerated list of qualifications.
+- `/elections-voting` (200) links nothing absentee-statistical at all; the only
+  spreadsheets on the elections side are handbooks and calendars.
+
+Mississippi does not register voters by party. There is no file, and there is
+also no early-voting electorate to count.
+
+### Alabama — no early voting, and an inventory that proves the negative
+
+`www.sos.alabama.gov/alabama-votes/voter/election-data` (200, 218,654 b) lists
+**every** election data file the SoS publishes — 150-odd links, precinct results
+back to 1992, `ALVR-<year>.xls` registration totals through `ALVR-2026.xlsx`,
+`…TotalBallotsCast.pdf` per election, and participation by age / gender / race as
+post-election PDFs. There is not one absentee or early-voting file anywhere on
+it, in any year. `/alabama-votes/voter/absentee-voting` (200) is application
+forms and a county absentee-manager lookup.
+
+Alabama has no in-person early voting and does not register voters by party, so
+even a hypothetical file would carry neither dimension. Its open 2026 Senate seat
+makes this a real loss and there is nothing to scrape.
+
+### Arkansas — results only, and a correction to the party assumption
+
+`www.sos.arkansas.gov/elections/` (200) and its `research/election-results` page
+(200, 113,327 b) publish certified results back to 1976 as PDF/XLS and nothing
+else. `elections/research/` offers results, the historical report, and NVRA
+statistics. `www.voterview.ar-nova.org/voterview` (200) is the ESSVR VoterView
+per-voter lookup — registration status, party association, polling place for one
+named person — with no statistics endpoint. Arkansas runs 15 days of early voting
+through its county clerks and the state publishes no count of it during or after.
+
+**Correction worth recording:** Arkansas is commonly assumed to register voters
+by party. Its own registration form,
+`https://www.sos.arkansas.gov/uploads/elections/ArkansasVoterRegistrationApplication.pdf`
+(200, 187,050 b), carries `Party Affiliation (Optional)` and a
+`This is a party change.` checkbox — so a party field exists on the record — but
+the state publishes no party-registration statistics and Arkansas is not counted
+as a party-registration state. It is moot here, because there is no early-vote
+file to attach a party to; it is recorded so nobody populates a party field on
+the strength of the form alone.
+
+### West Virginia — registers by party, publishes no early-vote data
+
+**West Virginia does register by party**, and its own page says which ones:
+`sos.wv.gov/elections/election-data/west-virginia-voter-registration-totals`
+(200) — *"Voter registration numbers are broken down by political party:
+Democrat, Republican, Mountain, Libertarian, Constitution, No Party, and Other."*
+
+That is the whole of what it publishes. The election-data section is exactly
+three pages: that one (monthly registration reports, a denominator),
+`…/historical-voter-turnout` (200 — post-election, one link per election back to
+2008) and `…/historical-election-results-and-turnout`. Nothing absentee, nothing
+during the window, in a state that runs 13 days of early voting.
+
+The two live apps are both per-voter, not statistical:
+`https://apps.sos.wv.gov/Elections/Voter/AbsenteeBallotTracking` (200, 9,305 b —
+a lookup form) and `https://apps.wv.gov/SOS/BulkData` (200, but a 302 to
+`/SOS/BulkData/Login.aspx`, and it is business-entity data). Results go to
+Clarity: `https://results.enr.clarityelections.com/WV/126209/` (200), election
+night only.
+
+## What `normalize.py` needed, and did not
+
+The known `"non partisan"` gap did **not** bite Louisiana, because Louisiana's
+report is column-headed `DEM | REP | OTH` rather than labelled per row —
+`normalize.party()` is never called for it, and the `OTH` column is deliberately
+not published at all. Its race and sex labels (`WHITE`/`BLACK`/`OTH`,
+`MALE`/`FEMALE`) all resolve through `normalize.race()` / `.sex()` unchanged.
+
+Oklahoma's four registrations — `Democrat`, `Republican`, `Independent`,
+`Libertarian` — all resolve through `normalize.party()` (to `dem`, `rep`, `npa`,
+`oth`), and its `Absentee` / `Early Voting` method labels through
+`normalize.method()`. **No new vocabulary was needed for either state**, and no
+per-state override table exists in either module.
+
+One thing Louisiana cannot express through `DemoDay`: its report prints only
+`MALE` and `FEMALE`, and the two do not add up to the total (East Baton Rouge
+2024: 38,449 + 56,293 = 94,742 against 94,908). The residual is published as the
+`unknown` sex bucket, which is exact — unlike the party residual, "neither male
+nor female" *is* the bucket our vocabulary has, so nothing is conflated.

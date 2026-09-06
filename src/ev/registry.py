@@ -40,6 +40,10 @@ TIER1: dict[str, str] = {
     "IA": "ia:IAScraper",
     "ME": "me:MEScraper",
     "PA": "pa:PAScraper",
+    # County + party + method, from the SoS's Daily Ballot Returns PDF. One
+    # download carries the whole daily curve; Oregon is all-mail, so every
+    # returned ballot is a mail ballot and `inperson` is always blank.
+    "OR": "or:ORScraper",
     # TOWN + county + party + method, from per-ballot files. New England runs
     # elections by municipality, so these publish town rows and let the county
     # rows fall out of the 10-digit cousub GEOID. See _towns.py.
@@ -68,6 +72,11 @@ TIER1: dict[str, str] = {
     "CA": "ca:CAScraper",
     # Voter-level daily file: county + method + sex, no party registration.
     "WA": "wa:WAScraper",
+    # County + method, absentee only. Neither state registers voters by party.
+    # Montana's dashboard is dated and named by its PDF export; Hawaii's report
+    # names its own election, which is what keeps a primary out of the general.
+    "MT": "mt:MTScraper",
+    "HI": "hi:HIScraper",
     # Statewide only (no county breakdown published), but with party + method.
     "SD": "sd:SDScraper",
     # Statewide only, method only -- Alaska's report is keyed by House district,

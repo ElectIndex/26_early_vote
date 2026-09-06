@@ -111,6 +111,12 @@ _INDEX_LINK = re.compile(r"AbsenteeReconState-(\d{8})\.pdf", re.I)
 #: run on a Sunday must still find Friday's snapshot rather than report nothing.
 LOOKBACK_DAYS = 10
 
+#: Reports to try in one run. The newest is almost always the answer; the rest
+#: only cover a report withdrawn between the index being written and our GET.
+#: Keeping this small is politeness, and the reason the probe stopped tripping
+#: this host's rate limiter.
+MAX_CANDIDATES = 3
+
 #: The nine columns, in order, identified by the letter tags Hawaii prints in
 #: their headings. Matching on the tags rather than the words survives the
 #: line-wrapping pypdf introduces ("ELECT \nSent (a)") and still fails loudly if
@@ -357,9 +363,18 @@ class HIScraper(Adapter):
         return sorted(set(out))
 
     def _candidates(self, as_of: date) -> list[date]:
+        """Report dates to try, newest first and deliberately few.
+
+        The index page is authoritative and one request, so it is used alone
+        whenever it answers: walking a blind date range instead costs eleven
+        requests a run, and `elections.hawaii.gov` answers that with HTTP 429.
+        The constructed range stays as the fallback for a day the index is down.
+        """
         listed = [d for d in self._index_dates() if d <= as_of]
+        if listed:
+            return sorted(listed, reverse=True)[:MAX_CANDIDATES]
         constructed = [as_of - timedelta(days=n) for n in range(LOOKBACK_DAYS + 1)]
-        return sorted(set(listed) | set(constructed), reverse=True)
+        return constructed[:MAX_CANDIDATES]
 
     def fetch(self, cycle: int, as_of: date) -> FetchResult:
         seen = 0

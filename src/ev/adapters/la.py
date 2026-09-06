@@ -44,10 +44,13 @@ Four things follow from that shape, and they are the whole design:
   every way there is -- but this file has none of it, so every one of those
   fields is `None` here. Blank means "this source does not report it"; see THE
   BLANK RULE in schema.py.
-* **It is expensive.** A full rebuild of the 2024 general's window measured
-  **1,026 files, 168 MB and 150 seconds** -- 64 parishes x ~16 posting days.
-  That is the price of the only during-season parish-level number Louisiana
-  publishes, and it is why every day before `as_of` is served from `cache/`.
+* **It is expensive, and the host notices.** A full rebuild of the 2024
+  general's window measured **1,026 files, 168 MB and 150 seconds** -- 64
+  parishes x ~16 posting days -- and shortly afterwards the SoS's edge WAF began
+  answering 403 to *every* URL on the host from this IP. See `_MIN_INTERVAL`:
+  the module throttles itself, every day before `as_of` is served from `cache/`,
+  and a wall it cannot get past raises `SourceError` so the ladder falls through
+  instead of recording "Louisiana has nothing".
 
 WHY NOT THE OTHER ROUTES
 ------------------------
@@ -69,13 +72,14 @@ import html
 import io
 import logging
 import re
+import time
 from collections import defaultdict
 from datetime import date, datetime, timedelta
 
 import pypdf
 
 from ..calendar import election_date
-from ..normalize import PARTY_DEM, PARTY_REP, race as _race, sex as _sex
+from ..normalize import race as _race, sex as _sex
 from ..schema import TIER_SCRAPER, CountyDay, DemoDay, StateDay
 from . import _fips, _net
 from .base import Adapter, FetchResult, NotYetPublished, SchemaDrift, SourceError
@@ -83,6 +87,42 @@ from .base import Adapter, FetchResult, NotYetPublished, SchemaDrift, SourceErro
 log = logging.getLogger(__name__)
 
 BASE = "https://electionstatistics.sos.la.gov"
+
+#: `electionstatistics.sos.la.gov` sits behind an edge WAF that answers with a
+#: ~400-byte "Access Denied / Reference #18.…" page and HTTP 403. Two distinct
+#: behaviours were observed live on 2026-09-06:
+#:
+#: 1. **Flapping.** The same URL 403ing to one client and 200ing to the next in
+#:    the same second, while a 1,026-file window rebuild ran clean.
+#: 2. **A rate ban.** After that rebuild -- 1,026 requests in 150 s, about 7/s --
+#:    the WHOLE HOST began answering 403 to every URL from this IP, including its
+#:    root, to both `requests` and a full browser fingerprint. Not a fingerprint
+#:    rule: it is per-IP and volume-triggered, and it cleared on its own after
+#:    roughly half an hour.
+#:
+#: So this module throttles itself, and treats a wall it cannot get past as
+#: `SourceError` -- "we could not look" -- which falls through to the aggregator
+#: rather than being recorded as "Louisiana has nothing".
+#:
+#: **UNVERIFIED:** _MIN_INTERVAL was chosen after the ban was already in force,
+#: so it has NOT been shown to avoid one. 0.35 s puts a full late-October run at
+#: roughly six minutes and under 3 requests/second, against the ~7/s that
+#: provoked it. Whoever runs the first live October ingest should watch for a
+#: host-wide 403 and raise this if it appears.
+_MIN_INTERVAL = 0.35
+_RETRIES = 3
+_BACKOFF = 4.0
+
+_last_request = 0.0
+
+
+def _throttle() -> None:
+    """Space this module's requests out. See _MIN_INTERVAL."""
+    global _last_request
+    wait = _MIN_INTERVAL - (time.monotonic() - _last_request)
+    if wait > 0:
+        time.sleep(wait)
+    _last_request = time.monotonic()
 
 #: The ASP.NET page that lists which roster files exist for one parish and year.
 #: VERIFIED live 2026-09-06: HTTP 200, and a POST carrying the initial page's
@@ -207,37 +247,85 @@ def _table_rows(markup: str) -> list[list[str]]:
     return rows
 
 
+def _retrying(call):
+    """Run `call`, retrying a SourceError a few times. `Missing` is never retried.
+
+    See _RETRIES: this host's WAF refuses the odd request at random, and a
+    SourceError anywhere in a thousand-file run would drop Louisiana to the
+    aggregator for the day. A 404 is not a fault and is passed straight through.
+    """
+    for attempt in range(_RETRIES):
+        _throttle()
+        try:
+            return call()
+        except _net.Missing:
+            raise
+        except SourceError as exc:
+            if attempt == _RETRIES - 1:
+                if "403" in str(exc):
+                    # Say what this is, because "HTTP 403" in ev_status.json
+                    # reads like a transient fault somebody should retry, and
+                    # this one is a per-IP rate ban that outlives the run.
+                    raise SourceError(
+                        f"{exc} -- electionstatistics.sos.la.gov is refusing "
+                        f"this IP (its edge WAF rate-bans a whole host after a "
+                        f"heavy run; see _MIN_INTERVAL in la.py). Louisiana is "
+                        f"unreadable until it clears, which is not the same as "
+                        f"Louisiana having no data."
+                    ) from exc
+                raise
+            time.sleep(_BACKOFF * (attempt + 1))
+    raise AssertionError("unreachable")
+
+
+def _get(url: str, *, filename: str, use_cache: bool = False,
+         min_bytes: int = 64, timeout: int = _net.DEFAULT_TIMEOUT) -> bytes:
+    """A throttled, retried `_net.get`. A cache hit costs neither."""
+    path = _net.cache_path("LA", filename)
+    if use_cache and path.exists() and path.stat().st_size >= min_bytes:
+        return path.read_bytes()
+    return _retrying(lambda: _net.get(
+        url, state="LA", filename=filename, use_cache=use_cache,
+        min_bytes=min_bytes, timeout=timeout,
+    ))
+
+
 def _post(url: str, data: dict[str, str], *, timeout: int = 60) -> str:
     """POST an ASP.NET postback and return the page.
 
     `_net.get` is GET-only and this listing is a WebForms postback, so the one
     POST in this module goes through the shared session directly -- same
-    headers, same TLS-ticket fix, same exception vocabulary.
+    headers, same TLS-ticket fix, same exception vocabulary, same retry.
     """
-    try:
-        response = _net.SESSION.post(
-            url, data=data, headers=_net.DEFAULT_HEADERS, timeout=timeout,
-        )
-    except Exception as exc:  # noqa: BLE001 - requests raises many shapes
-        raise SourceError(f"LA: POST {url} failed: {exc}") from exc
-    if response.status_code in (404, 410):
-        raise _net.Missing(f"LA: {url} returned {response.status_code}")
-    if not response.ok:
-        raise SourceError(f"LA: {url} returned HTTP {response.status_code}")
-    return response.text
+    def once() -> str:
+        try:
+            response = _net.SESSION.post(
+                url, data=data, headers=_net.DEFAULT_HEADERS, timeout=timeout,
+            )
+        except Exception as exc:  # noqa: BLE001 - requests raises many shapes
+            raise SourceError(f"LA: POST {url} failed: {exc}") from exc
+        if response.status_code in (404, 410):
+            raise _net.Missing(f"LA: {url} returned {response.status_code}")
+        if not response.ok:
+            raise SourceError(f"LA: {url} returned HTTP {response.status_code}")
+        return response.text
+
+    return _retrying(once)
 
 
 # --------------------------------------------------------------------------
 # Parsing
 # --------------------------------------------------------------------------
 def _mdy(raw: str) -> date | None:
-    raw = (raw or "").strip()
-    for fmt in ("%m/%d/%Y", "%-m/%-d/%Y"):
-        try:
-            return datetime.strptime(raw, fmt).date()
-        except ValueError:
-            continue
-    return None
+    """The listing's "Date Created" cell, e.g. "10/19/2024" or "5/23/2026".
+
+    `%d`/`%m` accept an unpadded number, which the SoS's table uses for single
+    digit months and days.
+    """
+    try:
+        return datetime.strptime((raw or "").strip(), "%m/%d/%Y").date()
+    except ValueError:
+        return None
 
 
 def roster_day(name: str, created: date | None, election: date) -> date | None:
@@ -434,14 +522,18 @@ def build_series(
 
     statewide_total: dict[date, int] = defaultdict(int)
     statewide_new: dict[date, int] = defaultdict(int)
-    covered = 0
+    reporting: dict[date, int] = defaultdict(int)
+    parishes = [p for p, series in daily.items() if series]
+    covered = len(parishes)
+    # A parish contributes nothing before its own first file, so a statewide sum
+    # taken earlier than the LAST parish's first file is short by however many
+    # ballots the late parishes had already recorded. Statewide rows therefore
+    # start where every parish has started, even though the parish rows do not.
+    all_started = max(min(daily[p]) for p in parishes) if parishes else None
 
-    for parish in sorted(daily):
+    for parish in sorted(parishes):
         fips, canonical = _fips_for(parish)
         series = daily[parish]
-        if not series:
-            continue
-        covered += 1
         running = 0
         started = False
         for day in span:
@@ -464,15 +556,21 @@ def build_series(
             statewide_total[day] += running
             if today is not None:
                 statewide_new[day] += today
+                reporting[day] += 1
 
     if covered == EXPECTED_PARISHES:
         for day in span:
-            if day not in statewide_total:
+            if all_started is None or day < all_started:
                 continue
             result.state_rows.append(StateDay(
                 cycle=cycle, state="LA", day=day,
                 ballots_total=statewide_total[day],
-                ballots_new=statewide_new.get(day),
+                # Only a real day's-worth if EVERY parish filed for that day;
+                # otherwise the missing parishes' new ballots are unknown, not
+                # zero, and a partial sum would read as a national-style
+                # "ballots cast today" figure.
+                ballots_new=(statewide_new[day]
+                             if reporting[day] == covered else None),
                 mail_requested=None, mail_returned=None, inperson=None,
                 party_dem=None, party_rep=None, party_oth=None, party_npa=None,
             ))
@@ -625,9 +723,8 @@ class LAScraper(Adapter):
         only thing that dates the PreEV file.
         """
         try:
-            page = _net.get(
-                VOTER_LIST_PAGE, state="LA", filename="EarlyVoterList.aspx",
-                min_bytes=2048,
+            page = _get(
+                VOTER_LIST_PAGE, filename="EarlyVoterList.aspx", min_bytes=2048,
             ).decode("utf-8", errors="replace")
         except _net.Missing as exc:
             raise SourceError(f"LA: {VOTER_LIST_PAGE} is gone: {exc}") from exc
@@ -691,10 +788,7 @@ class LAScraper(Adapter):
     def _pdf(self, filename: str, *, use_cache: bool) -> bytes | None:
         url = f"{VOTER_LIST_DIR}/{filename}"
         try:
-            body = _net.get(
-                url, state="LA", filename=filename,
-                use_cache=use_cache, min_bytes=1024,
-            )
+            body = _get(url, filename=filename, use_cache=use_cache, min_bytes=1024)
         except _net.Missing:
             # The listing said it was there and it is not. Treat it as absent
             # rather than as a fault: the next run re-reads the whole window.
@@ -708,10 +802,8 @@ class LAScraper(Adapter):
     def _parish_stats(self, cycle: int, election: date) -> FetchResult:
         filename = f"{cycle}_{election.strftime('%m%d')}_ParishStats.pdf"
         url = f"{PARISH_STATS_DIR}/{filename}"
-        body = _net.get(
-            url, state="LA", filename=filename, use_cache=True,
-            min_bytes=4096, timeout=300,
-        )
+        body = _get(url, filename=filename, use_cache=True,
+                    min_bytes=4096, timeout=300)
         if _net.looks_like_html(body):
             raise NotYetPublished(f"LA: {url} is not posted yet")
         stats = parse_parish_stats(body, cycle)

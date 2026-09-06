@@ -95,8 +95,7 @@ from __future__ import annotations
 import io
 import logging
 import re
-from datetime import date, datetime
-from typing import Iterable
+from datetime import date
 
 import pypdf
 
@@ -388,7 +387,6 @@ def classic_daily(pages: list[str], year: int) -> tuple[list[date], dict[str, li
         if not dates:
             raise SchemaDrift(f"OR: day header {header!r} carries no dates")
         series: dict[str, list[int]] = {}
-        width = 0
         for line in lines:
             cells = line.split()
             numbers = [c for c in cells if _VALUE.match(c)]
@@ -406,7 +404,6 @@ def classic_daily(pages: list[str], year: int) -> tuple[list[date], dict[str, li
                 hit = _fips.lookup("OR", label)
                 if hit is None:
                     continue
-                width = max(width, len(numbers))
                 series[hit[0]] = [_int(n) for n in numbers]
         counties = {k: v for k, v in series.items() if not k.startswith("statewide")}
         if not counties:
@@ -709,7 +706,7 @@ def _rows(
             f"stamped {as_of.isoformat()}"
         )
 
-    def bucket(key: str, name: str) -> dict[str, int | None]:
+    def bucket(key: str) -> dict[str, int | None]:
         split = party.get(key, {})
         return {
             f"party_{b}": split.get(b) for b in ("dem", "rep", "oth", "npa")
@@ -746,7 +743,7 @@ def _rows(
             county_name=_NAMES[fips],
             ballots_total=returned, ballots_new=last_new,
             mail_returned=returned, inperson=None,
-            **bucket(fips, "county"),
+            **bucket(fips),
         ))
 
     state_new = series.get("statewide new")
@@ -774,7 +771,7 @@ def _rows(
         ballots_total=statewide_total,
         ballots_new=state_new[-1] if state_new else None,
         mail_requested=None, mail_returned=statewide_total, inperson=None,
-        **bucket("statewide", "statewide"),
+        **bucket("statewide"),
     ))
 
     for row in result.county_rows:
@@ -798,7 +795,9 @@ def parse(body: bytes, cycle: int) -> FetchResult:
 def _parse_classic(body: bytes, plain: list[str], cycle: int) -> FetchResult:
     year = classic_election_year(plain)
     if year != int(cycle):
-        raise SchemaDrift(f"OR: report is for the {year} general, not {cycle}")
+        raise NotYetPublished(
+            f"OR: this report is the {year} general, not the {cycle} general"
+        )
     as_of, totals = classic_summary(plain)
     dates, series = classic_daily(plain, year)
     party = classic_party(body, plain)
@@ -810,9 +809,12 @@ def _parse_powerbi(body: bytes, plain: list[str], cycle: int) -> FetchResult:
     layout = _pages(body, layout=True)
     election, generated = pbi_dates(layout)
     if election != election_date(cycle):
-        raise SchemaDrift(
-            f"OR: report is for the {election.isoformat()} election, not the "
-            f"{cycle} general"
+        # The live report during the primary season parses perfectly and is a
+        # completely different election. NotYetPublished, not SchemaDrift: there
+        # is nothing wrong with the file, the general simply has not started.
+        raise NotYetPublished(
+            f"OR: this report is for the {election.isoformat()} election, not "
+            f"the {cycle} general"
         )
     totals = pbi_counties(layout)
     dates, series = pbi_daily(layout, election.year)
@@ -878,7 +880,7 @@ class ORScraper(Adapter):
             SOS + path.format(cycle=cycle, yy=str(cycle)[-2:])
             for path in FALLBACK_PATHS
         ]
-        errors: list[str] = []
+        wrong_election: list[str] = []
         for index, url in enumerate(dict.fromkeys(candidates)):
             try:
                 body = self._download(url, filename=f"{cycle}_daily_{index}.pdf")
@@ -886,15 +888,18 @@ class ORScraper(Adapter):
                 continue
             try:
                 return parse(body, cycle)
-            except SchemaDrift as exc:
-                # A live report for the PRIMARY parses fine and is rejected here
-                # by its own election date, which is the whole point of reading
-                # it. Keep looking rather than failing the run.
-                errors.append(str(exc))
+            except NotYetPublished as exc:
+                # A live report for the PRIMARY parses fine and is refused by its
+                # own election date. Another candidate URL may still be the
+                # general's, so keep looking. SchemaDrift and SourceError are
+                # deliberately NOT caught: a file whose columns changed must
+                # fall through a tier, not be reported as "no data yet".
+                wrong_election.append(str(exc))
                 log.info("OR: %s is not this cycle's general (%s)", url, exc)
-        if errors:
+        if wrong_election:
             raise NotYetPublished(
-                f"OR: no {cycle} general Daily Ballot Returns report yet ({errors[0]})"
+                f"OR: no {cycle} general Daily Ballot Returns report yet "
+                f"({wrong_election[0]})"
             )
         raise NotYetPublished(
             f"OR: the SoS has not posted a {cycle} Daily Ballot Returns report yet"

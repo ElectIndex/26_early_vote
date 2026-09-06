@@ -77,7 +77,7 @@ from ..normalize import (
 )
 from ..schema import TIER_SCRAPER, CountyDay, StateDay
 from . import _fips, _net
-from .base import Adapter, FetchResult, NotYetPublished, SchemaDrift, SourceError
+from .base import Adapter, FetchResult, NotYetPublished, SchemaDrift
 
 log = logging.getLogger(__name__)
 
@@ -359,7 +359,11 @@ class OKScraper(Adapter):
         history = self._history(election)
         if history is not None:
             counties, names = history
-            absentee = self._absentee(election)
+            # The only thing voter history cannot say is how many mail ballots
+            # went OUT; that lives in the absentee table. Its party breakdown is
+            # not wanted here -- voter history already has a better one -- so the
+            # four per-party queries are skipped.
+            absentee = self._absentee(election, with_party=False)
             extra = None
             if absentee is not None:
                 requested = _add(*[c.get("mail_requested") for c in absentee[0].values()])
@@ -426,7 +430,9 @@ class OKScraper(Adapter):
         return election.strftime(_ENCODED_STAMP) in self._elections(dashboard, combo)
 
     # ------------------------------------------------------------------
-    def _absentee(self, election: date) -> tuple[dict[str, dict], dict[str, str]] | None:
+    def _absentee(
+        self, election: date, *, with_party: bool = True,
+    ) -> tuple[dict[str, dict], dict[str, str]] | None:
         """County mail applications sent and ballots returned, by party."""
         if not self._has(ABSENTEE_DASHBOARD, ABSENTEE_DATE_COMBO, election):
             return None
@@ -450,6 +456,9 @@ class OKScraper(Adapter):
                 "inperson": None,
                 "party": {},
             }
+
+        if not with_party:
+            return counties, names
 
         parties = self._item(ABSENTEE_DASHBOARD, ABSENTEE_PARTY_COMBO, [date_filter])
         for label in dimension_values(parties, COL_PARTY):

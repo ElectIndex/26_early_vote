@@ -95,8 +95,21 @@ try:  # pragma: no cover - import-time capability probe
 except Exception:  # noqa: BLE001
     _curl = None
 
-#: Which browser to impersonate. "chrome" tracks curl_cffi's newest Chrome.
-IMPERSONATE = "chrome"
+#: Browsers to impersonate, tried in order until one is not refused.
+#:
+#: A SINGLE profile is not enough, and the evidence is specific: from one machine
+#: in one second, vote.sos.ri.gov answers 403 to "chrome", "chrome131" and "edge"
+#: and 200 to "safari" and "firefox". A WAF rule can be keyed to a particular
+#: fingerprint rather than to automation in general, so a state whose one profile
+#: happens to be blocked reads as unreachable when it is not -- which is the same
+#: mistake, one level down, that had Ohio and Arizona written off as blocked.
+#:
+#: Chrome first because it is the common case and usually settles it in one
+#: request; the rest cost nothing unless the first is refused.
+IMPERSONATE_PROFILES = ("chrome", "safari", "firefox")
+
+#: Kept for callers that want the primary profile by name.
+IMPERSONATE = IMPERSONATE_PROFILES[0]
 
 
 def _impersonated_get(url, *, timeout, headers, params):
@@ -116,14 +129,25 @@ def _impersonated_get(url, *, timeout, headers, params):
     """
     if _curl is None:
         return None
-    try:
-        return _curl.get(
-            url, timeout=timeout, headers=headers, params=params,
-            impersonate=IMPERSONATE,
-        )
-    except Exception as exc:  # noqa: BLE001 - a failed retry is just no retry
-        log.debug("impersonated retry failed for %s: %s", url, exc)
-        return None
+    last = None
+    for profile in IMPERSONATE_PROFILES:
+        try:
+            response = _curl.get(
+                url, timeout=timeout, headers=headers, params=params,
+                impersonate=profile,
+            )
+        except Exception as exc:  # noqa: BLE001 - a failed profile is just no retry
+            log.debug("impersonated retry (%s) failed for %s: %s", profile, url, exc)
+            continue
+        # Any answer that is not another refusal is the answer -- including a
+        # 404, which is the whole point: it means we finally got to ask.
+        if response.status_code != 403:
+            if profile != IMPERSONATE_PROFILES[0]:
+                log.debug("%s answered %s to the %s fingerprint",
+                          url, response.status_code, profile)
+            return response
+        last = response
+    return last
 
 
 class Missing(SourceError):
