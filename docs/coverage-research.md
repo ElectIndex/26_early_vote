@@ -450,3 +450,301 @@ but this row is unconfirmed from this network rather than checked.
    `normalize.py` should make that call. Separately, `AGE_BANDS` genuinely cannot
    express Maryland's 25-44 / 45-64 bands — that is not a bug, but it is why
    Maryland publishes no age dimension.
+
+---
+
+# Second pass, 2026-09-06 — re-testing the bot-blocked hosts, and five states built
+
+Everything above stands except where this section says otherwise. The trigger
+for the re-test is the change described in `docs/ohio-source.md`: `_net.get` now
+retries any 403 through `curl_cffi` with a real Chrome TLS/HTTP2 fingerprint.
+Several verdicts above were reached because a host answered 403 or served a bot
+interstitial, and those verdicts were reached about our HTTP client rather than
+about the state.
+
+**Every status code below was observed live from this machine on 2026-09-06.**
+
+## The blocked hosts, re-tested
+
+| Host | plain `requests` | `curl_cffi` chrome | Verdict now |
+|---|---|---|---|
+| `www.sos.mn.gov` | **302 → validate.perfdrive.com**, 200 / 15,096 b of Radware challenge | **200 / 65,748 b, the real page** | **UNBLOCKED — built, `mn.py`** |
+| `sos.ms.gov` | 403 / 370 b | **200 / 145,760 b** | **UNBLOCKED.** Nothing to scrape behind it (see below) |
+| `www.sec.state.ma.us` | 200 / **212 b** (Incapsula stub) | **200 / 51,646 b, the real page** | **UNBLOCKED.** Verdict above unchanged: post-election only |
+| `elections.ny.gov` | 403 / 5,709 b | **200 / 56,142 b** | **UNBLOCKED.** Verdict above unchanged: no turnout data exists |
+| `www.voteinfo.net` (Riverside CA) | 403 | **200 / 139,590 b** (intermittently 403) | **UNBLOCKED**, probabilistically |
+| `www.sos.wa.gov/elections/.../ballot-status-reports` | 403 | **403** | Still walled — but irrelevant, see Washington below |
+| `www.nvsos.gov` | 200 / **925 b** Incapsula wall | 200 / **926 b**, same wall | **Still blocked.** `nv.py`'s SourceError is correct |
+| `vote.sos.ri.gov` | 403 | **403** Cloudflare challenge | Still blocked (`elections.ri.gov` is 200 and has nothing) |
+| `azsos.gov` | 403 | **403** on this run | Intermittent; `docs/ohio-source.md` saw 200. Score, not rule |
+
+Impersonation profiles tried against the two hosts that still refuse:
+`chrome`, `chrome120`, `chrome124`, `chrome131`, `chrome133a`, `chrome136`,
+`safari184`, `safari18_0`, `firefox135`, `edge101`. All 403.
+
+Two traps worth recording, because both cost real time:
+
+* **Radware and Incapsula inject their own scripts into the GOOD page too.** The
+  genuine 65,748-byte Minnesota page contains `validate.perfdrive.com` at byte
+  3,691 and `SSJSConnectorObj` at byte 2,933; the genuine Massachusetts page
+  contains `_Incapsula_Resource`. Detecting the challenge by domain name rejects
+  every successful fetch. `mn.py` matches on `Radware Captcha Page` and
+  `captcha.perfdrive.com`, which appear only on the challenge itself.
+* **Radware challenges the FIRST request from a new session and cookies it.**
+  Request A on a fresh `curl_cffi` session returned the 15,096-byte challenge and
+  request B, identical in every other way, returned the real page. The retry has
+  to REUSE the session; building a fresh one each time is challenged forever.
+
+## Built this pass — five adapters
+
+| State | Adapter | Geography | Dims | Why |
+|---|---|---|---|---|
+| **MN** | `mn.py` (`mn-sos`) | statewide + **87 counties** | method (2026 layout), applications | **Open US Senate seat** |
+| **AK** | `ak.py` (`ak-doe`) | statewide only | method (mail / in-person) | **Open governorship + Senate** |
+| **WA** | `wa.py` (`wa-sos`) | statewide + **39 counties** | method, **sex**, full daily curve | Best file in the country |
+| **CA** | `ca.py` (`ca-sos`) | statewide + **58 counties** | method (return channel), issued | Largest electorate, open governorship |
+| **NY** | `ny.py` (`ny-nycboe`) | **5 of 62 counties — PARTIAL** | in-person check-ins | ~40% of the state's electorate |
+
+### Minnesota — `mn.py`, and the verdict above is now wrong
+
+`https://www.sos.mn.gov/election-administration-campaigns/data-maps/absentee-data/`
+is not "HTML behind Radware needing a headless browser". It needs a TLS
+fingerprint, which `curl_cffi` supplies, and the page is a plain table:
+
+```
+State Primary Absentee Counts                (heading names the election)
+Statewide Counts
+  Applications (8/11/26 at 3 p.m.): 445,023
+  Accepted ballots - by mail (8/11/26 at 3 p.m.): 116,414
+  Accepted ballots - in person (8/11/26 at 3 p.m.): 133,364
+Counts by County   <caption>Absentee Counts by County as of August 11, 2026 …</caption>
+  Aitkin  5,889  2,164  292     … 87 rows, all 87 resolve through _fips
+```
+
+**The county table has no dependable header row** — it has none at all in the
+live 2026 page or the 2024-10-03 capture, and does have one in the 2022 capture
+and the 2024-11-09 one. So the columns are identified by PROOF: each column's
+sum across the 87 counties must equal its statewide bullet exactly. It does, on
+all three fixtures. A table that does not reproduce Minnesota's own statewide
+figures raises `SchemaDrift`.
+
+Two layouts, both handled: 2022 and 2024 published two columns (applications,
+accepted) with no method split; the 2026 primary publishes three. Today the page
+carries the PRIMARY, so `mn-sos` correctly returns `NotYetPublished`.
+
+Archived generals, both verified 200 and both in `tests/fixtures/mn/`:
+`web.archive.org/web/20241003181752id_/…` and `…/20221014040640id_/…`.
+
+### Alaska — `ak.py`. The geography verdict stands; there is a second file
+
+The verdict above — house-district keyed, cannot meet the county contract — is
+correct and unchanged. What it missed is that the Division publishes the same
+measurement **statewide, in HTML**, on each election's own results page:
+
+```
+https://www.elections.alaska.gov/election-results/e/?id=24genr    200, 109,271 b
+https://www.elections.alaska.gov/election-results/e/?id=22genr    200, 110,823 b
+https://www.elections.alaska.gov/election-results/e/?id=26prim    200, 100,868 b
+https://www.elections.alaska.gov/election-results/e/?id=26genr    200,  86,431 b — no statistics block yet
+```
+
+carrying `<dt>24GENR Totals</dt>`, Alaska's own two totals, and an eight-row
+`Ballot Type | Number Issued | Number Received` table (By Fax / By Mail / Early
+Vote / Federal Write-In / In-Person (Absentee) / Online Delivery / Questioned /
+Special Needs). The rows sum to the totals exactly, which is the drift check.
+Statewide only, so `county_rows` is always empty — as `sd.py` does for South
+Dakota. Questioned ballots are in the total and in neither method bucket.
+
+Transport notes worth keeping:
+
+* `elections.alaska.gov` was never blocked; plain `requests` is enough.
+* The near-daily 2022 artefact, `/doc/info/Combined%20Ballot%20Count%20Report_11.1.2022.pdf`
+  (200, 58,995 b), is a 2022-only practice — there is no 2024 or 2026 file under
+  `/doc/info/`, and its text layer runs the three numeric columns together
+  (`FAX 110` could be 1/1/0 or 11/0), so it is not safely parseable anyway.
+* In 2024 the equivalent moved to
+  `/results/24GENR/20241204_Combined-Ballot-Count-Report.html`, which answers
+  **405 "Human Verification" to every client including a full browser
+  fingerprint**. PDFs under the same directory return 200, so the wall is on
+  HTML only.
+* **Unverified:** whether the Election Statistics block is refreshed DAILY during
+  the early-vote window. Every capture we can see is post-election and the
+  Wayback Machine has no `?id=24genr` capture before 2024-12-07. Flagged in
+  `ak.py`'s docstring. If it turns out to be post-count only, Alaska stays
+  `NotYetPublished` through the season, which is honest rather than wrong.
+* A known consequence of tracking Alaska is recorded in `tests/test_estimate.py`
+  as `KNOWN_BASELINE_GAPS`: `data/baseline/county_results_2024.csv` predates the
+  2019 split of Valdez-Cordova (02261) into Chugach (02063) and Copper River
+  (02066). It cannot bias anything, because `ak.py` publishes no county rows.
+
+### Washington — `wa.py`, built as recommended
+
+`https://www.sos.wa.gov/sites/default/files/current_election/Statewide{YYYY-MM-DD}.zip`
+is confirmed real and daily. **The landing page is still 403 to everything, and
+that does not matter**: the `/sites/default/files/` path is not challenged and
+answers an honest 404 today from both clients, because `current_election/` is
+purged between cycles.
+
+Verified downloads and parses: `Statewide2024-10-22.zip` (18,139,811 b →
+515,318 ballots, 38 of 39 counties), `Statewide2024-10-23.zip` (25,065,276 b →
+39 of 39), `Statewide2025-10-24.zip` (14,370,190 b → 342,572 ballots, 38 of 39).
+Every day from 2024-10-22 to 2024-11-19 is in the Wayback Machine at 200.
+
+Decisions worth carrying:
+
+* **`Party` is empty on every row of every file** — Washington has no party
+  enrolment. All four party fields are None. If that column ever fills in, the
+  adapter raises `SchemaDrift` rather than guessing.
+* **Coverage varies day to day**: 2024-10-22 is missing Grant County, 2025-10-24
+  is missing Okanogan, 2024-10-23 has all 39. So the statewide row is gated on
+  all 39 counties being in the FILE, exactly as `tx.py` gates Texas. Coverage is
+  a property of the file, not of the truncated span — every ballot carries its
+  own `Received Date`, so a county in the file has all of its returns in it.
+* `ballots_total` is every ballot RETURNED (2024-10-22: 393,692 Accepted /
+  117,364 Received / 4,262 Rejected). Rejected ballots were returned and many
+  are cured later.
+* Drop Box, Email, Fax and both Non-Standard channels are `mail`; only
+  `In Person` is `inperson`. Washington mails every voter a ballot, so
+  `mail_requested` is meaningless here and stays None.
+* Data rows carry **21 fields against a 20-column header** — a real trailing
+  empty field, harmless to `DictReader`, and preserved in the fixtures.
+
+### California — `ca.py`. **The verdict above is wrong.**
+
+"The SoS publishes nothing on ballots returned while the vote-by-mail window is
+open" is not correct. It publishes this, on a constructible URL:
+
+```
+https://elections.cdn.sos.ca.gov/statewide-elections/{cycle}-general/vbm-statistics.{xlsx,xlsm,xls,pdf}
+```
+
+Live today: `2022-general/vbm-statistics.xlsm` → **200, 77,507 b, real xlsm**
+(`Last-Modified: Mon, 16 Jun 2025 22:51:49 GMT`). Every `2026-general/*` and
+`2026-primary/*` path → **403 AccessDenied** (S3 with listing denied, exactly
+like Tennessee's bucket), which is absence, not a block.
+
+That it is a DURING-season file is not inferred. The Wayback Machine holds
+captures taken before Election Day, and the counts grow between them:
+
+```
+2022-general/vbm-statistics.xlsm   2022-10-27 (452,327 b)   2022-11-05 (456,693 b)
+2022-general/vbm-statistics.pdf    2022-10-27, 11-02, 11-04 …
+2024-general/vbm-statistics.pdf    2024-10-20
+2024-general/vbm-statistics.xls    2024-11-01 (129,536 b)
+2024-primary/vbm-statistics.pdf    2024-02-24 … 2024-03-02   (primary was 03-05)
+2025-special/vbm-statistics.pdf    2025-10-25, 10-27, 10-28  (special was 11-04)
+
+Alameda, ballots returned:  60,892 on 2022-10-27  ->  166,600 on 2022-11-05
+Statewide, ballots returned: 1,642,945 on 2022-10-27 -> 5,230,699 final
+```
+
+The sheet to read is **"VBM Press Version"**, the only one present in every
+version (the during-season workbooks have eight sheets, the final has one).
+Header, identical across all of them:
+
+```
+COUNTY | County Type | REGISTRATION (15-day ROR) 2020 |
+Total voters Issued VBM ballots | Drop Box | Drop Off Location |
+Vote Center Drop Off | Mail | FAX | Other | Sum |
+Total Accepted VBM ballots | Total VBM Ballots in Review * |
+Accepted % of Voter-returned Ballots
+```
+
+58 counties plus California's own `Total` row. `Sum` is exactly the six return
+channels added up, which is the per-county drift check. `ballots_total` is `Sum`
+(returned), not `Total Accepted` — accepted lags returns by each county's
+signature-review queue, whose size is printed in the next column.
+
+Two live risks, both handled rather than hidden:
+
+* **The as-of date is the CDN's `Last-Modified`.** The workbook says its numbers
+  are "as of a specific date and time" without giving one, and the URL carries
+  no date. `ca.py` therefore has its own transport (`_net.get` discards headers)
+  and refuses a stamp outside the cycle's window — which is what keeps the live
+  2022 file, rewritten 2025-06-16, from being republished as this season's.
+* **The extension churns.** 2022 shipped `.xlsm`, 2024 shipped `.xls`. The 2024
+  file is legacy OLE2 (`d0 cf 11 e0`), which `openpyxl` cannot open and which
+  needs `xlrd` — not a dependency, and `pyproject.toml` is not this module's to
+  change. `.xlsx` and `.xlsm` are tried in order; a cycle that ships only `.xls`
+  or only `.pdf` raises SourceError naming exactly that and California falls
+  through to the aggregator, which is where it is today anyway. **Adding `xlrd`,
+  or a PDF route, would make California safe against both.**
+
+The county-level plan in the brief was checked and is not needed: no California
+county publishes a during-season return file at a constructible URL today (there
+is no election in progress), and a Wayback sweep of `lavote.gov`, `ocvote.gov`,
+`sdvote.com`, `sccvote.sccgov.org`, `acvote.org`, `elections.saccounty.gov`,
+`voteinfo.net`, `sfelections.sfgov.org` and `contracostavote.gov` for dated
+CSV/XLSX return files found **one** hit, a 2021 recall SOV workbook from Santa
+Clara. Orange County's `ocvote.gov/datacentral` is a live registration dashboard
+(200, 38,606 b) whose ballots tab 400s off-season. The statewide file above is
+better than any of them and needs no partial-coverage labelling.
+
+### New York — `ny.py`, PARTIAL and marked as such
+
+`elections.ny.gov` is now reachable (403 → **200, 56,142 b**), and reading it
+changes nothing: its 4,218-URL sitemap carries enrolment statistics, absentee
+DEADLINE press releases and election law. There is no turnout report. The
+verdict above is re-confirmed with access rather than assumed without it.
+
+The NYC Board's page is reachable with no fingerprint at all:
+`https://www.vote.nyc/page/early-voting-check-ins` → **200, 73,496 b**, plain
+`requests`. It carries one election at a time under an `<h2>` that names it
+("November General Election 2022", "General Election 2024", "Primary Election
+2026" today), then one block per day:
+
+```
+October 26, 2024 - Day 1
+  Manhattan - 38,237   Bronx - 16,462   Brooklyn - 40,289
+  Queens - 31,671      Staten Island - 13,486
+  *Unofficial as of Close of Polls 140,145
+```
+
+The five boroughs sum to the Board's own figure on every day of every fixture,
+which is the drift check; the series is cumulative from Day 2, so one fetch
+rebuilds the curve. **Five of New York's sixty-two counties, so `ny.py` emits
+county rows and never a `StateDay`** — the rule `tx.py` established. In-person
+check-ins only: `mail_returned` is None because the city's absentee ballots are
+counted by the counties and are not on this page.
+
+Archived generals, both verified 200 and both in `tests/fixtures/ny/`:
+`web.archive.org/web/20241102072441id_/…` and `…/20221103025647id_/…`.
+
+## Re-tested and still rejected
+
+**Mississippi — no longer "unverified".** `sos.ms.gov` answers 200 to a browser
+fingerprint (145,760 b root, 168,555 b `/elections-voting`). The elections
+section links one absentee page, `/yall-vote/absentee-voting-information`, which
+is instructional. Mississippi has no in-person early voting and no statewide
+absentee reporting, so the expected answer was "nothing" and that is now the
+CONFIRMED answer rather than an assumption.
+
+**Massachusetts — reachable, and still post-election only.** With access, the
+Election Data and Statistics Hub (200, 55,347 b) lists exactly what the verdict
+above predicted: `2018-State-Election-Early-and-Absentee-Statistics.xlsx`,
+`2020-State-Election-Early-and-Vote-by-Mail-Statistics.xlsx`,
+`2022-State-Election-Early-and-Vote-by-Mail-Statistics.xlsx`,
+`2024-State-Election-Ballot-Statistics.xlsx` and their primary equivalents. All
+post-canvass. No during-season artefact, and none since the 2018 XML feed.
+
+**Nevada — still genuinely blocked.** `www.nvsos.gov` answers a 925-byte
+Incapsula wall to plain `requests` and a 926-byte one to `curl_cffi` chrome.
+`nv.py`'s SourceError is the correct reading and the fingerprint retry does not
+help. Nevada reaches the site through the aggregator tier.
+
+**Rhode Island.** `vote.sos.ri.gov` is still a Cloudflare challenge to both
+clients. `elections.ri.gov` is 200 and carries nothing during the season.
+
+## Two things worth carrying forward from this pass
+
+1. **"403" and "blocked" are different claims, and so are "302 to a bot manager"
+   and "blocked".** Of the nine hosts re-tested here, five were reachable with a
+   browser fingerprint and two of those (Minnesota, California) were carrying a
+   usable during-season file the whole time. Any future "we could not look"
+   verdict should name the client it was reached with.
+
+2. **The four states whose `notes` in `data/meta/states.csv` still read "not
+   tracked in 2026" — AK, CA, MN, NY, WA — are now tracked.** That column is
+   published to `output/ev_state_meta.csv` and the site reads it. The
+   `has_party_reg` flags there are already right (AK/CA/NY true, MN/WA false).
+   Left for that file's owner rather than edited here.
