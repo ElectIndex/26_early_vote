@@ -127,7 +127,15 @@ class NCScraper(Adapter):
         return self._aggregate(self._read_zip(body, stamp), cycle, election_date(cycle))
 
     # ------------------------------------------------------------------
-    def _read_zip(self, body: bytes, stamp: str) -> list[dict[str, str]]:
+    def _read_zip(self, body: bytes, stamp: str):
+        """Yield rows, streaming.
+
+        Deliberately a generator, not a list. NC's 2024 file is 207 MB zipped and
+        carries millions of ballot records; materialising it as a list of dicts
+        needs tens of gigabytes and simply cannot complete. The 2026 file reaches
+        the same size by late October, so this is a live-season constraint and not
+        just a backfill one.
+        """
         try:
             archive = zipfile.ZipFile(io.BytesIO(body))
         except zipfile.BadZipFile as exc:
@@ -137,15 +145,17 @@ class NCScraper(Adapter):
         if not members:
             raise SchemaDrift(f"NC: no CSV inside absentee_{stamp}.zip")
 
-        text = archive.read(members[0]).decode(ENCODING)
-        reader = csv.DictReader(io.StringIO(text))
-        missing = REQUIRED - set(reader.fieldnames or [])
-        if missing:
-            raise SchemaDrift(f"NC: absentee file missing columns {sorted(missing)}")
-        return list(reader)
+        with archive.open(members[0]) as raw:
+            stream = io.TextIOWrapper(raw, encoding=ENCODING, newline="")
+            reader = csv.DictReader(stream)
+            missing = REQUIRED - set(reader.fieldnames or [])
+            if missing:
+                raise SchemaDrift(f"NC: absentee file missing columns {sorted(missing)}")
+            for row in reader:
+                yield row
 
     # ------------------------------------------------------------------
-    def _aggregate(self, rows: list[dict[str, str]], cycle: int, as_of: date) -> FetchResult:
+    def _aggregate(self, rows, cycle: int, as_of: date) -> FetchResult:
         by_state: dict[date, _Bucket] = defaultdict(_Bucket)
         by_county: dict[tuple[str, date], _Bucket] = defaultdict(_Bucket)
         by_demo: dict[tuple[date, str, str], int] = defaultdict(int)
