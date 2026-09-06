@@ -1,11 +1,29 @@
 name: ingest
 
-# Every six hours, plus a button. The site reads output/*.csv straight off
+# Every two hours, plus a button. The site reads output/*.csv straight off
 # raw.githubusercontent.com, so this job IS the publish step -- there is nothing
 # else to deploy.
+#
+# ⚠️ TWO HOURS IS NOT ABOUT FRESHNESS, IT IS ABOUT GITHUB'S SCHEDULER. Most
+# states publish once a day; hourly would tell us nothing new about them. What a
+# tighter cron buys is slack against a delay we have measured: on 2026-09-06 the
+# three scheduled runs fired at 09:54, 14:38 and 19:46 for the 06:00, 12:00 and
+# 18:00 slots -- late by 3.9, 2.6 and 1.8 hours -- and a fourth slot was skipped
+# outright. Scheduled runs on shared runners are best-effort and always have
+# been. At six-hour slots that pattern leaves ten-hour holes; at two-hour slots
+# the delays overlap and something lands every few hours regardless.
+#
+# The floor is set by politeness, not by GitHub (whose documented minimum is 5
+# minutes). Twelve slots a day is twelve hits per state source instead of four
+# -- nothing for a public page -- and _net.py's 0.4s per-host throttle governs
+# pacing WITHIN a run, which is where the one real ban we have taken came from.
+# Going hourly would triple request volume for states that publish daily.
+#
+# A run that changes nothing commits nothing, so before October -- when every
+# state answers NotYetPublished -- the extra slots cost an empty log line each.
 on:
   schedule:
-    - cron: "0 */6 * * *"
+    - cron: "0 */2 * * *"
   workflow_dispatch:
 
 # Runs must never overlap. Two concurrent runs would each commit their own

@@ -56,7 +56,7 @@ python -m ev turnout --validate --both-directions   # ...both ways round
 python -m ev turnout --state NC --cycle 2026
 ```
 
-It is a separate subcommand and deliberately **not** part of the six-hourly
+It is a separate subcommand and deliberately **not** part of the scheduled
 `ingest` walk, for the same reason `estimate`, `regress` and `counterfactual` are
 not: keeping it out means the daily job cannot accidentally publish a model
 number, and `ev.turnout` is imported inside the CLI's dispatcher so `ingest` never

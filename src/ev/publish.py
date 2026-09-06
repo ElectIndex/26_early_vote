@@ -92,7 +92,7 @@ def _atomic_write(path: Path, columns: Sequence[str], rows: Iterable[dict[str, s
     try:
         with os.fdopen(fd, "w", newline="", encoding="utf-8") as fh:
             # LF, not csv's RFC-4180 default of CRLF. These files are committed
-            # every six hours by CI and read by git, which would otherwise rewrite
+            # on every scheduled run by CI and read by git, which would otherwise rewrite
             # the line endings on every touch and turn each run into a whole-file
             # diff instead of the few changed rows.
             writer = csv.DictWriter(fh, fieldnames=list(columns),

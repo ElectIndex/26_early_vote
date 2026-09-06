@@ -293,7 +293,7 @@ python -m ev results --refresh              # re-download instead of using cache
 ```
 
 It is **deliberately not part of the `ingest` walk.** A certified return cannot
-change, so re-fetching it every six hours would be pure noise in the commit log;
+change, so re-fetching it on every scheduled run would be pure noise in the commit log;
 downloads are cached under `cache/us/` via `_net.get(use_cache=True)` and only
 re-fetched on `--refresh`. The write is a keyed merge on
 `(cycle, state, office)`, so `--cycle 2022` cannot erase the 2024 rows, and it

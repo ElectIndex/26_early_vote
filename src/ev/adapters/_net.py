@@ -162,10 +162,11 @@ def _impersonated_get(url, *, timeout, headers, params):
 #: is indistinguishable from a bot wall while it lasts, so it does not just cost
 #: one state's data, it produces a wrong verdict about why the state is missing.
 #:
-#: 0.4s is deliberately gentle rather than tuned: this runs every six hours with
-#: a whole season to spare, so throughput is worth nothing and a ban is
+#: 0.4s is deliberately gentle rather than tuned: this runs on a two-hourly
+#: cron with a whole season to spare, so throughput is worth nothing and a ban is
 #: expensive. An adapter that knows its host tolerates more can pass a smaller
-#: `min_interval`.
+#: `min_interval`. Note this governs pacing WITHIN a run -- the gap BETWEEN runs
+#: is hours either way, so tightening the cron does not touch this number.
 DEFAULT_MIN_INTERVAL = 0.4
 
 _last_request: dict[str, float] = {}

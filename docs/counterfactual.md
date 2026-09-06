@@ -59,7 +59,7 @@ python -m ev counterfactual --state NC --cycle 2026
 python -m ev counterfactual --baseline PATH # score it against different weights
 ```
 
-It is a separate subcommand and deliberately **not** part of the six-hourly
+It is a separate subcommand and deliberately **not** part of the scheduled
 `ingest` walk, for the same reason `estimate` and `regress` are not: keeping it
 out means the daily job cannot accidentally publish a model number, and
 `ev.counterfactual` is imported inside the CLI's dispatcher so `ingest` never

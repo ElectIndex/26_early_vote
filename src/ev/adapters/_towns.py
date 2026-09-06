@@ -237,10 +237,12 @@ def county_name_of(state: str, county_fips: str) -> str:
 # tables and predates this one. Adding a fourth field there would touch the file
 # every adapter in the tree imports, so town rows ride as an attribute instead
 # and these three functions are the only way to put them on or take them off.
-# The cost is that `FetchResult.stamp()` does not know about them, so an adapter
-# that emits town rows must call `_towns.stamp()` as well -- forget it and
-# `schema._prov` refuses the write by name, loudly, rather than publishing rows
-# with no provenance.
+# The cost is that `FetchResult.stamp()` does not know about them. `ladder.py`
+# therefore calls `_towns.stamp()` right beside it, so an adapter cannot forget:
+# it used to be each adapter's job, and forgetting meant a full ladder walk, a
+# real fetch, and then a `TownDay written without provenance` at WRITE time --
+# loud, but loud in a cron log rather than in a test. me.py and ct.py still call
+# it themselves and that is harmless; `schema._prov` remains the backstop.
 # --------------------------------------------------------------------------
 ROWS_ATTR = "town_rows"
 

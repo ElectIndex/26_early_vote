@@ -1252,7 +1252,7 @@ def format_validation(results: Sequence[Validation]) -> Iterator[str]:
 
 
 def cmd_counterfactual(args) -> int:
-    """`python -m ev counterfactual`. Never part of the six-hourly ingest."""
+    """`python -m ev counterfactual`. Never part of the scheduled ingest."""
     out_dir = Path(args.output) if args.output else ROOT / "output"
     baseline = load_baseline(args.baseline)
 

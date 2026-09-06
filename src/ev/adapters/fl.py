@@ -14,10 +14,11 @@ each split Republican / Democrat / Other / No Party Affiliation / Total, and eac
 county row carrying its own `Election` label and `Compiled` timestamp.
 
 Unlike North Carolina, this page is a SNAPSHOT — it carries today's cumulative
-numbers and no history at all. Florida therefore genuinely depends on the daily
-cron for the CURRENT cycle: a day we fail to run is a day of Florida's curve that
-cannot be recovered later. That asymmetry is why the job runs every six hours
-rather than daily. A PAST cycle's curve is a different problem and it is solved
+numbers and no history at all. Florida therefore genuinely depends on the cron
+for the CURRENT cycle: a day we fail to run is a day of Florida's curve that
+cannot be recovered later. That asymmetry is why the job runs every two hours
+rather than daily — Florida is the state that pays for a missed slot, and
+GitHub's scheduler misses them. A PAST cycle's curve is a different problem and it is solved
 in `fetch_history` below, out of the Internet Archive.
 
 Four things this parser refuses to do quietly:
