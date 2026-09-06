@@ -9,6 +9,12 @@ dependencies = [
     # Iowa publishes its absentee request/return report only as a PDF -- there is
     # no CSV or XLSX of it anywhere on sos.iowa.gov. Text-layer extraction only.
     "pypdf>=5.0",
+    # Browser TLS/HTTP2 fingerprint. Several state hosts (ohiosos.gov,
+    # azsos.gov) sit behind a Cloudflare rule that scores any Python client's
+    # JA3 as automation and answers 403 -- to their homepages and archived files
+    # alike, regardless of headers. _net.get retries a 403 through this; without
+    # it those hosts stay unreachable but nothing breaks.
+    "curl_cffi>=0.7",
 ]
 
 [project.optional-dependencies]

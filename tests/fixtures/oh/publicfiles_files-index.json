@@ -1,0 +1,663 @@
+{
+ "historicalComparisons": [
+  {
+   "displayName": "Voter Turnout History in General Elections Official Comparison: 1940-present",
+   "blobPath": "historical-comparisons/general-election-turnout-comparison.xlsx",
+   "order": 999
+  }
+ ],
+ "listOfElectedOfficials": [
+  {
+   "displayName": "Adjutants General of State of the State of Ohio: 1803-present",
+   "blobPath": "list-of-officials/list-of-adjutants-generals.xlsx",
+   "order": 999
+  }
+ ],
+ "pastElectionResults": [
+  {
+   "year": 2026,
+   "elections": [
+    {
+     "type": "Primary/Special Election - May 5, 2026",
+     "fileGroups": [
+      {
+       "description": null,
+       "files": [
+        {
+         "displayName": "Local Questions and Issues Results",
+         "blobPath": "past-elections/2026/Primary+Special Election - May 5, 2026/local-questions-and-issues-results-2026-primary.xlsx",
+         "order": 10
+        },
+        {
+         "displayName": "Voter Turnout by County",
+         "blobPath": "past-elections/2026/Primary+Special Election - May 5, 2026/turnoutbycountybyparty.xlsx",
+         "order": 20
+        },
+        {
+         "displayName": "Voter Turnout by Precinct",
+         "blobPath": "past-elections/2026/Primary+Special Election - May 5, 2026/turnoutbyprecinctbyparty.xlsx",
+         "order": 30
+        },
+        {
+         "displayName": "Absentee Supplemental Report",
+         "blobPath": "past-elections/2026/Primary+Special Election - May 5, 2026/absentee_report_web.xlsx",
+         "order": 40
+        },
+        {
+         "displayName": "Provisional Supplemental Report",
+         "blobPath": "past-elections/2026/Primary+Special Election - May 5, 2026/provisional_report_web.xlsx",
+         "order": 50
+        }
+       ]
+      },
+      {
+       "description": "These reports include data on voter registration and turnout, as well as breakdown by county and by precinct of the results for the following races: President, U.S. Senate, U.S. Representatives to Congress, Ohio Supreme Court, Court of Appeals, General Assembly, State Central Committee \r\n\r\nResults by County by Party",
+       "files": [
+        {
+         "displayName": "Summary Level Official Results for 2026 Primary Election - Democratic",
+         "blobPath": "past-elections/2026/Primary+Special Election - May 5, 2026/group1/summary-level-official-results-2026-primary---democratic.xlsx",
+         "order": 10
+        },
+        {
+         "displayName": "Summary Level Official Results for 2026 Primary Election - Libertarian",
+         "blobPath": "past-elections/2026/Primary+Special Election - May 5, 2026/group1/summary-level-official-results-2026-primary---libertarian.xlsx",
+         "order": 20
+        },
+        {
+         "displayName": "Summary Level Official Results for 2026 Primary Election - Republican",
+         "blobPath": "past-elections/2026/Primary+Special Election - May 5, 2026/group1/summary-level-official-results-2026-primary---republican.xlsx",
+         "order": 30
+        }
+       ]
+      },
+      {
+       "description": "Results by Precinct by Party",
+       "files": [
+        {
+         "displayName": "Precinct Level Official Results for 2026 Primary Election - Democratic",
+         "blobPath": "past-elections/2026/Primary+Special Election - May 5, 2026/group2/precinct-level-official-results-2026-primary---democratic.xlsx",
+         "order": 10
+        },
+        {
+         "displayName": "Precinct Level Official Results for 2026 Primary Election - Libertarian",
+         "blobPath": "past-elections/2026/Primary+Special Election - May 5, 2026/group2/precinct-level-official-results-2026-primary---libertarian.xlsx",
+         "order": 20
+        },
+        {
+         "displayName": "Precinct Level Official Results for 2026 Primary Election - Republican",
+         "blobPath": "past-elections/2026/Primary+Special Election - May 5, 2026/group2/precinct-level-official-results-2026-primary---republican.xlsx",
+         "order": 30
+        }
+       ]
+      },
+      {
+       "description": "Results by Party by County - County Officials Only",
+       "files": [
+        {
+         "displayName": "Summary Level Official Results for 2026 Primary Election - County Officials Only - Democratic",
+         "blobPath": "past-elections/2026/Primary+Special Election - May 5, 2026/group3/summary-level-official-results-2026-primary---county-officials-only---democratic.xlsx",
+         "order": 10
+        },
+        {
+         "displayName": "Summary Level Official Results for 2026 Primary Election - County Officials Only - Libertarian",
+         "blobPath": "past-elections/2026/Primary+Special Election - May 5, 2026/group3/summary-level-official-results-2026-primary---county-officials-only---libertarian.xlsx",
+         "order": 20
+        },
+        {
+         "displayName": "Summary Level Official Results for 2026 Primary Election - County Officials Only - Republican",
+         "blobPath": "past-elections/2026/Primary+Special Election - May 5, 2026/group3/summary-level-official-results-2026-primary---county-officials-only---republican.xlsx",
+         "order": 30
+        }
+       ]
+      },
+      {
+       "description": "Results by Party by Precinct - County Officials Only",
+       "files": [
+        {
+         "displayName": "Precinct Level Official Results for 2026 Primary Election - County Officials Only - Democratic",
+         "blobPath": "past-elections/2026/Primary+Special Election - May 5, 2026/group4/precinct-level-official-results-2026-primary---county-officials-only---democratic.xlsx",
+         "order": 10
+        },
+        {
+         "displayName": "Precinct Level Official Results for 2026 Primary Election - County Officials Only - Libertarian",
+         "blobPath": "past-elections/2026/Primary+Special Election - May 5, 2026/group4/precinct-level-official-results-2026-primary---county-officials-only---libertarian.xlsx",
+         "order": 20
+        },
+        {
+         "displayName": "Precinct Level Official Results for 2026 Primary Election - County Officials Only - Republican",
+         "blobPath": "past-elections/2026/Primary+Special Election - May 5, 2026/group4/precinct-level-official-results-2026-primary---county-officials-only---republican.xlsx",
+         "order": 30
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "year": 2024,
+   "elections": [
+    {
+     "type": "General Election: November 5, 2024",
+     "fileGroups": [
+      {
+       "description": null,
+       "files": [
+        {
+         "displayName": "Voter Turnout by County",
+         "blobPath": "past-elections/2024/General Election: November 5, 2024/turnout-by-county.xlsx",
+         "order": 10
+        },
+        {
+         "displayName": "Voter Turnout by Precinct",
+         "blobPath": "past-elections/2024/General Election: November 5, 2024/turnout-by-precinct.xlsx",
+         "order": 20
+        },
+        {
+         "displayName": "Absentee Supplemental Report",
+         "blobPath": "past-elections/2024/General Election: November 5, 2024/absentee_report_web.xlsx",
+         "order": 30
+        },
+        {
+         "displayName": "Local Issues Results",
+         "blobPath": "past-elections/2024/General Election: November 5, 2024/november-5-2024-summary-local-questions.xlsx",
+         "order": 50
+        },
+        {
+         "displayName": "Post Election Audit Information",
+         "blobPath": "past-elections/2024/General Election: November 5, 2024/11-5-2024-post-election-audit-totals.xlsx",
+         "order": 60
+        },
+        {
+         "displayName": "Provisional Supplemental Report",
+         "blobPath": "past-elections/2024/General Election: November 5, 2024/provisional_report_web.xlsx",
+         "order": 999
+        }
+       ]
+      },
+      {
+       "description": "The following reports include data on voter registration and turnout, as well as breakdown by county and by precinct of the results for the following races: President, Justice of the Supreme Court, U.S. Congress, General Assembly, Judge of Court of Appeals, State Board of Education",
+       "files": [
+        {
+         "displayName": "Results by County",
+         "blobPath": "past-elections/2024/General Election: November 5, 2024/group1/statewide-race-summary.xlsx",
+         "order": 10
+        },
+        {
+         "displayName": "Results by Precinct",
+         "blobPath": "past-elections/2024/General Election: November 5, 2024/group1/statewide-races-precint-level.xlsx",
+         "order": 20
+        }
+       ]
+      },
+      {
+       "description": "The following reports include data on voter registration and turnout, as well as breakdown by county and by precinct of the results for County Officials.",
+       "files": [
+        {
+         "displayName": "Results by County",
+         "blobPath": "past-elections/2024/General Election: November 5, 2024/group2/county-races-summary.xlsx",
+         "order": 10
+        },
+        {
+         "displayName": "Results by Precinct",
+         "blobPath": "past-elections/2024/General Election: November 5, 2024/group2/county-races-precint-level.xlsx",
+         "order": 20
+        }
+       ]
+      },
+      {
+       "description": "The following reports include data on voter registration and turnout, as well as breakdown by county and by precinct of the results of the Statewide Issue.",
+       "files": [
+        {
+         "displayName": "Issue Summary",
+         "blobPath": "past-elections/2024/General Election: November 5, 2024/group3/issue-summary.xlsx",
+         "order": 10
+        },
+        {
+         "displayName": "Issue by Precinct",
+         "blobPath": "past-elections/2024/General Election: November 5, 2024/group3/issue-precinct.xlsx",
+         "order": 20
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "type": "Sixth Congressional District Special General Election: June 11, 2024",
+     "fileGroups": [
+      {
+       "description": null,
+       "files": [
+        {
+         "displayName": "Results by County",
+         "blobPath": "past-elections/2024/Sixth Congressional District Special General Election: June 11, 2024/voter-turnout.xlsx",
+         "order": 10
+        },
+        {
+         "displayName": "Voter Turnout by Precinct",
+         "blobPath": "past-elections/2024/Sixth Congressional District Special General Election: June 11, 2024/voter-turnout-by-precinct.xlsx",
+         "order": 20
+        },
+        {
+         "displayName": "Absentee Supplemental Report",
+         "blobPath": "past-elections/2024/Sixth Congressional District Special General Election: June 11, 2024/absentee_report_web.xlsx",
+         "order": 30
+        },
+        {
+         "displayName": "Provisional Supplemental Report",
+         "blobPath": "past-elections/2024/Sixth Congressional District Special General Election: June 11, 2024/provisional_report_web.xlsx",
+         "order": 40
+        }
+       ]
+      },
+      {
+       "description": "Official Results for the 2024 Special Congressional General Election",
+       "files": [
+        {
+         "displayName": "Results by County",
+         "blobPath": "past-elections/2024/Sixth Congressional District Special General Election: June 11, 2024/group1/results-by-county---summary.xlsx",
+         "order": 10
+        },
+        {
+         "displayName": "Results by Precinct",
+         "blobPath": "past-elections/2024/Sixth Congressional District Special General Election: June 11, 2024/group1/results-by-precinct.xlsx",
+         "order": 20
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "type": "Primary Election: March 19, 2024",
+     "fileGroups": [
+      {
+       "description": null,
+       "files": [
+        {
+         "displayName": "Local Questions and Issues Results",
+         "blobPath": "past-elections/2024/Primary Election: March 19, 2024/march-2024-primary-issues-summary.xlsx",
+         "order": 10
+        },
+        {
+         "displayName": "Voter Turnout by County",
+         "blobPath": "past-elections/2024/Primary Election: March 19, 2024/turnoutbycountybyparty.xlsx",
+         "order": 20
+        },
+        {
+         "displayName": "Voter Turnout by Precinct",
+         "blobPath": "past-elections/2024/Primary Election: March 19, 2024/turnoutbyprecinctbyparty.xlsx",
+         "order": 30
+        },
+        {
+         "displayName": "Absentee Supplemental Report",
+         "blobPath": "past-elections/2024/Primary Election: March 19, 2024/absentee_report_web.xlsx",
+         "order": 40
+        },
+        {
+         "displayName": "Provisional Supplemental Support",
+         "blobPath": "past-elections/2024/Primary Election: March 19, 2024/provisional_report_web.xlsx",
+         "order": 50
+        }
+       ]
+      },
+      {
+       "description": "These reports include data on voter registration and turnout, as well as breakdown by county and by precinct of the results for the following races: President, U.S. Senate, U.S. Representatives to Congress, Ohio Supreme Court, Court of Appeals, General Assembly, State Central Committee \r\n\r\nResults by County by Party",
+       "files": [
+        {
+         "displayName": "Summary Level Official Results for 2024 Primary Election - Democratic",
+         "blobPath": "past-elections/2024/Primary Election: March 19, 2024/group1/summary-level-official-results-primary-2024---democratic.xlsx",
+         "order": 10
+        },
+        {
+         "displayName": "Summary Level Official Results for 2024 Primary Election - Republican",
+         "blobPath": "past-elections/2024/Primary Election: March 19, 2024/group1/summary-level-results-primary-2024---republican.xlsx",
+         "order": 20
+        },
+        {
+         "displayName": "Summary Level Official Results - State Central Committee for 2024 Primary Election - Republican",
+         "blobPath": "past-elections/2024/Primary Election: March 19, 2024/group1/summary-scc-republican-totals-primary-totals.xlsx",
+         "order": 30
+        }
+       ]
+      },
+      {
+       "description": "Results by Precinct by Party",
+       "files": [
+        {
+         "displayName": "Precinct Level Official Results for 2024 Primary Election - Republican",
+         "blobPath": "past-elections/2024/Primary Election: March 19, 2024/group2/precinct-level-official-results-2024-primary---republican.xlsx",
+         "order": 10
+        },
+        {
+         "displayName": "Precinct Level Official Results for 2024 Primary Election - Democratic",
+         "blobPath": "past-elections/2024/Primary Election: March 19, 2024/group2/precinct-level-official-results-primary-2024---democratic.xlsx",
+         "order": 20
+        },
+        {
+         "displayName": "Precinct Level Official Results - State Central Committee for 2024 Primary Election - Republican",
+         "blobPath": "past-elections/2024/Primary Election: March 19, 2024/group2/precinct-level-results-scc---republican.xlsx",
+         "order": 30
+        }
+       ]
+      },
+      {
+       "description": "Results by Party by County - County Officials Only",
+       "files": [
+        {
+         "displayName": "Summary Level Official Results for 2024 Primary Election - County Officials Only - Democratic",
+         "blobPath": "past-elections/2024/Primary Election: March 19, 2024/group3/summary-level-official-results-2024-primary---county-officials-only---democratic.xlsx",
+         "order": 10
+        },
+        {
+         "displayName": "Summary Level Official Results for 2024 Primary Election - County Officials Only - Republican",
+         "blobPath": "past-elections/2024/Primary Election: March 19, 2024/group3/summary-level-official-results-2024-primary---county-officials-only---republican.xlsx",
+         "order": 20
+        }
+       ]
+      },
+      {
+       "description": "Results by Party by Precinct - County Officials Only",
+       "files": [
+        {
+         "displayName": "Precinct Level Official Results for 2024 Primary Election - County Officials Only - Democratic",
+         "blobPath": "past-elections/2024/Primary Election: March 19, 2024/group4/precinct-level-official-results-2024-primary---county-officials-only---democratic.xlsx",
+         "order": 10
+        },
+        {
+         "displayName": "Precinct Level Official Results for 2024 Primary Election - County Officials Only - Republican",
+         "blobPath": "past-elections/2024/Primary Election: March 19, 2024/group4/precinct-totals-primary-2024---county-officials-only---republican.xlsx",
+         "order": 20
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "year": 2022,
+   "elections": [
+    {
+     "type": "General Election: November 8, 2022",
+     "fileGroups": [
+      {
+       "description": null,
+       "files": [
+        {
+         "displayName": "Voter Turnout by County",
+         "blobPath": "past-elections/2022/General Election: November 8, 2022/11-8-22-voter-turnout-summary.xlsx",
+         "order": 10
+        },
+        {
+         "displayName": "Voter Turnout by Precinct",
+         "blobPath": "past-elections/2022/General Election: November 8, 2022/11-8-22-voter-turnout-by-precinct.xlsx",
+         "order": 20
+        },
+        {
+         "displayName": "Local Questions and Issues Results",
+         "blobPath": "past-elections/2022/General Election: November 8, 2022/issues-2022-11-08_general.xlsx",
+         "order": 30
+        },
+        {
+         "displayName": "Absentee Supplemental Report",
+         "blobPath": "past-elections/2022/General Election: November 8, 2022/absentee_report_web.xlsx",
+         "order": 40
+        },
+        {
+         "displayName": "Provisional Supplemental Report",
+         "blobPath": "past-elections/2022/General Election: November 8, 2022/provisional_report_web.xlsx",
+         "order": 50
+        },
+        {
+         "displayName": "Post Election Audit Information",
+         "blobPath": "past-elections/2022/General Election: November 8, 2022/11-8-22-audit-totals.xlsx",
+         "order": 60
+        },
+        {
+         "displayName": "Governor's Race Percentage Chart",
+         "blobPath": "past-elections/2022/General Election: November 8, 2022/governors-percentage-chart-2022.pdf",
+         "order": 70
+        }
+       ]
+      },
+      {
+       "description": "These reports include data on voter registration and turnout, as well as breakdown by county and by precinct of the results for the following races: Statewide Offices, U.S. Senate, U.S. Representatives to Congress, General Assembly, Members of State Board of Education, Ohio Supreme Court, and Court of Appeals:",
+       "files": [
+        {
+         "displayName": "Statewide Races Summary",
+         "blobPath": "past-elections/2022/General Election: November 8, 2022/group1/statewide-races-summary.xlsx",
+         "order": 10
+        },
+        {
+         "displayName": "Statewide Races by Precinct",
+         "blobPath": "past-elections/2022/General Election: November 8, 2022/group1/statewide-races-by-precinct.xlsx",
+         "order": 20
+        }
+       ]
+      },
+      {
+       "description": "These reports include data on voter registration and turnout, as well as breakdown by county and by precinct of the results for County Officials:",
+       "files": [
+        {
+         "displayName": "County Races Summary",
+         "blobPath": "past-elections/2022/General Election: November 8, 2022/group2/county-races-summary.xlsx",
+         "order": 10
+        },
+        {
+         "displayName": "County Races by Precinct",
+         "blobPath": "past-elections/2022/General Election: November 8, 2022/group2/county-races-by-precinct.xlsx",
+         "order": 20
+        }
+       ]
+      },
+      {
+       "description": "These reports include data on voter registration and turnout, as well as breakdown by county and by precinct of the results of the Statewide Issues:",
+       "files": [
+        {
+         "displayName": "Issues Summary",
+         "blobPath": "past-elections/2022/General Election: November 8, 2022/group3/issues-summary.xlsx",
+         "order": 10
+        },
+        {
+         "displayName": "Issues by Precinct",
+         "blobPath": "past-elections/2022/General Election: November 8, 2022/group3/issues-by-precinct.xlsx",
+         "order": 20
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "type": "Primary/Special Election: August 2, 2022",
+     "fileGroups": [
+      {
+       "description": null,
+       "files": [
+        {
+         "displayName": "Voter Turnout by County",
+         "blobPath": "past-elections/2022/Primary+Special Election: August 2, 2022/voterturnout-county-2022-08-02_primaryspecial.xlsx",
+         "order": 10
+        },
+        {
+         "displayName": "Voter Turnout by Precinct",
+         "blobPath": "past-elections/2022/Primary+Special Election: August 2, 2022/voterturnout-precinct-2022-08-02_primaryspecial.xlsx",
+         "order": 20
+        },
+        {
+         "displayName": "Local Questions and Issues Results",
+         "blobPath": "past-elections/2022/Primary+Special Election: August 2, 2022/issues-2022-08-02_primaryspecial.xlsx",
+         "order": 30
+        }
+       ]
+      },
+      {
+       "description": "These reports include data on voter registration and turnout, as well as breakdown by county and by precinct of the results of the Statewide Issues:",
+       "files": [
+        {
+         "displayName": "Summary Level Official Results for August 2, 2022 Primary/Special Election - Democratic",
+         "blobPath": "past-elections/2022/Primary+Special Election: August 2, 2022/group1/democratic-summarylevel-2022-08-02_primaryspecial.xlsx",
+         "order": 10
+        },
+        {
+         "displayName": "Summary Level Official Results for the August 2, 2022 Primary/Special Election - Republican",
+         "blobPath": "past-elections/2022/Primary+Special Election: August 2, 2022/group1/republican-summarylevel-2022-08-02_primaryspecial.xlsx",
+         "order": 20
+        }
+       ]
+      },
+      {
+       "description": "Results by Precinct by Party",
+       "files": [
+        {
+         "displayName": "Precinct Level Official Results for the August 2, 2022 Primary/Special Election - Democratic",
+         "blobPath": "past-elections/2022/Primary+Special Election: August 2, 2022/group2/democratic-precinctlevel-2022-08-02_primaryspecial.xlsx",
+         "order": 10
+        },
+        {
+         "displayName": "Precinct Level Official Results for the August 2, 2022 Primary/Special Election - Republican",
+         "blobPath": "past-elections/2022/Primary+Special Election: August 2, 2022/group2/republican-precinctlevel-2022-08-02_primaryspecial.xlsx",
+         "order": 20
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "type": "Primary Election: May 3, 2022",
+     "fileGroups": [
+      {
+       "description": null,
+       "files": [
+        {
+         "displayName": "Post Election Audit Information",
+         "blobPath": "past-elections/2022/Primary Election: May 3, 2022/post-election-audit.xlsx",
+         "order": 10
+        },
+        {
+         "displayName": "Voter Turnout by County",
+         "blobPath": "past-elections/2022/Primary Election: May 3, 2022/ballotscastsummaryofficialresults_2022-05-03_primaryelection.xlsx",
+         "order": 20
+        },
+        {
+         "displayName": "Voter Turnout by Precinct",
+         "blobPath": "past-elections/2022/Primary Election: May 3, 2022/ballotscastprecinctofficalresults_2022-05-03_primaryelection.xlsx",
+         "order": 30
+        },
+        {
+         "displayName": "Local Questions and Issues Results",
+         "blobPath": "past-elections/2022/Primary Election: May 3, 2022/issues.xlsx",
+         "order": 40
+        },
+        {
+         "displayName": "Absentee Supplemental Report",
+         "blobPath": "past-elections/2022/Primary Election: May 3, 2022/05-03-2022-master-absentee-report-for-web.xlsx",
+         "order": 50
+        },
+        {
+         "displayName": "Provisional Supplemental Report",
+         "blobPath": "past-elections/2022/Primary Election: May 3, 2022/05-03-2022-master-provisional-report-for-web.xlsx",
+         "order": 60
+        }
+       ]
+      },
+      {
+       "description": "Cuyahoga and Hamilton counties both utilized a Risk Limiting Audit. Refer to the June 24, 2022 press release for addidtion information on Risk Limiting Audits",
+       "files": [
+        {
+         "displayName": "Cuyahoga County Executive - Democratic",
+         "blobPath": "past-elections/2022/Primary Election: May 3, 2022/group1/rla-demcountyexecutive-cuyahoga.xlsx",
+         "order": 10
+        },
+        {
+         "displayName": "Cuyahoga Governor - Democratic",
+         "blobPath": "past-elections/2022/Primary Election: May 3, 2022/group1/rla-demgovernor-cuyahoga.xlsx",
+         "order": 20
+        },
+        {
+         "displayName": "Cuyahoga U.S. Senator",
+         "blobPath": "past-elections/2022/Primary Election: May 3, 2022/group1/rla-repussenate-cuyahoga.xlsx",
+         "order": 30
+        },
+        {
+         "displayName": "Hamilton Governor - Democratic",
+         "blobPath": "past-elections/2022/Primary Election: May 3, 2022/group1/rla-demgovernor-hamilton.xlsx",
+         "order": 40
+        },
+        {
+         "displayName": "Hamilton Juvenile Court - Democratic",
+         "blobPath": "past-elections/2022/Primary Election: May 3, 2022/group1/rla-demjuvenilecourt-hamilton.xlsx",
+         "order": 50
+        },
+        {
+         "displayName": "Hamilton U.S. Senator",
+         "blobPath": "past-elections/2022/Primary Election: May 3, 2022/group1/rla-repussenator-hamilton.xlsx",
+         "order": 60
+        }
+       ]
+      },
+      {
+       "description": "These reports include data on voter registration and turnout, as well as breakdown by county and by precinct of the results for the following races: Governor and Lieutenant Governor, Attorney General, Auditor of State, Secretary of State, Treasurer of State, Chief Justice of the Supreme Court, Justice of the Supreme Court, U.S. Senator, and Judge of the Court of Appeals\r\n\r\nResults by County by Party",
+       "files": [
+        {
+         "displayName": "Summary Level Official Results for May 3, 2022 Primary Election - Democratic",
+         "blobPath": "past-elections/2022/Primary Election: May 3, 2022/group2/summarylevelofficialresults_2022-05-03_primaryelection_democratic.xlsx",
+         "order": 10
+        },
+        {
+         "displayName": "Summary Level Official Results for May 3, 2022 Primary Election - Republican",
+         "blobPath": "past-elections/2022/Primary Election: May 3, 2022/group2/summarylevelofficialresults_2022-05-03_primaryelection_republican.xlsx",
+         "order": 20
+        }
+       ]
+      },
+      {
+       "description": "Results by Precinct by Party",
+       "files": [
+        {
+         "displayName": "Precinct Level Official Results for May 3, 2022 Primary Election - Democratic",
+         "blobPath": "past-elections/2022/Primary Election: May 3, 2022/group3/precinctlevelofficialresults_2022-05-03_primaryelection_democratic.xlsx",
+         "order": 10
+        },
+        {
+         "displayName": "Precinct Level Official Results for May 3, 2022 Primary Election - Republican",
+         "blobPath": "past-elections/2022/Primary Election: May 3, 2022/group3/precinctlevelofficialresults_2022-05-03_primaryelection_republican.xlsx",
+         "order": 20
+        }
+       ]
+      },
+      {
+       "description": "Results by Party by County - County Officials Only",
+       "files": [
+        {
+         "displayName": "Summary Level Official Results for the May 3, 2022 Primary Election- County Officials Only - Democratic",
+         "blobPath": "past-elections/2022/Primary Election: May 3, 2022/group4/summarylevelofficialresults_2022-05-03_primaryelection_countyofficialsonly_democratic.xlsx",
+         "order": 10
+        },
+        {
+         "displayName": "Summary Level Official Results for the May 3, 2022 Primary Election- County Officials Only - Republican",
+         "blobPath": "past-elections/2022/Primary Election: May 3, 2022/group4/summarylevelofficialresults_2022-05-03_primaryelection_countyofficialsonly_republican.xlsx",
+         "order": 20
+        }
+       ]
+      },
+      {
+       "description": "Results by Party by Precinct - County Officials Only",
+       "files": [
+        {
+         "displayName": "Precinct Level Official Results for the May 3, 2022 Primary Election- County Officials Only - Democratic",
+         "blobPath": "past-elections/2022/Primary Election: May 3, 2022/group5/precinctlevelofficialresults_2022-05-03_primaryelection_countyofficialsonly_democratic.xlsx",
+         "order": 10
+        },
+        {
+         "displayName": "Precinct Level Official Results for the May 3, 2022 Primary Election- County Officials Only - Republican",
+         "blobPath": "past-elections/2022/Primary Election: May 3, 2022/group5/precinctlevelofficialresults_2022-05-03_primaryelection_countyofficialsonly_republican.xlsx",
+         "order": 20
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

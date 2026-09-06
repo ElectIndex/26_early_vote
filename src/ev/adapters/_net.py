@@ -86,6 +86,46 @@ SESSION = requests.Session()
 SESSION.mount("https://", _TicketAdapter())
 
 
+# curl_cffi impersonates a real browser's TLS/HTTP2 fingerprint. OPTIONAL on
+# purpose: if it is not installed the module still works, and only the handful of
+# hosts behind fingerprint rules stay unreachable. Declared in pyproject so CI
+# has it; guarded so a stock checkout without it degrades rather than crashes.
+try:  # pragma: no cover - import-time capability probe
+    from curl_cffi import requests as _curl
+except Exception:  # noqa: BLE001
+    _curl = None
+
+#: Which browser to impersonate. "chrome" tracks curl_cffi's newest Chrome.
+IMPERSONATE = "chrome"
+
+
+def _impersonated_get(url, *, timeout, headers, params):
+    """Retry a 403 with a real browser's TLS fingerprint.
+
+    Some state hosts (ohiosos.gov, azsos.gov) sit behind a Cloudflare rule that
+    scores the JA3 of any Python HTTP client as automation and answers 403 --
+    including their own homepages and archived files, and regardless of headers.
+    Restoring TLS session tickets (see _TicketAdapter) was enough for Colorado;
+    these two need the full fingerprint.
+
+    This matters for correctness, not just reach: a 403 raises SourceError and
+    falls through to a weaker tier, while what is actually behind the wall is
+    very often an honest 404 that should raise Missing and STOP the ladder. Ohio
+    and Arizona were both being read as "unreachable" when the truth was "not
+    posted yet".
+    """
+    if _curl is None:
+        return None
+    try:
+        return _curl.get(
+            url, timeout=timeout, headers=headers, params=params,
+            impersonate=IMPERSONATE,
+        )
+    except Exception as exc:  # noqa: BLE001 - a failed retry is just no retry
+        log.debug("impersonated retry failed for %s: %s", url, exc)
+        return None
+
+
 class Missing(SourceError):
     """The URL returned 404/410. The caller decides what that means."""
 
@@ -127,6 +167,19 @@ def get(
         )
     except requests.RequestException as exc:
         raise SourceError(f"{state}: GET {url} failed: {exc}") from exc
+
+    # A 403 is very often a fingerprint rule rather than a real refusal, and the
+    # honest answer behind it is frequently a 404. Retry once with a browser
+    # fingerprint before concluding anything.
+    if response.status_code == 403:
+        retried = _impersonated_get(
+            url, timeout=timeout,
+            headers={**DEFAULT_HEADERS, **(headers or {})}, params=params,
+        )
+        if retried is not None:
+            log.debug("%s: %s answered %s to the impersonated retry",
+                      state, url, retried.status_code)
+            response = retried
 
     if response.status_code in (404, 410):
         raise Missing(f"{state}: {url} returned {response.status_code}")
