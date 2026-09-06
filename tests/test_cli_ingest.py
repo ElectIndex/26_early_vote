@@ -239,3 +239,54 @@ def test_every_subcommand_parses(tmp_path):
     ):
         parsed = parser.parse_args(argv)
         assert callable(parsed.func), argv
+
+
+# --------------------------------------------------------------------------
+# BACKFILL runs the same seam and does NOT go through the ladder
+# --------------------------------------------------------------------------
+class HistoryScraper(Adapter):
+    """An archive-backed state that returns town rows and does NOT self-stamp.
+
+    That last clause is the whole test. `me.py` and `ct.py` both call
+    `_towns.stamp()` inside their own `fetch_history`, so the backfill path has
+    never been exercised by an adapter that relies on the caller to do it -- and
+    `cmd_backfill` does not walk `ladder.run_state`, so it does not inherit the
+    stamping that was added there.
+    """
+
+    name = "stub-history"
+    tier = TIER_SCRAPER
+
+    def fetch(self, cycle: int, as_of: date) -> FetchResult:
+        raise NotYetPublished("this stub only has history")
+
+    def fetch_history(self, cycle: int) -> FetchResult:
+        day = date(cycle, 10, 20)
+        result = FetchResult(state_rows=[StateDay(
+            cycle=cycle, state=self.state, day=day, ballots_total=900,
+        )])
+        _towns.attach(result, [TownDay(
+            cycle=cycle, state=self.state, day=day,
+            town_geoid=PORTLAND_ME, town_name="Portland", ballots_total=900,
+        )])
+        return result
+
+
+def test_backfill_stamps_town_rows_it_did_not_fetch_itself(tmp_path, monkeypatch):
+    """`ev backfill` publishes towns too, on a path the ladder never touches.
+
+    Without the stamp this dies at WRITE time on `TownDay written without
+    provenance` -- after the archive has been fetched, which for a Wayback
+    backfill is minutes of downloads thrown away.
+    """
+    monkeypatch.setattr(cli, "ladder", lambda state: [HistoryScraper(state=state)])
+    parsed = cli.build_parser().parse_args(
+        ["--output", str(tmp_path / "output"),
+         "backfill", "--cycle", "2024", "--state", "NC"]
+    )
+    assert cli.cmd_backfill(parsed) == 0
+
+    towns = list(csv.DictReader(
+        (tmp_path / "output" / "towns" / "nc.csv").open()))
+    assert [r["town_geoid"] for r in towns] == [PORTLAND_ME]
+    assert towns[0]["source_name"] == "stub-history"
