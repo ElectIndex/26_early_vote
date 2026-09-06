@@ -39,6 +39,17 @@ _PARTY_MAP = {
     "uaf": PARTY_NPA, "npa": PARTY_NPA, "no party affiliation": PARTY_NPA,
     "non-partisan": PARTY_NPA, "nonpartisan": PARTY_NPA, "np": PARTY_NPA,
     "no party": PARTY_NPA, "none": PARTY_NPA, "n": PARTY_NPA,
+    # ⚠️ "independent" IS AMBIGUOUS ACROSS STATES and this mapping is only the
+    # majority reading. In most states the word means unaffiliated, which is why
+    # it sits here. But the Independent Party is BALLOT-QUALIFIED in Oregon
+    # (150,715 registrants, whose unaffiliated bucket is spelled "Nonaffiliated")
+    # and state-recognised in Connecticut (whose unaffiliated are "Unaffiliated").
+    # In those states this mapping silently files a real third party as
+    # no-party. or.py and ct.py therefore consult their own documented tables
+    # BEFORE calling here; any new adapter for a state with a registered
+    # Independent Party must do the same. Left as npa rather than None because
+    # flipping it would force twenty adapters to restate a label that is
+    # unambiguous for nineteen of them.
     "no party preference": PARTY_NPA, "npp": PARTY_NPA, "independent": PARTY_NPA,
     "ind": PARTY_NPA, "i": PARTY_NPA, "nf": PARTY_NPA, "no affiliation": PARTY_NPA,
     "decline to state": PARTY_NPA, "dts": PARTY_NPA, "other/none": PARTY_NPA,
