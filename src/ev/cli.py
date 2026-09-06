@@ -147,7 +147,16 @@ def cmd_backfill(args) -> int:
                 continue
             if not result:
                 continue
-            result.stamp(adapter.provenance())
+            provenance = adapter.provenance()
+            result.stamp(provenance)
+            # ...and the fourth table, for the same reason ladder.run_state does
+            # it: town rows ride as an ATTRIBUTE, so `FetchResult.stamp()` cannot
+            # reach them. Backfill does NOT walk the ladder, so it does not
+            # inherit that stamping and needs its own call. me.py and ct.py stamp
+            # inside their own `fetch_history` and are why this has never bitten;
+            # without it an adapter that does not would fetch a whole archive --
+            # minutes of Wayback downloads -- and then die at WRITE time.
+            _towns.stamp(result, provenance)
             combined.state_rows.extend(result.state_rows)
             if result.county_rows:
                 per_state_county.setdefault(state, []).extend(result.county_rows)
