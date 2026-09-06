@@ -94,21 +94,28 @@ log = logging.getLogger(__name__)
 SOS_PAGE = "https://sos.ks.gov/elections/advance-voting-data.html"
 
 #: The `?r=` token is base64 of `{"k": <resourceKey>, "t": <tenantId>}`. VERIFIED
-#: live 2026-09-06 on SOS_PAGE, decoding to the key below.
+#: live 2026-09-06 on SOS_PAGE, decoding to the key below. The WHOLE token is
+#: what the embed page is asked for, not a rebuilt one: a token carrying only
+#: `k` still returns 200 (28,867 bytes) but names no cluster, because Power BI
+#: resolves the cluster from the TENANT id -- verified both ways.
 _EMBED_TOKEN = re.compile(r"app\.powerbigov\.us/view\?r=([A-Za-z0-9_\-=]+)")
 
 POWERBI_VIEW = "https://app.powerbigov.us/view?r={token}"
 
-#: VERIFIED live 2026-09-06: the token on SOS_PAGE decodes to this key, and
-#: `POWERBI_VIEW` with that token returns HTTP 200, 29,106 bytes.
+#: VERIFIED live 2026-09-06 on SOS_PAGE: this token returns HTTP 200, 29,106
+#: bytes, and decodes to POWERBI_RESOURCE_KEY.
+POWERBI_TOKEN = (
+    "eyJrIjoiZGUzYjZlM2MtYjk0ZS00MTlhLThkOWMtOTQzNWViYTcyNzgwIiwidCI6"
+    "ImRjYWU4MTAxLWM5MmQtNDgwYy1iYzQzLWM2NzYxY2NjY2M1YSJ9"
+)
 POWERBI_RESOURCE_KEY = "de3b6e3c-b94e-419a-8d9c-9435eba72780"
 
-#: The embed page names its own cluster in a `ClusterUri` assignment. The
-#: `-redirect` host it names 403s every API call (VERIFIED: 403, 0 bytes); the
-#: `-api` host is the one that answers (VERIFIED: 200, 82,782 bytes). Ohio's
-#: dashboard behaves identically on a different cluster, so the substitution is
-#: the documented shape of these endpoints, not a Kansas quirk.
-_CLUSTER_URI = re.compile(r"ClusterUri['\"]?\s*[:=]\s*['\"]([^'\"]+)")
+#: The embed page names its own cluster in a `ClusterUri` assignment, and the
+#: host it names is a `-redirect` one that 403s every API call (VERIFIED: 403,
+#: 0 bytes). `api_host` below applies the page's OWN `getAPIMUrl()` transform to
+#: get the host that answers (VERIFIED: 200, 82,782 bytes). Ohio's dashboard
+#: behaves identically on a different cluster.
+_CLUSTER_URI = re.compile(r"ClusterUri['\"]?\s*[:=]\s*['\"](https://[^'\"]+)")
 POWERBI_CLUSTER = "https://wabi-us-gov-virginia-api.analysis.usgovcloudapi.net"
 
 MODELS_PATH = "/public/reports/{key}/modelsAndExploration?preferReadOnlySession=true"
@@ -168,11 +175,11 @@ FALLBACK_MODEL = Model(
 # --------------------------------------------------------------------------
 # Discovery
 # --------------------------------------------------------------------------
-def resource_key(markup: str) -> str | None:
-    """The report's public resource key, out of the SoS page's iframe token.
+def embed(markup: str) -> tuple[str, str] | None:
+    """(token, resource key) out of the SoS page's Power BI iframe.
 
     None -- not an exception -- when the page does not carry one: the caller
-    falls back to the verified literal, because a redesigned SoS page is not a
+    falls back to the verified literals, because a redesigned SoS page is not a
     reason to stop reading a report that still works.
     """
     match = _EMBED_TOKEN.search(markup or "")
@@ -188,24 +195,34 @@ def resource_key(markup: str) -> str | None:
     key = str(payload.get("k") or "").strip()
     # A resource key is a UUID. Anything else is not one, and guessing would
     # send the SoS's tenant id to the query API as if it were a report.
-    if not re.fullmatch(r"[0-9a-fA-F-]{36}", key):
+    if not re.fullmatch(r"[0-9a-fA-F]{8}(?:-[0-9a-fA-F]{4}){3}-[0-9a-fA-F]{12}", key):
         return None
-    return key.lower()
+    return token, key.lower()
+
+
+def api_host(uri: str) -> str:
+    """The Power BI API host for a cluster URI, by the embed page's own rule.
+
+    Verbatim from `getAPIMUrl()` in the embed page: drop `-redirect`, drop a
+    leading `global-`, then append `-api`. The cluster the page advertises is a
+    `-redirect` host that 403s every API call, so this substitution is the
+    difference between a working endpoint and no endpoint at all.
+    """
+    host = uri.split("//", 1)[-1].split("/", 1)[0]
+    labels = host.split(".")
+    labels[0] = labels[0].replace("-redirect", "").replace("global-", "") + "-api"
+    return "https://" + ".".join(labels)
 
 
 def cluster(markup: str) -> str | None:
-    """The API host, from the embed page's own `ClusterUri`.
-
-    Power BI hands out a `-redirect` host that refuses every API call, so the
-    `-api` sibling is what is returned. None when the page does not name one.
-    """
+    """The API host, from the embed page's own `ClusterUri`. None if absent."""
     match = _CLUSTER_URI.search(markup or "")
     if match is None:
         return None
     uri = match.group(1).strip().rstrip("/")
-    if not uri.startswith("https://") or "analysis.usgovcloudapi.net" not in uri:
+    if "analysis.usgovcloudapi.net" not in uri and "analysis.windows.net" not in uri:
         return None
-    return uri.replace("-redirect.", "-api.")
+    return api_host(uri)
 
 
 def _visual_queries(exploration: dict):
@@ -458,10 +475,19 @@ def _int(value) -> int | None:
         raise SchemaDrift(f"KS: {value!r} is not a ballot count") from exc
 
 
-def _add(*values: int | None) -> int | None:
-    """Sum, keeping None when NOTHING was reported. 0 + None is 0, not None."""
-    present = [v for v in values if v is not None]
-    return sum(present) if present else None
+def _total(returned: int | None, inperson: int | None) -> int | None:
+    """Kansas's own headline: mail ballots back plus in-person advance.
+
+    None unless BOTH halves are present. Kansas has never left one blank -- it
+    writes a real 0, and the first day of the August 2026 primary carries
+    `IN PERSON ADVANCE = 0` rather than an empty cell -- so a blank here would
+    mean the model changed. Publishing the half we did get as though it were the
+    total would understate advance turnout while looking exactly like a real
+    number; a hole in the series is visibly a hole. See TX for the same call.
+    """
+    if returned is None or inperson is None:
+        return None
+    return returned + inperson
 
 
 def window(cycle: int) -> tuple[date, date]:
@@ -522,8 +548,7 @@ def parse(payload: dict, cycle: int, as_of: date) -> FetchResult:
         sent, returned, inperson = inside[day]
         result.state_rows.append(StateDay(
             cycle=cycle, state="KS", day=day,
-            # Kansas's own headline: mail ballots back plus in-person advance.
-            ballots_total=_add(returned, inperson),
+            ballots_total=_total(returned, inperson),
             # The series is cumulative and skips weekends, so a snapshot
             # difference is not a day's new ballots. See the module docstring.
             ballots_new=None,
@@ -552,23 +577,21 @@ class KSScraper(Adapter):
     tier = TIER_SCRAPER
 
     # ---- discovery ---------------------------------------------------------
-    def _resource_key(self) -> str:
+    def _embed(self) -> tuple[str, str]:
+        """(token, resource key) -- scraped from the SoS page, else the literals."""
         try:
             body = get(SOS_PAGE, state="KS", filename="advance-voting-data.html",
                        min_bytes=1024)
         except Exception:  # noqa: BLE001 -- discovery is a nicety, not a source
-            log.debug("KS: SoS page unavailable; using the verified resource key")
-            return POWERBI_RESOURCE_KEY
-        found = resource_key(body.decode("utf-8", errors="replace"))
+            log.debug("KS: SoS page unavailable; using the verified embed token")
+            return POWERBI_TOKEN, POWERBI_RESOURCE_KEY
+        found = embed(body.decode("utf-8", errors="replace"))
         if found is None:
-            log.debug("KS: %s carries no embed token; using the verified key", SOS_PAGE)
-            return POWERBI_RESOURCE_KEY
+            log.debug("KS: %s carries no embed token; using the verified one", SOS_PAGE)
+            return POWERBI_TOKEN, POWERBI_RESOURCE_KEY
         return found
 
-    def _cluster(self, key: str) -> str:
-        token = base64.b64encode(
-            json.dumps({"k": key}, separators=(",", ":")).encode()
-        ).decode().rstrip("=")
+    def _cluster(self, token: str) -> str:
         try:
             body = get(POWERBI_VIEW.format(token=token), state="KS",
                        filename="powerbi_view.html", min_bytes=1024)
@@ -646,8 +669,8 @@ class KSScraper(Adapter):
         through) when it could not be read or parsed -- "we could not look" must
         never be recorded as "Kansas has nothing".
         """
-        key = self._resource_key()
-        host = self._cluster(key)
+        token, key = self._embed()
+        host = self._cluster(token)
         models = self._models(host, key)
 
         problems: list[str] = []

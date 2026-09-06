@@ -29,22 +29,34 @@ looks like a count WILL be quoted as a count. So:
 
 WHAT IT MEASURES, AND WHAT IT DOES NOT
 --------------------------------------
-`est_dem_share` is the 2024 presidential two-party Democratic share OF THE PLACES
-whose ballots are in so far. It is a statement about geography, not about voters:
-"if everyone who has voted early so far voted exactly the way their county did in
-2024, the early vote would be X% Democratic."
+`est_dem_share` has two parts, and the second one is the reason this file is not
+just a restatement of the last election:
 
-It is NOT "X% of early ballots were cast by Democrats". Measured against the six
-states that do report party registration, that reading is wrong by a mean of
-5.5 points and by as much as 12 (Pennsylvania 2024). Worse, because every state
-we track publishes every one of its counties, the county weights are close to
-proportional to county size, so the estimate is arithmetically pinned within
-about two points of the state's own 2024 result -- it moves 0.2 to 1.7 points
-across an entire early-vote window while the real party mix of the early
-electorate moves twenty or thirty. The full numbers are in
-docs/party-estimate.md, including the comparison against simply quoting the
-state's 2024 result and calling it a day, which this method beats by under one
-point.
+  geography     the 2024 presidential two-party Democratic share OF THE PLACES
+                whose ballots are in so far -- "if everyone who has voted early
+                so far voted exactly the way their county did in 2024, the early
+                vote would be X% Democratic."
+
+  mail          plus a correction for the fact that the people who return a MAIL
+                ballot are not a random draw from their county. Where mail is a
+                minority channel that a voter has to ask for, the people who ask
+                lean sharply Democratic; where mail has already reached most of
+                the electorate (Colorado) there is nobody left for it to select,
+                and the correction goes to nothing. See `mail_selection`.
+
+The geography-only version of this model was measured at 6.9 points of mean
+absolute error against the states that DO report party, and beat "quote the
+state's own 2024 result and stop" by 0.7 points -- which is to say it was mostly
+laundering a known election result through today's ballot counts. Adding the mail
+term takes that to 3.3 points out of sample and a gain of 4.3 over the same null.
+Pennsylvania, the worst state in the old table at 15.5, is 4.6.
+
+It is still NOT "X% of early ballots were cast by Democrats". The remaining error
+is dominated by a gap this model cannot see and does not try to: a state's party
+REGISTRATION is not its VOTE (Kentucky is full of registered Democrats who vote
+Republican), and the states this model actually publishes for do not register by
+party at all. The full numbers, the states it gets worse rather than better, and
+the one assumption that would sink it in 2026 are all in docs/party-estimate.md.
 
 Read that document before putting any of this on a page.
 """
@@ -85,19 +97,47 @@ BASELINE_COLUMNS = frozenset({"county_fips", "state", "votes_dem", "votes_rep"})
 ESTIMATE_FILENAME = "party_estimate.csv"
 
 #: Identifies the algorithm in every row, so a row written under an older
-#: version is recognisable after the fact.
-METHOD = "pres2024-2party-county-weighted"
+#: version is recognisable after the fact. The suffix names the second term:
+#: rows written before it carry the bare `pres2024-2party-county-weighted`.
+METHOD = "pres2024-2party-county-weighted+mail-selection"
 
 #: Identifies the WEIGHTS, separately from the algorithm.
 SOURCE_NAME = "electindex-estimate/pres2024-county-returns"
 
-#: Empirical, not statistical. The mean absolute distance between this estimate
-#: and the reported party-registration split of the same state's early ballots,
-#: across every validation day on which at least a quarter of that series' final
-#: early vote was in (9.8 points; see `validate()` and docs/party-estimate.md).
-#: Rounded to 10 points and applied as a flat half-width, because the error is
-#: dominated by a structural mismatch that does not shrink with sample size.
-MODEL_ERROR = 0.10
+#: How much more Democratic a mail ballot is than the county it came from, at the
+#: limit where mail has reached none of the electorate, in share points. Fitted
+#: by `fit_mail_selection` on every state-cycle in output/ that reports party AND
+#: has county rows; see docs/party-estimate.md for the leave-one-state-out score.
+#: `test_fitted_constants_still_match_the_data` refits and fails if the data
+#: moves away from these.
+MAIL_SELECTION = 0.366
+
+#: How fast that advantage decays as mail reaches more of the electorate. Fitted
+#: on the same panel over a 1.00-8.00 grid; every leave-one-state-out fold picks
+#: 4.00-6.50, so the shape is not one state's idea. A high power is what
+#: separates Pennsylvania (mail reaches 29% of the electorate and its mail voters
+#: are 12 points more Democratic than their counties) from Colorado (mail reaches
+#: everybody, so there is nobody left for it to select and the correction is
+#: under a point).
+MAIL_DECAY = 5.0
+
+#: A midterm electorate is smaller than the presidential one the baseline
+#: measures, so the same number of mail ballots reaches more of it. The national
+#: ratio of ballots cast in 2022 to 2024. The result barely depends on it: the
+#: out-of-sample gain runs 3.4 to 3.7 points across the whole range 0.50 to 1.00.
+MIDTERM_TURNOUT = 0.73
+
+#: Empirical, not statistical, and applied as a flat half-width because the error
+#: is structural rather than sampling noise. The leave-one-state-out error of the
+#: model above is 3.1 points pooled over validation days and 3.3 averaged over
+#: state-cycles; the worst single state-cycle is 6.0. Five points sits between
+#: them -- deliberately above the mean, because the mail term assumes a DIRECTION
+#: (mail voters lean Democratic) that 2022 and 2024 both support and that 2026
+#: need not repeat. It was 10 points when the model was geography alone.
+#:
+#: `ev.adapters.az.MODEL_ERROR` is a copy of this, kept because the ingest path
+#: must never import this module; `test_model_error_tracks_estimate` guards it.
+MODEL_ERROR = 0.05
 
 #: Below this many ballots the day is thin enough that the composition of the
 #: returned ballots is nothing like the composition of the eventual early vote.
@@ -122,6 +162,15 @@ ESTIMATE_COLUMNS = [
     "method", "confidence",
     "counties_used", "counties_total", "coverage_share", "coverage_electorate",
     "ballots_used", "baseline_dem_share", "lean_vs_baseline",
+    # The model shown in its two parts, so a reader can see which half of the
+    # answer is last election and which half is this one's mail.
+    "geo_dem_share", "mail_adjustment", "mail_share", "mail_reach",
+    # How much of this figure was COUNTED rather than modelled. `estimate_basis`
+    # is "model" (nothing counted, the normal case), "blend" or "reported"; the
+    # band is MODEL_ERROR scaled by `modelled_fraction`. Note that `method`
+    # above is the algorithm's name and has been that since this table's first
+    # row -- these three are about provenance, not arithmetic.
+    "measured_fraction", "modelled_fraction", "estimate_basis",
     "state_has_party_reg", "source_name", "retrieved_at",
 ]
 
@@ -216,6 +265,21 @@ class Baseline:
         two = sum(r.two_party for r in rows)
         return dem / two if two else None
 
+    def state_two_party(self, state: str) -> int | None:
+        """Two-party votes cast statewide in 2024. The electorate's SIZE.
+
+        Used as the denominator of "how much of this state has the mail channel
+        already reached", which is what tells Pennsylvania's self-selected mail
+        electorate apart from Colorado's universal one. Two-party rather than
+        total votes so that any baseline file satisfying BASELINE_COLUMNS can
+        answer it -- the third-party remainder is 2-3% and is absorbed by the
+        fitted coefficients either way.
+        """
+        rows = self.counties(state)
+        if not rows:
+            return None
+        return sum(r.two_party for r in rows) or None
+
 
 def load_baseline(path: Path | str | None = None) -> Baseline:
     """Read the county partisan baseline.
@@ -267,6 +331,212 @@ def county_count(state: str) -> int | None:
 
 
 # --------------------------------------------------------------------------
+# The mail-selection correction
+# --------------------------------------------------------------------------
+# THE FINDING THIS IMPLEMENTS
+# ---------------------------
+# County geography cannot see who chose to vote early, and that is what sank the
+# geography-only model. But the tracker publishes one thing that CAN see it: how
+# many of the returned ballots came by mail.
+#
+# Across every state-cycle we can score, the ballots already back are more
+# Democratic than their counties, and the size of that gap tracks the mail
+# channel almost exactly:
+#
+#   North Carolina 2024   mail-only phase, 20+ points more D than its counties;
+#                         the day in-person opens the gap collapses to 4, and it
+#                         finishes at 0.7.
+#   Kentucky 2024         +22 while mail-only, +10 once in-person is running.
+#   Pennsylvania 2024     mail-only from start to finish, so the gap never
+#                         collapses: +12 at the close. This is the state the old
+#                         model was worst on, and this is why.
+#   Colorado 2024         all-mail, and the gap is NEGATIVE (-3.7). Where every
+#                         voter is mailed a ballot, mail is not a choice and
+#                         selects nobody.
+#
+# Colorado is the case that fixes the functional form. The correction cannot be
+# "mail ballots are Democratic"; it has to be "ASKING for a mail ballot is
+# Democratic, and it stops meaning anything once mail has reached everybody". So
+# the term decays in `mail_reach` -- mail ballots returned as a share of the
+# state's electorate -- and decays fast:
+#
+#     adjustment = MAIL_SELECTION * mail_share * (1 - mail_reach) ** MAIL_DECAY
+#
+# Both constants are fitted (`fit_mail_selection`), and every number quoted for
+# them in docs/party-estimate.md is LEAVE-ONE-STATE-OUT: the fold that scores
+# Pennsylvania has never seen Pennsylvania. That protocol is not decoration. The
+# sibling effort in docs/regression.md found seven specifications that each
+# appeared to beat "quote the last result" by one to two points and were every
+# one of them worse than nothing once measured against the right null.
+#
+# WHAT THIS TERM ASSUMES, AND WHEN IT WILL BE WRONG
+# -------------------------------------------------
+# It assumes a DIRECTION: that the voters who ask for a mail ballot lean
+# Democratic. That was true in 2020, 2022 and 2024, and it is a fact about a
+# particular decade of American politics rather than about arithmetic. If
+# Republican mail voting keeps rising and the sign flips in 2026, this term will
+# be confidently wrong in exactly the states it currently rescues, and it will be
+# wrong by more than the geography-only model ever was. MODEL_ERROR is set above
+# the measured mean partly for that reason, and `validate()` re-derives the whole
+# thing from output/ on demand, so the day the sign flips is a command, not an
+# argument.
+# --------------------------------------------------------------------------
+def method_split(
+    ballots_total: int | float | None,
+    mail_returned: int | float | None,
+    inperson: int | float | None,
+) -> tuple[float, float] | None:
+    """(mail, in-person) of the ballots returned so far, or None if unreported.
+
+    The state's own mail figure is believed and EVERYTHING ELSE in its headline
+    is treated as in-person. That order matters and is not interchangeable:
+    North Carolina reports 297,034 mail, `inperson = 0` and a headline of
+    4,520,768 -- its one-stop votes are simply not in that column -- so reading
+    `inperson` first would make North Carolina a 100% mail state and hand it the
+    largest correction in the table instead of the smallest.
+
+    Where only `inperson` is reported the mail side is whatever the headline has
+    left over, which for Maryland is exactly zero: Maryland's tracked early vote
+    is its in-person centres and its mail ballots are a separate figure it does
+    not publish here. Zero mail then means zero correction, which is right.
+
+    Neither column reported is None, not zero -- THE BLANK RULE. The caller then
+    falls back to the geography-only estimate rather than assuming a split.
+    """
+    if ballots_total is None or ballots_total <= 0:
+        return None
+    total = float(ballots_total)
+    if mail_returned is not None:
+        mail = max(0.0, min(total, float(mail_returned)))
+    elif inperson is not None:
+        mail = max(0.0, total - float(inperson))
+    else:
+        return None
+    return mail, total - mail
+
+
+def expected_electorate(cycle: int, state: str, baseline: Baseline) -> float | None:
+    """How many voters this state is expected to turn out in `cycle`.
+
+    The baseline measures a presidential electorate. A midterm one is smaller, so
+    the same number of mail ballots reaches more of it; MIDTERM_TURNOUT carries
+    that. Presidential years are the ones divisible by four.
+    """
+    two_party = baseline.state_two_party(state)
+    if not two_party:
+        return None
+    return two_party * (1.0 if int(cycle) % 4 == 0 else MIDTERM_TURNOUT)
+
+
+def mail_selection(
+    mail: float,
+    inperson: float,
+    electorate: float | None,
+    *,
+    alpha: float = MAIL_SELECTION,
+    decay: float = MAIL_DECAY,
+) -> float | None:
+    """How much more Democratic the returned ballots are than their geography.
+
+    In share points, added to the county-weighted number. `None` when it cannot
+    be computed at all -- no electorate, no ballots -- which leaves the caller on
+    the geography-only estimate rather than on a guess.
+    """
+    if not electorate or electorate <= 0:
+        return None
+    total = mail + inperson
+    if total <= 0:
+        return None
+    reach = min(1.0, max(0.0, mail / electorate))
+    return alpha * (mail / total) * (1.0 - reach) ** decay
+
+
+#: The grid `fit_mail_selection` searches for MAIL_DECAY. Wide enough to contain
+#: a linear decay at one end and a near-step function at the other; the fit lands
+#: at 5.0 on the full panel and 4.00-6.50 across leave-one-state-out folds.
+DECAY_GRID = tuple(i / 4 for i in range(4, 33))
+
+
+@dataclass(frozen=True)
+class Observation:
+    """One scoreable state-day: what the model saw and what actually happened.
+
+    `truth` is the state's OWN reported two-party registration share of the
+    ballots returned that day -- the only ground truth that exists for any of
+    this. `geo` is the geography-only estimate for the same day.
+    """
+
+    cycle: int
+    state: str
+    day: str
+    geo: float
+    truth: float
+    ballots: float
+    mail: float | None
+    inperson: float | None
+    electorate: float | None
+    baseline_dem_share: float
+
+    def selection_input(self, decay: float) -> float | None:
+        """The regressor: `mail_share * (1 - mail_reach) ** decay`."""
+        if self.mail is None or self.inperson is None:
+            return None
+        got = mail_selection(self.mail, self.inperson, self.electorate,
+                             alpha=1.0, decay=decay)
+        return got
+
+    def predict(self, alpha: float, decay: float) -> float:
+        x = self.selection_input(decay)
+        if x is None:
+            return self.geo
+        return min(1.0, max(0.0, self.geo + alpha * x))
+
+
+def fit_mail_selection(
+    series: Iterable[Sequence[Observation]],
+    *,
+    decay_grid: Sequence[float] = DECAY_GRID,
+) -> tuple[float, float] | None:
+    """Fit (MAIL_SELECTION, MAIL_DECAY) on completed series. Weighted least squares.
+
+    `series` is a collection of state-cycle series, NOT a flat list of days, and
+    each series is weighted to count once. Pennsylvania contributes 70 days and
+    Colorado 5; pooling them by day would fit Pennsylvania and call it a model.
+
+    `decay` is searched on a grid and `alpha` solved in closed form at each point,
+    which is exact for the one linear parameter and honest about the one that is
+    not. Returns None rather than a number when nothing is fittable.
+    """
+    rows: list[tuple[Observation, float]] = []
+    for one in series:
+        usable = [o for o in one if o.selection_input(1.0) is not None]
+        if not usable:
+            continue
+        weight = 1.0 / len(usable)
+        rows.extend((o, weight) for o in usable)
+    if len(rows) < 2:
+        return None
+
+    best: tuple[float, float, float] | None = None
+    for decay in decay_grid:
+        num = den = 0.0
+        for obs, weight in rows:
+            x = obs.selection_input(decay)
+            num += weight * x * (obs.truth - obs.geo)
+            den += weight * x * x
+        if den <= 0:
+            continue
+        alpha = num / den
+        rss = sum(
+            w * (o.truth - o.geo - alpha * o.selection_input(decay)) ** 2
+            for o, w in rows
+        )
+        if best is None or rss < best[0]:
+            best = (rss, alpha, decay)
+    return (best[1], best[2]) if best else None
+
+
+# --------------------------------------------------------------------------
 # The estimate
 # --------------------------------------------------------------------------
 @dataclass
@@ -285,6 +555,22 @@ class PartyEstimate:
     coverage_share: float | None
     coverage_electorate: float | None
     baseline_dem_share: float | None
+    #: The county-weighted 2024 presidential share before the mail term, and the
+    #: mail term itself. Published separately so a reader can see how much of the
+    #: answer is last election and how much is this one's returned ballots.
+    geo_dem_share: float | None = None
+    mail_adjustment: float | None = None
+    mail_share: float | None = None
+    mail_reach: float | None = None
+    #: The share of these ballots whose party was actually COUNTED rather than
+    #: modelled. 0.0 for every state today: the nine no-registration states have
+    #: no such count anywhere, and Arizona -- which does register by party -- has
+    #: no county recorder that publishes one. It exists because the arithmetic for
+    #: a partial count is settled (`ev.adapters.az.blend_party_share`) and turning
+    #: it on later should be data, not a rewrite. At 0.0 every row is exactly what
+    #: it was before the field existed.
+    measured_fraction: float = 0.0
+    measured_dem_share: float | None = None
     state_has_party_reg: bool | None = None
     method: str = METHOD
     source_name: str = SOURCE_NAME
@@ -292,6 +578,19 @@ class PartyEstimate:
 
     def key(self) -> tuple:
         return (int(self.cycle), self.state.upper(), self.day.isoformat())
+
+    @property
+    def modelled_fraction(self) -> float:
+        return 1.0 - self.measured_fraction
+
+    @property
+    def estimate_basis(self) -> str:
+        """Whether this row is counted, part-counted or wholly modelled."""
+        if self.measured_fraction >= 1.0:
+            return "reported"
+        if self.measured_fraction <= 0.0:
+            return "model"
+        return "blend"
 
     @property
     def est_margin(self) -> float:

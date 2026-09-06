@@ -40,10 +40,20 @@ TIER1: dict[str, str] = {
     "IA": "ia:IAScraper",
     "ME": "me:MEScraper",
     "PA": "pa:PAScraper",
+    # TOWN + county + party + method, from per-ballot files. New England runs
+    # elections by municipality, so these publish town rows and let the county
+    # rows fall out of the 10-digit cousub GEOID. See _towns.py.
+    "CT": "ct:CTScraper",
+    # County + method only. Delaware DOES register by party; its voting-method
+    # report just does not break it out, so every party field is blank there.
+    "DE": "de:DEScraper",
     # County + party + sex, in-person early voting only.
     "MD": "md:MDScraper",
     # County + party (DEM/REP only) + method.
     "KY": "ky:KYScraper",
+    # County + party + method, from two DevExpress dashboards. The live one is
+    # absentee-only, so `inperson` is blank until voter-history credit appears.
+    "OK": "ok:OKScraper",
     # County + method (no party registration in these states).
     "IL": "il:ILScraper",
     "SC": "sc:SCScraper",
@@ -63,9 +73,20 @@ TIER1: dict[str, str] = {
     # Statewide only, method only -- Alaska's report is keyed by House district,
     # which does not nest into boroughs, so no county rows are possible.
     "AK": "ak:AKScraper",
+    # Statewide only, method only -- Kansas's advance-voting Power BI model has
+    # no geography column at all. Kansas DOES register by party; the dashboard
+    # just does not break it out. See ks.py.
+    "KS": "ks:KSScraper",
+    # County + method, from 53 stateless ASP.NET postbacks. North Dakota has no
+    # voter registration at all, so every party field is blank. See nd.py.
+    "ND": "nd:NDScraper",
     # PARTIAL: the NYC Board covers 5 of New York's 62 counties, so this one
     # publishes county rows and never a statewide row. See ny.py.
     "NY": "ny:NYScraper",
+    # Parish + day, counted off Louisiana's daily early-voter roster PDFs. The
+    # roster carries no party or method; the post-election report that does is
+    # used only for backfill. See la.py.
+    "LA": "la:LAScraper",
 }
 
 FALLBACKS: tuple[str, ...] = (
