@@ -70,7 +70,9 @@ def cmd_ingest(args) -> int:
         for state, rows in sorted(per_state_demo.items()):
             files.append(publish.publish_demo_daily(out_dir, state, rows))
 
-        meta = publish.publish_state_meta(out_dir, STATE_META)
+        meta = publish.publish_state_meta(
+            out_dir, STATE_META, publish.derive_prior_finals(out_dir)
+        )
         if meta:
             files.append(meta)
 

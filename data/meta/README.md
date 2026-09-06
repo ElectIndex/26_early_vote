@@ -25,6 +25,19 @@ file, not what the state is reputed to publish.
 The page already degrades correctly on every blank cell: the comparison column
 renders "—" rather than inventing a ratio.
 
+## Blanks the pipeline fills in for itself
+
+`ev_2022_total` / `ev_2024_total` are ALSO derived automatically, by
+`publish.derive_prior_finals()`, from our own backfilled daily series — but only
+where that series actually reaches Election Day (`days_to_election == 0`). A
+backfill that stopped a week early would understate the final and inflate every
+percentage measured against it, so a partial one yields nothing and the cell
+stays blank.
+
+A value typed here by hand ALWAYS wins over the derived one: an official canvass
+figure beats our scrape, and silently overwriting it would make this file a lie.
+Filling a cell here is therefore how you correct the pipeline.
+
 ## has_party_reg
 
 Whether the state records a party on the voter registration record. It is a
