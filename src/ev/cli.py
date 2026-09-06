@@ -24,6 +24,7 @@ from .registry import ladder, tracked_states
 
 ROOT = Path(__file__).resolve().parents[2]
 OUTPUT_DIR = ROOT / "output"
+STATE_META = ROOT / "data" / "meta" / "states.csv"
 
 log = logging.getLogger("ev")
 
@@ -68,6 +69,10 @@ def cmd_ingest(args) -> int:
             files.append(publish.publish_county_daily(out_dir, state, rows))
         for state, rows in sorted(per_state_demo.items()):
             files.append(publish.publish_demo_daily(out_dir, state, rows))
+
+        meta = publish.publish_state_meta(out_dir, STATE_META)
+        if meta:
+            files.append(meta)
 
         # Written unconditionally: a status file that stops advancing is itself
         # the signal the page uses to show a stale badge.

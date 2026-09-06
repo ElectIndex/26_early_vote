@@ -230,6 +230,41 @@ def publish_demo_daily(out_dir: Path, state: str, rows, **kw) -> dict:
     )
 
 
+#: The static per-state context table. Hand-maintained in data/meta/states.csv
+#: and copied to output/ verbatim, because the site needs it alongside the daily
+#: data and fetches everything from one place.
+STATE_META_COLUMNS = [
+    "state", "name", "election_date", "ev_start_2026", "ev_end_2026",
+    "has_party_reg", "dims_available", "ev_2022_total", "ev_2024_total",
+    "turnout_2022_total", "turnout_2024_total", "reg_voters_2026", "notes",
+]
+
+
+def publish_state_meta(out_dir: Path, meta_path: Path) -> dict | None:
+    """Copy data/meta/states.csv to output/ev_state_meta.csv, validating columns.
+
+    Missing is not an error -- the table is hand-maintained and the daily job must
+    not fail because it has not been written yet. A column MISMATCH is an error,
+    because the page joins on these names.
+    """
+    if not meta_path.exists():
+        log.warning("no state meta at %s; skipping", meta_path)
+        return None
+
+    rows = _read(meta_path)
+    if not rows:
+        log.warning("%s is empty; skipping", meta_path)
+        return None
+
+    missing = set(STATE_META_COLUMNS) - set(rows[0])
+    if missing:
+        raise PublishRefused(f"{meta_path.name} is missing columns: {sorted(missing)}")
+
+    _atomic_write(out_dir / "ev_state_meta.csv", STATE_META_COLUMNS, rows)
+    log.info("ev_state_meta.csv: %d states", len(rows))
+    return {"file": "ev_state_meta.csv", "rows": len(rows)}
+
+
 def write_status(out_dir: Path, payload: dict) -> None:
     """ev_status.json -- the page's honesty layer.
 
