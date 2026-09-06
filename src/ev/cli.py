@@ -378,6 +378,49 @@ def build_parser() -> argparse.ArgumentParser:
         return cf.cmd_counterfactual(args)
 
     cfa.set_defaults(func=_counterfactual)
+
+    # TURNOUT: each state's final turnout projected from its early-vote pace,
+    # by inverting the share of that state's final turnout that had been cast at
+    # the same days-to-election in the last comparable election. Its own
+    # subcommand and NOT part of the six-hourly ingest walk, for the same reason
+    # `estimate`, `regress` and `counterfactual` are not -- the daily job must
+    # never be able to publish a model number -- and `ev.turnout` is imported
+    # inside the dispatcher below so `ingest` never loads it. It writes ONLY
+    # output/turnout.csv, never a reported column of ev_state_daily.csv.
+    tur = sub.add_parser(
+        "turnout",
+        help="project each state's final turnout from its early-vote pace, "
+             "scored OUT OF SAMPLE against both nulls -> output/turnout.csv. "
+             "Read docs/turnout.md: it beats neither.",
+    )
+    tur.add_argument("--state", nargs="+", help="limit to these states")
+    # Every cycle by default, like `estimate` and `counterfactual`: the table is
+    # re-derived from output/ each run, so restricting it to 2026 would freeze
+    # the 2024-vs-2022 audit rows under whatever method wrote them first.
+    tur.add_argument("--cycle", type=int, nargs="+", default=None, choices=CYCLES,
+                     help="target cycles (default: every cycle with a reference)")
+    tur.add_argument("--dry-run", action="store_true")
+    tur.add_argument("--validate", action="store_true",
+                     help="fit the curve on one cycle, project the other, and "
+                          "print the per-state error as a percent of actual "
+                          "turnout beside both nulls")
+    tur.add_argument("--fit", type=int, choices=CYCLES,
+                     help="with --validate: the cycle to fit the curve on")
+    tur.add_argument("--test", type=int, choices=CYCLES,
+                     help="with --validate: the cycle to project")
+    tur.add_argument("--both-directions", action="store_true",
+                     help="with --validate: score 2022->2024 and 2024->2022")
+    tur.add_argument("--cross-type", action="store_true",
+                     help="fall back to the cycle two years back when the "
+                          "comparable one is missing. Measured at 58%% error; "
+                          "off by default and there is a document saying why")
+
+    def _turnout(args):
+        from . import turnout as projector
+
+        return projector.cmd_turnout(args)
+
+    tur.set_defaults(func=_turnout)
     return p
 
 
