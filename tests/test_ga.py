@@ -24,6 +24,7 @@ from __future__ import annotations
 
 import csv
 import io
+import json
 import zipfile
 from datetime import date
 from pathlib import Path
@@ -82,6 +83,19 @@ def test_no_party_field_is_ever_populated(primary, general):
         for row in result.state_rows + result.county_rows:
             for field in PARTY_FIELDS:
                 assert getattr(row, field) is None, (field, row)
+
+
+def test_no_party_field_is_ever_zero(primary, general):
+    """The failure mode THE BLANK RULE exists for.
+
+    `is None` above already excludes 0, but 0 is the specific wrong answer here
+    -- it renders on the site as "zero Democrats have voted" in a state that has
+    no party registration to count -- so it gets its own assertion by name.
+    """
+    for result in (primary, general):
+        for row in result.state_rows + result.county_rows:
+            for field in PARTY_FIELDS:
+                assert getattr(row, field) != 0, (field, row)
 
 
 def test_the_fixture_really_does_carry_a_party_column():
@@ -400,16 +414,36 @@ def test_an_election_that_covers_no_counties_is_drift(monkeypatch):
 # --------------------------------------------------------------------------
 # The reCAPTCHA gate is a SourceError, deliberately -- the data exists
 # --------------------------------------------------------------------------
+def _gate(monkeypatch, up: bool) -> None:
+    """Pin the SoS's bot-check switch so no test ever calls the live endpoint."""
+    monkeypatch.setattr(ga.GAScraper, "bot_check_active", lambda self: up)
+
+
 def test_missing_recaptcha_token_is_a_source_error_not_not_yet_published(monkeypatch):
     """Georgia's file is there; we simply cannot reach it without a token. That
     must fall THROUGH to the aggregator, not stop the ladder as if Georgia had
     not started voting."""
     monkeypatch.delenv(ga.TOKEN_ENV, raising=False)
+    _gate(monkeypatch, up=True)
     monkeypatch.setattr(ga.GAScraper, "election_number", lambda self, cycle: "A-12601")
     with pytest.raises(SourceError) as caught:
         ga.GAScraper().fetch(2026, date(2026, 9, 5))
     assert not isinstance(caught.value, NotYetPublished)
     assert ga.TOKEN_ENV in str(caught.value)
+
+
+def test_the_error_says_georgia_cannot_be_collected_unattended(monkeypatch):
+    """The finding, not a TODO: this text is what a maintainer reads in the CI
+    log every night, so it has to name the cause and the consequence."""
+    monkeypatch.delenv(ga.TOKEN_ENV, raising=False)
+    _gate(monkeypatch, up=True)
+    monkeypatch.setattr(ga.GAScraper, "election_number", lambda self, cycle: "A-12601")
+    with pytest.raises(SourceError) as caught:
+        ga.GAScraper().fetch(2026, date(2026, 9, 5))
+    message = str(caught.value)
+    assert "cannot be collected unattended" in message
+    assert "aggregator" in message
+    assert "docs/georgia-source.md" in message
 
 
 def test_a_token_drives_the_real_presign_and_download(monkeypatch):
@@ -449,6 +483,7 @@ def test_live_fetch_never_serves_a_stale_cache(monkeypatch, tmp_path):
     """Today's file changes every morning, so a cached copy is not an answer to
     'what does Georgia say now' -- only to 'what did 2022 finish at'."""
     monkeypatch.delenv(ga.TOKEN_ENV, raising=False)
+    _gate(monkeypatch, up=True)
     cached = tmp_path / "2026_A-12601_absentee.zip"
     cached.write_bytes(_zip(GENERAL.read_bytes()))
     monkeypatch.setattr(ga._net, "cache_path", lambda state, filename: cached)
@@ -485,6 +520,250 @@ def test_current_cycle_has_no_archive():
 def test_html_error_page_is_a_source_error():
     with pytest.raises(SourceError):
         ga.parse(b"<!DOCTYPE html><html>nope</html>", 2026, date(2026, 9, 5))
+
+
+# --------------------------------------------------------------------------
+# Georgia's own kill switch: the only route to an unattended Georgia
+# --------------------------------------------------------------------------
+RECAPTCHA_DETAILS = FIXTURES / "recaptcha_details.json"
+
+
+def test_the_live_switch_really_is_on():
+    """A verbatim capture of VrMvpUtility.getRecaptchaDetails on 2026-09-06.
+
+    This fixture is the evidence for the whole "Georgia cannot run unattended"
+    finding: both of the Secretary of State's switches are on. If a future
+    capture disagrees, the tokenless path below is what should start working.
+    """
+    action = json.loads(RECAPTCHA_DETAILS.read_text())
+    details = action["returnValue"]["returnValue"]
+    assert action["state"] == "SUCCESS"
+    assert [details[f] for f in ga.BOT_CHECK_FIELDS] == [True, True]
+
+
+def test_bot_check_reads_the_real_payload(monkeypatch):
+    action = json.loads(RECAPTCHA_DETAILS.read_text())
+    monkeypatch.setattr(ga.GAScraper, "_apex", lambda self, c, m, p: action)
+    assert ga.GAScraper().bot_check_active() is True
+
+
+@pytest.mark.parametrize("flags", [
+    {"Active__c": False, "Bot_Check_Active__c": True},
+    {"Active__c": True, "Bot_Check_Active__c": False},
+    {"Active__c": False, "Bot_Check_Active__c": False},
+])
+def test_either_switch_off_takes_the_gate_down(monkeypatch, flags):
+    monkeypatch.setattr(
+        ga.GAScraper, "_apex",
+        lambda self, c, m, p: {"state": "SUCCESS", "returnValue": {"returnValue": flags}},
+    )
+    assert ga.GAScraper().bot_check_active() is False
+
+
+@pytest.mark.parametrize("action", [
+    {"state": "ERROR", "error": [{"message": "boom"}]},
+    {"state": "SUCCESS", "returnValue": {"returnValue": None}},
+    {"state": "SUCCESS", "returnValue": {"returnValue": "not a map"}},
+    # A field disappearing is a shape we have never seen, not permission to
+    # start hammering the presign endpoint.
+    {"state": "SUCCESS", "returnValue": {"returnValue": {"Active__c": False}}},
+])
+def test_an_uncertain_answer_means_the_gate_is_up(monkeypatch, action):
+    monkeypatch.setattr(ga.GAScraper, "_apex", lambda self, c, m, p: action)
+    assert ga.GAScraper().bot_check_active() is True
+
+
+def test_a_failed_probe_means_the_gate_is_up(monkeypatch):
+    def boom(self, cls, method, params):
+        raise SchemaDrift("GA: getRecaptchaDetails is gone")
+
+    monkeypatch.setattr(ga.GAScraper, "_apex", boom)
+    assert ga.GAScraper().bot_check_active() is True
+
+
+def test_a_lowered_gate_is_tried_without_a_token(monkeypatch):
+    """If Georgia ever switches its own bot check off, the nightly job starts
+    working with no code change. This is the whole reason we ask."""
+    monkeypatch.delenv(ga.TOKEN_ENV, raising=False)
+    _gate(monkeypatch, up=False)
+    monkeypatch.setattr(ga.GAScraper, "election_number", lambda self, cycle: "A-12601")
+    seen: dict = {}
+
+    def presign(self, key, token):
+        seen.update(key=key, token=token)
+        return f"https://{ga.BUCKET_HOST}/{key}?sig=x"
+
+    monkeypatch.setattr(ga.GAScraper, "presigned_url", presign)
+    monkeypatch.setattr(ga._net, "get", lambda url, **kw: _zip(GENERAL.read_bytes()))
+
+    result = ga.GAScraper().fetch(2026, date(2026, 9, 5))
+    assert seen == {"key": "GAVR/ABSENTEE_ZIP/2026/A-12601/A-12601.zip", "token": ""}
+    assert result.state_rows[-1].mail_requested > 0
+
+
+def test_a_lowered_gate_that_still_refuses_is_the_same_source_error(monkeypatch):
+    """The tokenless branch is an ATTEMPT, not an assumption -- it cannot be
+    exercised against the live site while the switch is on, so a refusal has to
+    land on the ordinary fall-through and say the ordinary thing."""
+    monkeypatch.delenv(ga.TOKEN_ENV, raising=False)
+    _gate(monkeypatch, up=False)
+
+    def refuse(self, key, token):
+        raise SourceError("GA: presign of ... failed: ['V3 Recaptcha Failed']")
+
+    monkeypatch.setattr(ga.GAScraper, "presigned_url", refuse)
+    with pytest.raises(SourceError) as caught:
+        ga.GAScraper()._download(2026, "A-12601", allow_cache=False)
+    assert not isinstance(caught.value, NotYetPublished)
+    assert "cannot be collected unattended" in str(caught.value)
+    assert "V3 Recaptcha Failed" in str(caught.value)
+
+
+def test_a_lowered_gate_does_not_flatten_drift_into_the_captcha_message(monkeypatch):
+    """Salesforce changing shape under us is its own signal, not a captcha."""
+    monkeypatch.delenv(ga.TOKEN_ENV, raising=False)
+    _gate(monkeypatch, up=False)
+
+    def drifted(self, key, token):
+        raise SchemaDrift("GA: presign response carried no download_url")
+
+    monkeypatch.setattr(ga.GAScraper, "presigned_url", drifted)
+    with pytest.raises(SchemaDrift, match="download_url"):
+        ga.GAScraper()._download(2026, "A-12601", allow_cache=False)
+
+
+def test_a_lowered_gate_still_reports_an_unposted_file_as_not_yet_published(monkeypatch):
+    """NotYetPublished must survive the tokenless branch: an election whose zip
+    is not up yet is not the same condition as a gate we cannot pass."""
+    monkeypatch.delenv(ga.TOKEN_ENV, raising=False)
+    _gate(monkeypatch, up=False)
+    monkeypatch.setattr(
+        ga.GAScraper, "presigned_url",
+        lambda self, key, token: f"https://{ga.BUCKET_HOST}/{key}?sig=x",
+    )
+
+    def missing(*args, **kwargs):
+        raise ga._net.Missing("404")
+
+    monkeypatch.setattr(ga._net, "get", missing)
+    with pytest.raises(NotYetPublished):
+        ga.GAScraper()._download(2026, "A-12601", allow_cache=False)
+
+
+def test_the_cache_still_wins_before_the_switch_is_consulted(monkeypatch, tmp_path):
+    """A backfill off a cached archive must not touch the network at all."""
+    monkeypatch.delenv(ga.TOKEN_ENV, raising=False)
+    body = _zip(PRIMARY.read_bytes())
+    cached = tmp_path / "2022_A-12054_absentee.zip"
+    cached.write_bytes(body)
+    monkeypatch.setattr(ga._net, "cache_path", lambda state, filename: cached)
+
+    def never(self, cls, method, params):  # pragma: no cover - must not run
+        raise AssertionError("the cached archive should not need the network")
+
+    monkeypatch.setattr(ga.GAScraper, "_apex", never)
+    assert ga.GAScraper()._download(2022, "A-12054", allow_cache=True) == body
+
+
+def test_the_recorded_site_key_is_the_enterprise_one():
+    """Recorded so a reader can tell this is reCAPTCHA Enterprise, not classic
+    v3. The adapter never calls Google; the key is evidence, not plumbing."""
+    assert ga.RECAPTCHA_SITE_KEY.startswith("6Ld")
+    assert "recaptcha" not in ga.PAGE
+
+
+# --------------------------------------------------------------------------
+# The presign payload must match the page BYTE FOR BYTE
+# --------------------------------------------------------------------------
+def test_token_payload_matches_the_pages_own_shape():
+    """`handleZipFile(token, "V3", fileName)` posts
+    `{recaptchaResponse: JSON.stringify({response, action}), version: "V3"}`.
+
+    The Apex validates the SHAPE before it validates the token, so an invented
+    shape is refused for the wrong reason -- it answers "Missing necessary
+    information" rather than "V3 Recaptcha Failed", and a maintainer reading the
+    log would conclude Georgia is captcha'd when we had actually sent nonsense.
+    """
+    params = ga.recaptcha_params("03AF-a-real-token")
+    assert params["version"] == "V3"
+    assert json.loads(params["recaptchaResponse"]) == {
+        "response": "03AF-a-real-token",
+        "action": "Submit",
+    }
+
+
+def test_tokenless_payload_matches_the_pages_gate_down_shape():
+    """With `Active__c` false the page calls `handleZipFile("", "", fileName)`,
+    i.e. `JSON.stringify("")` -- the two-character string `""` -- and an EMPTY
+    version, not "V3".
+
+    This is the branch that would start working if Georgia lowered its gate, so
+    it has to speak the SoS's language rather than ours.
+    """
+    params = ga.recaptcha_params("")
+    assert params == {"recaptchaResponse": '""', "version": ""}
+
+
+def test_the_tokenless_shape_is_not_the_token_shape():
+    """Guards the pair above from drifting back together. The old code sent
+    `{"response": "", "action": "Submit"}` with version "V3" for BOTH, which is
+    a shape the live action has never been observed to accept."""
+    assert ga.recaptcha_params("") != ga.recaptcha_params("tok")
+    assert "response" not in json.loads(ga.recaptcha_params("")["recaptchaResponse"] or '""')
+
+
+REFUSAL = FIXTURES / "presign_refusal_browser_token.json"
+
+
+def test_a_real_browser_minted_token_is_still_refused():
+    """The evidence for "a scripted browser does not get past this".
+
+    Captured 2026-09-06: headless Playwright Chromium loaded the page, reCAPTCHA
+    Enterprise minted a genuine 2,318-character token in under a second, and the
+    presign -- sent in the page's own shape -- still came back "V3 Recaptcha
+    Failed". Minting is not the hard part; passing the server-side assessment is,
+    and a fresh automated browser scores below Georgia's threshold.
+
+    If a future capture of this shows SUCCESS, a browser step became viable and
+    the module docstring's headline needs rewriting.
+    """
+    captured = json.loads(REFUSAL.read_text())
+    assert captured["_token_length"] > 1000, "a real token, not a stub"
+    assert captured["_request_params"]["version"] == "V3"
+    action = captured["action"]
+    assert action["state"] == "ERROR"
+    assert [e["message"] for e in action["error"]] == ["V3 Recaptcha Failed"]
+
+
+def test_that_refusal_becomes_a_source_error_not_not_yet_published(monkeypatch):
+    """However it fails, a refused token must fall THROUGH to the aggregator."""
+    action = json.loads(REFUSAL.read_text())["action"]
+    monkeypatch.setattr(ga.GAScraper, "_apex", lambda self, c, m, p: action)
+    with pytest.raises(SourceError) as caught:
+        ga.GAScraper().presigned_url("GAVR/ABSENTEE_ZIP/2026/A-12601/A-12601.zip", "tok")
+    assert not isinstance(caught.value, NotYetPublished)
+    assert "V3 Recaptcha Failed" in str(caught.value)
+
+
+def test_presign_sends_exactly_those_params(monkeypatch):
+    """Wiring: presigned_url must hand the Apex call the page's pair plus the
+    object key, and nothing else."""
+    seen = {}
+
+    def apex(self, cls, method, params):
+        seen.update(cls=cls, method=method, params=params)
+        return {"state": "SUCCESS",
+                "returnValue": {"returnValue": '"{\\"download_url\\": \\"https://x/y\\"}"'}}
+
+    monkeypatch.setattr(ga.GAScraper, "_apex", apex)
+    url = ga.GAScraper().presigned_url("GAVR/ABSENTEE_ZIP/2026/A-12601/A-12601.zip", "tok")
+    assert url == "https://x/y"
+    assert (seen["cls"], seen["method"]) == (
+        "VrMvpUtility", "getPublicDownloadPresignedContent")
+    assert seen["params"] == {
+        "fileName": "GAVR/ABSENTEE_ZIP/2026/A-12601/A-12601.zip",
+        **ga.recaptcha_params("tok"),
+    }
 
 
 def test_adapter_identity():

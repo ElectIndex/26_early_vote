@@ -26,32 +26,68 @@ districts and ballot lifecycle -- no age, no race, no gender (unlike the
 pre-2020 layout and unlike North Carolina). So GA emits no DemoDay rows at all
 rather than inventing an "unknown" bucket.
 
-**3. The download is behind Google reCAPTCHA v3.** The old
-`elections.sos.ga.gov/Elections/voterabsenteefile.do` endpoint now 301s to a
-Salesforce Experience Cloud page, `https://mvp.sos.ga.gov/s/voter-absentee-files`.
-Its Submit button calls a public Apex action which returns a *presigned* S3 URL,
-and that Apex action rejects the call outright ("No Recaptcha Response") unless
-it is handed a live reCAPTCHA v3 token. The S3 bucket itself is private -- an
-unsigned GET is 403, and so is a bucket listing.
+**3. GEORGIA CANNOT BE COLLECTED UNATTENDED.** This is a finding, not a TODO.
+The old `elections.sos.ga.gov/Elections/voterabsenteefile.do` endpoint now 301s
+to a Salesforce Experience Cloud page,
+`https://mvp.sos.ga.gov/s/voter-absentee-files`. Its Submit button calls a public
+Apex action that returns a *presigned* S3 URL, and that action refuses every
+request that does not carry a live reCAPTCHA Enterprise token. There is no
+unprotected sibling: the URL it hands back is presigned, and the bucket behind it
+answers 403 to an object GET and to a listing alike. (The Aura endpoints below
+are NOT blocked -- Cloudflare challenges the sos.ga.gov CMS, not this API.)
+`docs/georgia-source.md` records every Georgia source checked on 2026-09-06 and
+what each returned.
 
-Everything except the token is plain HTTP and is implemented here:
+Everything EXCEPT the token is plain HTTP and is implemented here:
 
-  * `getElectionOptions` (no captcha) resolves the cycle's election to its
-    auto-number, e.g. the 2026 general is `A-12601`.
+  * `vrWebIntegrationController.getElectionOptions` (no captcha) resolves the
+    cycle's election to its auto-number, e.g. the 2026 general is `A-12601`.
   * the statewide object key is `GAVR/ABSENTEE_ZIP/<year>/<A-number>/<A-number>.zip`
     and a per-county one is `GAVR/ABSENTEE_BALLOT/<year>/<A-number>/<COUNTY>.csv`.
-  * `getPublicDownloadPresignedContent` (captcha) trades an object key for a
-    presigned `download_url`.
+  * `VrMvpUtility.getRecaptchaDetails` (no captcha) reports the SoS's OWN switch
+    for the gate -- see `bot_check_active()`.
+  * `VrMvpUtility.getPublicDownloadPresignedContent` (captcha) trades an object
+    key for a presigned `download_url`.
 
-So `fetch()` needs a token in `$GA_SOS_RECAPTCHA_TOKEN`, minted immediately
-before the run -- a token is single-use and lives about two minutes, so the CI
-job has to run a headless browser step against the page and export the token
-into the environment. Without one this adapter raises SourceError, which is the
-correct signal: the data exists, we could not get it, and the ladder should fall
-through to the aggregator rather than pretend Georgia has not started voting.
+So the only way to collect Georgia is to put a token in `$GA_SOS_RECAPTCHA_TOKEN`
+immediately before the run: it is single-use and lives about two minutes, so a
+human or a browser step has to mint it. That does not survive a nightly GitHub
+Actions job, so in CI this adapter raises SourceError -- which is the correct
+signal, not a failure to try. The data exists, we could not get it, and the
+ladder falls through to the aggregator (which does carry Georgia) rather than
+pretending Georgia has not started voting. Raising NotYetPublished here would be
+the real bug: it would stop the ladder and blank the state out entirely.
 
-VERIFIED 2026-09-05 by driving the real page and downloading real files; the
-fixtures under tests/fixtures/ga/ are slices of those downloads.
+A SCRIPTED BROWSER DOES NOT GET PAST THIS. Tested 2026-09-06, so that nobody
+spends another day on it. Playwright Chromium loads the page, reCAPTCHA
+Enterprise initialises, and `grecaptcha.enterprise.execute()` happily returns a
+~2.3 kB token in under a second -- HEADLESS AND HEADED ALIKE. Both tokens were
+then posted to the presign in the page's exact shape (see `recaptcha_params`,
+which was read out of the page's own inline script) and both came back
+`ERROR "V3 Recaptcha Failed"`. So the token mints fine and the SERVER-SIDE
+Enterprise assessment is what refuses it: a fresh, profile-less, automated
+browser scores below Georgia's threshold. That is a bot check working as
+designed, and it would score WORSE on a GitHub Actions runner -- datacenter IP,
+throwaway profile, no history -- not better. Note the page's own "automation"
+check is unrelated and is pure theatre: it is literally
+`new CustomEvent('automationDetected', {detail: window.navigator.webdriver})`,
+evaluated in the browser, and it never reaches the server.
+
+Georgia's kill switch is the remaining automatic way out, but it is WEAKER than
+it looks. The page asks `getRecaptchaDetails` on every load and gets back
+`Active__c` / `Bot_Check_Active__c`; both were true on 2026-09-06. Those flags
+only steer the PAGE: `verifyRecaptcha()` skips straight to `handleZipFile("",
+"", fileName)` when `Active__c` is false. The Apex action does not consult them
+-- posting that same tokenless shape while the switch is on answers
+`ERROR "Missing necessary information to handle the request."`, not a download.
+So the switch coming down is NECESSARY but not demonstrably SUFFICIENT.
+`_download` still tries, because trying costs one request and the alternative is
+never noticing; it is written as an ATTEMPT, never an assumption, and a refusal
+ends in the same SourceError.
+
+VERIFIED 2026-09-05/06 by driving the real page and downloading real files; the
+fixtures under tests/fixtures/ga/ are slices of those downloads and a verbatim
+capture of the live `getRecaptchaDetails` response.
 """
 
 from __future__ import annotations
@@ -94,14 +130,52 @@ COUNTY_KEY = "GAVR/ABSENTEE_BALLOT/{year}/{number}/{county}.csv"
 #: Where the presigned URL points. Private: an unsigned GET is 403.
 BUCKET_HOST = "prod-ga-sos-vr-data-processing-bucket.s3.amazonaws.com"
 
-#: A live reCAPTCHA v3 token for the page, minted by a browser step immediately
+#: A live reCAPTCHA token for the page, minted by a browser step immediately
 #: before the run. Single-use, ~2 minutes.
 TOKEN_ENV = "GA_SOS_RECAPTCHA_TOKEN"
 
-NO_TOKEN = (
-    f"GA: no {TOKEN_ENV} in the environment. The Secretary of State's absentee "
-    f"download is behind reCAPTCHA v3 ({PAGE}); a token must be minted by a "
-    "browser step and exported before this adapter runs."
+#: The reCAPTCHA ENTERPRISE site key the page renders with. VERIFIED 2026-09-06
+#: from the live page's own
+#: <script src="https://www.google.com/recaptcha/enterprise.js?render=...">.
+#: Recorded so a future reader can tell at a glance that this is Enterprise and
+#: not classic v3 -- the adapter never calls Google itself.
+RECAPTCHA_SITE_KEY = "6LdUOgYfAAAAAGDYBY939FbeWV3bL-Ktw2EKMoua"
+
+#: The action name minted with the token. VERIFIED 2026-09-06 by reading the
+#: inline script on the live page:
+#:
+#:     grecaptcha.enterprise.execute(
+#:         '6LdU...', {action: 'Submit'}).then(function(token) {
+#:         document.dispatchEvent(new CustomEvent('grecaptchaVerified',
+#:             {'detail': {response: token, action: 'Submit'}})); });
+#:
+#: reCAPTCHA Enterprise binds the action into the token and an assessment can
+#: reject a mismatch, so this string is not decorative.
+RECAPTCHA_ACTION = "Submit"
+
+#: `version` values the Apex action branches on, from the same component
+#: (`c/vrWiVoterAbsenteeFiles.handleZipFile(token, version, fileName)`).
+#: With a token the page passes "V3"; with the gate down it passes "".
+VERSION_V3 = "V3"
+VERSION_NONE = ""
+
+#: The SoS's own switches for the gate, returned by
+#: VrMvpUtility.getRecaptchaDetails. VERIFIED 2026-09-06: both are `true`.
+#: A field we have never seen counts as "the gate is up" -- see bot_check_active.
+BOT_CHECK_FIELDS = ("Active__c", "Bot_Check_Active__c")
+
+#: The message that goes out when Georgia cannot be collected. It has to say
+#: plainly that this is a property of the source and not a bug in the run,
+#: because it is what a maintainer sees in the CI log every single night.
+UNATTENDED = (
+    "GA: Georgia cannot be collected unattended. The Secretary of State's only "
+    "machine-readable absentee/advance-voting file is gated by reCAPTCHA "
+    f"Enterprise on {PAGE}: the presign action refuses every request without a "
+    "live browser-minted token, the S3 bucket behind it is private, and no "
+    "unprotected sibling or alternative statewide feed exists (see "
+    f"docs/georgia-source.md for what was checked). Export {TOKEN_ENV} from a "
+    "browser step to collect Georgia by hand; otherwise this must fall through "
+    "to the aggregator, which does carry Georgia."
 )
 
 #: The statewide member inside the zip. It is the union of the 159 per-county
@@ -175,6 +249,48 @@ def ballot_method(style: str | None) -> str:
     if bucket is None:
         raise SchemaDrift(f"GA: unrecognised Ballot Style {style!r}")
     return bucket
+
+
+def recaptcha_params(token: str) -> dict[str, str]:
+    """The `recaptchaResponse` / `version` pair for a presign call.
+
+    Mirrors `c/vrWiVoterAbsenteeFiles.handleZipFile(token, version, fileName)`,
+    which posts `{recaptchaResponse: JSON.stringify(token), version: version}`
+    where `token` is the whole `grecaptchaVerified` detail object, not the bare
+    string. So the wire shape with a token is::
+
+        {"recaptchaResponse": '{"response": "03AF...", "action": "Submit"}',
+         "version": "V3"}
+
+    and the shape the page falls back to when the Secretary of State's own
+    `Active__c` switch is OFF -- `handleZipFile("", "", fileName)` -- is::
+
+        {"recaptchaResponse": '""', "version": ""}
+
+    VERIFIED 2026-09-06, both replayed against the live action:
+
+    ==========================================  ==========================================
+    sent                                        answered
+    ==========================================  ==========================================
+    the token shape above, real browser token    ERROR "V3 Recaptcha Failed"
+    the tokenless shape above                    ERROR "Missing necessary information ..."
+    ``recaptchaResponse`` omitted                ERROR "No Recaptcha Response"
+    ==========================================  ==========================================
+
+    The middle row is the important one and it is why this function exists: the
+    tokenless branch now sends what the SoS's own front end sends rather than a
+    shape we made up, so if Georgia ever lowers the gate we are already speaking
+    its language. It still fails TODAY, because the switch is only a client-side
+    toggle -- the Apex checks the token unconditionally. See docs/georgia-source.md.
+    """
+    if not token:
+        return {"recaptchaResponse": json.dumps(""), "version": VERSION_NONE}
+    return {
+        "recaptchaResponse": json.dumps(
+            {"response": token, "action": RECAPTCHA_ACTION}
+        ),
+        "version": VERSION_V3,
+    }
 
 
 class _Bucket:
@@ -454,13 +570,52 @@ class GAScraper(Adapter):
             log.info("GA: %d elections dated %s; chose %s", len(candidates), wanted, number)
         return number
 
+    def bot_check_active(self) -> bool:
+        """Is the SoS's own reCAPTCHA gate switched on right now?
+
+        The page asks this on every load and we ask it for one reason: it is the
+        only *change of Georgia's own* that could plausibly make the state
+        collectable unattended. If Georgia turns the gate off, `_download` stops
+        demanding a token and tries the presign with no code change.
+
+        It is a CLIENT-SIDE toggle, so a `False` here is a green light to try,
+        not a promise of success -- the Apex refused the tokenless shape on
+        2026-09-06 with the switch on. See `recaptcha_params`.
+
+        Every uncertain answer -- the call failed, the action errored, the shape
+        is not what we saw on 2026-09-06, a flag we do not recognise -- returns
+        True. "I could not tell" must mean "assume the gate is up", because the
+        alternative is a pointless presign call against a state election site.
+        """
+        try:
+            action = self._apex("VrMvpUtility", "getRecaptchaDetails", {})
+        except SourceError:
+            return True
+        if action.get("state") != "SUCCESS":
+            return True
+        details = (action.get("returnValue") or {}).get("returnValue")
+        if not isinstance(details, dict):
+            return True
+        flags = [details.get(field) for field in BOT_CHECK_FIELDS]
+        if any(flag is None for flag in flags):
+            return True
+        # Either switch being off is the gate coming down, so it takes BOTH
+        # being on to keep it up.
+        return all(bool(flag) for flag in flags)
+
     def presigned_url(self, object_key: str, token: str) -> str:
-        """Trade an S3 object key for a presigned download URL."""
+        """Trade an S3 object key for a presigned download URL.
+
+        The payload is built to match `c/vrWiVoterAbsenteeFiles` BYTE FOR BYTE,
+        because the Apex action validates the shape before it validates the
+        token and an invented shape gets refused for the wrong reason -- which
+        would read in a log as "Georgia is captcha'd" when it really meant "we
+        sent nonsense". Both branches were replayed against the live endpoint on
+        2026-09-06; see `recaptcha_params` for what each one returns.
+        """
         action = self._apex(
             "VrMvpUtility", "getPublicDownloadPresignedContent",
-            {"fileName": object_key,
-             "recaptchaResponse": json.dumps({"response": token, "action": "Submit"}),
-             "version": "V3"},
+            {"fileName": object_key, **recaptcha_params(token)},
         )
         if action.get("state") != "SUCCESS":
             messages = [e.get("message", "") for e in action.get("error") or []]
@@ -480,18 +635,20 @@ class GAScraper(Adapter):
     def _cache_name(self, cycle: int, number: str) -> str:
         return f"{cycle}_{number}_absentee.zip"
 
+    def _presigned_download(self, object_key: str, filename: str, token: str) -> bytes:
+        url = self.presigned_url(object_key, token)
+        try:
+            return _net.get(url, state=self.state, filename=filename,
+                            min_bytes=MIN_BYTES)
+        except _net.Missing as exc:
+            raise NotYetPublished(f"GA: {object_key} is not posted") from exc
+
     def _download(self, cycle: int, number: str, *, allow_cache: bool) -> bytes:
         filename = self._cache_name(cycle, number)
+        object_key = ZIP_KEY.format(year=cycle, number=number)
         token = os.environ.get(TOKEN_ENV, "").strip()
         if token:
-            url = self.presigned_url(
-                ZIP_KEY.format(year=cycle, number=number), token
-            )
-            try:
-                return _net.get(url, state=self.state, filename=filename,
-                                min_bytes=MIN_BYTES)
-            except _net.Missing as exc:
-                raise NotYetPublished(f"GA: {number} absentee zip is not posted") from exc
+            return self._presigned_download(object_key, filename, token)
 
         if allow_cache:
             path = _net.cache_path(self.state, filename)
@@ -499,7 +656,26 @@ class GAScraper(Adapter):
                 log.debug("GA: serving archived %s from cache", filename)
                 return path.read_bytes()
 
-        raise SourceError(NO_TOKEN)
+        if self.bot_check_active():
+            raise SourceError(UNATTENDED)
+
+        # Georgia reports its own gate as OFF. Still an ATTEMPT, not an
+        # assumption: the switch is a CLIENT-SIDE toggle, and the Apex action
+        # refused this exact tokenless shape on 2026-09-06 while the switch was
+        # on ("Missing necessary information to handle the request"). Whether it
+        # relents once the switch is genuinely off cannot be tested from here --
+        # so we spend one request to find out, and a refusal ends in exactly the
+        # same SourceError as above.
+        log.info("GA: SoS reports its bot check off; trying a tokenless presign")
+        try:
+            return self._presigned_download(object_key, filename, "")
+        except SchemaDrift:
+            # The org changed shape under us. That is its own signal and must
+            # not be flattened into "Georgia is captcha'd". (NotYetPublished is
+            # not a SourceError, so it already passes through untouched.)
+            raise
+        except SourceError as exc:
+            raise SourceError(f"{UNATTENDED} Tokenless attempt: {exc}") from exc
 
     # ------------------------------------------------------------------
     def fetch(self, cycle: int, as_of: date) -> FetchResult:
