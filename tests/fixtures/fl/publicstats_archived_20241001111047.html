@@ -1,0 +1,501 @@
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width" />
+        <title>Statistics - County Vote-by-Mail and Early Voting Reports</title>
+        <link href="/Content/themes/base/jquery-ui.css" rel="stylesheet"/>
+<link href="/Content/site.css" rel="stylesheet"/>
+
+        <link href="/Scripts/modernizr-2.8.3.js" rel="stylesheet"/>
+
+        <link href="/Content/DataTables/css/dataTables.jqueryui.css" rel="stylesheet"/>
+<link href="/Content/DataTables/css/select.dataTables.css" rel="stylesheet"/>
+<link href="/Content/DataTables/css/responsive.jqueryui.css" rel="stylesheet"/>
+
+        <script src="/Scripts/jquery-3.3.1.js"></script>
+<script src="/Scripts/jquery-ui-1.12.1.js"></script>
+
+        
+        <script src="/Scripts/respond.js"></script>
+
+        <script src="/Scripts/DataTables/jquery.dataTables.js"></script>
+<script src="/Scripts/DataTables/dataTables.select.js"></script>
+
+
+        
+                
+        
+        
+    </head>
+    <body>
+        
+        <div class="contentHolder">
+            <div class="headerRight">
+                <div class="headerLeft">
+                    <div id="title">Vote-by-Mail Request and Early Voting Reports</div>
+                    
+                </div>
+            </div>
+            <menu>
+                <style>
+    * {
+        box-sizing: border-box;
+    }
+
+    .leftdiv {
+        float: left;
+        width: 20%;
+       
+    }
+
+    .rightdiv {
+        float: right;
+        width: 80%;
+        padding: 5px;
+    }
+
+    .row:after {
+        content: "";
+        display: table;
+        clear: both;
+    }
+    /*Responsive layout*/
+    @media screen and (max-width: 600px) {
+        .leftdiv {
+            width: 50%;
+        }
+
+        .rightdiv {
+            width: 50%;
+        }
+    }
+</style>
+
+<div class="row">
+    <div class="leftdiv">
+        <ul id="menu" style="margin:-18px 0 0 -20px">
+        </ul>
+
+    </div>
+    <div class="rightdiv">
+        <ul id="menu" style="padding-right: 5px">
+           
+            <li><a href="/" title="Home">Home</a></li>
+
+            <li><a href="/VoteByMailEarlyVotingReports/VoteByMailHome" title="VoteByMail Requests">Vote-by-Mail</a></li>
+            <li><a href="/VoteByMailEarlyVotingReports/EarlyVotingHome" title="Early Voting">Early Voting</a></li>
+
+            <li><a href="/VoteByMailEarlyVotingReports/PublicStats" title="Statistics">Statistics</a></li>
+
+
+
+            
+
+
+        </ul>
+
+
+    </div>
+
+</div>
+
+            </menu>
+            <div id="main">
+                <div id="content">
+                   
+
+<script>
+    $(document).ready(function() {
+
+        $('#statewideTotal').tabs({
+            collapsible: false,
+            show: function() {
+                var selectedTab = $('#statewideTotal').tabs('option', 'selected');
+
+            }
+        });
+
+        $('#countyTotal').tabs({
+            collapsible: false,
+            show: function() {
+                var selectedTab = $('#countyTotal').tabs('option', 'selected');
+            }
+        });
+    });
+
+</script>
+
+
+
+<div >
+
+
+<H2>Vote-by-Mail Request & Early Voting Statistics</H2>The following information reflects statewide statistics compiled directly from the individual county daily reports 
+for vote-by-mail and early voting activity as last filed by the county. For county-by-county breakdown, scroll down to tabs.
+</br></br>
+<b>Frequency</b>: Daily reporting of early voting activity starts the day after early voting begins and ends on the Monday 
+after the end of early voting. Early voting schedules may vary county by county. Daily reporting of vote-by-mail activity 
+starts 60 days before the applicable election and ends on the 15th day after the election.
+</br></br>
+While a county is only required to report once a day by 8 a.m., in the event of technical difficulties, the website is refreshed 
+at noon, 3 p.m., and 6 p.m. so that all county reports will be available by 6 p.m. The reports are cumulative up through the prior 
+day’s vote-by-mail and early voting activity.
+</br></br>
+<b>Inquiries</b>: Any media inquiries regarding these statistics should be directed to the Department of State’s Communications 
+Office at 850.245.6522. Please contact the respective supervisor of elections directly for questions about county-specific reports. 
+</br></br>
+Reference Material: • <a href="http://dos.myflorida.com/elections/data-statistics/elections-data/absentee-and-early-voting/" 
+title="Archived statistical reports" target=”_blank"> Archived statistical reports</a>    
+</div>
+
+<h2>Statewide Totals</h2>
+
+<div id="statewideTotal" style="font-family: Arial;
+                                      font-size: 1em;
+                                      margin: 0;">
+    
+    
+    
+    <div>
+        
+        
+<br />
+                         <span style="font-size: medium"><b> 2024 General </b> </span>
+                         <br />
+                         <span><b>Election Number - 43888  &nbsp;&nbsp; &nbsp; Election Date - 11/05/2024 </b></span>
+                     <table>
+                         <tr>
+                            
+                             <th style="text-align: left;">
+                                 Stats Type
+                             </th>
+                             <th class="statsCenter">
+                                 Republican
+                             </th>
+                             <th class="statsCenter">
+                                 Democrat
+                             </th>
+                             <th class="statsCenter">
+                                 Other
+                             </th>
+                             <th class="statsCenter">
+                                 No Party Affiliation
+                             </th>
+                             <th class="statsCenter">
+                                 Total
+                             </th>
+                
+                             <th class="statsCenter">
+                                 Compiled
+                             </th>
+                             <th >
+                                
+                             </th>
+                         </tr>
+             
+
+                             <tr>
+                                 
+                                 <td style="text-align: left;">
+                                     Vote-by-Mail Provided (Not Yet Returned)
+                                 </td>
+                                 <td class="statsCenter">
+590,681                        
+                       
+                                 </td>
+                                 <td class="statsCenter">
+667,170                       
+                                 </td>
+                                 <td class="statsCenter">
+32,592                       
+                                 </td>
+                                 <td class="statsCenter">
+315,884                       
+
+                                 </td>
+                                 <td class="statsCenter">
+                        
+1,606,327                                 </td>
+                                 <td class="statsCenter" >09/30/2024
+5:03PM                                 </td>
+                                 
+                                 
+                                 <td class="statsCenter" >
+                                     
+                                 </td>
+                             </tr>
+                             <tr>
+                                 
+                                 <td style="text-align: left;">
+                                     Voted Vote-by-Mail
+                                 </td>
+                                 <td class="statsCenter">
+1,189                        
+                       
+                                 </td>
+                                 <td class="statsCenter">
+1,270                       
+                                 </td>
+                                 <td class="statsCenter">
+97                       
+                                 </td>
+                                 <td class="statsCenter">
+688                       
+
+                                 </td>
+                                 <td class="statsCenter">
+                        
+3,244                                 </td>
+                                 <td class="statsCenter" >09/30/2024
+5:03PM                                 </td>
+                                 
+                                 
+                                 <td class="statsCenter" >
+                                     
+                                 </td>
+                             </tr>
+                             <tr>
+                                 
+                                 <td style="text-align: left;">
+                                     Voted Early
+                                 </td>
+                                 <td class="statsCenter">
+                                         0
+                        
+                       
+                                 </td>
+                                 <td class="statsCenter">
+                                         0
+                       
+                                 </td>
+                                 <td class="statsCenter">
+                                         0
+                       
+                                 </td>
+                                 <td class="statsCenter">
+                                         0
+                       
+
+                                 </td>
+                                 <td class="statsCenter">
+                        
+                                         0
+                                 </td>
+                                 <td class="statsCenter" >
+                                 </td>
+                                 
+                                 
+                                 <td class="statsCenter" >
+                                     
+                                 </td>
+                             </tr>
+                     </table>
+        </div>
+    
+    
+    
+</div>
+
+
+<div>
+
+</div>
+
+<h2>County Totals</h2>
+
+<div id="countyTotal" style="font-family: Arial;
+                                                                                                                                                                                                                font-size: 1em;
+                                                                                                                                                                                                                margin: 0;">
+    <ul>
+        <li><a href="#county_ablnotyet">Vote-By-Mail Provided (Not Yet Returned)</a></li>
+        <li><a href="#county_abl">Voted Vote-by-Mail</a></li>
+        <li><a href="#county_evs">Voted Early</a></li>
+    </ul>
+    
+    
+    <div id="county_ablnotyet">
+         <table>
+            <tr>
+                <th>
+                    County
+                </th>
+                <th class="statsCenter">
+                    Election
+                </th>
+                <th class="statsRight">
+                    Republican
+                </th>
+                <th class="statsRight">
+                    Democrat
+                </th>
+                <th class="statsRight">
+                    Other
+                </th>
+                <th class="statsRight">
+                    No Party Affiliation
+                </th>
+                <th class="statsRight">
+                    Total
+                </th>
+
+                <th class="statsCenter">
+                    Compiled
+                </th>
+            </tr><tr>
+                            <td >Alachua                  </td>
+                            <td style="text-align: Center;">
+                                43888  - General
+                            </td>
+                            <td class="statsRight">
+7,544                            </td>
+                            <td class="statsRight">
+19,900                      
+                            </td>
+                            <td class="statsRight">
+616                            </td>
+                            <td class="statsRight" style="padding-right:30px; ">
+5,623                            </td>
+                            <td class="statsRight">
+33,683                            </td>
+                            <td class="statsCenter">
+                                09/30/2024
+8:05AM                            </td>
+                        </tr>
+        </table>
+        
+        
+
+    </div>
+
+    <div id="county_abl">
+        
+        <table>
+            <tr>
+                <th>
+                    County
+                </th>
+                <th class="statsCenter">
+                    Election
+                </th>
+                <th class="statsRight">
+                    Republican
+                </th>
+                <th class="statsRight">
+                    Democrat
+                </th>
+                <th class="statsRight">
+                    Other
+                </th>
+                <th class="statsRight">
+                    No Party Affiliation
+                </th>
+                <th class="statsRight">
+                    Total
+                </th>
+
+                <th class="statsCenter">
+                    Compiled
+                </th>
+            </tr><tr>
+                            <td >Alachua                  </td>
+                            <td style="text-align: Center;">
+                                43888  - General
+                            </td>
+                            <td class="statsRight">
+03                            </td>
+                            <td class="statsRight">
+25                      
+                            </td>
+                            <td class="statsRight">
+0                            </td>
+                            <td class="statsRight" style="padding-right:30px; ">
+06                            </td>
+                            <td class="statsRight">
+34                            </td>
+                            <td class="statsCenter">
+                                09/30/2024
+8:05AM                            </td>
+                        </tr>
+        </table>
+    </div>
+
+    <div id="county_evs">
+       
+        <table>
+            <tr>
+                <th>
+                    County
+                </th>
+                <th class="statsCenter">
+                    Election
+                </th>
+                <th class="statsRight">
+                    Republican
+                </th>
+                <th class="statsRight">
+                    Democrat
+                </th>
+                <th class="statsRight">
+                    Other
+                </th>
+                <th class="statsRight">
+                    No Party Affiliation
+                </th>
+                <th class="statsRight">
+                    Total
+                </th>
+
+                <th class="statsCenter">
+                    Compiled
+                </th>
+            </tr><tr>
+                            <td >Alachua                  </td>
+                            <td style="text-align: Center;">
+                                43888  - General
+                            </td>
+                            <td class="statsRight">
+0                            </td>
+                            <td class="statsRight">
+0                      
+                            </td>
+                            <td class="statsRight">
+0                            </td>
+                            <td class="statsRight" style="padding-right:30px; ">
+0                            </td>
+                            <td class="statsRight">
+0                            </td>
+                            <td class="statsCenter">
+                                
+                            </td>
+                        </tr>
+        </table>
+        
+    </div>
+</div>
+    
+    
+
+
+
+                </div>
+                <br/>
+                <div id="help-info">If you are experiencing a problem with this web site please contact the <a href="/cdn-cgi/l/email-protection#b8dcd1ceddd4dddbccd1d7d6cbf8dcd7cb96d5c1ded4d7cad1dcd996dbd7d5" title="Division of Elections contact email">Division of Elections</a>.</div>
+                <div id="help-info">County Ballot Reports - Version 1.0.1.0</div>
+            </div>
+            <div id="footer">
+                <a href="https://dos.fl.gov/">Florida Department of State</a><img src='/Content/images/greystar.gif' alt="" />
+                <a href="https://dos.fl.gov/elections">Division of Elections</a><img src='/Content/images/greystar.gif' alt="" />
+                <a href="https://dos.fl.gov/accessibility/">Accessibility</a><img src='/Content/images/greystar.gif' alt="" />
+                <a href="https://dos.fl.gov/privacy-policy/">Privacy Policy</a><img src='/Content/images/greystar.gif' alt="" />
+                <a href="https://dos.fl.gov/elections/contacts/contact-us/">Contact Us</a></div>
+        </div>
+
+        <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="https://www.google.com/recaptcha/api.js"></script>
+
+        
+
+    </body>
+
+</html>

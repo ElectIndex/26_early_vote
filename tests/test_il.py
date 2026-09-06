@@ -25,7 +25,8 @@ from pathlib import Path
 import pytest
 
 from ev.adapters import il
-from ev.adapters.base import NotYetPublished, SchemaDrift, SourceError
+from ev.adapters.base import (AdapterError, NotYetPublished, SchemaDrift,
+                              SourceError)
 
 FIXTURES = Path(__file__).parent / "fixtures" / "il"
 PAGE = FIXTURES / "PreElectionCounts.html"
@@ -309,8 +310,35 @@ def test_a_500_on_the_export_falls_through(monkeypatch):
 
 
 def test_there_is_no_archive_to_backfill():
-    with pytest.raises(NotYetPublished, match="no archived daily file"):
+    """Illinois has no recoverable 2024 or 2022 county series, and this says why.
+
+    Florida's page has the same "snapshot, overwritten in place" shape and its
+    two past cycles came straight out of the Wayback Machine. Illinois' does not,
+    because the counts live behind an ASP.NET postback: every archived capture of
+    the page that was fetched — five spread across November 2024, plus the single
+    2022 one — carries the dropdown unselected, with no tables and no export
+    links. The
+    refusal is a finding, so the message has to carry it rather than inherit the
+    base class's generic shrug.
+    """
+    with pytest.raises(NotYetPublished) as caught:
         il.ILScraper().fetch_history(2024)
+    message = str(caught.value)
+    assert "pre-election counts" in message
+    assert "Wayback" in message
+    assert il.INDEX in message
+
+
+def test_the_history_refusal_covers_2022_too():
+    with pytest.raises(NotYetPublished, match="2022"):
+        il.ILScraper().fetch_history(2022)
+
+
+def test_the_history_refusal_is_a_stop_not_a_fallthrough():
+    """NotYetPublished STOPS the ladder. A SourceError here would let a weaker
+    tier invent a statewide-only Illinois row and call it county data."""
+    assert issubclass(NotYetPublished, AdapterError)
+    assert not issubclass(NotYetPublished, SourceError)
 
 
 def test_adapter_identity():
