@@ -2,10 +2,13 @@
 
 The third ladder rule lives here: A WORSE TIER NEVER OVERWRITES A BETTER ONE for
 the same key. If Tuesday's run scraped North Carolina's voter-level file (tier 1,
-with counties and party) and Wednesday's scrape 502s so the aggregator answers
-instead (tier 2, statewide only), Wednesday must not replace Tuesday's rich row
-with a thin one. A same-or-better tier does replace, because that is a genuine
-update -- states restate counts routinely.
+with counties, party and demographics) and Wednesday's scrape 502s so civicAPI
+answers instead (tier 2, counties and party but no demographics), Wednesday must
+not replace Tuesday's rich row with a thin one. A same-or-better tier does
+replace, because that is a genuine update -- states restate counts routinely.
+
+The comparison is purely relative -- lower wins -- so inserting a tier is safe
+here by construction. Nothing in this module names a tier NUMBER.
 """
 
 from __future__ import annotations

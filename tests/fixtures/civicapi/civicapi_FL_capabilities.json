@@ -1,0 +1,33 @@
+{
+ "state": "FL",
+ "provides": {
+  "party": true,
+  "gender": false,
+  "race": false,
+  "ethnicity": false,
+  "age": false
+ },
+ "categories": {
+  "requested": {
+   "party": true,
+   "gender": false,
+   "race": false,
+   "ethnicity": false,
+   "age": false
+  },
+  "returned": {
+   "party": true,
+   "gender": false,
+   "race": false,
+   "ethnicity": false,
+   "age": false
+  },
+  "inperson": {
+   "party": true,
+   "gender": false,
+   "race": false,
+   "ethnicity": false,
+   "age": false
+  }
+ }
+}

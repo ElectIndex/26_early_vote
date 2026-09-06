@@ -25,11 +25,13 @@ from .calendar import days_to_election
 # Provenance tiers. Lower is better; publish.py keeps the lowest per key.
 # --------------------------------------------------------------------------
 TIER_SCRAPER = 1     # our own adapter against the state's own file
-TIER_AGGREGATOR = 2  # a third-party aggregator
-TIER_MANUAL = 3      # hand-entered statewide total
+TIER_CIVIC = 2       # civicAPI's national early-vote API (statewide + counties)
+TIER_AGGREGATOR = 3  # a third-party aggregator (statewide only)
+TIER_MANUAL = 4      # hand-entered statewide total
 
 TIER_LABELS = {
     TIER_SCRAPER: "state",
+    TIER_CIVIC: "civicapi",
     TIER_AGGREGATOR: "aggregator",
     TIER_MANUAL: "manual",
 }
