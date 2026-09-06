@@ -16,10 +16,10 @@ ID,Idaho,2026-11-03,,,false,,,,,,,not tracked in 2026
 IL,Illinois,2026-11-03,,,false,,,,,,,not tracked in 2026
 IN,Indiana,2026-11-03,,,false,,,,,,,not tracked in 2026
 KS,Kansas,2026-11-03,,,true,,,,,,,not tracked in 2026
-KY,Kentucky,2026-11-03,,,true,,,,,,,not tracked in 2026
+KY,Kentucky,2026-11-03,,,true,county|party|method,,,,,,
 LA,Louisiana,2026-11-03,,,true,,,,,,,not tracked in 2026
 MA,Massachusetts,2026-11-03,,,true,,,,,,,not tracked in 2026
-MD,Maryland,2026-11-03,,,true,,,,,,,not tracked in 2026
+MD,Maryland,2026-11-03,,,true,county|party|sex,,,,,,
 ME,Maine,2026-11-03,,,true,county|party|method,,,,,,
 MI,Michigan,2026-11-03,,,false,county|method,,,,,,
 MN,Minnesota,2026-11-03,,,false,,,,,,,not tracked in 2026
@@ -41,7 +41,7 @@ PA,Pennsylvania,2026-11-03,,,true,county|party|method,,,,,,
 RI,Rhode Island,2026-11-03,,,true,,,,,,,not tracked in 2026
 SC,South Carolina,2026-11-03,,,false,,,,,,,not tracked in 2026
 SD,South Dakota,2026-11-03,,,true,,,,,,,not tracked in 2026
-TN,Tennessee,2026-11-03,,,false,,,,,,,not tracked in 2026
+TN,Tennessee,2026-11-03,,,false,county|method,,,,,,
 TX,Texas,2026-11-03,,,false,county|method,,,,,,
 UT,Utah,2026-11-03,,,true,,,,,,,not tracked in 2026
 VA,Virginia,2026-11-03,,,false,county|method,,,,,,

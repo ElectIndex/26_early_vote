@@ -40,6 +40,10 @@ TIER1: dict[str, str] = {
     "IA": "ia:IAScraper",
     "ME": "me:MEScraper",
     "PA": "pa:PAScraper",
+    # County + party + sex, in-person early voting only.
+    "MD": "md:MDScraper",
+    # County + party (DEM/REP only) + method.
+    "KY": "ky:KYScraper",
     # County + method (no party registration in these states).
     "MI": "mi:MIScraper",
     "VA": "va:VAScraper",
@@ -47,6 +51,7 @@ TIER1: dict[str, str] = {
     "WI": "wi:WIScraper",
     "TX": "tx:TXScraper",
     "NH": "nh:NHScraper",
+    "TN": "tn:TNScraper",
 }
 
 FALLBACKS: tuple[str, ...] = (

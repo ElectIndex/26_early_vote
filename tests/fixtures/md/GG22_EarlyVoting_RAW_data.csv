@@ -1,0 +1,118 @@
+﻿COUNTY_CODE,COUNTY_NAME,congressional_district_code,legislative_district_code,councilmanic_district_code,Precinct,VOTER_STATUS,GENDER_CODE,AgeGroup,PARTY_CODE,EARLY_VOTE_CENTER,Day1,Day2,Day3,Day4,Day5,Day6,Day7,Day8
+1,Allegany,06,01A,,007-002,A,F,25-44,REP,Allegany County Office Complex,,,,,,,,1
+1,Allegany,06,01A,,007-002,A,F,65 and older,REP,Allegany County Office Complex,,,,,,,,1
+1,Allegany,06,01A,,007-002,A,M,25-44,UNA,Allegany County Office Complex,,,,,,,,1
+1,Allegany,06,01A,,007-002,A,M,45-64,REP,Allegany County Office Complex,,,,,,,,1
+1,Allegany,06,01A,,007-002,E,F,18-24,DEM,Allegany County Office Complex,,,,,,,1,
+1,Allegany,06,01A,,007-002,E,F,25-44,DEM,Allegany County Office Complex,,,2,,,,,
+1,Allegany,06,01A,,007-002,E,F,25-44,REP,Allegany County Office Complex,,1,,,,1,,
+1,Allegany,06,01A,,007-002,E,F,45-64,DEM,Allegany County Office Complex,,1,1,,1,1,,
+1,Allegany,06,01A,,007-002,E,F,45-64,REP,Allegany County Office Complex,1,,,,1,,2,
+1,Allegany,06,01A,,007-002,E,F,45-64,UNA,Allegany County Office Complex,,1,,,,1,,
+1,Allegany,06,01A,,007-002,E,F,65 and older,DEM,Allegany County Office Complex,1,,,1,,,,
+1,Allegany,06,01A,,007-002,E,F,65 and older,REP,Allegany County Office Complex,1,1,,3,,1,2,
+1,Allegany,06,01A,,007-002,E,F,65 and older,UNA,Allegany County Office Complex,,,,,,1,,
+1,Allegany,06,01A,,007-002,E,M,25-44,DEM,Allegany County Office Complex,,,2,,1,1,,
+1,Allegany,06,01A,,007-002,E,M,25-44,REP,Allegany County Office Complex,1,1,1,,,1,,
+1,Allegany,06,01A,,007-002,E,M,45-64,DEM,Allegany County Office Complex,,,3,,,,,
+1,Allegany,06,01A,,007-002,E,M,45-64,REP,Allegany County Office Complex,,1,,,1,,2,
+1,Allegany,06,01A,,007-002,E,M,45-64,UNA,Allegany County Office Complex,,,1,,,1,,
+1,Allegany,06,01A,,007-002,E,M,65 and older,DEM,Allegany County Office Complex,,2,,,1,2,,
+1,Allegany,06,01A,,007-002,E,M,65 and older,REP,Allegany County Office Complex,1,2,,3,1,1,,
+1,Allegany,06,01A,,007-002,E,M,65 and older,UNA,Allegany County Office Complex,,,,,,,1,
+1,Allegany,06,01A,,008-000,A,F,25-44,REP,Allegany County Office Complex,,,,,,,,1
+1,Allegany,06,01A,,008-000,A,F,45-64,REP,Allegany County Office Complex,,,,,,,,1
+1,Allegany,06,01A,,008-000,A,F,65 and older,DEM,Allegany County Office Complex,,,,,,,,2
+1,Allegany,06,01A,,008-000,A,F,65 and older,REP,Allegany County Office Complex,,,,,,,,2
+1,Allegany,06,01A,,008-000,A,M,25-44,REP,Allegany County Office Complex,,,,,,,,1
+1,Allegany,06,01A,,008-000,A,M,45-64,REP,Allegany County Office Complex,,,,,,,,2
+1,Allegany,06,01A,,008-000,A,M,65 and older,DEM,Allegany County Office Complex,,,,,,,,1
+1,Allegany,06,01A,,008-000,A,M,65 and older,REP,Allegany County Office Complex,,,,,,,,2
+1,Allegany,06,01A,,008-000,E,F,45-64,DEM,Allegany County Office Complex,,,2,,,,,
+1,Allegany,06,01A,,008-000,E,M,45-64,LIB,Allegany County Office Complex,,,,,,,1,
+1,Allegany,06,01A,,026-000,E,M,25-44,OTH,Allegany County Office Complex,1,,,,,,,
+1,Allegany,06,01A,,026-000,E,M,65 and older,OTH,Allegany County Office Complex,,,,,1,1,,
+1,Allegany,06,01A,,031-000,E,M,25-44,LIB,Allegany County Office Complex,,1,,,,,,
+1,Allegany,06,01B,,006-001,E,M,45-64,LIB,Allegany County Office Complex,,,1,,,,,
+1,Allegany,06,01B,,007-001,E,M,25-44,OTH,Allegany County Office Complex,,,,,,1,,
+1,Allegany,06,01C,,016-001,E,F,65 and older,GRN,Allegany County Office Complex,,,1,,,,,
+2,Anne Arundel,05,30B,007,007-010,E,M,65 and older,GRN,Edgewater Library,,,1,,,,,
+2,Anne Arundel,05,31,005,005-030,A,M,25-44,GRN,Odenton Library,,,,,,,,1
+2,Anne Arundel,03,12B,001,001-015,A,F,25-44,WCP,Anne Arundel County Board of Elections,,,,,,,,1
+2,Anne Arundel,03,31,003,003-007,A,F,25-44,WCP,Anne Arundel County Board of Elections,,,,,,,,1
+2,Anne Arundel,03,31,003,003-013,E,M,45-64,WCP,Severna Park Library,,1,,,,,,
+2,Anne Arundel,05,33A,004,004-008,A,M,45-64,WCP,Odenton Library,,,,,,,,1
+3,Baltimore City,07,43A,014,009-010,A,F,65 and older,DEM,The League For People With Disabilities,,,,,,,,1
+3,Baltimore City,07,43A,014,009-010,E,F,25-44,DEM,The League For People With Disabilities,,,,,,1,,1
+3,Baltimore City,07,43A,014,009-010,E,F,25-44,REP,Southeast Anchor Library,,,,,,1,,
+3,Baltimore City,07,43A,014,009-010,E,F,45-64,DEM,The League For People With Disabilities,1,2,,,,1,,1
+3,Baltimore City,07,43A,014,009-010,E,F,65 and older,DEM,Public Safety Training Center,,,,,1,,,
+3,Baltimore City,07,43A,014,009-010,E,F,65 and older,DEM,The League For People With Disabilities,1,,1,,1,1,,
+3,Baltimore City,07,43A,014,009-010,E,M,25-44,DEM,The League For People With Disabilities,1,,,,,,,
+3,Baltimore City,07,43A,014,009-010,E,M,45-64,DEM,The League For People With Disabilities,1,1,,,,2,,
+3,Baltimore City,07,43A,014,009-010,E,M,45-64,DEM,University of Maryland Baltimore City - Engagement Center,1,,,,,,,
+3,Baltimore City,07,43A,014,009-010,E,M,45-64,UNA,University of Maryland Baltimore City - Engagement Center,,,,,,1,,
+3,Baltimore City,07,43A,014,009-010,E,M,65 and older,DEM,The League For People With Disabilities,,,,,,1,,
+3,Baltimore City,07,43A,014,009-011,A,M,45-64,DEM,University of Maryland Baltimore City - Engagement Center,,,,,,,,1
+3,Baltimore City,07,43A,014,009-011,E,F,45-64,DEM,The League For People With Disabilities,2,,1,,,,,
+3,Baltimore City,07,43A,014,009-011,E,F,65 and older,DEM,The League For People With Disabilities,,1,,,1,,,
+3,Baltimore City,07,43A,014,009-011,E,M,25-44,DEM,University of Maryland Baltimore City - Engagement Center,,,,1,,,,
+3,Baltimore City,07,43A,014,009-011,E,M,45-64,DEM,The League For People With Disabilities,,,1,,,,,
+3,Baltimore City,07,43A,014,009-011,E,M,65 and older,DEM,Westside Skill Center,,,,1,,,,
+3,Baltimore City,07,43A,014,009-011,M,M,45-64,UNA,Public Safety Training Center,,,,,,,1,
+3,Baltimore City,07,43A,014,009-012,A,F,18-24,DEM,The League For People With Disabilities,,,,,,,,2
+3,Baltimore City,07,43A,014,009-012,A,F,25-44,DEM,The League For People With Disabilities,,,,,,,,1
+4,Baltimore County,02,10,002,004-004,E,M,25-44,REP,Reisterstown Senior Center - Hanna Moore - Social Rm,,,,,,,1,
+4,Baltimore County,02,10,002,004-004,E,M,25-44,UNA,Baltimore County Board of Elections - Multi Purpose Rm,,,,,,,1,
+4,Baltimore County,02,10,002,004-004,E,M,25-44,UNA,County Campus Metro Centre At Owings Mills,,,,,,1,,
+4,Baltimore County,02,10,002,004-004,E,M,45-64,DEM,Baltimore County Board of Elections - Multi Purpose Rm,,,1,,1,1,,
+4,Baltimore County,02,10,002,004-004,E,M,45-64,DEM,County Campus Metro Centre At Owings Mills,1,1,1,,3,,,
+4,Baltimore County,02,10,002,004-004,E,M,45-64,DEM,Reisterstown Senior Center - Hanna Moore - Social Rm,5,5,8,2,5,9,7,1
+4,Baltimore County,02,10,002,004-004,E,M,45-64,REP,County Campus Metro Centre At Owings Mills,,,1,1,,,,
+4,Baltimore County,02,10,002,004-004,E,M,45-64,REP,Reisterstown Senior Center - Hanna Moore - Social Rm,,3,,4,,1,4,
+4,Baltimore County,02,10,002,004-004,E,M,45-64,UNA,County Campus Metro Centre At Owings Mills,,,,1,,,,
+4,Baltimore County,02,10,002,004-004,E,M,45-64,UNA,Reisterstown Senior Center - Hanna Moore - Social Rm,,2,1,2,2,1,2,
+4,Baltimore County,02,10,002,004-004,E,M,65 and older,DEM,Baltimore County Board of Elections - Multi Purpose Rm,,,,1,,,,
+4,Baltimore County,02,10,002,004-004,E,M,65 and older,DEM,County Campus Metro Centre At Owings Mills,4,,,1,,,1,
+16,Montgomery,08,19,006,013-001,F,M,25-44,REP,Mid-County Community Recreation Center,,,,,1,,,
+16,Montgomery,08,19,006,013-001,F,M,25-44,UNA,Silver Spring Civic Building,,,,,,,,1
+16,Montgomery,08,19,006,013-001,X,M,25-44,DEM,Wheaton Library & Community Recreation Center,,,,,1,,,1
+16,Montgomery,08,19,006,013-002,A,F,18-24,DEM,Mid-County Community Recreation Center,,,,,,,,1
+16,Montgomery,08,19,006,013-002,A,F,18-24,DEM,Wheaton Library & Community Recreation Center,,,,,,,,3
+16,Montgomery,08,19,006,013-002,A,F,18-24,UNA,Mid-County Community Recreation Center,,,,,,,,3
+16,Montgomery,08,19,006,013-002,A,F,25-44,DEM,Executive Office Building,,,,,,,,2
+16,Montgomery,08,19,006,013-002,A,F,25-44,DEM,Mid-County Community Recreation Center,,,,,,,,14
+16,Montgomery,08,19,006,013-002,A,F,25-44,DEM,Wheaton Library & Community Recreation Center,,,,,,,,5
+16,Montgomery,08,19,006,013-002,A,F,25-44,DEM,White Oak Community Recreation Center,,,,,,,,1
+16,Montgomery,08,19,006,013-002,A,F,25-44,REP,Marilyn J. Praisner Community Recreation Center,,,,,,,,1
+16,Montgomery,08,19,006,013-002,A,F,25-44,REP,Mid-County Community Recreation Center,,,,,,,,2
+17,Prince George's,04,25,009,009-010,E,F,25-44,DEM,Wayne K. Curry Sports and Learning Center,1,,,,,,,
+17,Prince George's,04,25,009,009-010,E,F,45-64,DEM,Accokeek Vfd Training & Activity Center,,,,,1,,,
+17,Prince George's,04,25,009,009-010,E,F,45-64,DEM,Baden Community Center,,,,,1,,,
+17,Prince George's,04,25,009,009-010,E,F,45-64,DEM,Southern Area Aquatic and Recreation Complex,2,,,1,3,,3,
+17,Prince George's,04,25,009,009-010,E,F,45-64,DEM,Southern Regional Technology and Recreation Complex,2,1,,1,5,4,10,
+17,Prince George's,04,25,009,009-010,E,F,45-64,DEM,Suitland Community Park School Center,2,,,,2,,2,
+17,Prince George's,04,25,009,009-010,E,F,45-64,DEM,Upper Marlboro Community Center,,,,,,1,,
+17,Prince George's,04,25,009,009-010,E,F,45-64,DEM,Wayne K. Curry Sports and Learning Center,,,,,1,,2,
+17,Prince George's,04,25,009,009-010,E,F,45-64,REP,Baden Community Center,,1,,,,,,
+17,Prince George's,04,25,009,009-010,E,F,45-64,UNA,Accokeek Vfd Training & Activity Center,,,,1,,,,
+17,Prince George's,04,25,009,009-010,E,F,45-64,UNA,Southern Area Aquatic and Recreation Complex,,,1,,,,1,
+17,Prince George's,04,25,009,009-010,E,F,65 and older,DEM,Accokeek Vfd Training & Activity Center,1,,,,1,,1,
+18,Queen Anne's,01,36,,001-001,A,F,18-24,DEM,"Queen Anne's Office Building, Conference Rm.",,,,,,,,1
+18,Queen Anne's,01,36,,001-001,A,F,25-44,DEM,"Queen Anne's Office Building, Conference Rm.",,,,,,,,1
+18,Queen Anne's,01,36,,001-001,A,F,45-64,DEM,"Queen Anne's Office Building, Conference Rm.",,,,,,,,2
+18,Queen Anne's,01,36,,001-001,A,F,45-64,REP,"Queen Anne's Office Building, Conference Rm.",,,,,,,,3
+18,Queen Anne's,01,36,,001-001,A,F,65 and older,REP,"Queen Anne's Office Building, Conference Rm.",,,,,,,,1
+18,Queen Anne's,01,36,,001-001,A,F,65 and older,UNA,"Queen Anne's Office Building, Conference Rm.",,,,,,,,1
+19,Saint Mary's,05,29A,,003-001,A,F,18-24,REP,Hollywood Firehouse,,,,,,,,1
+19,Saint Mary's,05,29A,,003-001,A,F,25-44,DEM,Bay District Firehouse,,,,,,,,1
+19,Saint Mary's,05,29A,,003-001,A,F,25-44,DEM,Hollywood Firehouse,,,,,,,,5
+19,Saint Mary's,05,29A,,003-001,A,F,25-44,REP,Bay District Firehouse,,,,,,,,1
+19,Saint Mary's,05,29A,,003-001,A,F,25-44,REP,Hollywood Firehouse,,,,,,,,4
+19,Saint Mary's,05,29A,,003-001,A,F,45-64,DEM,Hollywood Firehouse,,,,,,,,7
+19,Saint Mary's,05,29A,,003-001,A,F,45-64,REP,Bay District Firehouse,,,,,,,,1
+19,Saint Mary's,05,29A,,003-001,A,F,45-64,REP,Hollywood Firehouse,,,,,,,,12
+19,Saint Mary's,05,29A,,003-001,A,F,45-64,REP,Mechanicsville Firehouse,,,,,,,,1
+19,Saint Mary's,05,29A,,003-001,A,F,45-64,UNA,Hollywood Firehouse,,,,,,,,2
+19,Saint Mary's,05,29A,,003-001,A,F,65 and older,DEM,Hollywood Firehouse,,,,,,,,5
+19,Saint Mary's,05,29A,,003-001,A,F,65 and older,REP,Hollywood Firehouse,,,,,,,,3
