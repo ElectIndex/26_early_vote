@@ -21,9 +21,12 @@ every adapter here catches it deliberately.
 from __future__ import annotations
 
 import logging
+import ssl
 from pathlib import Path
 
 import requests
+from requests.adapters import HTTPAdapter
+from urllib3.util.ssl_ import create_urllib3_context
 
 from .base import SourceError
 
@@ -37,13 +40,50 @@ DEFAULT_TIMEOUT = 60
 #: A handful of state election sites (OH and TX in particular) reject the default
 #: python-requests User-Agent outright, so we send a real one.
 DEFAULT_HEADERS = {
+    # ONLY a real User-Agent -- nothing appended. michigan.gov's WAF 403s any UA
+    # with a token after "Safari/537.36", including a bare
+    # "(+https://electindex.com/early-vote/)" with no mention of a bot. The
+    # courtesy self-identification moves to `From`, which it does not inspect.
+    # Verified 2026-09-06: suffix -> 403, no suffix -> 200.
     "User-Agent": (
         "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 "
-        "(KHTML, like Gecko) Chrome/125.0 Safari/537.36 "
-        "(+https://electindex.com/early-vote/ bot)"
+        "(KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
     ),
     "Accept": "*/*",
+    "From": "contact@electindex.com",
 }
+
+
+class _TicketAdapter(HTTPAdapter):
+    """Restore TLS session tickets in the ClientHello.
+
+    urllib3 sets OP_NO_TICKET unconditionally, which drops TLS extension 35.
+    Cloudflare's managed ruleset scores the resulting JA3 as automation and 403s
+    coloradosos.gov -- its homepage included, and files we know exist included.
+    curl and stdlib urllib both send the extension and were never blocked, which
+    is why this looked like a site blocking us rather than us fingerprinting as
+    a bot.
+
+    Verified 2026-09-06: with OP_NO_TICKET set every coloradosos.gov URL 403s;
+    cleared, the archived 2024-10-31 workbook returns 200 and the unposted 2026
+    file returns an honest 404 -- which is the difference between "the state is
+    blocking us" and "the file does not exist yet", and therefore between
+    falling through to a weaker tier and correctly stopping the ladder.
+
+    Certificate verification is unchanged: CERT_REQUIRED, check_hostname True.
+    """
+
+    def init_poolmanager(self, *args, **kwargs):
+        ctx = create_urllib3_context()
+        ctx.options &= ~ssl.OP_NO_TICKET
+        kwargs["ssl_context"] = ctx
+        return super().init_poolmanager(*args, **kwargs)
+
+
+#: Module-level so connections are reused across a run. The ingest walk is
+#: sequential; if that ever changes, give each worker its own session.
+SESSION = requests.Session()
+SESSION.mount("https://", _TicketAdapter())
 
 
 class Missing(SourceError):
@@ -79,7 +119,7 @@ def get(
         return path.read_bytes()
 
     try:
-        response = requests.get(
+        response = SESSION.get(
             url,
             timeout=timeout,
             headers={**DEFAULT_HEADERS, **(headers or {})},
