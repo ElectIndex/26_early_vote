@@ -117,8 +117,13 @@ FILENAME_PATTERNS = {
     "mail": ("absentee_ballot_{mmddyyyy}.xlsx", "abs_detail_{mmddyy}.xlsx"),
 }
 
-#: How a filename says which of the two files it is. Checked in this order, so
-#: "early_voting_..." cannot be mistaken for an absentee file.
+#: How a SCRAPED filename says which of the two files it is. Checked in this
+#: order, so "early_voting_..." cannot be mistaken for an absentee file. These
+#: are wider than FILENAME_PATTERNS on purpose: classifying a link the page
+#: already gave us costs nothing if the guess is unused, whereas constructing a
+#: URL from a guess would be fabricating one. ("ev_detail" is the only entry
+#: here that has never been seen in the wild; it is the symmetric partner of the
+#: verified "abs_detail".)
 KIND_MARKERS = (("inperson", ("early_vot", "early-vot", "ev_detail")),
                 ("mail", ("absentee", "abs_detail", "abs_")))
 
@@ -273,7 +278,10 @@ def index_files(page: bytes, cycle: int) -> dict[str, list[tuple[date, str]]]:
         # The query string carries Sitecore's rev/hash; the bare path serves the
         # same bytes (verified), so it is dropped to keep the cache key stable.
         found[kind].setdefault(day, path)
-    return {kind: sorted(days.items(), reverse=True) for kind, days in found.items()}
+    listed = {kind: sorted(days.items(), reverse=True) for kind, days in found.items()}
+    log.debug("CT: the %s voter-data page lists %s", cycle,
+              {kind: [day.isoformat() for day, _ in entries] for kind, entries in listed.items()})
+    return listed
 
 
 def constructed(cycle: int, kind: str, day: date) -> list[str]:
@@ -347,13 +355,11 @@ class Tally:
         self.by_town: dict[tuple[str, date], _Bucket] = defaultdict(_Bucket)
         self.town_names: dict[str, str] = {}
         self.unmapped: dict[str, int] = defaultdict(int)
-        self.counted = 0        # ballots placed on the curve
+        self.counted = 0        # ballots placed on the RETURNS/early-vote curve
+        self.placed = 0         # rows that landed in any bucket at all
         self.unenrolled = 0     # counted ballots with a blank PARTY cell
         self.ballot_days: list[date] = []
         self.kinds: set[str] = set()
-        #: The newest filename date among the files actually read: the last day
-        #: the series can honestly speak for.
-        self.through: date | None = None
 
 
 def _header(row) -> dict[str, int]:
@@ -405,10 +411,18 @@ def read(body: bytes, kind: str, tally: Tally) -> None:
         # Validated on every row, counted or not, so a vocabulary change shows up
         # wherever it lands rather than only when it hits a counted ballot.
         party = _party(row[index["party"]])
-        town = _resolve(row[index["town"]], tally)
+        name, town = _resolve(row[index["town"]], tally)
 
         mailed = _day(row[index["mailed"]])
         returned = _day(row[index["returned"]])
+
+        # A row with no usable date lands in no bucket, so it is neither placed
+        # nor held against the town-coverage floor -- that floor is about names
+        # we could not resolve, not about dates the clerk did not key.
+        if returned is not None or (kind == "mail" and mailed is not None):
+            tally.placed += 1
+            if town is None:
+                tally.unmapped[name] += 1
 
         if kind == "mail":
             if mailed is not None:
@@ -445,19 +459,23 @@ def read(body: bytes, kind: str, tally: Tally) -> None:
         raise SchemaDrift(f"CT: the {kind} ballot file has a header but no rows")
 
 
-def _resolve(raw, tally: Tally) -> str | None:
-    """The town's 10-digit GEOID, or None -- counted, never guessed into one."""
+def _resolve(raw, tally: Tally) -> tuple[str, str | None]:
+    """(the name as written, its 10-digit GEOID or None).
+
+    None is never guessed into a county: the caller counts the miss and the row
+    is excluded from both the town and the county table. `read` does the
+    counting rather than this function, so a row that lands in no bucket at all
+    is not held against the coverage floor.
+    """
     name = " ".join(str(raw or "").split())
     if not name:
-        tally.unmapped[""] += 1
-        return None
+        return "", None
     hit = _towns.lookup("CT", name)
     if hit is None:
-        tally.unmapped[name] += 1
-        return None
+        return name, None
     geoid, canonical = hit
     tally.town_names[geoid] = canonical
-    return geoid
+    return name, geoid
 
 
 def belongs_to(tally: Tally, cycle: int) -> bool:
@@ -489,8 +507,8 @@ def _report_coverage(tally: Tally) -> bool:
     """Log what did not map; refuse the file if too little did. Returns whether
     the party columns may be published."""
     lost = sum(tally.unmapped.values())
-    counted = tally.counted
-    coverage = 1.0 - (lost / counted) if counted else 0.0
+    placed = tally.placed
+    coverage = 1.0 - (lost / placed) if placed else 0.0
     if tally.unmapped:
         worst = sorted(tally.unmapped.items(), key=lambda kv: -kv[1])
         shown = ", ".join(f"{name or '<blank>'} ({count})" for name, count in worst[:UNMAPPED_LOG_LIMIT])
@@ -500,15 +518,16 @@ def _report_coverage(tally: Tally) -> bool:
             len(tally.unmapped), "y" if len(tally.unmapped) == 1 else "ies", lost, shown,
             "" if len(worst) <= UNMAPPED_LOG_LIMIT else f", +{len(worst) - UNMAPPED_LOG_LIMIT} more",
         )
-    log.info("CT: %d towns mapped, %.2f%% of %d counted ballots placed",
-             len(tally.town_names), 100 * coverage, counted)
-    if counted and coverage < MIN_TOWN_COVERAGE:
+    log.info("CT: %d towns mapped, %.2f%% of %d placed ballots keyed to a GEOID",
+             len(tally.town_names), 100 * coverage, placed)
+    if placed and coverage < MIN_TOWN_COVERAGE:
         raise SchemaDrift(
             f"CT: only {100 * coverage:.1f}% of ballots map to a census "
             f"county-subdivision GEOID (floor is {100 * MIN_TOWN_COVERAGE:.0f}%); "
             f"the residence-city column or its vocabulary has changed"
         )
 
+    counted = tally.counted
     enrolled = 1.0 - (tally.unenrolled / counted) if counted else 0.0
     if counted and enrolled < MIN_PARTY_COVERAGE:
         log.warning(

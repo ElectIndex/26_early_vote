@@ -48,8 +48,8 @@ The geography-only version of this model was measured at 6.9 points of mean
 absolute error against the states that DO report party, and beat "quote the
 state's own 2024 result and stop" by 0.7 points -- which is to say it was mostly
 laundering a known election result through today's ballot counts. Adding the mail
-term takes that to 3.3 points out of sample and a gain of 4.3 over the same null.
-Pennsylvania, the worst state in the old table at 15.5, is 4.6.
+term takes that to 3.1 points out of sample and a gain of 4.4 over the same null.
+Pennsylvania, the worst state in the old table at 15.5, is 3.2.
 
 It is still NOT "X% of early ballots were cast by Democrats". The remaining error
 is dominated by a gap this model cannot see and does not try to: a state's party
@@ -121,6 +121,17 @@ MAIL_SELECTION = 0.366
 #: under a point).
 MAIL_DECAY = 5.0
 
+#: The correction never exceeds this, in share points. The largest gap between a
+#: state's reported party split and its geography on any day this model was
+#: fitted on is 18.7 points -- Pennsylvania, 13 October 2024, mail-only, with
+#: mail having reached 7% of the electorate. Past 20 points the term is
+#: extrapolating beyond anything it has ever been measured against, which in the
+#: opening days of a window it otherwise does freely: mail reach is then near
+#: zero and the raw formula asks for 36 points. Capping there is worth 2.3 points
+#: of error across all days and cuts the estimate's travel across a window from
+#: 28 points to 19.
+MAX_ADJUSTMENT = 0.20
+
 #: A midterm electorate is smaller than the presidential one the baseline
 #: measures, so the same number of mail ballots reaches more of it. The national
 #: ratio of ballots cast in 2022 to 2024. The result barely depends on it: the
@@ -128,12 +139,13 @@ MAIL_DECAY = 5.0
 MIDTERM_TURNOUT = 0.73
 
 #: Empirical, not statistical, and applied as a flat half-width because the error
-#: is structural rather than sampling noise. The leave-one-state-out error of the
-#: model above is 3.1 points pooled over validation days and 3.3 averaged over
-#: state-cycles; the worst single state-cycle is 6.0. Five points sits between
-#: them -- deliberately above the mean, because the mail term assumes a DIRECTION
-#: (mail voters lean Democratic) that 2022 and 2024 both support and that 2026
-#: need not repeat. It was 10 points when the model was geography alone.
+#: is structural rather than sampling noise. Measured leave-one-state-out on days
+#: with at least THIN_BALLOTS ballots in, the model above is off by a mean of 3.4
+#: points and a 90th percentile of about 7; per state-cycle the mean is 3.1 and
+#: the worst is 6.0. Five points sits above the mean deliberately, because the
+#: mail term assumes a DIRECTION (mail voters lean Democratic) that 2022 and 2024
+#: both support and that 2026 need not repeat. It was 10 points when the model
+#: was geography alone.
 #:
 #: `ev.adapters.az.MODEL_ERROR` is a copy of this, kept because the ingest path
 #: must never import this module; `test_model_error_tracks_estimate` guards it.
@@ -144,9 +156,32 @@ MODEL_ERROR = 0.05
 #: A row is still written -- the ballots are real -- but confidence is "low".
 THIN_BALLOTS = 50_000
 
+#: ...and the band has to say so too, because "low confidence" is a word and the
+#: band is the number. The error is almost entirely a function of how much is in:
+#: leave-one-state-out, across every validation day,
+#:
+#:     under 10,000 ballots      mean |error| 17.3 points
+#:     10,000 - 50,000           mean |error|  5.1
+#:     50,000 - 250,000          mean |error|  4.6
+#:     over 250,000              mean |error|  2.6
+#:
+#: 15 points is the measured mean below THIN_BALLOTS. A South Carolina series
+#: that stops eighteen days out at 17,000 all-mail ballots then reads 63% +/-15
+#: -- 48 to 78, which is the honest way to say "this is a handful of the most
+#: eager mail voters in the state and we do not know" -- instead of 63% +/-5.
+THIN_MODEL_ERROR = 0.15
+
 #: Coverage thresholds under which confidence drops to "low".
 MIN_COVERAGE = 0.85
 MIN_COUNTY_FRACTION = 0.85
+
+def model_error(ballots_used: int | float) -> float:
+    """The band's flat half-width for a day with this many ballots in.
+
+    Not a constant, because the error is not one. See THIN_MODEL_ERROR.
+    """
+    return MODEL_ERROR if ballots_used >= THIN_BALLOTS else THIN_MODEL_ERROR
+
 
 #: With complete coverage the band's half-width is exactly MODEL_ERROR, so the
 #: threshold has to sit strictly above it -- a bare `> MODEL_ERROR` flips on
@@ -435,6 +470,7 @@ def mail_selection(
     *,
     alpha: float = MAIL_SELECTION,
     decay: float = MAIL_DECAY,
+    cap: float = MAX_ADJUSTMENT,
 ) -> float | None:
     """How much more Democratic the returned ballots are than their geography.
 
@@ -448,7 +484,7 @@ def mail_selection(
     if total <= 0:
         return None
     reach = min(1.0, max(0.0, mail / electorate))
-    return alpha * (mail / total) * (1.0 - reach) ** decay
+    return min(cap, alpha * (mail / total) * (1.0 - reach) ** decay)
 
 
 #: The grid `fit_mail_selection` searches for MAIL_DECAY. Wide enough to contain
@@ -478,18 +514,25 @@ class Observation:
     baseline_dem_share: float
 
     def selection_input(self, decay: float) -> float | None:
-        """The regressor: `mail_share * (1 - mail_reach) ** decay`."""
+        """The regressor: `mail_share * (1 - mail_reach) ** decay`, UNCAPPED.
+
+        Uncapped because this is what `fit_mail_selection` solves alpha against,
+        and a cap inside the regressor would make that closed form a lie. The cap
+        belongs to prediction, where it is what stops the term extrapolating.
+        """
         if self.mail is None or self.inperson is None:
             return None
-        got = mail_selection(self.mail, self.inperson, self.electorate,
-                             alpha=1.0, decay=decay)
-        return got
+        return mail_selection(self.mail, self.inperson, self.electorate,
+                              alpha=1.0, decay=decay, cap=float("inf"))
 
     def predict(self, alpha: float, decay: float) -> float:
-        x = self.selection_input(decay)
-        if x is None:
+        if self.mail is None or self.inperson is None:
             return self.geo
-        return min(1.0, max(0.0, self.geo + alpha * x))
+        adjustment = mail_selection(self.mail, self.inperson, self.electorate,
+                                    alpha=alpha, decay=decay)
+        if adjustment is None:
+            return self.geo
+        return min(1.0, max(0.0, self.geo + adjustment))
 
 
 def fit_mail_selection(
@@ -599,15 +642,22 @@ class PartyEstimate:
 
     @property
     def lean_vs_baseline(self) -> float | None:
-        """The only quantity here the geography actually measures.
+        """The quantity the geography by itself actually measures.
 
         How much more Democratic (2024 presidential terms) the counties that
         have returned ballots are than the state as a whole. Typically under two
-        points, which is the honest size of the signal.
+        points, which is the honest size of the geographic signal, and the one
+        sentence docs/party-estimate.md was ever willing to defend on its own.
+
+        Measured on `geo_dem_share`, deliberately NOT on the published estimate:
+        the mail term is a statement about voters, and folding it in here would
+        turn a checkable fact about turnout geography into a model output
+        wearing the same label.
         """
+        base = self.geo_dem_share if self.geo_dem_share is not None else self.est_dem_share
         if self.baseline_dem_share is None:
             return None
-        return self.est_dem_share - self.baseline_dem_share
+        return base - self.baseline_dem_share
 
     @property
     def confidence(self) -> str:
@@ -651,6 +701,13 @@ class PartyEstimate:
             "ballots_used": str(self.ballots_used),
             "baseline_dem_share": _pct(self.baseline_dem_share),
             "lean_vs_baseline": _pct(self.lean_vs_baseline),
+            "geo_dem_share": _pct(self.geo_dem_share),
+            "mail_adjustment": _pct(self.mail_adjustment),
+            "mail_share": _pct(self.mail_share),
+            "mail_reach": _pct(self.mail_reach),
+            "measured_fraction": _pct(self.measured_fraction),
+            "modelled_fraction": _pct(self.modelled_fraction),
+            "estimate_basis": self.estimate_basis,
             "state_has_party_reg": (
                 "" if self.state_has_party_reg is None
                 else ("true" if self.state_has_party_reg else "false")
@@ -719,7 +776,12 @@ def estimate_day(
     baseline: Baseline,
     *,
     statewide_ballots: int | None = None,
+    mail_returned: int | None = None,
+    inperson: int | None = None,
     has_party_reg: bool | None = None,
+    measured_dem: int | None = None,
+    measured_rep: int | None = None,
+    measured_fraction: float = 0.0,
     retrieved_at: str | None = None,
 ) -> PartyEstimate | None:
     """One state-day, or None if it cannot be estimated at all.
@@ -729,6 +791,16 @@ def estimate_day(
     the honest denominator for coverage, because a state can report a statewide
     figure that its county file does not yet add up to (late mail not yet
     attributed to a county is the usual reason).
+
+    `mail_returned` / `inperson` are the state's own method split for that day.
+    Both blank means no mail term and the answer is the geography-only estimate,
+    which is what the whole model was before this term existed -- a state that
+    does not say how its ballots arrived does not get guessed at.
+
+    `measured_dem` / `measured_rep` / `measured_fraction` are for the case where
+    part of a state's ballots have a REAL party split (some counties publish one
+    even where the state does not). Nothing supplies them today. At the default
+    `measured_fraction=0.0` this row is exactly the model.
     """
     state = state.upper()
     result = weighted_share(ballots, baseline)
@@ -745,14 +817,50 @@ def estimate_day(
         log.warning("%s %s: county sum %d exceeds statewide %d",
                     state, day, ballots_used, statewide_ballots)
 
+    # The mail term. It is a statement about the STATE's returned ballots, so it
+    # uses the state's own headline where there is one -- a county file that is
+    # still short would otherwise understate how far mail has reached and hand
+    # the state a bigger correction than it has earned.
+    geo = share
+    split = method_split(statewide_ballots or ballots_used, mail_returned, inperson)
+    electorate = expected_electorate(cycle, state, baseline)
+    adjustment = mail_share = mail_reach = None
+    if split is not None:
+        mail, in_person = split
+        total = mail + in_person
+        mail_share = (mail / total) if total > 0 else None
+        mail_reach = (min(1.0, mail / electorate) if electorate else None)
+        adjustment = mail_selection(mail, in_person, electorate)
+    if adjustment is not None:
+        share = min(1.0, max(0.0, geo + adjustment))
+
     seen = {f for f in ballots if f in baseline}
     missing = [c for c in state_counties if c.fips not in seen]
-    lo, hi = coverage_band(share, coverage, missing, state_counties)
-    lo = max(0.0, lo - MODEL_ERROR)
-    hi = min(1.0, hi + MODEL_ERROR)
+    lo, hi = coverage_band(geo, coverage, missing, state_counties)
+    if adjustment is not None:
+        # The bound is on the geography of the ballots we cannot see; the mail
+        # term applies to the same ballots either way, so it shifts both ends.
+        lo, hi = lo + adjustment, hi + adjustment
 
-    electorate = sum(c.two_party for c in state_counties)
-    covered_electorate = sum(c.two_party for c in state_counties if c.fips in seen)
+    measured_share = None
+    two_party = (measured_dem or 0) + (measured_rep or 0)
+    if measured_fraction > 0 and two_party and measured_dem is not None:
+        measured_share = measured_dem / two_party
+        share = measured_fraction * measured_share + (1 - measured_fraction) * share
+        lo = measured_fraction * measured_share + (1 - measured_fraction) * lo
+        hi = measured_fraction * measured_share + (1 - measured_fraction) * hi
+    else:
+        measured_fraction = 0.0
+
+    # The band's flat half-width is the model's own error, applied only to the
+    # part of the figure the model is responsible for. At measured_fraction=0
+    # that is the whole of it, which is every row today.
+    half = model_error(ballots_used) * (1.0 - measured_fraction)
+    lo, hi = min(lo, hi) - half, max(lo, hi) + half
+    lo, hi = max(0.0, lo), min(1.0, hi)
+
+    electorate_votes = sum(c.two_party for c in state_counties)
+    covered = sum(c.two_party for c in state_counties if c.fips in seen)
 
     return PartyEstimate(
         cycle=int(cycle), state=state, day=day,
@@ -760,8 +868,14 @@ def estimate_day(
         counties_used=used, counties_total=county_count(state),
         ballots_used=ballots_used,
         coverage_share=coverage,
-        coverage_electorate=(covered_electorate / electorate) if electorate else None,
+        coverage_electorate=(covered / electorate_votes) if electorate_votes else None,
         baseline_dem_share=baseline.state_dem_share(state),
+        geo_dem_share=geo,
+        mail_adjustment=adjustment,
+        mail_share=mail_share,
+        mail_reach=mail_reach,
+        measured_fraction=measured_fraction,
+        measured_dem_share=measured_share,
         state_has_party_reg=has_party_reg,
         retrieved_at=retrieved_at or _utcnow(),
     )
@@ -879,6 +993,12 @@ def build(
             estimate = estimate_day(
                 cycle, state, date.fromisoformat(day), ballots, baseline,
                 statewide_ballots=_num((reported or {}).get("ballots_total")),
+                # The method split comes from the state's OWN row and nowhere
+                # else. Summing the county file would look equivalent and is
+                # not: under partial county coverage the sum understates how far
+                # mail has reached and inflates the correction.
+                mail_returned=_num((reported or {}).get("mail_returned")),
+                inperson=_num((reported or {}).get("inperson")),
                 has_party_reg=flags.get(state),
                 retrieved_at=stamp,
             )
@@ -931,16 +1051,28 @@ class Validation:
     mean_abs_error: float        # over mature days only
     max_abs_error: float
     null_mean_abs_error: float   # same days, quoting the state's 2024 result instead
+    geo_mean_abs_error: float    # same days, geography only -- the model before this
     est_range: float             # how far the estimate moved, points
     truth_range: float           # how far the truth moved, points
     final_estimate: float
     final_truth: float
     baseline: float
+    #: The (MAIL_SELECTION, MAIL_DECAY) this series was scored with. Fitted
+    #: WITHOUT this state, so the number beside it is out of sample.
+    fitted: tuple[float, float] | None = None
+    #: False when there was no other state to fit on and the shipped constants
+    #: were used instead. Then the row is in-sample and says so.
+    held_out: bool = True
 
     @property
     def gain(self) -> float:
-        """Points of accuracy the county weighting buys over the null model."""
+        """Points of accuracy this model buys over quoting the 2024 result."""
         return self.null_mean_abs_error - self.mean_abs_error
+
+    @property
+    def gain_vs_geography(self) -> float:
+        """Points it buys over the geography-only model this one replaced."""
+        return self.geo_mean_abs_error - self.mean_abs_error
 
 
 #: A day is "mature" once this share of the series' eventual early vote is in.
@@ -949,17 +1081,14 @@ class Validation:
 MATURE_FRACTION = 0.25
 
 
-def validate(
+def observations(
     out_dir: Path, baseline: Baseline, *, states: Iterable[str] | None = None
-) -> list[Validation]:
-    """Score the estimate against every state-cycle that reports party.
+) -> dict[tuple[int, str], list[Observation]]:
+    """Every state-day in output/ that has county ballots AND a reported party.
 
-    This is the honest measure of the feature and the reason
-    docs/party-estimate.md exists. It compares a modelled two-party PRESIDENTIAL
-    share against a reported two-party REGISTRATION share, which are not the
-    same object -- Kentucky is full of registered Democrats who vote Republican,
-    and that alone is most of Kentucky's error. The comparison is still the one
-    a reader will make, so it is the one we publish.
+    The panel both `fit_mail_selection` and `validate` run on. Keyed by
+    (cycle, state) because a series is the unit: Pennsylvania is 70 days and
+    Colorado is 5, and pooling them by day would fit Pennsylvania.
     """
     out_dir = Path(out_dir)
     county_dir = out_dir / "counties"
@@ -967,14 +1096,13 @@ def validate(
     wanted = {s.upper() for s in states} if states else None
     statewide = read_state_daily(out_dir)
 
-    results: list[Validation] = []
+    panel: dict[tuple[int, str], list[Observation]] = defaultdict(list)
     for state in available:
         if wanted and state not in wanted:
             continue
         state_base = baseline.state_dem_share(state)
         if state_base is None:
             continue
-        by_cycle: dict[int, list[tuple[str, float, float, int]]] = defaultdict(list)
         for (cycle, day), ballots in sorted(read_county_ballots(out_dir, state).items()):
             reported = statewide.get((cycle, state, day))
             if not reports_party(reported):
@@ -986,44 +1114,113 @@ def validate(
             if weighted is None:
                 continue
             total = _num(reported.get("ballots_total")) or weighted[2]
-            by_cycle[cycle].append((day, weighted[0], dem / (dem + rep), total))
-
-        for cycle, series in sorted(by_cycle.items()):
-            if len(series) < 2:
-                continue
-            series.sort()
-            final_volume = max(v for _, _, _, v in series) or 1
-            mature = [s for s in series if s[3] / final_volume >= MATURE_FRACTION]
-            if not mature:
-                mature = series[-1:]
-            errors = [abs(est - truth) for _, est, truth, _ in mature]
-            nulls = [abs(state_base - truth) for _, _, truth, _ in mature]
-            _, last_est, last_truth, _ = series[-1]
-            ests = [est for _, est, _, _ in mature]
-            truths = [truth for _, _, truth, _ in mature]
-            results.append(Validation(
-                cycle=cycle, state=state, days=len(series),
-                final_error=(last_est - last_truth) * 100,
-                mean_abs_error=sum(errors) / len(errors) * 100,
-                max_abs_error=max(abs(est - truth) for _, est, truth, _ in series) * 100,
-                null_mean_abs_error=sum(nulls) / len(nulls) * 100,
-                est_range=(max(ests) - min(ests)) * 100,
-                truth_range=(max(truths) - min(truths)) * 100,
-                final_estimate=last_est * 100,
-                final_truth=last_truth * 100,
-                baseline=state_base * 100,
+            split = method_split(total, _num(reported.get("mail_returned")),
+                                 _num(reported.get("inperson")))
+            panel[(cycle, state)].append(Observation(
+                cycle=cycle, state=state, day=day,
+                geo=weighted[0], truth=dem / (dem + rep), ballots=float(total),
+                mail=split[0] if split else None,
+                inperson=split[1] if split else None,
+                electorate=expected_electorate(cycle, state, baseline),
+                baseline_dem_share=state_base,
             ))
+    for series in panel.values():
+        series.sort(key=lambda o: o.day)
+    return dict(panel)
+
+
+def mature_days(series: Sequence[Observation]) -> list[Observation]:
+    """The days on which at least MATURE_FRACTION of the eventual vote was in.
+
+    Before that the returns are mail-dominated and every method looks terrible;
+    scoring on them would flatter this model, which is a mail model. The last day
+    is the floor, so a series is never scored on nothing.
+    """
+    final_volume = max((o.ballots for o in series), default=0) or 1
+    ripe = [o for o in series if o.ballots / final_volume >= MATURE_FRACTION]
+    return ripe or list(series[-1:])
+
+
+def validate(
+    out_dir: Path, baseline: Baseline, *, states: Iterable[str] | None = None
+) -> list[Validation]:
+    """Score the estimate against every state-cycle that reports party.
+
+    This is the honest measure of the feature and the reason
+    docs/party-estimate.md exists.
+
+    LEAVE ONE STATE OUT. The mail term has two fitted constants, so scoring a
+    series with constants fitted on that same series would be marking its own
+    homework -- and docs/regression.md is the standing example in this repo of a
+    model that looked like it had found something until it was measured against
+    the right null. Every series here is scored with constants refitted on the
+    OTHER states, and North Carolina 2022 cannot train the fold that scores North
+    Carolina 2024. Where there is no other state to fit on (the single-state test
+    fixture) the shipped constants are used and `held_out` says so.
+
+    It compares a modelled two-party PRESIDENTIAL share against a reported
+    two-party REGISTRATION share, which are not the same object -- Kentucky is
+    full of registered Democrats who vote Republican, and that alone is most of
+    Kentucky's remaining error. The comparison is still the one a reader will
+    make, so it is the one we publish.
+    """
+    panel = observations(out_dir, baseline, states=states)
+    scoreable = {k: v for k, v in panel.items() if len(v) >= 2}
+    # A series is fittable only if it ever got past THIN_BALLOTS. North Carolina
+    # 2026 is three days and EIGHT ballots, six of them from registered
+    # Democrats; as a training series it would count for as much as
+    # Pennsylvania's seventy days. It is still SCORED below -- hiding what the
+    # tracker looks like in September would be its own dishonesty -- but it does
+    # not get a vote in the constants.
+    trainable = {
+        k: mature_days(v) for k, v in scoreable.items()
+        if max(o.ballots for o in v) >= THIN_BALLOTS
+    }
+
+    results: list[Validation] = []
+    for (cycle, state), series in sorted(scoreable.items()):
+        others = [v for k, v in trainable.items() if k[1] != state]
+        fitted = fit_mail_selection(others) if others else None
+        held_out = fitted is not None
+        alpha, decay = fitted or (MAIL_SELECTION, MAIL_DECAY)
+
+        ripe = mature_days(series)
+        predicted = [o.predict(alpha, decay) for o in ripe]
+        truths = [o.truth for o in ripe]
+        errors = [abs(p - t) for p, t in zip(predicted, truths)]
+        nulls = [abs(o.baseline_dem_share - o.truth) for o in ripe]
+        geo = [abs(o.geo - o.truth) for o in ripe]
+        last = series[-1]
+
+        results.append(Validation(
+            cycle=cycle, state=state, days=len(series),
+            final_error=(last.predict(alpha, decay) - last.truth) * 100,
+            mean_abs_error=sum(errors) / len(errors) * 100,
+            max_abs_error=max(abs(o.predict(alpha, decay) - o.truth)
+                              for o in series) * 100,
+            null_mean_abs_error=sum(nulls) / len(nulls) * 100,
+            geo_mean_abs_error=sum(geo) / len(geo) * 100,
+            est_range=(max(predicted) - min(predicted)) * 100,
+            truth_range=(max(truths) - min(truths)) * 100,
+            final_estimate=last.predict(alpha, decay) * 100,
+            final_truth=last.truth * 100,
+            baseline=last.baseline_dem_share * 100,
+            fitted=(alpha, decay), held_out=held_out,
+        ))
     return results
 
 
 def format_validation(results: Sequence[Validation]) -> Iterator[str]:
     yield (f"{'cycle':>5s} {'st':3s} {'days':>4s} {'est':>6s} {'truth':>6s} {'base':>6s} "
-           f"{'final':>7s} {'MAE':>6s} {'null':>6s} {'gain':>6s} {'moved':>6s} {'truth±':>7s}")
+           f"{'final':>7s} {'MAE':>6s} {'geo':>6s} {'null':>6s} {'v.geo':>6s} "
+           f"{'v.null':>6s} {'moved':>6s} {'truth+-':>7s}")
     for r in sorted(results, key=lambda r: (r.state, r.cycle)):
         yield (f"{r.cycle:5d} {r.state:3s} {r.days:4d} {r.final_estimate:6.1f} "
                f"{r.final_truth:6.1f} {r.baseline:6.1f} {r.final_error:+7.1f} "
-               f"{r.mean_abs_error:6.1f} {r.null_mean_abs_error:6.1f} {r.gain:+6.1f} "
-               f"{r.est_range:6.1f} {r.truth_range:7.1f}")
+               f"{r.mean_abs_error:6.1f} {r.geo_mean_abs_error:6.1f} "
+               f"{r.null_mean_abs_error:6.1f} {r.gain_vs_geography:+6.1f} "
+               f"{r.gain:+6.1f} {r.est_range:6.1f} {r.truth_range:7.1f}"
+               + ("" if r.held_out else "  (in sample: no other state to fit on)"))
     if not results:
         yield "(no state-cycle in output/ both reports party and has county rows)"
         return
@@ -1031,9 +1228,16 @@ def format_validation(results: Sequence[Validation]) -> Iterator[str]:
     yield ""
     yield (f"mean |final error| = {sum(abs(r.final_error) for r in results) / n:.1f} pp   "
            f"mean MAE = {sum(r.mean_abs_error for r in results) / n:.1f} pp   "
-           f"null model MAE = {sum(r.null_mean_abs_error for r in results) / n:.1f} pp   "
-           f"gain = {sum(r.gain for r in results) / n:+.1f} pp")
+           f"geography-only MAE = {sum(r.geo_mean_abs_error for r in results) / n:.1f} pp   "
+           f"null model MAE = {sum(r.null_mean_abs_error for r in results) / n:.1f} pp")
+    yield (f"gain vs geography-only = {sum(r.gain_vs_geography for r in results) / n:+.1f} pp   "
+           f"gain vs null = {sum(r.gain for r in results) / n:+.1f} pp")
+    if all(r.held_out for r in results):
+        yield ("Every row is LEAVE-ONE-STATE-OUT: the constants scoring a state "
+               "were fitted without it, and without that state's other cycles.")
     yield ("columns: final = signed error on Dem two-party share at the last day; "
-           "MAE/null over days with >=25% of the series' final early vote; "
+           "MAE/geo/null over days with >=25% of the series' final early vote; "
+           "geo = the geography-only model this one replaced; "
+           "null = quoting the state's 2024 presidential result; "
            "moved = how far the estimate travelled across the window; "
            "truth+- = how far the reported party split travelled.")

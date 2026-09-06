@@ -86,10 +86,10 @@ one, because the arithmetic around it is the part worth getting right in advance
   ballots they are.
 
 * `blend_party_share()` is the piece worth the trouble. The modelled split carries
-  a flat +/-10 points of structural error, but that error applies only to the
+  a flat +/-5 points of structural error, but that error applies only to the
   ballots the model is actually standing in for. Measure Maricopa and Pima and the
   modelled remainder is a quarter of the state, so the blended figure carries
-  +/-2.6 points, not +/-10 -- the band shrinks in proportion to how much is
+  +/-1.3 points, not +/-5 -- the band shrinks in proportion to how much is
   counted. A blend is still partly a model, so it belongs in
   `output/party_estimate.csv` beside the models and never in the reported
   `party_*` columns; docs/arizona-party.md carries the columns `estimate.py` would
@@ -437,7 +437,11 @@ REGISTRATION_SHARE: dict[str, float] = {
 #: `ev.estimate` -- keeping the model out of the daily job is what stops it
 #: publishing a model number by accident. `test_model_error_tracks_estimate`
 #: imports both and fails if they ever drift apart.
-MODEL_ERROR = 0.10
+#:
+#: It was 0.10 while the model was county geography alone. It is 0.05 since the
+#: model gained a mail-selection term whose measured leave-one-state-out error is
+#: 3.1 points; see docs/party-estimate.md.
+MODEL_ERROR = 0.05
 
 #: How Arizona spells its parties, mapped onto a spelling `normalize.party()`
 #: already knows. Only labels normalize does NOT recognise belong here; anything
@@ -941,10 +945,10 @@ class BlendedShare:
       "model"     nothing was counted. This is the pure estimate, on exactly the
                   terms docs/party-estimate.md sets for every other state.
 
-    The band is the reason to do this at all. A pure model carries +/-10 points
+    The band is the reason to do this at all. A pure model carries +/-5 points
     because that is the measured structural error of standing in for a party
-    split with geography. Count 74% of the ballots and the model is only standing
-    in for the other 26%, so the band is +/-2.6. It shrinks in proportion to what
+    split with a model. Count 74% of the ballots and the model is only standing
+    in for the other 26%, so the band is +/-1.3. It shrinks in proportion to what
     is measured, which is a fact about the arithmetic and not a claim about the
     model getting better.
     """
@@ -996,7 +1000,7 @@ def blend_party_share(
 
     `f` is the share of the ballots that were actually counted. The band is the
     model's error applied only to the fraction the model is responsible for --
-    at f=0 it is the full +/-10 points every other modelled state carries, at
+    at f=0 it is the full +/-5 points every other modelled state carries, at
     f=1 it is zero and the answer is not a model at all.
 
     Returns None rather than a number when the inputs cannot support one: no

@@ -285,3 +285,21 @@ def test_election_lists_use_the_dashboards_own_date_spelling():
     dates = ok.dimension_values(load("VHCountsByCounty_dates.json"), ok.COL_ELECTION)
     assert ELECTION_2024.strftime(ok._ENCODED_STAMP) in dates
     assert ELECTION_2024.strftime(ok._FILTER_STAMP) not in dates
+
+
+def test_the_two_dashboards_are_combined_when_both_carry_the_cycle():
+    """Voter history says how many ballots came back and how; only the absentee
+    table says how many went out. `mail_requested` is the one field taken from
+    the other dashboard, and its party breakdown is deliberately not fetched --
+    voter history already has a better one."""
+    scraper = Offline()
+    result = scraper.fetch(2024, date(2024, 11, 20))
+    row = result.state_rows[0]
+    assert (row.ballots_total, row.mail_returned, row.inperson) == (
+        401_467, 107_549, 293_918)
+    assert row.mail_requested == 130_640      # from AbsStatsByCounty
+    assert row.party_dem == 113_521           # from VHCountsByCounty
+    assert row.day == date(2024, 11, 20)      # neither dashboard carries a stamp
+    party_queries = [c for c in scraper.calls
+                     if c == (ok.ABSENTEE_DASHBOARD, ok.ABSENTEE_PARTY_COMBO)]
+    assert party_queries == []
