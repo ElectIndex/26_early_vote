@@ -341,6 +341,43 @@ def build_parser() -> argparse.ArgumentParser:
         return regression.cmd_regress(args)
 
     reg.set_defaults(func=_regress)
+
+    # The COUNTERFACTUAL: what 2024 would have produced if the 2026 early
+    # electorate had been the one that turned out, with every group's behaviour
+    # frozen at 2024. Like `estimate` and `regress`, it is its own subcommand and
+    # NOT part of the six-hourly ingest walk -- the daily job must not be able to
+    # publish a model number -- and `ev.counterfactual` is imported inside the
+    # dispatcher below so `ingest` never loads it. It writes ONLY
+    # output/counterfactual.csv, never a reported column of ev_state_daily.csv.
+    cfa = sub.add_parser(
+        "counterfactual",
+        help="project the 2024 presidential result under the CURRENT early "
+             "electorate's composition, compared like-for-like against the same "
+             "state's previous early electorate at the same days-to-election -> "
+             "output/counterfactual.csv. Read docs/counterfactual.md: it does "
+             "not beat the no-change null.",
+    )
+    cfa.add_argument("--state", nargs="+", help="limit to these states")
+    # Every comparable cycle by default, for the same reason `estimate` does it:
+    # the table is re-derived from output/ on each run, so restricting it to 2026
+    # would freeze the 2024-vs-2022 audit rows under whatever method wrote them.
+    cfa.add_argument("--cycle", type=int, nargs="+", default=None, choices=CYCLES,
+                     help="target cycles (default: every cycle with a reference)")
+    cfa.add_argument("--dry-run", action="store_true")
+    cfa.add_argument("--baseline", help="county partisan baseline CSV "
+                                        "(default data/baseline/county_results_2024.csv)")
+    cfa.add_argument("--validate", action="store_true",
+                     help="score the method against the only measured "
+                          "compositional change there is -- the reported party "
+                          "registration of the same ballots -- and print the "
+                          "per-state error in percentage points of margin")
+
+    def _counterfactual(args):
+        from . import counterfactual as cf
+
+        return cf.cmd_counterfactual(args)
+
+    cfa.set_defaults(func=_counterfactual)
     return p
 
 

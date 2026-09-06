@@ -78,6 +78,14 @@ JUDGEMENT CALLS
   `ballots_new` can be smaller than the day-over-day change in `ballots_total`.
   (On the 2024 file they agree exactly: 2,004,468 both ways.)
 
+* **The report is generated the morning after the day it covers.** The
+  post-election 2022 file is stamped 2022-11-09 and its last day column is
+  2022-11-08, so the two are NOT required to be equal -- only that no day column
+  is dated after the stamp, which really would be impossible. When they differ,
+  the day columns carry the curve and the summary's cumulative figure is filed
+  under the stamp with `ballots_new` left None, because the file says nothing
+  about how many of those ballots arrived that day.
+
 * **Future days print as literal zeros in some reports and are absent in
   others.** The November 2025 file lists all thirteen planned dates and writes
   `0` for the eight that had not happened; the 2022-10-25 file lists thirteen
@@ -116,14 +124,27 @@ CURRENT_ELECTION_URL = "https://sos.oregon.gov/voting/Pages/current-election.asp
 
 SOS = "https://sos.oregon.gov"
 
-#: Archived general-election reports. Both paths were VERIFIED 200 through the
-#: Wayback Machine at the timestamps given; both are 404 on sos.oregon.gov today,
-#: because Oregon deletes the report after each election. The timestamp is the
-#: last capture of that cycle, i.e. the most complete snapshot of the season.
-ARCHIVED: dict[int, tuple[str, str]] = {
+#: Archived general-election reports: (live URL, Wayback capture stamps, newest
+#: usable first). Both URLs are 404 on sos.oregon.gov today -- Oregon deletes the
+#: report after each election -- so the archive is the only copy, and every stamp
+#: below was VERIFIED 200 and parsed end to end.
+#:
+#: The stamps are NOT simply the newest capture. Oregon replaces the report with
+#: a post-canvass FINAL version weeks later, and the 2024 final is a seven-page
+#: file whose party table gains a second, supplemental section: its own page-2
+#: party columns come to 2,304,398 against a printed total of 2,307,070, and
+#: adding the supplement overshoots to 2,317,716. Neither reading reconciles, so
+#: `parse` refuses all five 2024 captures from 2024-11-23 onward -- correctly --
+#: and the stamps here are the last captures of the ORIGINAL during-season
+#: report. They still carry the whole curve:
+#:
+#:   2022  14 days, 2022-10-21 .. 2022-11-09, 1,813,994 ballots returned
+#:   2024  14 days, 2024-10-18 .. 2024-11-06, 2,137,613 ballots returned
+ARCHIVED: dict[int, tuple[str, tuple[str, ...]]] = {
     2022: (f"{SOS}/elections/Documents/statistics/G22-Daily-Ballot-Returns.pdf",
-           "20221025193050"),
-    2024: (f"{SOS}/voting/Documents/G24-Daily-Ballot-Returns.pdf", "20241102"),
+           ("20221110100105", "20221113180131", "20221108183430", "20221025193050")),
+    2024: (f"{SOS}/voting/Documents/G24-Daily-Ballot-Returns.pdf",
+           ("20241113125733", "20241111105708", "20241106082418")),
 }
 
 WAYBACK = "https://web.archive.org/web/{stamp}id_/{url}"
@@ -700,10 +721,10 @@ def _rows(
     party: dict[str, dict[str, int]],
 ) -> FetchResult:
     """Build the canonical rows from the three tables every layout produces."""
-    if dates and dates[-1] != as_of:
+    if dates and dates[-1] > as_of:
         raise SchemaDrift(
-            f"OR: the last day column is {dates[-1].isoformat()} but the report is "
-            f"stamped {as_of.isoformat()}"
+            f"OR: the last day column is {dates[-1].isoformat()}, which is after "
+            f"the report's own stamp of {as_of.isoformat()}"
         )
 
     def bucket(key: str) -> dict[str, int | None]:
@@ -916,13 +937,24 @@ class ORScraper(Adapter):
         entry = ARCHIVED.get(int(cycle))
         if entry is None:
             raise NotYetPublished(f"OR: no archived report recorded for {cycle}")
-        url, stamp = entry
-        for candidate in (WAYBACK.format(stamp=stamp, url=url), url):
+        url, stamps = entry
+        problems: list[str] = []
+        for index, stamp in enumerate(stamps):
             try:
                 body = self._download(
-                    candidate, filename=f"{cycle}_archive.pdf", use_cache=True
+                    WAYBACK.format(stamp=stamp, url=url),
+                    filename=f"{cycle}_archive_{stamp}.pdf", use_cache=True,
                 )
-            except Missing:
+            except Missing as exc:
+                problems.append(str(exc))
                 continue
-            return parse(body, cycle)
-        raise NotYetPublished(f"OR: the {cycle} report is not retrievable")
+            try:
+                return parse(body, cycle)
+            except SourceError as exc:
+                # A post-canvass FINAL version that does not reconcile. Try the
+                # next-oldest capture rather than losing the cycle entirely.
+                problems.append(f"{stamp}: {exc}")
+                log.warning("OR: archived capture %s is unusable (%s)", stamp, exc)
+        raise NotYetPublished(
+            f"OR: no usable archived {cycle} report ({problems[0] if problems else ''})"
+        )
