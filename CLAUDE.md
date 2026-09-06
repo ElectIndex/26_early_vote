@@ -18,6 +18,21 @@ python -m ev backfill --cycle 2022
 pytest
 ```
 
+## The ladder, top to bottom
+
+| tier | source | gives |
+|---|---|---|
+| 1 | `adapters/<st>.py` — the state's own file | whatever that state publishes |
+| 2 | `adapters/civicapi.py` — civicAPI's national API | statewide + counties + party |
+| 3 | `adapters/aggregator.py` — UF Election Lab | statewide only |
+| 4 | `adapters/manual.py` — `data/manual/` | a hand-typed statewide total |
+
+Tiers 2-4 are appended to every state automatically (`registry.FALLBACKS`), so a
+`TIER1` entry only ever names its own scraper. `publish.py`'s merge is relative
+(lower wins) and names no tier number; `schema.TIER_LABELS` is the one place the
+numbering is written down. See `docs/civicapi-source.md` for why civicAPI sits
+above the aggregator and what it deliberately refuses to publish.
+
 ## Writing a state adapter — the contract
 
 Subclass `ev.adapters.base.Adapter` in `src/ev/adapters/<st>.py`, set `state`,

@@ -1,0 +1,1232 @@
+{
+ "state": "FL",
+ "category": "inperson",
+ "election_name": "Florida In-Person Early Voting",
+ "snapshot_date": "2026-09-06",
+ "regions": {
+  "Alachua": {
+   "Democratic": {
+    "votes": 0,
+    "color": "#4874a3"
+   },
+   "No Party Affiliation": {
+    "votes": 0,
+    "color": "#63c660"
+   },
+   "Other": {
+    "votes": 0,
+    "color": "#e0bb24"
+   },
+   "Republican": {
+    "votes": 0,
+    "color": "#c6606b"
+   }
+  },
+  "Baker": {
+   "Democratic": {
+    "votes": 0,
+    "color": "#4874a3"
+   },
+   "No Party Affiliation": {
+    "votes": 0,
+    "color": "#63c660"
+   },
+   "Other": {
+    "votes": 0,
+    "color": "#e0bb24"
+   },
+   "Republican": {
+    "votes": 0,
+    "color": "#c6606b"
+   }
+  },
+  "Bay": {
+   "Democratic": {
+    "votes": 0,
+    "color": "#4874a3"
+   },
+   "No Party Affiliation": {
+    "votes": 0,
+    "color": "#63c660"
+   },
+   "Other": {
+    "votes": 0,
+    "color": "#e0bb24"
+   },
+   "Republican": {
+    "votes": 0,
+    "color": "#c6606b"
+   }
+  },
+  "Bradford": {
+   "Democratic": {
+    "votes": 0,
+    "color": "#4874a3"
+   },
+   "No Party Affiliation": {
+    "votes": 0,
+    "color": "#63c660"
+   },
+   "Other": {
+    "votes": 0,
+    "color": "#e0bb24"
+   },
+   "Republican": {
+    "votes": 0,
+    "color": "#c6606b"
+   }
+  },
+  "Brevard": {
+   "Democratic": {
+    "votes": 0,
+    "color": "#4874a3"
+   },
+   "No Party Affiliation": {
+    "votes": 0,
+    "color": "#63c660"
+   },
+   "Other": {
+    "votes": 0,
+    "color": "#e0bb24"
+   },
+   "Republican": {
+    "votes": 0,
+    "color": "#c6606b"
+   }
+  },
+  "Broward": {
+   "Democratic": {
+    "votes": 0,
+    "color": "#4874a3"
+   },
+   "No Party Affiliation": {
+    "votes": 0,
+    "color": "#63c660"
+   },
+   "Other": {
+    "votes": 0,
+    "color": "#e0bb24"
+   },
+   "Republican": {
+    "votes": 0,
+    "color": "#c6606b"
+   }
+  },
+  "Calhoun": {
+   "Democratic": {
+    "votes": 0,
+    "color": "#4874a3"
+   },
+   "No Party Affiliation": {
+    "votes": 0,
+    "color": "#63c660"
+   },
+   "Other": {
+    "votes": 0,
+    "color": "#e0bb24"
+   },
+   "Republican": {
+    "votes": 0,
+    "color": "#c6606b"
+   }
+  },
+  "Charlotte": {
+   "Democratic": {
+    "votes": 0,
+    "color": "#4874a3"
+   },
+   "No Party Affiliation": {
+    "votes": 0,
+    "color": "#63c660"
+   },
+   "Other": {
+    "votes": 0,
+    "color": "#e0bb24"
+   },
+   "Republican": {
+    "votes": 0,
+    "color": "#c6606b"
+   }
+  },
+  "Citrus": {
+   "Democratic": {
+    "votes": 0,
+    "color": "#4874a3"
+   },
+   "No Party Affiliation": {
+    "votes": 0,
+    "color": "#63c660"
+   },
+   "Other": {
+    "votes": 0,
+    "color": "#e0bb24"
+   },
+   "Republican": {
+    "votes": 0,
+    "color": "#c6606b"
+   }
+  },
+  "Clay": {
+   "Democratic": {
+    "votes": 0,
+    "color": "#4874a3"
+   },
+   "No Party Affiliation": {
+    "votes": 0,
+    "color": "#63c660"
+   },
+   "Other": {
+    "votes": 0,
+    "color": "#e0bb24"
+   },
+   "Republican": {
+    "votes": 0,
+    "color": "#c6606b"
+   }
+  },
+  "Collier": {
+   "Democratic": {
+    "votes": 0,
+    "color": "#4874a3"
+   },
+   "No Party Affiliation": {
+    "votes": 0,
+    "color": "#63c660"
+   },
+   "Other": {
+    "votes": 0,
+    "color": "#e0bb24"
+   },
+   "Republican": {
+    "votes": 0,
+    "color": "#c6606b"
+   }
+  },
+  "Columbia": {
+   "Democratic": {
+    "votes": 0,
+    "color": "#4874a3"
+   },
+   "No Party Affiliation": {
+    "votes": 0,
+    "color": "#63c660"
+   },
+   "Other": {
+    "votes": 0,
+    "color": "#e0bb24"
+   },
+   "Republican": {
+    "votes": 0,
+    "color": "#c6606b"
+   }
+  },
+  "DeSoto": {
+   "Democratic": {
+    "votes": 0,
+    "color": "#4874a3"
+   },
+   "No Party Affiliation": {
+    "votes": 0,
+    "color": "#63c660"
+   },
+   "Other": {
+    "votes": 0,
+    "color": "#e0bb24"
+   },
+   "Republican": {
+    "votes": 0,
+    "color": "#c6606b"
+   }
+  },
+  "Dixie": {
+   "Democratic": {
+    "votes": 0,
+    "color": "#4874a3"
+   },
+   "No Party Affiliation": {
+    "votes": 0,
+    "color": "#63c660"
+   },
+   "Other": {
+    "votes": 0,
+    "color": "#e0bb24"
+   },
+   "Republican": {
+    "votes": 0,
+    "color": "#c6606b"
+   }
+  },
+  "Duval": {
+   "Democratic": {
+    "votes": 0,
+    "color": "#4874a3"
+   },
+   "No Party Affiliation": {
+    "votes": 0,
+    "color": "#63c660"
+   },
+   "Other": {
+    "votes": 0,
+    "color": "#e0bb24"
+   },
+   "Republican": {
+    "votes": 0,
+    "color": "#c6606b"
+   }
+  },
+  "Escambia": {
+   "Democratic": {
+    "votes": 0,
+    "color": "#4874a3"
+   },
+   "No Party Affiliation": {
+    "votes": 0,
+    "color": "#63c660"
+   },
+   "Other": {
+    "votes": 0,
+    "color": "#e0bb24"
+   },
+   "Republican": {
+    "votes": 0,
+    "color": "#c6606b"
+   }
+  },
+  "Flagler": {
+   "Democratic": {
+    "votes": 0,
+    "color": "#4874a3"
+   },
+   "No Party Affiliation": {
+    "votes": 0,
+    "color": "#63c660"
+   },
+   "Other": {
+    "votes": 0,
+    "color": "#e0bb24"
+   },
+   "Republican": {
+    "votes": 0,
+    "color": "#c6606b"
+   }
+  },
+  "Franklin": {
+   "Democratic": {
+    "votes": 0,
+    "color": "#4874a3"
+   },
+   "No Party Affiliation": {
+    "votes": 0,
+    "color": "#63c660"
+   },
+   "Other": {
+    "votes": 0,
+    "color": "#e0bb24"
+   },
+   "Republican": {
+    "votes": 0,
+    "color": "#c6606b"
+   }
+  },
+  "Gadsden": {
+   "Democratic": {
+    "votes": 0,
+    "color": "#4874a3"
+   },
+   "No Party Affiliation": {
+    "votes": 0,
+    "color": "#63c660"
+   },
+   "Other": {
+    "votes": 0,
+    "color": "#e0bb24"
+   },
+   "Republican": {
+    "votes": 0,
+    "color": "#c6606b"
+   }
+  },
+  "Gilchrist": {
+   "Democratic": {
+    "votes": 0,
+    "color": "#4874a3"
+   },
+   "No Party Affiliation": {
+    "votes": 0,
+    "color": "#63c660"
+   },
+   "Other": {
+    "votes": 0,
+    "color": "#e0bb24"
+   },
+   "Republican": {
+    "votes": 0,
+    "color": "#c6606b"
+   }
+  },
+  "Glades": {
+   "Democratic": {
+    "votes": 0,
+    "color": "#4874a3"
+   },
+   "No Party Affiliation": {
+    "votes": 0,
+    "color": "#63c660"
+   },
+   "Other": {
+    "votes": 0,
+    "color": "#e0bb24"
+   },
+   "Republican": {
+    "votes": 0,
+    "color": "#c6606b"
+   }
+  },
+  "Gulf": {
+   "Democratic": {
+    "votes": 0,
+    "color": "#4874a3"
+   },
+   "No Party Affiliation": {
+    "votes": 0,
+    "color": "#63c660"
+   },
+   "Other": {
+    "votes": 0,
+    "color": "#e0bb24"
+   },
+   "Republican": {
+    "votes": 0,
+    "color": "#c6606b"
+   }
+  },
+  "Hamilton": {
+   "Democratic": {
+    "votes": 0,
+    "color": "#4874a3"
+   },
+   "No Party Affiliation": {
+    "votes": 0,
+    "color": "#63c660"
+   },
+   "Other": {
+    "votes": 0,
+    "color": "#e0bb24"
+   },
+   "Republican": {
+    "votes": 0,
+    "color": "#c6606b"
+   }
+  },
+  "Hardee": {
+   "Democratic": {
+    "votes": 0,
+    "color": "#4874a3"
+   },
+   "No Party Affiliation": {
+    "votes": 0,
+    "color": "#63c660"
+   },
+   "Other": {
+    "votes": 0,
+    "color": "#e0bb24"
+   },
+   "Republican": {
+    "votes": 0,
+    "color": "#c6606b"
+   }
+  },
+  "Hendry": {
+   "Democratic": {
+    "votes": 0,
+    "color": "#4874a3"
+   },
+   "No Party Affiliation": {
+    "votes": 0,
+    "color": "#63c660"
+   },
+   "Other": {
+    "votes": 0,
+    "color": "#e0bb24"
+   },
+   "Republican": {
+    "votes": 0,
+    "color": "#c6606b"
+   }
+  },
+  "Hernando": {
+   "Democratic": {
+    "votes": 0,
+    "color": "#4874a3"
+   },
+   "No Party Affiliation": {
+    "votes": 0,
+    "color": "#63c660"
+   },
+   "Other": {
+    "votes": 0,
+    "color": "#e0bb24"
+   },
+   "Republican": {
+    "votes": 0,
+    "color": "#c6606b"
+   }
+  },
+  "Highlands": {
+   "Democratic": {
+    "votes": 0,
+    "color": "#4874a3"
+   },
+   "No Party Affiliation": {
+    "votes": 0,
+    "color": "#63c660"
+   },
+   "Other": {
+    "votes": 0,
+    "color": "#e0bb24"
+   },
+   "Republican": {
+    "votes": 0,
+    "color": "#c6606b"
+   }
+  },
+  "Hillsborough": {
+   "Democratic": {
+    "votes": 0,
+    "color": "#4874a3"
+   },
+   "No Party Affiliation": {
+    "votes": 0,
+    "color": "#63c660"
+   },
+   "Other": {
+    "votes": 0,
+    "color": "#e0bb24"
+   },
+   "Republican": {
+    "votes": 0,
+    "color": "#c6606b"
+   }
+  },
+  "Holmes": {
+   "Democratic": {
+    "votes": 0,
+    "color": "#4874a3"
+   },
+   "No Party Affiliation": {
+    "votes": 0,
+    "color": "#63c660"
+   },
+   "Other": {
+    "votes": 0,
+    "color": "#e0bb24"
+   },
+   "Republican": {
+    "votes": 0,
+    "color": "#c6606b"
+   }
+  },
+  "Indian River": {
+   "Democratic": {
+    "votes": 0,
+    "color": "#4874a3"
+   },
+   "No Party Affiliation": {
+    "votes": 0,
+    "color": "#63c660"
+   },
+   "Other": {
+    "votes": 0,
+    "color": "#e0bb24"
+   },
+   "Republican": {
+    "votes": 0,
+    "color": "#c6606b"
+   }
+  },
+  "Jackson": {
+   "Democratic": {
+    "votes": 0,
+    "color": "#4874a3"
+   },
+   "No Party Affiliation": {
+    "votes": 0,
+    "color": "#63c660"
+   },
+   "Other": {
+    "votes": 0,
+    "color": "#e0bb24"
+   },
+   "Republican": {
+    "votes": 0,
+    "color": "#c6606b"
+   }
+  },
+  "Jefferson": {
+   "Democratic": {
+    "votes": 0,
+    "color": "#4874a3"
+   },
+   "No Party Affiliation": {
+    "votes": 0,
+    "color": "#63c660"
+   },
+   "Other": {
+    "votes": 0,
+    "color": "#e0bb24"
+   },
+   "Republican": {
+    "votes": 0,
+    "color": "#c6606b"
+   }
+  },
+  "Lafayette": {
+   "Democratic": {
+    "votes": 0,
+    "color": "#4874a3"
+   },
+   "No Party Affiliation": {
+    "votes": 0,
+    "color": "#63c660"
+   },
+   "Other": {
+    "votes": 0,
+    "color": "#e0bb24"
+   },
+   "Republican": {
+    "votes": 0,
+    "color": "#c6606b"
+   }
+  },
+  "Lake": {
+   "Democratic": {
+    "votes": 0,
+    "color": "#4874a3"
+   },
+   "No Party Affiliation": {
+    "votes": 0,
+    "color": "#63c660"
+   },
+   "Other": {
+    "votes": 0,
+    "color": "#e0bb24"
+   },
+   "Republican": {
+    "votes": 0,
+    "color": "#c6606b"
+   }
+  },
+  "Lee": {
+   "Democratic": {
+    "votes": 0,
+    "color": "#4874a3"
+   },
+   "No Party Affiliation": {
+    "votes": 0,
+    "color": "#63c660"
+   },
+   "Other": {
+    "votes": 0,
+    "color": "#e0bb24"
+   },
+   "Republican": {
+    "votes": 0,
+    "color": "#c6606b"
+   }
+  },
+  "Leon": {
+   "Democratic": {
+    "votes": 0,
+    "color": "#4874a3"
+   },
+   "No Party Affiliation": {
+    "votes": 0,
+    "color": "#63c660"
+   },
+   "Other": {
+    "votes": 0,
+    "color": "#e0bb24"
+   },
+   "Republican": {
+    "votes": 0,
+    "color": "#c6606b"
+   }
+  },
+  "Levy": {
+   "Democratic": {
+    "votes": 0,
+    "color": "#4874a3"
+   },
+   "No Party Affiliation": {
+    "votes": 0,
+    "color": "#63c660"
+   },
+   "Other": {
+    "votes": 0,
+    "color": "#e0bb24"
+   },
+   "Republican": {
+    "votes": 0,
+    "color": "#c6606b"
+   }
+  },
+  "Liberty": {
+   "Democratic": {
+    "votes": 0,
+    "color": "#4874a3"
+   },
+   "No Party Affiliation": {
+    "votes": 0,
+    "color": "#63c660"
+   },
+   "Other": {
+    "votes": 0,
+    "color": "#e0bb24"
+   },
+   "Republican": {
+    "votes": 0,
+    "color": "#c6606b"
+   }
+  },
+  "Madison": {
+   "Democratic": {
+    "votes": 0,
+    "color": "#4874a3"
+   },
+   "No Party Affiliation": {
+    "votes": 0,
+    "color": "#63c660"
+   },
+   "Other": {
+    "votes": 0,
+    "color": "#e0bb24"
+   },
+   "Republican": {
+    "votes": 0,
+    "color": "#c6606b"
+   }
+  },
+  "Manatee": {
+   "Democratic": {
+    "votes": 0,
+    "color": "#4874a3"
+   },
+   "No Party Affiliation": {
+    "votes": 0,
+    "color": "#63c660"
+   },
+   "Other": {
+    "votes": 0,
+    "color": "#e0bb24"
+   },
+   "Republican": {
+    "votes": 0,
+    "color": "#c6606b"
+   }
+  },
+  "Marion": {
+   "Democratic": {
+    "votes": 0,
+    "color": "#4874a3"
+   },
+   "No Party Affiliation": {
+    "votes": 0,
+    "color": "#63c660"
+   },
+   "Other": {
+    "votes": 0,
+    "color": "#e0bb24"
+   },
+   "Republican": {
+    "votes": 0,
+    "color": "#c6606b"
+   }
+  },
+  "Martin": {
+   "Democratic": {
+    "votes": 0,
+    "color": "#4874a3"
+   },
+   "No Party Affiliation": {
+    "votes": 0,
+    "color": "#63c660"
+   },
+   "Other": {
+    "votes": 0,
+    "color": "#e0bb24"
+   },
+   "Republican": {
+    "votes": 0,
+    "color": "#c6606b"
+   }
+  },
+  "Miami-Dade": {
+   "Democratic": {
+    "votes": 0,
+    "color": "#4874a3"
+   },
+   "No Party Affiliation": {
+    "votes": 0,
+    "color": "#63c660"
+   },
+   "Other": {
+    "votes": 0,
+    "color": "#e0bb24"
+   },
+   "Republican": {
+    "votes": 0,
+    "color": "#c6606b"
+   }
+  },
+  "Monroe": {
+   "Democratic": {
+    "votes": 0,
+    "color": "#4874a3"
+   },
+   "No Party Affiliation": {
+    "votes": 0,
+    "color": "#63c660"
+   },
+   "Other": {
+    "votes": 0,
+    "color": "#e0bb24"
+   },
+   "Republican": {
+    "votes": 0,
+    "color": "#c6606b"
+   }
+  },
+  "Nassau": {
+   "Democratic": {
+    "votes": 0,
+    "color": "#4874a3"
+   },
+   "No Party Affiliation": {
+    "votes": 0,
+    "color": "#63c660"
+   },
+   "Other": {
+    "votes": 0,
+    "color": "#e0bb24"
+   },
+   "Republican": {
+    "votes": 0,
+    "color": "#c6606b"
+   }
+  },
+  "Okaloosa": {
+   "Democratic": {
+    "votes": 0,
+    "color": "#4874a3"
+   },
+   "No Party Affiliation": {
+    "votes": 0,
+    "color": "#63c660"
+   },
+   "Other": {
+    "votes": 0,
+    "color": "#e0bb24"
+   },
+   "Republican": {
+    "votes": 0,
+    "color": "#c6606b"
+   }
+  },
+  "Okeechobee": {
+   "Democratic": {
+    "votes": 0,
+    "color": "#4874a3"
+   },
+   "No Party Affiliation": {
+    "votes": 0,
+    "color": "#63c660"
+   },
+   "Other": {
+    "votes": 0,
+    "color": "#e0bb24"
+   },
+   "Republican": {
+    "votes": 0,
+    "color": "#c6606b"
+   }
+  },
+  "Orange": {
+   "Democratic": {
+    "votes": 0,
+    "color": "#4874a3"
+   },
+   "No Party Affiliation": {
+    "votes": 0,
+    "color": "#63c660"
+   },
+   "Other": {
+    "votes": 0,
+    "color": "#e0bb24"
+   },
+   "Republican": {
+    "votes": 0,
+    "color": "#c6606b"
+   }
+  },
+  "Osceola": {
+   "Democratic": {
+    "votes": 0,
+    "color": "#4874a3"
+   },
+   "No Party Affiliation": {
+    "votes": 0,
+    "color": "#63c660"
+   },
+   "Other": {
+    "votes": 0,
+    "color": "#e0bb24"
+   },
+   "Republican": {
+    "votes": 0,
+    "color": "#c6606b"
+   }
+  },
+  "Palm Beach": {
+   "Democratic": {
+    "votes": 0,
+    "color": "#4874a3"
+   },
+   "No Party Affiliation": {
+    "votes": 0,
+    "color": "#63c660"
+   },
+   "Other": {
+    "votes": 0,
+    "color": "#e0bb24"
+   },
+   "Republican": {
+    "votes": 0,
+    "color": "#c6606b"
+   }
+  },
+  "Pasco": {
+   "Democratic": {
+    "votes": 0,
+    "color": "#4874a3"
+   },
+   "No Party Affiliation": {
+    "votes": 0,
+    "color": "#63c660"
+   },
+   "Other": {
+    "votes": 0,
+    "color": "#e0bb24"
+   },
+   "Republican": {
+    "votes": 0,
+    "color": "#c6606b"
+   }
+  },
+  "Pinellas": {
+   "Democratic": {
+    "votes": 0,
+    "color": "#4874a3"
+   },
+   "No Party Affiliation": {
+    "votes": 0,
+    "color": "#63c660"
+   },
+   "Other": {
+    "votes": 0,
+    "color": "#e0bb24"
+   },
+   "Republican": {
+    "votes": 0,
+    "color": "#c6606b"
+   }
+  },
+  "Polk": {
+   "Democratic": {
+    "votes": 0,
+    "color": "#4874a3"
+   },
+   "No Party Affiliation": {
+    "votes": 0,
+    "color": "#63c660"
+   },
+   "Other": {
+    "votes": 0,
+    "color": "#e0bb24"
+   },
+   "Republican": {
+    "votes": 0,
+    "color": "#c6606b"
+   }
+  },
+  "Putnam": {
+   "Democratic": {
+    "votes": 0,
+    "color": "#4874a3"
+   },
+   "No Party Affiliation": {
+    "votes": 0,
+    "color": "#63c660"
+   },
+   "Other": {
+    "votes": 0,
+    "color": "#e0bb24"
+   },
+   "Republican": {
+    "votes": 0,
+    "color": "#c6606b"
+   }
+  },
+  "Santa Rosa": {
+   "Democratic": {
+    "votes": 0,
+    "color": "#4874a3"
+   },
+   "No Party Affiliation": {
+    "votes": 0,
+    "color": "#63c660"
+   },
+   "Other": {
+    "votes": 0,
+    "color": "#e0bb24"
+   },
+   "Republican": {
+    "votes": 0,
+    "color": "#c6606b"
+   }
+  },
+  "Sarasota": {
+   "Democratic": {
+    "votes": 0,
+    "color": "#4874a3"
+   },
+   "No Party Affiliation": {
+    "votes": 0,
+    "color": "#63c660"
+   },
+   "Other": {
+    "votes": 0,
+    "color": "#e0bb24"
+   },
+   "Republican": {
+    "votes": 0,
+    "color": "#c6606b"
+   }
+  },
+  "Seminole": {
+   "Democratic": {
+    "votes": 0,
+    "color": "#4874a3"
+   },
+   "No Party Affiliation": {
+    "votes": 0,
+    "color": "#63c660"
+   },
+   "Other": {
+    "votes": 0,
+    "color": "#e0bb24"
+   },
+   "Republican": {
+    "votes": 0,
+    "color": "#c6606b"
+   }
+  },
+  "St. Johns": {
+   "Democratic": {
+    "votes": 0,
+    "color": "#4874a3"
+   },
+   "No Party Affiliation": {
+    "votes": 0,
+    "color": "#63c660"
+   },
+   "Other": {
+    "votes": 0,
+    "color": "#e0bb24"
+   },
+   "Republican": {
+    "votes": 0,
+    "color": "#c6606b"
+   }
+  },
+  "St. Lucie": {
+   "Democratic": {
+    "votes": 0,
+    "color": "#4874a3"
+   },
+   "No Party Affiliation": {
+    "votes": 0,
+    "color": "#63c660"
+   },
+   "Other": {
+    "votes": 0,
+    "color": "#e0bb24"
+   },
+   "Republican": {
+    "votes": 0,
+    "color": "#c6606b"
+   }
+  },
+  "Sumter": {
+   "Democratic": {
+    "votes": 0,
+    "color": "#4874a3"
+   },
+   "No Party Affiliation": {
+    "votes": 0,
+    "color": "#63c660"
+   },
+   "Other": {
+    "votes": 0,
+    "color": "#e0bb24"
+   },
+   "Republican": {
+    "votes": 0,
+    "color": "#c6606b"
+   }
+  },
+  "Suwannee": {
+   "Democratic": {
+    "votes": 0,
+    "color": "#4874a3"
+   },
+   "No Party Affiliation": {
+    "votes": 0,
+    "color": "#63c660"
+   },
+   "Other": {
+    "votes": 0,
+    "color": "#e0bb24"
+   },
+   "Republican": {
+    "votes": 0,
+    "color": "#c6606b"
+   }
+  },
+  "Taylor": {
+   "Democratic": {
+    "votes": 0,
+    "color": "#4874a3"
+   },
+   "No Party Affiliation": {
+    "votes": 0,
+    "color": "#63c660"
+   },
+   "Other": {
+    "votes": 0,
+    "color": "#e0bb24"
+   },
+   "Republican": {
+    "votes": 0,
+    "color": "#c6606b"
+   }
+  },
+  "Union": {
+   "Democratic": {
+    "votes": 0,
+    "color": "#4874a3"
+   },
+   "No Party Affiliation": {
+    "votes": 0,
+    "color": "#63c660"
+   },
+   "Other": {
+    "votes": 0,
+    "color": "#e0bb24"
+   },
+   "Republican": {
+    "votes": 0,
+    "color": "#c6606b"
+   }
+  },
+  "Volusia": {
+   "Democratic": {
+    "votes": 0,
+    "color": "#4874a3"
+   },
+   "No Party Affiliation": {
+    "votes": 0,
+    "color": "#63c660"
+   },
+   "Other": {
+    "votes": 0,
+    "color": "#e0bb24"
+   },
+   "Republican": {
+    "votes": 0,
+    "color": "#c6606b"
+   }
+  },
+  "Wakulla": {
+   "Democratic": {
+    "votes": 0,
+    "color": "#4874a3"
+   },
+   "No Party Affiliation": {
+    "votes": 0,
+    "color": "#63c660"
+   },
+   "Other": {
+    "votes": 0,
+    "color": "#e0bb24"
+   },
+   "Republican": {
+    "votes": 0,
+    "color": "#c6606b"
+   }
+  },
+  "Walton": {
+   "Democratic": {
+    "votes": 0,
+    "color": "#4874a3"
+   },
+   "No Party Affiliation": {
+    "votes": 0,
+    "color": "#63c660"
+   },
+   "Other": {
+    "votes": 0,
+    "color": "#e0bb24"
+   },
+   "Republican": {
+    "votes": 0,
+    "color": "#c6606b"
+   }
+  },
+  "Washington": {
+   "Democratic": {
+    "votes": 0,
+    "color": "#4874a3"
+   },
+   "No Party Affiliation": {
+    "votes": 0,
+    "color": "#63c660"
+   },
+   "Other": {
+    "votes": 0,
+    "color": "#e0bb24"
+   },
+   "Republican": {
+    "votes": 0,
+    "color": "#c6606b"
+   }
+  }
+ },
+ "statewide_total": {
+  "Democratic": {
+   "votes": 0,
+   "color": "#4874a3"
+  },
+  "No Party Affiliation": {
+   "votes": 0,
+   "color": "#63c660"
+  },
+  "Other": {
+   "votes": 0,
+   "color": "#e0bb24"
+  },
+  "Republican": {
+   "votes": 0,
+   "color": "#c6606b"
+  }
+ }
+}

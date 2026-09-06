@@ -1,0 +1,662 @@
+{
+ "state": "IL",
+ "category": "requested",
+ "election_name": "Illinois Ballots Requested",
+ "snapshot_date": "2026-09-06",
+ "regions": {
+  "Adams": {
+   "Unspecified": {
+    "votes": 3952,
+    "color": "#999999"
+   }
+  },
+  "Alexander": {
+   "Unspecified": {
+    "votes": 0,
+    "color": "#999999"
+   }
+  },
+  "Bond": {
+   "Unspecified": {
+    "votes": 1280,
+    "color": "#999999"
+   }
+  },
+  "Boone": {
+   "Unspecified": {
+    "votes": 4268,
+    "color": "#999999"
+   }
+  },
+  "Brown": {
+   "Unspecified": {
+    "votes": 0,
+    "color": "#999999"
+   }
+  },
+  "Bureau": {
+   "Unspecified": {
+    "votes": 3706,
+    "color": "#999999"
+   }
+  },
+  "Calhoun": {
+   "Unspecified": {
+    "votes": 0,
+    "color": "#999999"
+   }
+  },
+  "Carroll": {
+   "Unspecified": {
+    "votes": 2410,
+    "color": "#999999"
+   }
+  },
+  "Cass": {
+   "Unspecified": {
+    "votes": 0,
+    "color": "#999999"
+   }
+  },
+  "Champaign": {
+   "Unspecified": {
+    "votes": 1082,
+    "color": "#999999"
+   }
+  },
+  "Christian": {
+   "Unspecified": {
+    "votes": 2986,
+    "color": "#999999"
+   }
+  },
+  "City of Bloomington": {
+   "Unspecified": {
+    "votes": 16398,
+    "color": "#999999"
+   }
+  },
+  "City of Chicago": {
+   "Unspecified": {
+    "votes": 382508,
+    "color": "#999999"
+   }
+  },
+  "City of Danville": {
+   "Unspecified": {
+    "votes": 0,
+    "color": "#999999"
+   }
+  },
+  "City of East St Louis": {
+   "Unspecified": {
+    "votes": 0,
+    "color": "#999999"
+   }
+  },
+  "City of Galesburg": {
+   "Unspecified": {
+    "votes": 66,
+    "color": "#999999"
+   }
+  },
+  "City of Rockford": {
+   "Unspecified": {
+    "votes": 0,
+    "color": "#999999"
+   }
+  },
+  "Clark": {
+   "Unspecified": {
+    "votes": 1298,
+    "color": "#999999"
+   }
+  },
+  "Clay": {
+   "Unspecified": {
+    "votes": 1350,
+    "color": "#999999"
+   }
+  },
+  "Clinton": {
+   "Unspecified": {
+    "votes": 40,
+    "color": "#999999"
+   }
+  },
+  "Coles": {
+   "Unspecified": {
+    "votes": 4190,
+    "color": "#999999"
+   }
+  },
+  "Cook": {
+   "Unspecified": {
+    "votes": 376090,
+    "color": "#999999"
+   }
+  },
+  "Crawford": {
+   "Unspecified": {
+    "votes": 1518,
+    "color": "#999999"
+   }
+  },
+  "Cumberland": {
+   "Unspecified": {
+    "votes": 0,
+    "color": "#999999"
+   }
+  },
+  "DeKalb": {
+   "Unspecified": {
+    "votes": 104,
+    "color": "#999999"
+   }
+  },
+  "DeWitt": {
+   "Unspecified": {
+    "votes": 1574,
+    "color": "#999999"
+   }
+  },
+  "Douglas": {
+   "Unspecified": {
+    "votes": 1698,
+    "color": "#999999"
+   }
+  },
+  "DuPage": {
+   "Unspecified": {
+    "votes": 546,
+    "color": "#999999"
+   }
+  },
+  "Edgar": {
+   "Unspecified": {
+    "votes": 1834,
+    "color": "#999999"
+   }
+  },
+  "Edwards": {
+   "Unspecified": {
+    "votes": 0,
+    "color": "#999999"
+   }
+  },
+  "Effingham": {
+   "Unspecified": {
+    "votes": 2280,
+    "color": "#999999"
+   }
+  },
+  "Fayette": {
+   "Unspecified": {
+    "votes": 1264,
+    "color": "#999999"
+   }
+  },
+  "Ford": {
+   "Unspecified": {
+    "votes": 1160,
+    "color": "#999999"
+   }
+  },
+  "Franklin": {
+   "Unspecified": {
+    "votes": 3036,
+    "color": "#999999"
+   }
+  },
+  "Fulton": {
+   "Unspecified": {
+    "votes": 0,
+    "color": "#999999"
+   }
+  },
+  "Gallatin": {
+   "Unspecified": {
+    "votes": 0,
+    "color": "#999999"
+   }
+  },
+  "Greene": {
+   "Unspecified": {
+    "votes": 0,
+    "color": "#999999"
+   }
+  },
+  "Grundy": {
+   "Unspecified": {
+    "votes": 0,
+    "color": "#999999"
+   }
+  },
+  "Hamilton": {
+   "Unspecified": {
+    "votes": 762,
+    "color": "#999999"
+   }
+  },
+  "Hancock": {
+   "Unspecified": {
+    "votes": 0,
+    "color": "#999999"
+   }
+  },
+  "Hardin": {
+   "Unspecified": {
+    "votes": 414,
+    "color": "#999999"
+   }
+  },
+  "Henderson": {
+   "Unspecified": {
+    "votes": 0,
+    "color": "#999999"
+   }
+  },
+  "Henry": {
+   "Unspecified": {
+    "votes": 0,
+    "color": "#999999"
+   }
+  },
+  "Iroquois": {
+   "Unspecified": {
+    "votes": 0,
+    "color": "#999999"
+   }
+  },
+  "Jackson": {
+   "Unspecified": {
+    "votes": 0,
+    "color": "#999999"
+   }
+  },
+  "Jasper": {
+   "Unspecified": {
+    "votes": 0,
+    "color": "#999999"
+   }
+  },
+  "Jefferson": {
+   "Unspecified": {
+    "votes": 0,
+    "color": "#999999"
+   }
+  },
+  "Jersey": {
+   "Unspecified": {
+    "votes": 72,
+    "color": "#999999"
+   }
+  },
+  "JoDaviess": {
+   "Unspecified": {
+    "votes": 4052,
+    "color": "#999999"
+   }
+  },
+  "Johnson": {
+   "Unspecified": {
+    "votes": 0,
+    "color": "#999999"
+   }
+  },
+  "Kane": {
+   "Unspecified": {
+    "votes": 906,
+    "color": "#999999"
+   }
+  },
+  "Kankakee": {
+   "Unspecified": {
+    "votes": 0,
+    "color": "#999999"
+   }
+  },
+  "Kendall": {
+   "Unspecified": {
+    "votes": 188,
+    "color": "#999999"
+   }
+  },
+  "Knox": {
+   "Unspecified": {
+    "votes": 0,
+    "color": "#999999"
+   }
+  },
+  "Lake": {
+   "Unspecified": {
+    "votes": 0,
+    "color": "#999999"
+   }
+  },
+  "LaSalle": {
+   "Unspecified": {
+    "votes": 0,
+    "color": "#999999"
+   }
+  },
+  "Lawrence": {
+   "Unspecified": {
+    "votes": 0,
+    "color": "#999999"
+   }
+  },
+  "Lee": {
+   "Unspecified": {
+    "votes": 3768,
+    "color": "#999999"
+   }
+  },
+  "Livingston": {
+   "Unspecified": {
+    "votes": 3292,
+    "color": "#999999"
+   }
+  },
+  "Logan": {
+   "Unspecified": {
+    "votes": 3252,
+    "color": "#999999"
+   }
+  },
+  "Macon": {
+   "Unspecified": {
+    "votes": 814,
+    "color": "#999999"
+   }
+  },
+  "Macoupin": {
+   "Unspecified": {
+    "votes": 5532,
+    "color": "#999999"
+   }
+  },
+  "Madison": {
+   "Unspecified": {
+    "votes": 0,
+    "color": "#999999"
+   }
+  },
+  "Marion": {
+   "Unspecified": {
+    "votes": 4,
+    "color": "#999999"
+   }
+  },
+  "Marshall": {
+   "Unspecified": {
+    "votes": 1718,
+    "color": "#999999"
+   }
+  },
+  "Mason": {
+   "Unspecified": {
+    "votes": 1494,
+    "color": "#999999"
+   }
+  },
+  "Massac": {
+   "Unspecified": {
+    "votes": 0,
+    "color": "#999999"
+   }
+  },
+  "McDonough": {
+   "Unspecified": {
+    "votes": 0,
+    "color": "#999999"
+   }
+  },
+  "McHenry": {
+   "Unspecified": {
+    "votes": 72,
+    "color": "#999999"
+   }
+  },
+  "McLean": {
+   "Unspecified": {
+    "votes": 0,
+    "color": "#999999"
+   }
+  },
+  "Menard": {
+   "Unspecified": {
+    "votes": 0,
+    "color": "#999999"
+   }
+  },
+  "Mercer": {
+   "Unspecified": {
+    "votes": 2110,
+    "color": "#999999"
+   }
+  },
+  "Monroe": {
+   "Unspecified": {
+    "votes": 0,
+    "color": "#999999"
+   }
+  },
+  "Montgomery": {
+   "Unspecified": {
+    "votes": 68,
+    "color": "#999999"
+   }
+  },
+  "Morgan": {
+   "Unspecified": {
+    "votes": 0,
+    "color": "#999999"
+   }
+  },
+  "Moultrie": {
+   "Unspecified": {
+    "votes": 1068,
+    "color": "#999999"
+   }
+  },
+  "Ogle": {
+   "Unspecified": {
+    "votes": 4658,
+    "color": "#999999"
+   }
+  },
+  "Peoria": {
+   "Unspecified": {
+    "votes": 2,
+    "color": "#999999"
+   }
+  },
+  "Perry": {
+   "Unspecified": {
+    "votes": 0,
+    "color": "#999999"
+   }
+  },
+  "Piatt": {
+   "Unspecified": {
+    "votes": 240,
+    "color": "#999999"
+   }
+  },
+  "Pike": {
+   "Unspecified": {
+    "votes": 1164,
+    "color": "#999999"
+   }
+  },
+  "Pope": {
+   "Unspecified": {
+    "votes": 0,
+    "color": "#999999"
+   }
+  },
+  "Pulaski": {
+   "Unspecified": {
+    "votes": 0,
+    "color": "#999999"
+   }
+  },
+  "Putnam": {
+   "Unspecified": {
+    "votes": 36,
+    "color": "#999999"
+   }
+  },
+  "Randolph": {
+   "Unspecified": {
+    "votes": 2656,
+    "color": "#999999"
+   }
+  },
+  "Richland": {
+   "Unspecified": {
+    "votes": 0,
+    "color": "#999999"
+   }
+  },
+  "Rock Island": {
+   "Unspecified": {
+    "votes": 0,
+    "color": "#999999"
+   }
+  },
+  "Saline": {
+   "Unspecified": {
+    "votes": 0,
+    "color": "#999999"
+   }
+  },
+  "Sangamon": {
+   "Unspecified": {
+    "votes": 45290,
+    "color": "#999999"
+   }
+  },
+  "Schuyler": {
+   "Unspecified": {
+    "votes": 0,
+    "color": "#999999"
+   }
+  },
+  "Scott": {
+   "Unspecified": {
+    "votes": 0,
+    "color": "#999999"
+   }
+  },
+  "Shelby": {
+   "Unspecified": {
+    "votes": 1890,
+    "color": "#999999"
+   }
+  },
+  "St. Clair": {
+   "Unspecified": {
+    "votes": 182,
+    "color": "#999999"
+   }
+  },
+  "Stark": {
+   "Unspecified": {
+    "votes": 542,
+    "color": "#999999"
+   }
+  },
+  "Stephenson": {
+   "Unspecified": {
+    "votes": 5862,
+    "color": "#999999"
+   }
+  },
+  "Tazewell": {
+   "Unspecified": {
+    "votes": 20968,
+    "color": "#999999"
+   }
+  },
+  "Union": {
+   "Unspecified": {
+    "votes": 0,
+    "color": "#999999"
+   }
+  },
+  "Vermilion": {
+   "Unspecified": {
+    "votes": 3758,
+    "color": "#999999"
+   }
+  },
+  "Wabash": {
+   "Unspecified": {
+    "votes": 0,
+    "color": "#999999"
+   }
+  },
+  "Warren": {
+   "Unspecified": {
+    "votes": 0,
+    "color": "#999999"
+   }
+  },
+  "Washington": {
+   "Unspecified": {
+    "votes": 0,
+    "color": "#999999"
+   }
+  },
+  "Wayne": {
+   "Unspecified": {
+    "votes": 1210,
+    "color": "#999999"
+   }
+  },
+  "White": {
+   "Unspecified": {
+    "votes": 0,
+    "color": "#999999"
+   }
+  },
+  "Whiteside": {
+   "Unspecified": {
+    "votes": 6598,
+    "color": "#999999"
+   }
+  },
+  "Will": {
+   "Unspecified": {
+    "votes": 6478,
+    "color": "#999999"
+   }
+  },
+  "Williamson": {
+   "Unspecified": {
+    "votes": 0,
+    "color": "#999999"
+   }
+  },
+  "Winnebago": {
+   "Unspecified": {
+    "votes": 82,
+    "color": "#999999"
+   }
+  },
+  "Woodford": {
+   "Unspecified": {
+    "votes": 86,
+    "color": "#999999"
+   }
+  }
+ },
+ "statewide_total": {
+  "Unspecified": {
+   "votes": 947926,
+   "color": "#999999"
+  }
+ }
+}

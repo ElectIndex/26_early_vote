@@ -7,10 +7,11 @@ the build-out that means the pipeline is runnable from day one with zero state
 scrapers; during the season it means one bad deploy cannot take the job down.
 
 TIER 1 is our own scraper against the state's own file.
-TIER 2 is the aggregator fallback.
-TIER 3 is the hand-entered statewide total in data/manual/.
+TIER 2 is civicAPI, a national early-vote API that answers with counties.
+TIER 3 is the UF Election Lab aggregator, which is statewide-only.
+TIER 4 is the hand-entered statewide total in data/manual/.
 
-Every state gets tiers 2 and 3 appended automatically, so a ladder entry here
+Every state gets tiers 2, 3 and 4 appended automatically, so a ladder entry here
 only ever lists its tier-1 scraper.
 """
 
@@ -99,6 +100,9 @@ TIER1: dict[str, str] = {
 }
 
 FALLBACKS: tuple[str, ...] = (
+    # Ordered best-first for readability; ladder() sorts on Adapter.tier anyway,
+    # so a mistake here cannot silently reorder the walk.
+    "civicapi:CivicApiAdapter",
     "aggregator:AggregatorAdapter",
     "manual:ManualAdapter",
 )
