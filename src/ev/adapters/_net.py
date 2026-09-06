@@ -22,7 +22,10 @@ from __future__ import annotations
 
 import logging
 import ssl
+import threading
+import time
 from pathlib import Path
+from urllib.parse import urlsplit
 
 import requests
 from requests.adapters import HTTPAdapter
@@ -150,6 +153,47 @@ def _impersonated_get(url, *, timeout, headers, params):
     return last
 
 
+#: Minimum seconds between requests to the SAME host.
+#:
+#: Learned from a real ban, not from caution. Rebuilding Louisiana's 2024 series
+#: means 1,026 PDFs from one host; run flat out at about 7 requests a second, it
+#: drew a HOST-WIDE 403 on every URL -- to requests and to every browser
+#: fingerprint alike -- that took roughly half an hour to clear. A ban like that
+#: is indistinguishable from a bot wall while it lasts, so it does not just cost
+#: one state's data, it produces a wrong verdict about why the state is missing.
+#:
+#: 0.4s is deliberately gentle rather than tuned: this runs every six hours with
+#: a whole season to spare, so throughput is worth nothing and a ban is
+#: expensive. An adapter that knows its host tolerates more can pass a smaller
+#: `min_interval`.
+DEFAULT_MIN_INTERVAL = 0.4
+
+_last_request: dict[str, float] = {}
+_throttle_lock = threading.Lock()
+
+
+def _throttle(url: str, min_interval: float) -> None:
+    """Space requests to one host without slowing requests to others.
+
+    Keyed on host, so a run that walks fifty states is never delayed by its own
+    breadth -- only by returning to the same server too soon.
+    """
+    if min_interval <= 0:
+        return
+    host = urlsplit(url).netloc.lower()
+    if not host:
+        return
+    with _throttle_lock:
+        previous = _last_request.get(host)
+        now = time.monotonic()
+        if previous is not None:
+            wait = min_interval - (now - previous)
+            if wait > 0:
+                time.sleep(wait)
+                now = time.monotonic()
+        _last_request[host] = now
+
+
 class Missing(SourceError):
     """The URL returned 404/410. The caller decides what that means."""
 
@@ -170,6 +214,7 @@ def get(
     params: dict | None = None,
     use_cache: bool = False,
     min_bytes: int = 64,
+    min_interval: float = DEFAULT_MIN_INTERVAL,
 ) -> bytes:
     """Download `url`, mirror it into cache/, and return its bytes.
 
@@ -182,6 +227,7 @@ def get(
         log.debug("%s: cache hit %s", state, path)
         return path.read_bytes()
 
+    _throttle(url, min_interval)
     try:
         response = SESSION.get(
             url,

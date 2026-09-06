@@ -405,9 +405,26 @@ def test_real_slice_reports_partial_electorate_coverage_on_the_first_day(tmp_pat
 # --------------------------------------------------------------------------
 def test_band_is_the_flat_model_error_when_coverage_is_complete(baseline):
     row = est.estimate_day(2026, "NC", date(2026, 10, 20),
-                           {MECKLENBURG: 600, ALAMANCE: 200}, baseline)
+                           {MECKLENBURG: 600_000, ALAMANCE: 200_000}, baseline)
     assert row.est_dem_hi - row.est_dem_lo == pytest.approx(2 * est.MODEL_ERROR)
     assert row.est_dem_lo < row.est_dem_share < row.est_dem_hi
+
+
+def test_a_thin_day_carries_the_wider_band_it_has_earned(baseline):
+    """"Low confidence" is a word; the band is the number, and under 50,000
+    ballots the measured error is 15 points, not 5. A South Carolina series that
+    stops eighteen days out at 17,000 all-mail ballots has to read as "we do not
+    know", not as a five-point answer."""
+    thin = est.estimate_day(2026, "NC", date(2026, 10, 20),
+                            {MECKLENBURG: 800}, baseline)
+    thick = est.estimate_day(2026, "NC", date(2026, 10, 20),
+                             {MECKLENBURG: 800_000}, baseline)
+    assert (thin.est_dem_hi - thin.est_dem_lo) / 2 == pytest.approx(est.THIN_MODEL_ERROR)
+    assert (thick.est_dem_hi - thick.est_dem_lo) / 2 == pytest.approx(est.MODEL_ERROR)
+    assert est.THIN_MODEL_ERROR > est.MODEL_ERROR
+    assert thin.confidence == "low"
+    assert est.model_error(est.THIN_BALLOTS) == est.MODEL_ERROR
+    assert est.model_error(est.THIN_BALLOTS - 1) == est.THIN_MODEL_ERROR
 
 
 def test_band_widens_with_the_ballots_we_cannot_see(baseline):
@@ -476,7 +493,7 @@ def test_the_band_shrinks_in_proportion_to_what_is_counted(baseline):
     """Count part of it and the model is only standing in for the rest, so it
     only gets to be wrong about the rest. This is arithmetic, not a claim that
     the model got better."""
-    ballots = {MECKLENBURG: 600, ALAMANCE: 200}
+    ballots = {MECKLENBURG: 600_000, ALAMANCE: 200_000}
     widths = {}
     for fraction in (0.0, 0.5, 1.0):
         row = est.estimate_day(2026, "NC", date(2026, 10, 20), ballots, baseline,

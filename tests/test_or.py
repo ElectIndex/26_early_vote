@@ -246,6 +246,32 @@ def test_power_bi_layout_produces_the_same_shape_as_the_classic_one(primary2026)
 # --------------------------------------------------------------------------
 # Drift
 # --------------------------------------------------------------------------
+def test_a_day_column_after_the_reports_own_stamp_raises_drift():
+    """Oregon generates the report the morning AFTER the day it covers, so a
+    stamp later than the last day column is normal. The reverse is impossible
+    and means the two tables were read out of step."""
+    with pytest.raises(SchemaDrift) as caught:
+        orx._rows(
+            cycle=2026,
+            as_of=date(2026, 10, 20),
+            totals={"statewide": (100, 10), "41001": (50, 5)},
+            dates=[date(2026, 10, 21)],
+            series={"41001": [5], "statewide new": [10]},
+            party={},
+        )
+    assert "after the report's own stamp" in str(caught.value)
+
+
+def test_the_2022_backfill_covers_the_whole_season_not_just_one_snapshot():
+    """The stamps in ARCHIVED are chosen so a backfill recovers the curve, and
+    deliberately exclude the post-canvass FINAL versions, whose party tables do
+    not reconcile against their own totals."""
+    assert set(orx.ARCHIVED) == {2022, 2024}
+    for cycle, (url, stamps) in orx.ARCHIVED.items():
+        assert url.startswith("https://sos.oregon.gov/")
+        assert stamps and all(len(s) == 14 and s.isdigit() for s in stamps)
+
+
 def test_a_party_column_we_do_not_know_raises_rather_than_bucketing():
     with pytest.raises(SchemaDrift):
         orx._party("Cascadia Independence")
