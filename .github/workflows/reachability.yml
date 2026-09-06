@@ -1,0 +1,68 @@
+name: reachability
+
+# Can a GitHub Actions runner actually reach each state's source?
+#
+# This exists because several adapters were fixed against blocks that are
+# IP-SENSITIVE, and every one of those fixes was proven from a residential
+# address. Cloudflare and Imperva both weigh IP reputation, and Actions runs from
+# datacentre ranges they score far more harshly -- so "works here" is not
+# evidence it works there. Colorado (a TLS-fingerprint fix), Ohio and Arizona
+# (a browser-fingerprint retry) and Nevada (an Imperva wall) are the four to
+# watch.
+#
+# Writes nothing. Publishes no data. It only asks each adapter what it can see
+# and prints the answer, so the run is safe to trigger at any time.
+
+on:
+  workflow_dispatch:
+  schedule:
+    # Weekly, so a block that appears mid-season is noticed before it matters.
+    - cron: "0 12 * * 1"
+
+permissions:
+  contents: read
+
+jobs:
+  reach:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install
+        run: pip install -e ".[dev]"
+
+      - name: Where this runner is
+        run: |
+          echo "Runner egress IP: $(curl -s --max-time 10 https://api.ipify.org || echo unknown)"
+
+      - name: Probe every state
+        id: probe
+        run: |
+          python -m ev probe 2>&1 | tee probe.txt
+
+      - name: Reachability summary
+        if: always()
+        run: |
+          {
+            echo "### Source reachability from a GitHub Actions runner"
+            echo
+            echo "\`pending\` and \`ok\` both mean WE COULD LOOK. \`failed\`, and any"
+            echo "SourceError naming a 403 or a bot wall, mean the runner was refused"
+            echo "where the dev machine was not."
+            echo
+            echo '```'
+            grep -E "^[A-Z]{2} " probe.txt || cat probe.txt
+            echo '```'
+            echo
+            echo "#### The IP-sensitive four"
+            for st in CO OH AZ NV; do
+              line=$(grep -E "^$st " probe.txt || echo "$st (no line)")
+              echo "- $line"
+            done
+          } >> "$GITHUB_STEP_SUMMARY"
