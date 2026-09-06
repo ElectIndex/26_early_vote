@@ -219,7 +219,16 @@ def test_renamed_column_raises_drift():
 def test_a_ninth_day_column_raises_drift():
     """The day columns ARE the calendar. A longer window would silently redate
     every count, so it must fail rather than publish."""
-    body = GG22.read_bytes().replace(b",Day8\r\n", b",Day8,Day9\r\n", 1)
+    # Line-ending agnostic: git normalises CRLF to LF in the checked-in fixture,
+    # and a b",Day8\r\n" match silently does nothing once that happens -- the test
+    # then passes a valid file and reports "did not raise" for the wrong reason.
+    raw = GG22.read_bytes()
+    for eol in (b"\r\n", b"\n"):
+        if b",Day8" + eol in raw:
+            body = raw.replace(b",Day8" + eol, b",Day8,Day9" + eol, 1)
+            break
+    else:
+        raise AssertionError("fixture has no Day8 header column to extend")
     with pytest.raises(SchemaDrift, match="day columns"):
         md.parse(body, 2022, GG22_LAST)
 
