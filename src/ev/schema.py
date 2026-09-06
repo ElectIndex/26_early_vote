@@ -1,6 +1,6 @@
 """Canonical record shapes and the CSV column contract.
 
-Three long-format tables, all keyed by `cycle` so 2022/2024/2026 live in the same
+Four long-format tables, all keyed by `cycle` so 2022/2024/2026 live in the same
 shape and the frontend pivots instead of joining.
 
 THE BLANK RULE: a count of `None` writes an empty cell and means "the state did
@@ -101,6 +101,60 @@ class CountyDay:
 
 
 @dataclass
+class TownDay:
+    """One municipality's cumulative position on one day.
+
+    New England runs elections by TOWN -- Maine's absentee file is keyed by
+    municipality and carries no county at all -- and the strong-MCD states
+    (Michigan, Wisconsin, Minnesota, Pennsylvania and the rest) report by
+    township or jurisdiction alongside their counties. This is that unit.
+
+    `town_geoid` is the 10-digit Census county-subdivision GEOID, never a name:
+    "Lincoln" is two different Maine places in two different counties, and
+    Wisconsin has 420 names that are simultaneously a town and a city or
+    village. Use `adapters._towns.lookup` to get one.
+
+    The county is NOT a separate input. A cousub GEOID is state(2) + county(3)
+    + cousub(5), so `county_fips` is a slice of the key and is derived at write
+    time -- which is what makes a town->county rollup exact rather than an
+    inferred crosswalk, and makes it impossible to file a town under the wrong
+    county.
+    """
+
+    cycle: int
+    state: str
+    town_geoid: str
+    day: date
+    town_name: str = ""
+    ballots_total: int | None = None
+    ballots_new: int | None = None
+    mail_returned: int | None = None
+    inperson: int | None = None
+    party_dem: int | None = None
+    party_rep: int | None = None
+    party_oth: int | None = None
+    party_npa: int | None = None
+    provenance: Provenance | None = None
+
+    def __post_init__(self) -> None:
+        geoid = str(self.town_geoid).strip()
+        if len(geoid) != 10 or not geoid.isdigit():
+            raise ValueError(
+                f"TownDay needs a 10-digit county-subdivision GEOID, got "
+                f"{self.town_geoid!r} -- towns are keyed by GEOID, never by name"
+            )
+        self.town_geoid = geoid
+
+    @property
+    def county_fips(self) -> str:
+        """The county this town is in, read straight out of its GEOID."""
+        return self.town_geoid[:5]
+
+    def key(self) -> tuple:
+        return (int(self.cycle), self.state.upper(), self.town_geoid, self.day.isoformat())
+
+
+@dataclass
 class DemoDay:
     """Ballots cast within one demographic bucket on one day.
 
@@ -143,6 +197,14 @@ COUNTY_DAILY_COLUMNS = [
     "source_tier", "source_name", "retrieved_at",
 ]
 
+TOWN_DAILY_COLUMNS = [
+    "cycle", "state", "town_geoid", "town_name", "county_fips",
+    "date", "days_to_election",
+    "ballots_total", "ballots_new", "mail_returned", "inperson",
+    "party_dem", "party_rep", "party_oth", "party_npa",
+    "source_tier", "source_name", "retrieved_at",
+]
+
 DEMO_DAILY_COLUMNS = [
     "cycle", "state", "date", "days_to_election",
     "dimension", "bucket", "ballots_total",
@@ -152,6 +214,7 @@ DEMO_DAILY_COLUMNS = [
 # Key columns per table, used by publish.py to merge without re-deriving them.
 STATE_KEY = ("cycle", "state", "date")
 COUNTY_KEY = ("cycle", "state", "county_fips", "date")
+TOWN_KEY = ("cycle", "state", "town_geoid", "date")
 DEMO_KEY = ("cycle", "state", "date", "dimension", "bucket")
 
 
@@ -196,6 +259,31 @@ def county_row_to_dict(row: CountyDay) -> dict[str, str]:
         "state": row.state.upper(),
         "county_fips": row.county_fips,
         "county_name": row.county_name,
+        "date": row.day.isoformat(),
+        "days_to_election": str(days_to_election(row.cycle, row.day)),
+        "ballots_total": _cell(row.ballots_total),
+        "ballots_new": _cell(row.ballots_new),
+        "mail_returned": _cell(row.mail_returned),
+        "inperson": _cell(row.inperson),
+        "party_dem": _cell(row.party_dem),
+        "party_rep": _cell(row.party_rep),
+        "party_oth": _cell(row.party_oth),
+        "party_npa": _cell(row.party_npa),
+        "source_tier": str(p.tier),
+        "source_name": p.name,
+        "retrieved_at": p.retrieved_at,
+    }
+
+
+def town_row_to_dict(row: TownDay) -> dict[str, str]:
+    p = _prov(row)
+    return {
+        "cycle": str(int(row.cycle)),
+        "state": row.state.upper(),
+        "town_geoid": row.town_geoid,
+        "town_name": row.town_name,
+        # Derived from the GEOID, never taken from the caller. See TownDay.
+        "county_fips": row.county_fips,
         "date": row.day.isoformat(),
         "days_to_election": str(days_to_election(row.cycle, row.day)),
         "ballots_total": _cell(row.ballots_total),

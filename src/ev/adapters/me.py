@@ -7,20 +7,44 @@ Like North Carolina's file -- and unlike Michigan's or Ohio's daily snapshots --
 every ballot carries its own return date, so a single download reconstructs the
 whole daily curve and a missed run costs us nothing.
 
-**Maine reports by MUNICIPALITY, not by county, and this adapter is therefore
-STATEWIDE ONLY.** The file's geography column is "RES MUNICIPALITY" and there is
-no county on the row. Rolling 533 towns up to Maine's 16 counties needs a
-municipality->county crosswalk, and no reliable one covers this file: the 2020
-Census county-subdivision table places 467 of the file's 533 municipalities, but
-the remaining 66 are unorganized-territory townships ("T1 R9 WELS",
-"Prentiss Twp T7 R3 NBPP", "Sandbar Tract Twp") that the Census lumps into a
-single per-county "unorganized territory" and cannot resolve individually, and
-"Lincoln"/"Unity" are each the name of two different Maine places in two
-different counties. Guessing those would silently misplace ballots on the map,
-which is exactly what rule 4 in CLAUDE.md forbids, so `county_rows` is empty and
-Maine renders as a statewide line only. If Maine ever adds a county column --
-or publishes the county alongside the municipality -- this file gains county
-rows without any other change.
+**Maine reports by MUNICIPALITY, and the municipality is the unit.** The file's
+geography column is "RES MUNICIPALITY" and there is no county on the row, because
+Maine does not administer elections by county -- town and city clerks do. So this
+adapter publishes TOWN rows keyed by the 10-digit Census county-subdivision
+GEOID (`adapters._towns`), and derives its COUNTY rows by summing them.
+
+That rollup is exact, not inferred, and the reason is worth stating plainly: a
+cousub GEOID is state(2) + county(3) + cousub(5), so Auburn's `2300102060`
+already says "Androscoggin County" in digits 3-5. The earlier version of this
+adapter was statewide-only because mapping municipality NAMES to counties needed
+a crosswalk that does not exist; mapping name -> GEOID -> county needs no
+crosswalk at all, because the county is inside the key.
+
+**What does not map, and where it goes.** Of the 533 municipalities in the 2026
+file, 460 resolve, 3 are ambiguous and 70 do not resolve at all:
+
+* The 70 are unorganized-territory townships -- "T1 R9 WELS", "Prentiss Twp T7
+  R3 NBPP", "Sandbar Tract Twp", "Sinclair". The Census names unorganized
+  TERRITORIES, most of which aggregate many of these townships ("Central
+  Aroostook UT"), so there is no township-level GEOID to key them to and
+  equating a township with its territory would file a dozen places' ballots
+  under one of them.
+* The 3 are "Lincoln" (a town in Penobscot County AND a plantation in Oxford),
+  "Unity" (a town in Waldo AND an unorganized territory in Kennebec) and
+  "Rangeley" (a town AND a plantation, both in Franklin). The file separately
+  names "Lincoln Plt", "Rangeley Plt" and "Unity Twp", so the bare name is
+  almost certainly the town -- but "almost certainly" is a guess, and rule 3
+  says do not guess a name mapping. They resolve to nothing.
+
+Together that is 0.73% of the 2026 primary file's records and 0.67% of the 2024
+general's. Those ballots ARE in the statewide row -- nothing is dropped from the
+state total -- but they are in neither the town rows nor the county rows, so
+**Maine's county rows do not sum to its statewide row, and are not meant to.**
+Every excluded municipality is counted and named in the run log, and if the
+unmapped share ever exceeds `1 - MIN_TOWN_COVERAGE` the parse raises SchemaDrift
+rather than quietly publishing a thinner map: that is the tripwire for Maine
+renaming the column or changing its municipality vocabulary. SchemaDrift falls
+through to the aggregator, so Maine keeps a statewide line even on that day.
 
 Three more things shape the parser:
 
@@ -62,7 +86,8 @@ from html import unescape
 from ..calendar import election_date
 from ..normalize import PARTY_DEM, PARTY_NPA, PARTY_OTH, PARTY_REP
 from ..normalize import party as normalize_party
-from ..schema import TIER_SCRAPER, StateDay
+from ..schema import TIER_SCRAPER, CountyDay, StateDay, TownDay
+from . import _towns
 from ._net import Missing, get, looks_like_html
 from .base import Adapter, FetchResult, NotYetPublished, SchemaDrift, SourceError
 
@@ -102,10 +127,10 @@ _FIELD_ALIASES = {
     "status": "status",
 }
 
-#: "municipality" is mapped but NOT required: this adapter is statewide-only so
-#: it never reads that column, and at least one archived file (the 2-24-2026
-#: special) omits it entirely. The alias stays so a future county roll-up has a
-#: hook, and so the header table documents the whole file rather than a slice.
+#: "municipality" is mapped but NOT required: at least one archived file (the
+#: 2-24-2026 special) omits it entirely, and a file without it is still a
+#: perfectly good statewide series. When it is absent this adapter publishes
+#: statewide rows only and says so in the log -- it does not fail.
 REQUIRED_ROLES = ("party", "requested", "return_method", "returned", "status")
 
 #: Maine's own party legend, published beside the file on the absentee layout
@@ -159,6 +184,17 @@ MAX_SPAN_DAYS = 120
 #: How many archived files fetch_history will download before giving up. The
 #: 2024 file is 37 MB, so probing the whole archive page is not free.
 MAX_ARCHIVE_PROBES = 6
+
+#: Share of ACCEPTED ballots whose municipality must resolve to a census GEOID
+#: before the town and county tables are trusted. Maine currently runs at 99.3%
+#: and the shortfall is unorganized territory, which is structural and will not
+#: grow. A drop below this is not "a few more townships" -- it is the column
+#: moving or the vocabulary changing wholesale, which is drift.
+MIN_TOWN_COVERAGE = 0.90
+
+#: How many unmapped municipality names to name in the log line. All of them are
+#: counted; listing 70 townships every run would bury the message.
+UNMAPPED_LOG_LIMIT = 12
 
 _PARTY_FIELD = {
     PARTY_DEM: "party_dem", PARTY_REP: "party_rep",
@@ -263,6 +299,18 @@ def parse(body: bytes, cycle: int, as_of: date) -> FetchResult:
     index, width = _header(lines[0])
 
     by_day: dict[date, _Bucket] = defaultdict(_Bucket)
+    #: (10-digit cousub GEOID, return day) -> tallies.
+    by_town: dict[tuple[str, date], _Bucket] = defaultdict(_Bucket)
+    town_names: dict[str, str] = {}
+    #: municipality name -> accepted ballots we could not place. Counted, never
+    #: silently dropped; reported below and in the log.
+    unmapped: dict[str, int] = defaultdict(int)
+    #: Maine writes the same name on every one of a town's ~800 rows, so the
+    #: normalise-and-join work is done once per name rather than once per ballot.
+    resolved: dict[str, tuple[str, str] | None] = {}
+    has_municipality = "municipality" in index
+    accepted_total = 0
+
     requested_days: list[date] = []
     records = 0
 
@@ -294,14 +342,33 @@ def parse(body: bytes, cycle: int, as_of: date) -> FetchResult:
             # can place on the curve.
             continue
 
-        bucket = by_day[returned]
-        bucket.total += 1
-        if cells[index["return_method"]].strip().upper() == IN_PERSON_RETURN:
-            bucket.inperson += 1
-        else:
-            bucket.mail += 1
-        if party:
-            bucket.party[party] += 1
+        accepted_total += 1
+        in_person = cells[index["return_method"]].strip().upper() == IN_PERSON_RETURN
+
+        def tally(bucket: _Bucket) -> None:
+            bucket.total += 1
+            if in_person:
+                bucket.inperson += 1
+            else:
+                bucket.mail += 1
+            if party:
+                bucket.party[party] += 1
+
+        tally(by_day[returned])
+
+        if has_municipality:
+            name = cells[index["municipality"]].strip()
+            if name not in resolved:
+                resolved[name] = _towns.lookup("ME", name)
+            hit = resolved[name]
+            if hit is None:
+                # Unorganized territory, or one of the three ambiguous names.
+                # Counted here so the exclusion is visible; see the docstring.
+                unmapped[name] += 1
+            else:
+                geoid, canonical = hit
+                town_names[geoid] = canonical
+                tally(by_town[(geoid, returned)])
 
     if not records:
         raise SchemaDrift("ME: absentee file has a header but no records")
@@ -320,7 +387,42 @@ def parse(body: bytes, cycle: int, as_of: date) -> FetchResult:
         if requested <= as_of:
             by_day[requested].requested += 1
 
-    return _emit(by_day, cycle, as_of, day_zero)
+    if has_municipality:
+        _report_coverage(unmapped, accepted_total, len(town_names))
+    else:
+        log.info("ME: this file has no municipality column; statewide rows only")
+
+    return _emit(by_day, by_town, town_names, cycle, as_of, day_zero)
+
+
+def _report_coverage(unmapped: dict[str, int], accepted: int, towns: int) -> None:
+    """Log what did not map, and refuse the file if too little did.
+
+    An unmapped municipality is never silently dropped: its ballots stay in the
+    statewide row, it is named here, and the share it represents is the thing
+    that decides whether the town and county tables can be trusted at all.
+    """
+    lost = sum(unmapped.values())
+    coverage = 1.0 - (lost / accepted) if accepted else 0.0
+    if unmapped:
+        worst = sorted(unmapped.items(), key=lambda kv: -kv[1])
+        shown = ", ".join(f"{name} ({count})" for name, count in worst[:UNMAPPED_LOG_LIMIT])
+        log.warning(
+            "ME: %d municipalit%s (%d ballots, %.2f%% of %d accepted) have no "
+            "census county-subdivision GEOID and are excluded from the town and "
+            "county tables: %s%s",
+            len(unmapped), "y" if len(unmapped) == 1 else "ies", lost,
+            100 * lost / accepted if accepted else 0.0, accepted, shown,
+            "" if len(worst) <= UNMAPPED_LOG_LIMIT else f", +{len(worst) - UNMAPPED_LOG_LIMIT} more",
+        )
+    log.info("ME: %d municipalities mapped, %.2f%% of accepted ballots placed",
+             towns, 100 * coverage)
+    if accepted and coverage < MIN_TOWN_COVERAGE:
+        raise SchemaDrift(
+            f"ME: only {100 * coverage:.1f}% of accepted ballots map to a census "
+            f"county-subdivision GEOID (floor is {100 * MIN_TOWN_COVERAGE:.0f}%); "
+            f"the municipality column or its vocabulary has changed"
+        )
 
 
 def _is_this_election(requested: list[date], day_zero: date) -> bool:
@@ -332,8 +434,43 @@ def _is_this_election(requested: list[date], day_zero: date) -> bool:
     return inside / len(requested) > WINDOW_SHARE
 
 
-def _emit(by_day: dict[date, _Bucket], cycle: int, as_of: date, day_zero: date) -> FetchResult:
+def _regroup(by_key: dict[tuple[str, date], _Bucket]) -> dict[str, dict[date, _Bucket]]:
+    """(geography, day) -> tallies, regrouped as geography -> day -> tallies."""
+    out: dict[str, dict[date, _Bucket]] = defaultdict(dict)
+    for (geography, day), bucket in by_key.items():
+        out[geography][day] = bucket
+    return out
+
+
+def _walk(series: dict[date, _Bucket], span: list[date], start: date):
+    """Yield (day, today, running) along `span` for one geography.
+
+    Ballots returned BEFORE the published axis are real and are folded into the
+    first day's cumulative total rather than dropped -- the same rule the
+    statewide series uses. Days before the geography's first ballot are skipped
+    entirely, so a town contributes rows from the day it starts voting rather
+    than a month of zeros.
+    """
+    running = _Bucket()
+    for day, bucket in sorted(series.items()):
+        if day < start:
+            running.add(bucket)
+    for day in span:
+        today = series.get(day)
+        if today:
+            running.add(today)
+        if running.total == 0:
+            continue
+        yield day, today, running
+
+
+def _emit(by_day: dict[date, _Bucket], by_town: dict[tuple[str, date], _Bucket],
+          town_names: dict[str, str], cycle: int, as_of: date,
+          day_zero: date) -> FetchResult:
     result = FetchResult()
+    # Present even when empty, so a caller can always ask a Maine result for its
+    # town rows without a getattr dance.
+    _towns.attach(result, [])
     days = [d for d in by_day if d <= as_of]
     if not days:
         return result
@@ -370,19 +507,68 @@ def _emit(by_day: dict[date, _Bucket], cycle: int, as_of: date, day_zero: date) 
             # report party at all.
             **{field: running.party.get(key, 0) for key, field in _PARTY_FIELD.items()},
         ))
+
+    if not by_town:
+        return result
+
+    # The county table is the town table summed, and it is EXACT: a cousub GEOID
+    # carries its county in digits 3-5, so this is arithmetic on a key rather
+    # than a name crosswalk. Municipalities that did not resolve are absent from
+    # both, which is why these county rows do not sum to the statewide row above.
+    by_county: dict[tuple[str, date], _Bucket] = defaultdict(_Bucket)
+    for (geoid, day), bucket in by_town.items():
+        by_county[(_towns.county_of(geoid), day)].add(bucket)
+
+    town_rows: list[TownDay] = []
+    for geoid, series in sorted(_regroup(by_town).items()):
+        for day, today, running in _walk(series, span, start):
+            town_rows.append(TownDay(
+                cycle=cycle, state="ME", town_geoid=geoid, day=day,
+                town_name=town_names.get(geoid, ""),
+                ballots_total=running.total,
+                ballots_new=today.total if today else 0,
+                mail_returned=running.mail,
+                inperson=running.inperson,
+                **{field: running.party.get(key, 0) for key, field in _PARTY_FIELD.items()},
+            ))
+    _towns.attach(result, town_rows)
+
+    for fips, series in sorted(_regroup(by_county).items()):
+        for day, today, running in _walk(series, span, start):
+            result.county_rows.append(CountyDay(
+                cycle=cycle, state="ME", county_fips=fips, day=day,
+                county_name=_towns.county_name_of("ME", fips),
+                ballots_total=running.total,
+                ballots_new=today.total if today else 0,
+                mail_returned=running.mail,
+                inperson=running.inperson,
+                **{field: running.party.get(key, 0) for key, field in _PARTY_FIELD.items()},
+            ))
     return result
 
 
 class MEScraper(Adapter):
     """Tier 1 for Maine: the SoS Statewide Absentee Voter Data File.
 
-    Statewide rows only -- see the module docstring for why the municipality
-    column cannot be rolled up to counties.
+    Statewide, town and county rows. Towns are the real unit in Maine and the
+    counties are summed from them; see the module docstring for what does not
+    map and where those ballots go.
     """
 
     state = "ME"
     name = "me-sos"
     tier = TIER_SCRAPER
+
+    def _stamped(self, result: FetchResult) -> FetchResult:
+        """Stamp the town rows.
+
+        `FetchResult.stamp()` covers the three tables `adapters.base` knows
+        about, and ladder.py calls it for us. Town rows ride on the result as an
+        attribute (see `_towns.attach`), so they need this one extra line --
+        forget it and schema.py refuses the write by name rather than publishing
+        rows with no provenance.
+        """
+        return _towns.stamp(result, self.provenance())
 
     def _index(self, url: str) -> list[str]:
         try:
@@ -406,7 +592,7 @@ class MEScraper(Adapter):
         # The filename is hand-stamped, so log which one we actually took --
         # "which file was that?" is the first question on any Maine surprise.
         log.info("ME: current absentee file is %s", url)
-        return parse(self._download(url, use_cache=False), cycle, as_of)
+        return self._stamped(parse(self._download(url, use_cache=False), cycle, as_of))
 
     def fetch_history(self, cycle: int) -> FetchResult:
         """The archived file for a past cycle's general.
@@ -429,8 +615,8 @@ class MEScraper(Adapter):
         problems: list[str] = []
         for url in candidates[:MAX_ARCHIVE_PROBES]:
             try:
-                return parse(self._download(url, use_cache=True), cycle,
-                             election_date(cycle))
+                return self._stamped(parse(self._download(url, use_cache=True), cycle,
+                                           election_date(cycle)))
             except NotYetPublished as exc:
                 problems.append(str(exc))
         raise NotYetPublished(
