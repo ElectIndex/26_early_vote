@@ -138,11 +138,20 @@ SOURCE_NAME = "electindex-counterfactual/pres2024-county-returns"
 #: moves enormously across a window.
 DTE_MATCH_TOLERANCE = 3
 
-#: A day is "mature" once this share of its series' eventual early vote is in.
+#: A day is "mature" once this share of a finished early-vote curve is in.
 #: Before that the returns are almost all mail and their composition is nothing
 #: like the eventual early electorate's; scoring there would make every method
 #: look terrible and would tell you nothing about any of them. Same threshold and
 #: same reasoning as `estimate.MATURE_FRACTION`.
+#:
+#: ⚠️ THE DENOMINATOR IS THE REFERENCE CYCLE'S FINAL EARLY VOTE, never the
+#: current series' own. `mature_days()` divides by `final_ballots()` -- the
+#: largest the series has EVER reached -- which is correct for a completed cycle
+#: and catastrophically wrong for a live one: North Carolina's eight 2026 ballots
+#: are 100% of what 2026 has reached so far, so a self-referential rule calls
+#: them a mature electorate. The reference cycle's curve is finished, which is
+#: exactly why it can serve as the yardstick for both sides. `completeness()` is
+#: that measure and `is_comparable()` is the gate; see THE MATURITY GATE below.
 MATURE_FRACTION = 0.25
 
 #: Below this many ballots on either side of the comparison, the day is thin
@@ -156,23 +165,46 @@ THIN_BALLOTS = 50_000
 MIN_COVERAGE = 0.85
 MIN_COUNTY_FRACTION = 0.85
 
+#: THE MATURITY GATE. A reference curve smaller than this is not an early
+#: electorate, it is a stub, and nothing can be measured against it. South
+#: Carolina's 2022 county series tops out at 16,975 ballots against 1,579,112 in
+#: 2024 -- comparing the two produced thirteen published rows whose "shift"
+#: was the difference between a state and a rounding error. Reuses THIN_BALLOTS
+#: because it is the same judgement about the same quantity.
+MIN_REFERENCE_BALLOTS = THIN_BALLOTS
+
 #: The measured error of this method, in percentage points of margin, applied as
 #: a flat half-width because it is structural rather than sampling noise -- it
 #: does NOT shrink as more ballots come in.
 #:
 #: It is the mean absolute distance, over mature days and averaged across the
-#: four state-cycles that can be scored at all, between the compositional shift
-#: this model reports and the shift the same states' own reported party
-#: registration says actually happened (11.2 points; rounded up). That is not a
-#: like-for-like unit -- a registration point is not a presidential point -- and
-#: it is the closest thing to a measurement that exists. Read it as "the size of
-#: the compositional change that county geography does not see", because that is
-#: what it is: the geography moves about a point and the registration moves
-#: twelve.
+#: state-cycles that can be scored at all, between the compositional shift this
+#: model reports and the shift the same states' own reported party registration
+#: says actually happened (10.4 points; rounded up). That is not a like-for-like
+#: unit -- a registration point is not a presidential point -- and it is the
+#: closest thing to a measurement that exists. Read it as "the size of the
+#: compositional change that county geography does not see", because that is
+#: what it is: the geography moves about a point and the registration moves ten.
+#:
+#: This is a MEASUREMENT, not a constant, and it moves when the tracker learns
+#: more, or when the domain it is measured over is corrected. Its history:
+#:
+#:   11.5  KY, MD, ME and NC were the only four state-cycles with a county
+#:         series AND a party split in two consecutive cycles.
+#:   10.5  Florida's 2022 and 2024 county curves came out of the Internet
+#:         Archive and made a fifth (measured 10.37).
+#:    9.5  THE MATURITY GATE landed (measured 9.09). Scoring and publishing now
+#:         share one domain: days at a comparable share of a finished early-vote
+#:         curve. The immature days this removed were not hard cases the model
+#:         was failing, they were phase differences it was never entitled to
+#:         call composition.
+#:
+#: The verdict does not move: the gain over the no-change null is +0.07 pp and
+#: the bar is +1.00.
 #:
 #: `test_model_error_matches_the_measured_validation` refits it from output/ and
 #: fails if the data moves away from it.
-MODEL_ERROR_PP = 11.5
+MODEL_ERROR_PP = 9.5
 
 #: With complete coverage on both sides the band's half-width is exactly
 #: MODEL_ERROR_PP, so the confidence threshold has to sit strictly above it or it
@@ -201,6 +233,9 @@ COUNTERFACTUAL_COLUMNS = [
     "counties_used", "counties_total", "county_coverage",
     "reference_counties_used", "reference_county_coverage",
     "ballots", "reference_ballots",
+    # How far through each electorate is, against the reference cycle's finished
+    # early vote. The gate that admitted this row is `>= MATURE_FRACTION` on both.
+    "completeness", "reference_completeness",
     # Reported, never folded in: a party REGISTRATION point is not a
     # presidential margin point, and this repo holds nothing that converts one
     # into the other.
@@ -290,6 +325,74 @@ def composition_margin(
     if used == 0 or total <= 0:
         return None
     return numerator / total, used, total
+
+
+def ballots_in(ballots: dict[str, int]) -> int:
+    """Ballots on one day, skipping counties that reported nothing.
+
+    THE BLANK RULE on the read side: a county absent from `ballots`, or carrying
+    None, has not reported -- it is not a county with zero ballots.
+    """
+    return sum(v for v in ballots.values() if v is not None)
+
+
+def completeness(ballots: dict[str, int], reference_final: int) -> float | None:
+    """How far along a day is, measured against a FINISHED early-vote curve.
+
+    The yardstick is the reference cycle's own final early vote, for both sides
+    of the comparison. That choice is the whole point: the current cycle's final
+    is not knowable while the current cycle is running, and a rule that divides
+    by "the largest this series has reached so far" declares day one complete.
+
+    It is deliberately not capped at 1.0. A cycle whose early vote overshoots the
+    last one reads above 100%, which is true and worth seeing.
+    """
+    if reference_final <= 0:
+        return None
+    return ballots_in(ballots) / reference_final
+
+
+def is_comparable(
+    now_ballots: dict[str, int],
+    reference_ballots: dict[str, int],
+    reference_final: int,
+    *,
+    fraction: float = MATURE_FRACTION,
+    floor: int = MIN_REFERENCE_BALLOTS,
+) -> str | None:
+    """None if the two days can be compared; otherwise why they cannot.
+
+    THE MATURITY GATE, and the reason it exists: this model is validated only on
+    mature days, and until 2026-09-06 it PUBLISHED on every day. 181 of the 260
+    rows in `output/counterfactual.csv` sat outside the domain it had been
+    scored on, and they were not marginal -- their mean |shift| was 6.4 points
+    against 1.2 for the mature rows, running as far as 26.2, and 24 of them
+    carried the top `confidence` label because completeness was not one of the
+    things confidence looked at. Maine published an 11.7-point shift off TWO
+    ballots.
+
+    None of that is composition. Early in a window the returns are mail, and a
+    mail electorate's geography is nothing like the eventual early electorate's;
+    the difference between a 3%-complete snapshot and a finished one is phase,
+    and this model reports phase as composition. So it refuses instead. Three
+    conditions, all of them computable live:
+
+      1. the reference curve is a real early electorate, not a stub;
+      2. the reference day is itself mature within that curve;
+      3. this cycle's day has reached the same share of it.
+    """
+    if reference_final < floor:
+        return (f"reference curve tops out at {reference_final:,} ballots, "
+                f"below the {floor:,} needed to measure against")
+    there = completeness(reference_ballots, reference_final)
+    if there is None or there < fraction:
+        return (f"reference day is {0.0 if there is None else there:.0%} of that "
+                f"curve, under the {fraction:.0%} maturity floor")
+    here = completeness(now_ballots, reference_final)
+    if here is None or here < fraction:
+        return (f"this day is {0.0 if here is None else here:.0%} of the reference "
+                f"curve, under the {fraction:.0%} maturity floor")
+    return None
 
 
 def state_actual_margin(state: str, baseline: Baseline) -> float | None:
@@ -541,6 +644,12 @@ class Counterfactual:
     reference_county_coverage: float | None
     ballots: int
     reference_ballots: int
+    #: Each side's ballots as a share of the REFERENCE cycle's final early vote
+    #: -- the only finished yardstick available while this cycle is running.
+    #: Published so a reader can see how far through each electorate is, and
+    #: because THE MATURITY GATE that admitted the row is the same number.
+    completeness: float | None = None
+    reference_completeness: float | None = None
     dims_used: tuple[str, ...] = ("county",)
     dims_reported: tuple[str, ...] = ("county",)
     party_margin_shift_pp: float | None = None
@@ -626,6 +735,8 @@ class Counterfactual:
             "reference_county_coverage": _pp(self.reference_county_coverage),
             "ballots": str(self.ballots),
             "reference_ballots": str(self.reference_ballots),
+            "completeness": _pp(self.completeness),
+            "reference_completeness": _pp(self.reference_completeness),
             "party_margin_shift_pp": _pp(self.party_margin_shift_pp),
             "party_coverage": _pp(self.party_coverage),
             "reference_party_coverage": _pp(self.reference_party_coverage),
@@ -667,6 +778,15 @@ def compare_day(
         return None
     ref_dte = reference.at(dte, tolerance)
     if ref_dte is None:
+        return None
+
+    # THE MATURITY GATE. Publish only on the domain the model is scored on.
+    reference_final = reference.final_ballots()
+    refusal = is_comparable(
+        now.counties.get(dte, {}), reference.counties.get(ref_dte, {}), reference_final
+    )
+    if refusal:
+        log.debug("%s %s d-%d: no row -- %s", state, now.cycle, dte, refusal)
         return None
 
     here = composition_margin(now.counties.get(dte, {}), baseline)
@@ -748,6 +868,9 @@ def compare_day(
         reference_counties_used=ref_used,
         reference_county_coverage=cover_ref,
         ballots=ballots, reference_ballots=ref_ballots,
+        completeness=completeness(now.counties.get(dte, {}), reference_final),
+        reference_completeness=completeness(
+            reference.counties.get(ref_dte, {}), reference_final),
         dims_used=("county",),
         dims_reported=tuple(reported),
         party_margin_shift_pp=party_shift,
@@ -803,7 +926,7 @@ def build(
     return rows
 
 
-def write(out_dir: Path, rows: Sequence[Counterfactual]) -> dict:
+def write(out_dir: Path, rows: Sequence[Counterfactual], *, rebuild: bool = False) -> dict:
     """Publish to output/counterfactual.csv and nowhere else.
 
     The destination is not a parameter and the column list cannot contain a
@@ -826,6 +949,13 @@ def write(out_dir: Path, rows: Sequence[Counterfactual]) -> dict:
         # is a pure function of data already on disk, so a rerun producing a
         # different row is a corrected model, not a truncated fetch.
         guard=False,
+        # ...and for the same reason a FULL rebuild replaces rather than merges.
+        # A merge cannot forget: when the maturity gate landed, the 182 rows this
+        # model had published from immature days had nothing to replace them and
+        # would have outlived the bug that made them. `rebuild` is only true when
+        # the caller asked for every state and every cycle -- a `--state NC` run
+        # must not delete the other nine states.
+        replace=rebuild,
     )
 
 
@@ -958,12 +1088,17 @@ def score_panel(
             now, reference = series.get(cycle), series.get(reference_cycle)
             if now is None or reference is None or not reference.counties:
                 continue
-            ripe_now, ripe_ref = mature_days(now), mature_days(reference)
+            reference_final = reference.final_ballots()
             for dte in sorted(now.counties, reverse=True):
-                if dte not in ripe_now:
-                    continue
                 ref_dte = reference.at(dte, tolerance)
-                if ref_dte is None or ref_dte not in ripe_ref:
+                if ref_dte is None:
+                    continue
+                # The SAME gate compare_day publishes under. A model scored on a
+                # domain wider than the one it publishes on is scoring days its
+                # own output never contains; narrower, and it is publishing days
+                # it has never been measured on. Both were true here before.
+                if is_comparable(now.counties[dte], reference.counties[ref_dte],
+                                 reference_final):
                     continue
                 here = composition_margin(now.counties[dte], baseline)
                 there = composition_margin(reference.counties[ref_dte], baseline)
@@ -1146,7 +1281,8 @@ def cmd_counterfactual(args) -> int:
         print("no like-for-like state-days; counterfactual.csv left untouched")
         return 0
 
-    info = write(out_dir, rows)
+    # A filtered run knows only part of the table and may only merge into it.
+    info = write(out_dir, rows, rebuild=not args.state and not args.cycle)
     print(f"counterfactual.csv: {info['rows']} rows "
           f"({len(rows)} computed this run: "
           + ", ".join(f"{c} {n}" for c, n in sorted(by_cycle.items())) + ")")

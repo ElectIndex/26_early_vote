@@ -844,7 +844,7 @@ def rollup(rows: Sequence[Projection], cycle: int,
 # --------------------------------------------------------------------------
 # Publish
 # --------------------------------------------------------------------------
-def write(out_dir: Path, rows: Sequence[Projection]) -> dict:
+def write(out_dir: Path, rows: Sequence[Projection], *, rebuild: bool = False) -> dict:
     """Publish to output/turnout.csv and nowhere else.
 
     The destination is not a parameter and the column list cannot contain a
@@ -872,6 +872,14 @@ def write(out_dir: Path, rows: Sequence[Projection]) -> dict:
         # is a pure function of data already on disk, so a rerun that produces a
         # different row is a corrected model, not a truncated fetch.
         guard=False,
+        # ...and for the same reason a FULL rebuild replaces rather than merges.
+        # A merge cannot forget: a row this model stops producing has nothing to
+        # replace it and outlives the change that retired it -- which is exactly
+        # what happened when counterfactual.py learned to refuse immature days
+        # and 182 of its rows stayed in the published file. `rebuild` is only
+        # true when the caller asked for every state and every cycle; a filtered
+        # run knows only part of the table and may only merge into it.
+        replace=rebuild,
     )
 
 
@@ -1244,6 +1252,7 @@ def cmd_turnout(args) -> int:
         print("no projectable state-day; turnout.csv left untouched")
         return 0
 
-    info = write(out_dir, rows)
+    # A filtered run knows only part of the table and may only merge into it.
+    info = write(out_dir, rows, rebuild=not args.state and not args.cycle)
     print(f"turnout.csv: {info['rows']} rows ({len(rows)} projected this run)")
     return 0

@@ -197,12 +197,35 @@ def publish_table(
     *,
     guard: bool = True,
     flag_restatements: bool = False,
+    replace: bool = False,
 ) -> dict:
-    """Merge `incoming` into the CSV at `path` and write it back atomically."""
+    """Merge `incoming` into the CSV at `path` and write it back atomically.
+
+    `replace=True` writes `incoming` and nothing else. That is WRONG for a
+    scraped table -- a state that fails to answer today must not delete what it
+    published yesterday, which is the whole reason this function merges -- and
+    RIGHT for a derived one, which is a pure function of data already on disk.
+
+    A merged derived table cannot forget. When `counterfactual.py` learned to
+    refuse immature days, the 182 rows it had published from them stayed in the
+    file forever: the model no longer produced them, so there was nothing to
+    replace them with. Only the caller knows whether its rows are the complete
+    output of a full rebuild, so only the caller may pass this.
+    """
     existing = _read(path)
-    merged, replaced, kept_better, kept_richer = merge_rows(
-        existing, incoming, key_cols, guard=guard
-    )
+    if replace:
+        merged, replaced, kept_better, kept_richer = list(incoming), 0, 0, 0
+        removed = len(existing) - len(
+            {tuple(r.get(k, "") for k in key_cols) for r in existing}
+            & {tuple(r.get(k, "") for k in key_cols) for r in incoming}
+        )
+        if removed:
+            log.info("%s: rebuilt from scratch, %d stale row(s) dropped",
+                     path.name, removed)
+    else:
+        merged, replaced, kept_better, kept_richer = merge_rows(
+            existing, incoming, key_cols, guard=guard
+        )
 
     if flag_restatements:
         mark_restatements(merged)
@@ -210,8 +233,13 @@ def publish_table(
     before, after = len(existing), len(merged)
     merged.sort(key=_sort_key(columns))
     _atomic_write(path, columns, merged)
-    log.info("%s: %d rows (+%d new, %d replaced, %d kept better tier, %d kept richer)",
-             path.name, after, after - before, replaced, kept_better, kept_richer)
+    if replace:
+        # "+-182 new" is not a sentence. A rebuild's arithmetic is a net change,
+        # not an addition, and the merge counters are all structurally zero.
+        log.info("%s: %d rows (rebuilt, net %+d)", path.name, after, after - before)
+    else:
+        log.info("%s: %d rows (+%d new, %d replaced, %d kept better tier, %d kept richer)",
+                 path.name, after, after - before, replaced, kept_better, kept_richer)
     return {
         "file": path.name, "rows": after, "added": after - before,
         "replaced": replaced, "kept_better_tier": kept_better,

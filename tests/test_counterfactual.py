@@ -99,12 +99,23 @@ DEMO_COLUMNS = ["cycle", "state", "date", "days_to_election", "dimension",
                 "bucket", "ballots_total"]
 
 
-def _county(cycle, dte, ballots: dict[str, object], state="NC") -> list[dict]:
+#: Synthetic county counts are written in readable round numbers (900 against
+#: 100) and then multiplied by this, because THE MATURITY GATE is real and a
+#: fixture has to clear it: a reference curve under `MIN_REFERENCE_BALLOTS`
+#: (50,000) is a stub the model refuses to measure against. Every quantity these
+#: tests assert on -- the composition margin, the shift, the coverage -- is a
+#: RATIO and is unchanged by the scaling, so the arithmetic stays as legible as
+#: it was while the fixtures now travel the same path production does.
+BALLOT_SCALE = 1_000
+
+
+def _county(cycle, dte, ballots: dict[str, object], state="NC",
+            scale: int = BALLOT_SCALE) -> list[dict]:
     return [
         {"cycle": cycle, "state": state, "county_fips": fips, "county_name": "",
          "date": (cf.election_date(cycle) - cf.timedelta(days=dte)).isoformat(),
          "days_to_election": dte,
-         "ballots_total": "" if count is None else count}
+         "ballots_total": "" if count is None else count * scale}
         for fips, count in ballots.items()
     ]
 
@@ -191,6 +202,91 @@ def test_a_state_with_no_reference_series_produces_no_row(tmp_path, nc_baseline)
     counties = _county(2026, 20, {MECKLENBURG: 1000, ALAMANCE: 500})
     out = _tree(tmp_path, counties, [_state(2026, 20, 1500)])
     assert cf.build(out, nc_baseline) == []
+
+
+# --------------------------------------------------------------------------
+# THE MATURITY GATE
+#
+# The model is validated on mature days and, until 2026-09-06, published on
+# every day. 181 of the 260 rows in output/counterfactual.csv came from days
+# outside the domain it had been scored on -- mean |shift| 6.4 points against
+# 1.2 for the mature ones, up to 26.2, and 24 of them carrying the TOP
+# confidence label because completeness was not one of the things confidence
+# looked at. Maine published an 11.7-point shift computed off two ballots.
+#
+# Nothing in that is composition. It is phase: early in a window the returns
+# are mail, and a mail electorate's geography is nothing like a finished one's.
+# --------------------------------------------------------------------------
+def test_completeness_is_measured_against_the_reference_cycles_final(nc_baseline):
+    """⚠️ The denominator is the FINISHED curve, never the running one.
+
+    This is the whole reason `completeness()` exists rather than reusing
+    `mature_days()`. A rule that divides by "the largest this series has reached
+    so far" declares day one complete, which is exactly what North Carolina's
+    eight 2026 ballots do today: they are 100% of 2026 and 0.0002% of an
+    electorate. The reference cycle's curve is over, so it can be the yardstick
+    for both sides.
+    """
+    assert cf.completeness({"37119": 250_000}, 1_000_000) == pytest.approx(0.25)
+    # Not capped: a cycle that outruns the last one reads above 100%, which is
+    # true and worth seeing.
+    assert cf.completeness({"37119": 2_000_000}, 1_000_000) == pytest.approx(2.0)
+    # THE BLANK RULE on the read side: a county that reported nothing is absent
+    # from the sum, not a zero in it.
+    assert cf.completeness({"37119": 250_000, "37001": None}, 1_000_000) == pytest.approx(0.25)
+    assert cf.completeness({"37119": 1}, 0) is None
+
+
+def test_the_gate_refuses_a_reference_curve_that_is_a_stub(tmp_path, nc_baseline):
+    """South Carolina's 2022 county series tops out at 16,975 ballots.
+
+    Its 2024 one reaches 1,579,112. Thirteen rows were published off that
+    comparison, and their "compositional shift" was the difference between a
+    state and a rounding error.
+    """
+    counties = (_county(2024, 10, {MECKLENBURG: 900, ALAMANCE: 100})
+                + _county(2022, 10, {MECKLENBURG: 10, ALAMANCE: 7}, scale=1))
+    assert cf.build(_tree(tmp_path, counties), nc_baseline) == []
+
+
+def test_the_gate_refuses_an_immature_reference_day(tmp_path, nc_baseline):
+    """A reference day that is 1% of its own cycle is mail, not an electorate."""
+    counties = (_county(2024, 10, {MECKLENBURG: 900, ALAMANCE: 100})
+                + _county(2022, 10, {MECKLENBURG: 9, ALAMANCE: 1})
+                + _county(2022, 0, {MECKLENBURG: 900, ALAMANCE: 100}))
+    rows = cf.build(_tree(tmp_path, counties), nc_baseline)
+    # d-10 in 2024 matches d-10 in 2022, which holds 1% of the 2022 curve.
+    assert [r.days_to_election for r in rows] == []
+
+
+def test_the_gate_refuses_a_current_day_that_has_barely_started(tmp_path, nc_baseline):
+    """The live half. North Carolina's 2026 eight ballots must not get a row."""
+    counties = (_county(2026, 10, {MECKLENBURG: 8}, scale=1)
+                + _county(2024, 10, {MECKLENBURG: 900, ALAMANCE: 100}))
+    assert cf.build(_tree(tmp_path, counties), nc_baseline) == []
+
+
+def test_a_row_that_clears_the_gate_carries_the_two_shares_it_cleared_it_on(
+    tmp_path, nc_baseline
+):
+    """Published, not just enforced -- a reader can check the gate themselves."""
+    counties = (_county(2024, 10, {MECKLENBURG: 600, ALAMANCE: 400})
+                + _county(2022, 10, {MECKLENBURG: 700, ALAMANCE: 300}))
+    row = cf.build(_tree(tmp_path, counties), nc_baseline)[0]
+    assert row.completeness == pytest.approx(1.0)
+    assert row.reference_completeness == pytest.approx(1.0)
+    assert row.to_dict()["completeness"] == "1.0000"
+
+
+def test_the_published_table_never_carries_an_immature_row(full_baseline):
+    """The regression that motivated all of this, checked against real output/."""
+    rows = cf.build(REPO_OUTPUT, full_baseline)
+    if not rows:
+        pytest.skip("no published output/ tree in this checkout")
+    assert all(r.completeness >= cf.MATURE_FRACTION for r in rows)
+    assert all(r.reference_completeness >= cf.MATURE_FRACTION for r in rows)
+    # The shift's honest range. Every row above five points was a phase artefact.
+    assert max(abs(r.shift_pp) for r in rows) < 5.0
 
 
 def test_a_missing_state_never_produces_a_zero_shift(tmp_path, nc_baseline):
@@ -325,7 +421,11 @@ def test_implied_margin_is_the_certified_result_moved_by_the_shift(tmp_path, nc_
 
 def test_an_unchanged_composition_gives_a_computed_zero(tmp_path, nc_baseline):
     """A zero here is a measurement. A zero from missing data is forbidden."""
-    counties = (_county(2024, 10, {MECKLENBURG: 700, ALAMANCE: 300})
+    # Different totals, identical 70/30 composition. The totals stay different
+    # on purpose -- that is what shows the shift is scale-free -- but the smaller
+    # side has to clear THE MATURITY GATE's 25% of the reference curve, so it is
+    # 30% of it rather than the 10% this fixture used to carry.
+    counties = (_county(2024, 10, {MECKLENBURG: 2100, ALAMANCE: 900})
                 + _county(2022, 10, {MECKLENBURG: 7000, ALAMANCE: 3000}))
     row = cf.build(_tree(tmp_path, counties), nc_baseline)[0]
     assert row.shift_pp == pytest.approx(0.0, abs=1e-9)
@@ -426,7 +526,8 @@ def test_partial_coverage_widens_the_band(tmp_path, nc_baseline):
     """Half the state's ballots unaccounted for is a bound, not a point."""
     counties = (_county(2024, 10, {MECKLENBURG: 1000})
                 + _county(2022, 10, {MECKLENBURG: 1000}))
-    states = [_state(2024, 10, 2000), _state(2022, 10, 1000)]
+    states = [_state(2024, 10, 2000 * BALLOT_SCALE),
+              _state(2022, 10, 1000 * BALLOT_SCALE)]
     row = cf.build(_tree(tmp_path, counties, states), nc_baseline)[0]
     assert row.county_coverage == pytest.approx(0.5)
     assert (row.shift_hi - row.shift_lo) / 2 > cf.MODEL_ERROR_PP
@@ -440,10 +541,20 @@ def test_confidence_is_never_high(nc_out, nc_baseline):
 
 
 def test_a_thin_day_is_low_confidence(tmp_path, nc_baseline):
-    counties = (_county(2024, 10, {MECKLENBURG: 8})
-                + _county(2022, 10, {MECKLENBURG: 8}))
+    """Thin and immature are different failures, and both are still checked.
+
+    THE MATURITY GATE refuses a day that is a small SHARE of a finished curve;
+    `confidence` still has to catch a day that is a fair share of a small one.
+    20,000 ballots against a 60,000-ballot reference is a third of the way
+    through -- comfortably mature -- and far too few ballots to characterise
+    North Carolina.
+    """
+    counties = (_county(2024, 10, {MECKLENBURG: 20})
+                + _county(2022, 10, {MECKLENBURG: 60}))
     row = cf.build(_tree(tmp_path, counties), nc_baseline)[0]
-    assert row.ballots == 8
+    assert row.ballots == 20 * BALLOT_SCALE
+    assert row.ballots < cf.THIN_BALLOTS
+    assert row.completeness == pytest.approx(1 / 3)
     assert row.confidence == "low"
 
 
@@ -458,14 +569,21 @@ def test_the_band_brackets_the_shift(nc_out, nc_baseline):
 def test_north_carolina_2024_against_2022_is_pinned(nc_out, nc_baseline):
     """The real numbers, so a change in the arithmetic fails a test.
 
-    All three days say the same thing: county geography moves about a point while
-    the party registration of the very same ballots moves eleven to thirty.
+    Both days say the same thing: county geography moves about a point while the
+    party registration of the very same ballots moves eleven to thirteen.
+
+    The fixture carries a THIRD day, 30 days out, and it is deliberately not
+    here. Its 2022 reference is 23,278 ballots -- 1.1% of that cycle's eventual
+    2,187,856 -- and until THE MATURITY GATE landed this module published a
+    -0.77 point "compositional shift" off it. A 1%-complete electorate is mail,
+    and the difference between mail and a finished early electorate is phase,
+    not composition. `test_the_gate_refuses_an_immature_reference_day` pins the
+    refusal; this test pins that the row is gone.
     """
     rows = {r.days_to_election: r for r in cf.build(nc_out, nc_baseline)}
-    assert sorted(rows) == [0, 10, 30]
+    assert sorted(rows) == [0, 10]
 
     expected = {  # dte: (shift_pp, party_margin_shift_pp, age_shift_tv)
-        30: (-0.77, -29.51, 8.63),
         10: (-1.41, -13.09, 12.60),
         0: (-1.25, -11.42, 12.55),
     }
@@ -583,13 +701,28 @@ def test_the_measured_gain_does_not_clear_the_bar(full_baseline):
 @pytest.mark.skipif(not (REPO_OUTPUT / "ev_state_daily.csv").exists(),
                     reason="no published output/ tree in this checkout")
 def test_the_fitted_scale_does_not_agree_with_itself_across_states(full_baseline):
-    """A unit gap would be fixable by a scale. This is not a unit gap."""
+    """A unit gap would be fixable by a scale. This is not a unit gap.
+
+    ⚠️ THE ARGUMENT CHANGED WHEN THE MATURITY GATE LANDED, and it is worth
+    knowing which half of it was real. It used to be that the multiplier fitting
+    Kentucky and Maryland was the NEGATIVE of the one fitting Maine and North
+    Carolina -- signs pointing both ways, which is about as clean a "there is no
+    signal here" as a fitted constant can give. Once the immature days came out,
+    every fold's multiplier is positive.
+
+    What survives is the magnitude. The scales still disagree by more than an
+    order of magnitude (0.24 in North Carolina against 7.28 in Maryland), and
+    applying the one fitted on the other states still makes three of the five
+    folds worse and lifts none of them over MIN_GAIN. A signal in the wrong unit
+    would be fixed by ONE number; nothing here is one number.
+    """
     scores = [r for r in cf.validate(REPO_OUTPUT, full_baseline)
               if r.fitted_scale is not None]
     assert len(scores) >= 2
-    assert min(r.fitted_scale for r in scores) < 0 < max(r.fitted_scale for r in scores)
-    # Every fold is worse than doing nothing.
-    assert all(r.scaled_gain < 0 for r in scores)
+    scales = [abs(r.fitted_scale) for r in scores]
+    assert max(scales) / min(scales) > 10
+    assert sum(r.scaled_gain for r in scores) / len(scores) < 0
+    assert all(r.scaled_gain < cf.MIN_GAIN for r in scores)
 
 
 @pytest.mark.skipif(not (REPO_OUTPUT / "ev_state_daily.csv").exists(),
