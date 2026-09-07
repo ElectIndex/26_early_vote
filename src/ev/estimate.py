@@ -111,11 +111,13 @@ SOURCE_NAME = "electindex-estimate/pres2024-county-returns"
 #: `test_fitted_constants_still_match_the_data` refits and fails if the data
 #: moves away from these.
 #:
-#: 0.366 on the twelve-series panel; 0.406 once Pennsylvania 2022 joined it. Note
-#: what this does and does not do: it changes what 2026 PUBLISHES, and it changes
-#: no number in the validation table, because every fold there refits on its own
-#: nine or twelve series regardless. A constant cannot improve its own score.
-MAIL_SELECTION = 0.406
+#: 0.366 on the twelve-series panel, 0.406 when Pennsylvania 2022 briefly trained
+#: it too, and 0.382 now: PA 2022 is scored but no longer fitted on
+#: (`within_reach`), and the readers stop at Election Day. Note what this does and
+#: does not do: it changes what 2026 PUBLISHES, and it changes no number in the
+#: validation table, because every fold there refits on its own eleven or twelve
+#: series regardless. A constant cannot improve its own score.
+MAIL_SELECTION = 0.382
 
 #: How fast that advantage decays as mail reaches more of the electorate. Fitted
 #: on the same panel over a 1.00-8.00 grid; every leave-one-state-out fold picks
@@ -125,9 +127,12 @@ MAIL_SELECTION = 0.406
 #: everybody, so there is nobody left for it to select and the correction is
 #: under a point).
 #:
-#: 5.00 on the twelve-series panel, 4.75 with Pennsylvania 2022 in it -- one grid
-#: step, on the state the term was built to explain and now with two cycles of it.
-MAIL_DECAY = 4.75
+#: 5.00 on the twelve-series panel and 4.75 while Pennsylvania 2022 was training
+#: it -- PA 2022 alone asks for 1.00, the shallowest the grid allows, because in
+#: that cycle mail stayed Democratic however far it reached. That is the 2020-22
+#: mail regime talking, not a shape 2026 will repeat, and `within_reach` is why
+#: it no longer sets this constant. 5.75 on the corrected panel.
+MAIL_DECAY = 5.75
 
 #: The correction never exceeds this, in share points. The largest gap between a
 #: state's reported party split and its geography on any day this model was
@@ -148,25 +153,32 @@ MIDTERM_TURNOUT = 0.73
 
 #: Empirical, not statistical, and applied as a flat half-width because the error
 #: is structural rather than sampling noise. Measured leave-one-state-out on days
-#: with at least THIN_BALLOTS ballots in, the model above is off by a mean of 4.4
-#: points and a 90th percentile of 9.5; per state-cycle the mean is 4.09 and the
-#: worst is 13.4. Six points sits above the mean deliberately, because the mail
-#: term assumes a DIRECTION (mail voters lean Democratic) that 2022 and 2024 both
-#: support and that 2026 need not repeat. It was 10 points when the model was
-#: geography alone.
+#: with at least THIN_BALLOTS ballots in, the model is off by a mean of 3.85
+#: points per state-cycle, and the worst is 13.4. Five points sits above that
+#: deliberately, because the mail term assumes a DIRECTION (mail voters lean
+#: Democratic) that 2022 and 2024 both support and that 2026 need not repeat. It
+#: was 10 points when the model was geography alone.
 #:
-#: ⚠️ IT WAS 5 UNTIL PENNSYLVANIA 2022 JOINED THE PANEL, and the way it got stuck
-#: there is the lesson. 5 was chosen as "1.6 points above the measured 3.4", but
-#: nothing refitted it, so when the panel gained the hardest midterm series in the
-#: country the measured error went to 4.4 and the deliberate headroom quietly
-#: became a rounding error. The counterfactual's band has had a refit guard since
-#: the day it was set; this one did not, which is why it drifted and that one
-#: could not. `test_model_error_is_refitted_from_the_panel` is that guard, and it
-#: is the reason 5 -> 6 is a measurement rather than a preference.
+#: ⚠️ IT WENT 5 -> 6 -> 5 IN ONE DAY AND THE ROUND TRIP IS THE POINT. 5 was
+#: chosen as "above the measured 3.4" and then nothing refitted it for months.
+#: Pennsylvania 2022 arriving took the measurement to 4.4 and the headroom
+#: silently became a rounding error, so the band went to 6. Then `within_reach`
+#: established that PA 2022 cannot TRAIN a capped model, the twelve reachable
+#: series stopped paying for it, and the measurement came back to 3.85.
+#:
+#: Both moves were measurements. Neither was a preference, and the difference is
+#: `test_model_error_is_refitted_from_the_panel` -- which did not exist for the
+#: first of them, which is exactly why the band had been wrong for months.
+#:
+#: ⚠️ AND IT COVERS A 2026 THAT RESEMBLES 2024. On the 2024 folds alone -- the
+#: cycle whose mail regime 2026 actually shares -- the measured error is 3.16.
+#: On the 2022 folds it is 4.97. If 2026 turns out to look like 2022 instead,
+#: this band is too narrow, and PA 2022 sitting in the panel at 13.4 is the
+#: standing reminder of how much too narrow.
 #:
 #: `ev.adapters.az.MODEL_ERROR` is a copy of this, kept because the ingest path
 #: must never import this module; `test_model_error_tracks_estimate` guards it.
-MODEL_ERROR = 0.06
+MODEL_ERROR = 0.05
 
 #: Below this many ballots the day is thin enough that the composition of the
 #: returned ballots is nothing like the composition of the eventual early vote.
@@ -916,28 +928,49 @@ def read_county_ballots(out_dir: Path, state: str) -> dict[tuple[int, str], dict
     """{(cycle, date): {fips: ballots}} from output/counties/<st>.csv.
 
     A blank `ballots_total` is skipped, not read as zero.
+
+    ⚠️ NOTHING AFTER ELECTION DAY. `counterfactual.read_series` has filtered
+    `days_to_election < 0` since it was written and this module did not, which
+    is a straightforward bug rather than a difference of opinion: five
+    state-cycles keep filing after their own election as late mail is processed,
+    and what those rows contain is not early voting.
+
+    Colorado 2024 is the case that shows the size of it. Colorado votes almost
+    entirely by mail, so its post-election row is effectively the FULL COUNT --
+    3,276,257 ballots against 1,731,171 cast early. `mature_days()` normalises by
+    the series' own maximum, so that one row was inflating Colorado's maturity
+    denominator by 89% and pushing genuinely mature days below the threshold,
+    and `series[-1]` -- the "final" estimate and the final truth this model
+    reports and `within_reach` tests -- was a post-election number.
     """
     rows = _read_csv(Path(out_dir) / "counties" / f"{state.lower()}.csv")
     days: dict[tuple[int, str], dict[str, int]] = defaultdict(dict)
     for row in rows:
         cycle = _num(row.get("cycle"))
+        dte = _num(row.get("days_to_election"))
         fips = (row.get("county_fips") or "").strip()
         total = _num(row.get("ballots_total"))
         day = (row.get("date") or "").strip()
         if cycle is None or total is None or len(fips) != 5 or not day:
+            continue
+        if dte is not None and dte < 0:
             continue
         days[(cycle, day)][fips] = total
     return days
 
 
 def read_state_daily(out_dir: Path) -> dict[tuple[int, str, str], dict[str, str]]:
+    """Same Election Day cut-off as `read_county_ballots`, for the same reason."""
     rows = _read_csv(Path(out_dir) / "ev_state_daily.csv")
     out: dict[tuple[int, str, str], dict[str, str]] = {}
     for row in rows:
         cycle = _num(row.get("cycle"))
         state = (row.get("state") or "").strip().upper()
         day = (row.get("date") or "").strip()
+        dte = _num(row.get("days_to_election"))
         if cycle is None or not state or not day:
+            continue
+        if dte is not None and dte < 0:
             continue
         out[(cycle, state, day)] = row
     return out
@@ -949,8 +982,19 @@ def read_party_reg_flags(meta_path: Path) -> dict[str, bool]:
     Arizona reads `true` here and still gets an estimate, because Arizona
     registers by party and its Secretary of State's daily table simply omits it.
     The flag is carried into every row so the CSV itself says whether a real
-    party split exists somewhere for that state -- for AZ the right fix is to go
-    and get it, not to model it.
+    party split exists somewhere for that state.
+
+    ⚠️ THAT FLAG IS NOT A REASON TO WITHHOLD THE MODEL, and it was read as one
+    for months. The page's gate refused to draw any estimate for a state whose
+    flag was true, on the argument that Arizona's real figure exists at its
+    county recorders and should be fetched instead. It does exist and it cannot
+    be fetched: `az.py`'s RECORDERS list is empty because the recorders serve
+    their data from an assigned secure folder. A gate waiting on a number that
+    cannot arrive is a permanent blank, not caution.
+
+    The question that decides whether to model is whether the SOURCE reports a
+    split, which is a different question, and Arizona is the state that separates
+    them. Reported still beats modelled wherever a report exists.
     """
     flags: dict[str, bool] = {}
     for row in _read_csv(Path(meta_path)):
@@ -1163,6 +1207,44 @@ def observations(
     return dict(panel)
 
 
+def within_reach(series: Sequence[Observation]) -> bool:
+    """Can this model's CAPPED correction reach where this series ended up?
+
+    A training series is only informative about `MAIL_SELECTION` and `MAIL_DECAY`
+    if the answer it demands is one the model is allowed to give. The fit solves
+    alpha on the UNCAPPED regressor (see `Observation.selection_input`) while
+    prediction clips at `MAX_ADJUSTMENT`, which is harmless for a series inside
+    the cap and incoherent for one outside it: least squares keeps enlarging
+    alpha to reach a target that prediction will clip away, and every OTHER
+    state pays for the overshoot.
+
+    ⚠️ THE SERIES THIS EXCLUDES TODAY IS PENNSYLVANIA 2022, AND THE REASON IS NOT
+    THAT IT SCORES BADLY. Its early electorate finished 25.3 points from its
+    counties; the model may move 20. No value of alpha reaches it, so the whole
+    of its residual is structural, and fitting on it moves the constants for the
+    twelve series that ARE reachable. Measured leave-one-state-out, removing it
+    from TRAINING (not from scoring) takes the panel from 4.09 to 3.85, and the
+    2024 folds -- the cycle 2026 actually resembles -- from 3.61 to 3.16.
+
+    Why PA 2022 and nothing else: it is the only all-mail state in the cycle when
+    mail voting was at its most party-polarised, so it is the one series where
+    `mail_share` is pinned at 1.00 while the mail electorate was 76.5% Democratic
+    against counties saying 49.1. That regime ended -- PA's own mail electorate
+    was 62.7% Democratic by 2024, a 27.6-point normalisation as Republicans came
+    back to mail voting -- which is why the series cannot train a model aimed at
+    2026 and why it is still SCORED, loudly, as what this model does when the
+    world moves outside its range.
+
+    Measured on the final mature day, which is the fully-formed early electorate
+    and the least noisy point in the series. `docs/party-estimate.md` records the
+    alternatives that were measured against this one.
+    """
+    if not series:
+        return False
+    last = series[-1]
+    return abs(last.truth - last.geo) <= MAX_ADJUSTMENT
+
+
 def mature_days(series: Sequence[Observation]) -> list[Observation]:
     """The days on which at least MATURE_FRACTION of the eventual vote was in.
 
@@ -1219,10 +1301,21 @@ def validate(
     # The row is still PRINTED. "What does this look like in September" and
     # "how accurate is this model" are different questions and only the second
     # one is a mean.
-    trainable = {
+    # ⚠️ TWO SETS, AND CONFLATING THEM IS A REAL BUG I WROTE ONCE. `thick` is
+    # every series solid enough to be a measurement, and it is what `scored`
+    # means -- what the headline error averages. `trainable` is the subset that
+    # can also TEACH the mail term, which is a strictly stronger requirement:
+    # a series the capped model cannot reach says nothing about what alpha
+    # should be, but it says a great deal about what this model does when the
+    # world moves outside its range, and that belongs in the headline.
+    #
+    # Pennsylvania 2022 is thick and not trainable. It is scored at 13.4 and it
+    # fits nothing.
+    thick = {
         k: mature_days(v) for k, v in scoreable.items()
         if max(o.ballots for o in v) >= THIN_BALLOTS
     }
+    trainable = {k: v for k, v in thick.items() if within_reach(v)}
 
     results: list[Validation] = []
     for (cycle, state), series in sorted(scoreable.items()):
@@ -1253,7 +1346,7 @@ def validate(
             final_truth=last.truth * 100,
             baseline=last.baseline_dem_share * 100,
             fitted=(alpha, decay), held_out=held_out,
-            scored=(cycle, state) in trainable,
+            scored=(cycle, state) in thick,
         ))
     return results
 

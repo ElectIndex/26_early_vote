@@ -290,6 +290,27 @@ def parse(markup: str, cycle: int) -> FetchResult:
     return result
 
 
+def _refuse_a_stale_table(result: FetchResult, cycle: int) -> None:
+    """Refuse a page still showing an earlier election's table.
+
+    Arizona reuses one URL for a cycle's primary and its general and leaves the
+    primary's numbers sitting there for months afterwards, so the table's own
+    Last Updated date is the only thing that says which election it describes.
+    See EARLY_WINDOW_DAYS. NotYetPublished rather than SchemaDrift: the general's
+    table is not wrong, it is not there yet, and the ladder must stop rather than
+    fall through to a source that would invent a number for the same day.
+    """
+    rows = result.state_rows or result.county_rows
+    if not rows:
+        return
+    published = rows[0].day
+    if days_to_election(cycle, published) > EARLY_WINDOW_DAYS:
+        raise NotYetPublished(
+            f"AZ: page is still showing the {published.isoformat()} table, from "
+            f"before the {cycle} general's early-vote window opened"
+        )
+
+
 class AZScraper(Adapter):
     """Tier 1 for Arizona: the SoS Sent/Accepted Early Ballots table."""
 
@@ -317,12 +338,7 @@ class AZScraper(Adapter):
             raise NotYetPublished(
                 f"AZ: table is dated {published.isoformat()}, after {as_of.isoformat()}"
             )
-        if days_to_election(cycle, published) > EARLY_WINDOW_DAYS:
-            # Last election's table, left on the page. See EARLY_WINDOW_DAYS.
-            raise NotYetPublished(
-                f"AZ: page is still showing the {published.isoformat()} table, from "
-                f"before the {cycle} general's early-vote window opened"
-            )
+        _refuse_a_stale_table(result, cycle)
         self._add_recorder_party(result, cycle, published)
         return result
 
@@ -377,10 +393,21 @@ class AZScraper(Adapter):
         day, so what survives for 2022/2024 is the last state it was left in.
         That is still the cycle's final early-ballot total, which is what the
         comparison lines anchor on.
+
+        ⚠️ AND IT IS THE PRIMARY'S TABLE AS OFTEN AS THE GENERAL'S, which is why
+        this shares `_refuse_a_stale_table` with `fetch()` rather than parsing and
+        publishing whatever the page holds. `fetch()` has had that check since it
+        was written; this path did not, so the backfill published what the live
+        path refuses -- 921,671 Arizona ballots dated 2024-07-29, ninety-nine days
+        before a general election whose ballots had not been printed. The live
+        path and the history path must not disagree about what counts as this
+        cycle's data.
         """
         if cycle >= date.today().year:
             raise NotYetPublished(f"AZ: {cycle} is not an archived cycle")
-        return parse(self._load(cycle, use_cache=True), cycle)
+        result = parse(self._load(cycle, use_cache=True), cycle)
+        _refuse_a_stale_table(result, cycle)
+        return result
 
 
 # ==========================================================================
@@ -438,11 +465,10 @@ REGISTRATION_SHARE: dict[str, float] = {
 #: publishing a model number by accident. `test_model_error_tracks_estimate`
 #: imports both and fails if they ever drift apart.
 #:
-#: It was 0.10 while the model was county geography alone, and 0.05 once the model
-#: gained a mail-selection term. It is 0.06 since Pennsylvania 2022 entered the
-#: panel and took the measured leave-one-state-out error from 3.1 to 4.09 points;
-#: see docs/party-estimate.md.
-MODEL_ERROR = 0.06
+#: It was 0.10 while the model was county geography alone. It is 0.05 since the
+#: model gained a mail-selection term, whose measured leave-one-state-out error
+#: is 3.85 points across thirteen completed series; see docs/party-estimate.md.
+MODEL_ERROR = 0.05
 
 #: How Arizona spells its parties, mapped onto a spelling `normalize.party()`
 #: already knows. Only labels normalize does NOT recognise belong here; anything

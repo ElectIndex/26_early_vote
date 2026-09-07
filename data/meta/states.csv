@@ -2,7 +2,7 @@ state,name,election_date,ev_start_2026,ev_end_2026,has_party_reg,dims_available,
 AK,Alaska,2026-11-03,,,true,method,,,,,,"statewide only; published by ballot type, not by borough"
 AL,Alabama,2026-11-03,,,false,,,,,,,not tracked in 2026
 AR,Arkansas,2026-11-03,,,false,,,,,,,not tracked in 2026
-AZ,Arizona,2026-11-03,,,true,county|party|method,,,,,,
+AZ,Arizona,2026-11-03,,,true,county,,,,,,registers by party; the SoS Sent/Accepted table publishes neither the party split nor a mail/in-person split -- county totals only
 CA,California,2026-11-03,,,true,county|method,,,,,,"registers by party, but the state workbook does not break it out"
 CO,Colorado,2026-11-03,,,true,county|party|method,,,,,,
 CT,Connecticut,2026-11-03,,,true,,,,,,,not tracked in 2026

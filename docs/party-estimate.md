@@ -21,8 +21,14 @@ stop" by **0.72**, which is to say it was laundering a known election result
 through today's ballot counts. Adding the second term — a correction for the fact
 that the people who *ask for a mail ballot* are not a random draw from their
 county — takes the measured error to **4.09 points** and the gain over that same
-null to **+4.29**, out of sample, leave-one-state-out. Pennsylvania 2024, the
-worst state in the old table at 15.5, is **3.7**.
+null to **+4.37**, out of sample, leave-one-state-out. Pennsylvania 2024, the
+worst state in the old table at 15.5, is **4.2**.
+
+Two numbers, not one, because the panel now spans two mail-voting regimes. On
+the **2024 folds — the cycle whose regime 2026 shares — it is 3.38**; on the 2022
+folds it is 5.24, and all of that gap is Pennsylvania 2022 (2022 without PA is
+2.9, better than 2024). If 2026 votes by mail the way 2024 did, expect the first
+number. The second is what it costs to be wrong about that.
 
 Those figures moved on 2026-09-06 and both directions are worth knowing. The
 gain fell from +4.44 because a three-day, eight-ballot series had been averaged
@@ -374,19 +380,19 @@ Carolina 2024.
 
 | cycle | state | days | est | truth | 2024 base | **final error** | MAE | geo MAE | null MAE | gain vs geo | gain vs null | est moved | truth moved |
 | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| 2024 | CO | 5 | 55.7 | 52.0 | 55.6 | **+3.7** | 5.6 | 3.3 | 3.8 | −2.3 | −1.8 | 3.8 | 0.4 |
-| 2022 | FL | 24 | 46.9 | 46.3 | 43.4 | **+0.6** | 2.5 | 3.6 | 3.6 | +1.0 | +1.0 | 13.4 | 6.0 |
-| 2024 | FL | 32 | 47.0 | 43.5 | 43.4 | **+3.5** | 4.5 | 0.4 | 0.5 | −4.2 | −4.1 | 9.7 | 4.5 |
-| 2024 | IA | 16 | 47.3 | 48.9 | 43.3 | **−1.6** | 3.5 | 6.7 | 7.4 | +3.2 | +3.9 | 16.7 | 4.2 |
-| 2024 | KY | 13 | 38.7 | 44.7 | 34.5 | **−6.1** | 5.1 | 10.6 | 10.5 | +5.4 | +5.4 | 4.0 | 0.9 |
+| 2024 | CO | 4 | 55.9 | 51.6 | 55.6 | **+4.3** | 4.9 | 3.2 | 3.8 | −1.7 | −1.1 | 1.9 | 0.3 |
+| 2022 | FL | 17 | 46.3 | 45.8 | 43.4 | **+0.4** | 1.9 | 4.0 | 4.0 | +2.1 | +2.1 | 11.0 | 6.0 |
+| 2024 | FL | 22 | 46.2 | 43.4 | 43.4 | **+2.8** | 4.5 | 0.8 | 0.9 | −3.7 | −3.6 | 8.3 | 4.5 |
+| 2024 | IA | 15 | 45.4 | 48.9 | 43.3 | **−3.6** | 3.1 | 6.8 | 7.5 | +3.7 | +4.4 | 16.2 | 4.2 |
+| 2024 | KY | 13 | 38.1 | 44.7 | 34.5 | **−6.7** | 6.0 | 10.6 | 10.5 | +4.6 | +4.6 | 3.4 | 0.9 |
 | 2022 | MD | 8 | 63.8 | 66.3 | 64.8 | **−2.5** | 1.9 | 1.9 | 0.5 | +0.0 | −1.4 | 1.4 | 2.2 |
 | 2024 | MD | 8 | 64.1 | 63.2 | 64.8 | **+1.0** | 1.8 | 1.8 | 2.9 | +0.0 | +1.1 | 1.0 | 2.8 |
-| 2022 | ME | 121 | 61.4 | 67.2 | 53.5 | **−5.8** | 2.8 | 14.1 | 15.9 | +11.3 | +13.1 | 14.0 | 5.4 |
-| 2024 | ME | 121 | 60.2 | 60.2 | 53.5 | **−0.1** | 3.4 | 7.4 | 8.7 | +4.0 | +5.3 | 12.7 | 5.6 |
-| 2022 | NC | 61 | 51.9 | 55.1 | 48.4 | **−3.2** | 3.6 | 6.3 | 7.0 | +2.7 | +3.5 | 1.3 | 1.7 |
-| 2024 | NC | 47 | 50.7 | 49.4 | 48.4 | **+1.3** | 1.1 | 0.9 | 1.1 | −0.2 | −0.0 | 1.1 | 2.0 |
-| 2022 | PA | 70 | 57.8 | 76.5 | 49.1 | **−18.7** | 13.4 | 27.7 | 29.1 | +14.3 | +15.7 | 12.8 | 3.4 |
-| 2024 | PA | 70 | 55.1 | 62.7 | 49.1 | **−7.6** | 3.7 | 15.5 | 17.9 | +11.7 | +14.1 | 20.1 | 11.2 |
+| 2022 | ME | 121 | 58.7 | 67.2 | 53.5 | **−8.5** | 4.6 | 14.1 | 15.9 | +9.5 | +11.3 | 14.9 | 5.4 |
+| 2024 | ME | 121 | 57.9 | 60.2 | 53.5 | **−2.4** | 1.6 | 7.4 | 8.7 | +5.8 | +7.1 | 12.1 | 5.6 |
+| 2022 | NC | 61 | 51.6 | 55.1 | 48.4 | **−3.5** | 3.8 | 6.3 | 7.0 | +2.5 | +3.2 | 1.2 | 1.7 |
+| 2024 | NC | 47 | 50.5 | 49.4 | 48.4 | **+1.1** | 0.9 | 0.9 | 1.1 | +0.0 | +0.2 | 1.0 | 2.0 |
+| 2022 | PA | 70 | 57.2 | 76.5 | 49.1 | **−19.3** | 13.9 | 27.7 | 29.1 | +13.8 | +15.2 | 13.4 | 3.4 |
+| 2024 | PA | 70 | 54.5 | 62.7 | 49.1 | **−8.2** | 4.2 | 15.5 | 17.9 | +11.3 | +13.7 | 20.7 | 11.2 |
 
 All figures are percentage points of the **Democratic two-party share**. `est`
 and `truth` are the last day of the series. `MAE`, `geo MAE` and `null MAE` are
@@ -399,24 +405,66 @@ this one replaces:**
 
 | | geography only | **+ mail term** |
 | --- | ---: | ---: |
-| mean absolute final-day error | 7.42 | **4.27** |
-| signed mean final-day error | −6.13 | **−2.74** |
-| RMSE of final-day error | 10.02 | **6.35** |
-| worst final-day error | 27.42 (PA 2022) | **18.66** (PA 2022) |
-| mean MAE, mature days | 7.71 | **4.09** |
-| mean MAE of the null model | 8.38 | 8.38 |
-| **gain over the null** | **+0.67** | **+4.29** |
-| **gain over the geography-only model** | — | **+3.62** |
-| how far the estimate moved across a window | 1.24 | 8.61 |
+| mean absolute final-day error | 7.49 | **4.93** |
+| signed mean final-day error | −6.20 | **−3.47** |
+| RMSE of final-day error | 10.10 | **6.92** |
+| worst final-day error | 27.42 (PA 2022) | **19.34** (PA 2022) |
+| mean MAE, mature days | 7.78 | **4.09** |
+| mean MAE of the null model | 8.46 | 8.46 |
+| **gain over the null** | **+0.68** | **+4.37** |
+| **gain over the geography-only model** | — | **+3.69** |
+| how far the estimate moved across a window | 1.24 | 8.18 |
 | how far the reported party split moved | 3.86 | 3.86 |
 
-**Two different signed biases, and they say different things.** The −2.74 above
+**Two different signed biases, and they say different things.** The −3.47 above
 is measured on each series' LAST day. Averaged over every mature day instead it
-is **−1.06** — the model leans Republican at the close and much less so through
-the middle of a window, which is consistent with the mail term doing most of its
-work early and decaying out. Neither number rescues a flat
+is **−2.77** — the model leans Republican throughout and a little more so at the
+close. Neither number rescues a flat
 correction (see [What else was tried](#what-else-was-tried)), and the smaller
 one is a reason there is less left to correct than this document used to think.
+
+### Two corrections behind those figures, 2026-09-07
+
+**1. A series the capped model cannot reach does not fit it (`within_reach`).**
+The mail term is fitted on the UNCAPPED regressor while prediction clips at
+`MAX_ADJUSTMENT`, which is harmless for a series inside the cap and incoherent
+for one outside it: least squares keeps enlarging alpha to reach a target that
+prediction will clip away, and every other state pays for the overshoot.
+
+Exactly one series in the panel is outside it. Pennsylvania 2022's early
+electorate finished **25.3 points** from its counties and the model may move 20,
+so no value of alpha reaches it and the whole of its residual is structural. It
+is the only all-mail state in the cycle when mail voting was at its most
+party-polarised — 76.5% Democratic mail against counties saying 49.1 — and that
+regime is over: PA's own mail electorate was 62.7% Democratic by 2024.
+
+The rule is stated on the data, not on the state. Measured leave-one-state-out,
+removing it from **training** is worth 0.24 points overall and 0.45 on the 2024
+folds. It is still **scored**, at 13.9, because what this model does when the
+world moves outside its range belongs in the headline even though it cannot
+teach the constants anything.
+
+⚠️ `scored` and `trainable` are now different sets and conflating them is a bug
+worth naming: it silently dropped PA 2022 out of the headline entirely, which is
+the opposite of the intent.
+
+**2. The readers stop at Election Day.** `counterfactual.read_series` has
+filtered `days_to_election < 0` since it was written and this module did not.
+Five state-cycles keep filing after their own election as late mail is
+processed, and what those rows contain is not early voting. **Colorado 2024 is
+the size of it**: Colorado votes almost entirely by mail, so its post-election
+row is effectively the full count — 3,276,257 ballots against 1,731,171 cast
+early. `mature_days()` normalises by the series' own maximum, so that one row
+inflated Colorado's maturity denominator by 89%, pushed genuinely mature days
+below the threshold, and made `series[-1]` — the "final" estimate, the final
+truth, and the input `within_reach` tests — a post-election number.
+
+Fixing it cost **0.24 points**, exactly cancelling what `within_reach` bought.
+That is worth stating plainly: the panel had been flattered by the bug by about
+as much as the fit was being dragged by Pennsylvania, and the headline barely
+moved because the two corrections point opposite ways. `MODEL_ERROR` went 5 → 6
+→ 5 across the same day for the same reason, and only the refit guard makes
+either move a measurement rather than a preference.
 
 ### A thirteenth series that is shown and not scored
 
@@ -484,18 +532,18 @@ spec beat even the crude null.
 
 | removed | model MAE | geography only | null | gain vs geo | gain vs null |
 | --- | ---: | ---: | ---: | ---: | ---: |
-| CO | 3.96 | 8.07 | 8.76 | +4.11 | +4.80 |
-| FL | 4.19 | 8.75 | 9.53 | +4.56 | +5.35 |
-| IA | 4.14 | 7.79 | 8.46 | +3.66 | +4.33 |
-| KY | 4.00 | 7.47 | 8.20 | +3.47 | +4.20 |
-| MD | 4.49 | 8.77 | 9.59 | +4.28 | +5.10 |
-| ME | 4.26 | 7.15 | 7.66 | +2.88 | +3.40 |
-| NC | 4.41 | 8.45 | 9.16 | +4.05 | +4.76 |
-| PA | 3.28 | 5.18 | 5.63 | +1.91 | +2.35 |
+| CO | 4.03 | 8.16 | 8.84 | +4.13 | +4.82 |
+| FL | 4.25 | 8.75 | 9.55 | +4.51 | +5.30 |
+| IA | 4.18 | 7.86 | 8.54 | +3.69 | +4.36 |
+| KY | 3.94 | 7.55 | 8.29 | +3.61 | +4.35 |
+| MD | 4.50 | 8.86 | 9.68 | +4.36 | +5.19 |
+| ME | 4.27 | 7.23 | 7.76 | +2.96 | +3.49 |
+| NC | 4.41 | 8.54 | 9.26 | +4.13 | +4.85 |
+| PA | 3.19 | 5.27 | 5.73 | +2.08 | +2.53 |
 
-The gain over the geography-only model never falls below **+1.91** whichever
+The gain over the geography-only model never falls below **+2.08** whichever
 state is removed — and that floor is Pennsylvania, which is the row worth
-pausing on. Removing PA takes the model's error from 4.09 to **3.28**, the best
+pausing on. Removing PA takes the model's error from 4.09 to **3.19**, the best
 any single removal achieves. It is simultaneously the state this model is most
 wrong about and the state where it earns most of its keep, because the null it
 is being measured against is even more wrong there. Both facts are the same
@@ -507,14 +555,15 @@ left over is large.
 was fitted without the state named:
 
 ```
-hold out CO   α = 0.319   decay = 4.00
-hold out KY   α = 0.311   decay = 4.25
-hold out NC   α = 0.348   decay = 4.75
-hold out MD   α = 0.366   decay = 5.00
-hold out IA   α = 0.382   decay = 5.00
-hold out ME   α = 0.402   decay = 5.75
-hold out PA   α = 0.466   decay = 6.50
-full sample   α = 0.366   decay = 5.00
+hold out KY   α = 0.326   decay = 5.00
+hold out CO   α = 0.332   decay = 4.75
+hold out FL   α = 0.363   decay = 5.00
+hold out NC   α = 0.364   decay = 5.50
+hold out MD   α = 0.382   decay = 5.75
+hold out IA   α = 0.408   decay = 6.00
+hold out ME   α = 0.426   decay = 6.75
+hold out PA   α = 0.509   decay = 7.75
+full sample   α = 0.382   decay = 5.75
 ```
 
 `test_fitted_constants_still_match_the_data` refits on whatever `output/` holds
