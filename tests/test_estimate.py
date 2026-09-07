@@ -793,18 +793,25 @@ def test_the_mail_term_is_scored_leave_one_state_out(tmp_path, full_baseline):
 
     The proof is that moving the OTHER state's truth moves this state's score. If
     scoring were in-sample it could not.
+
+    ⚠️ THE CONTROL VALUE USED TO BE 0.50 AND CANNOT BE ANY MORE. Philadelphia's
+    counties are 79.8% Democratic, so a 50% truth asks the model for 29.8 points
+    of correction against a `MAX_ADJUSTMENT` of 20 — outside its reach, which
+    `within_reach` now (correctly) keeps out of the fit, leaving the other state
+    with nothing to be held out against. 0.62 is 17.8 points out: the same
+    argument, inside the range the model actually serves.
     """
     scores = {}
-    for other_truth in (0.70, 0.50):
+    for other_truth in (0.70, 0.62):
         out = _two_state_tree(tmp_path / str(other_truth), other_truth)
         results = {v.state: v for v in est.validate(out, full_baseline)}
         assert set(results) == {"NC", "PA"}
         assert all(v.held_out for v in results.values())
         scores[other_truth] = results["NC"].mean_abs_error
 
-    # Pennsylvania stopped being 20 points more Democratic than its counties, so
-    # the constants North Carolina is scored with shrank and its error grew.
-    assert scores[0.50] > scores[0.70] + 1.0
+    # Pennsylvania moved further from its counties, so the constants North
+    # Carolina is scored with moved with it and North Carolina's error grew.
+    assert scores[0.62] > scores[0.70] + 1.0
 
 
 def test_a_state_with_no_other_state_falls_back_to_the_shipped_constants(

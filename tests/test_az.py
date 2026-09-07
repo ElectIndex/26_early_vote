@@ -106,6 +106,40 @@ def test_last_cycles_table_is_not_published_as_this_cycles(monkeypatch):
         az.AZScraper().fetch(2026, date(2026, 9, 5))
 
 
+def test_the_backfill_refuses_the_primarys_table_exactly_as_the_live_path_does(
+    monkeypatch,
+):
+    """⚠️ THE REGRESSION THIS EXISTS FOR, and it is a shape worth recognising.
+
+    Arizona leaves the PRIMARY's Sent/Accepted table on the general's page for
+    months -- the saved 2024 fixture is that table, dated Jul 29 2024, ninety-nine
+    days before the general. `fetch()` has refused it since it was written.
+    `fetch_history()` did not, so the BACKFILL published what the live path
+    rejects: 921,671 Arizona ballots recorded as 2024 general early votes before
+    a single general-election ballot had been printed, which then became the only
+    2024 county series Arizona had and the basis of a published party estimate.
+
+    A guard on the live path and not on the backfill path is not a guard. Both
+    now go through `_refuse_a_stale_table`.
+    """
+    monkeypatch.setattr(az.AZScraper, "_load", lambda self, cycle, **kw: PAGE_2024)
+    with pytest.raises(NotYetPublished, match="early-vote window"):
+        az.AZScraper().fetch_history(2024)
+
+
+def test_a_table_inside_the_window_still_backfills(monkeypatch):
+    """The guard must refuse the primary WITHOUT refusing the general.
+
+    Same fixture, redated into the general's early-vote window: it parses and
+    publishes, so what the test above pins is the date and not the page.
+    """
+    inside = PAGE_2024.replace("Jul 29, 2024", "Oct 29, 2024")
+    monkeypatch.setattr(az.AZScraper, "_load", lambda self, cycle, **kw: inside)
+    result = az.AZScraper().fetch_history(2024)
+    assert result.county_rows
+    assert all(r.day == date(2024, 10, 29) for r in result.county_rows)
+
+
 def test_missing_page_is_not_yet_published(monkeypatch):
     """A 404 STOPS the ladder -- patched at the network layer so the adapter's
     own Missing -> NotYetPublished conversion is what gets exercised."""
