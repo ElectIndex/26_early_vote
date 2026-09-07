@@ -53,6 +53,47 @@ def _zip_bytes(text: str | None = None) -> bytes:
     return buf.getvalue()
 
 
+def test_every_accepted_form_counts_and_none_is_silently_dropped(parsed):
+    """⚠️ THE REGRESSION THIS EXISTS FOR, and it was live in this fixture.
+
+    `ACCEPTED` was a set of two literals, "ACCEPTED" and "ACCEPTED - CURED".
+    North Carolina also writes "ACCEPTED - EXCEPTION", which is 2 of this
+    fixture's 10 rows -- so the adapter published 8 ballots out of 10, every
+    party and demographic bucket was 20% light, and Wayne County disappeared
+    from the county file because its only ballot carried that status.
+
+    Every other test in this file asserts an INVARIANT (monotonic, party sums to
+    total, FIPS-shaped), and all of them held perfectly on the undercount. That
+    is why this one asserts a CANONICAL VALUE: the fixture has ten accepted
+    ballots and the adapter must publish ten.
+    """
+    assert parsed.state_rows[-1].ballots_total == 10
+    fips = {row.county_fips for row in parsed.county_rows}
+    assert "37191" in fips, "Wayne County's only ballot is ACCEPTED - EXCEPTION"
+
+
+def test_a_status_we_cannot_classify_is_drift_not_a_silent_drop(monkeypatch):
+    """Rule 3. Whether a ballot counts is the headline number, so a status that
+    is neither an ACCEPTED form nor a known non-cast status must be refused
+    rather than quietly discarded. SchemaDrift falls through to civicAPI, which
+    carries North Carolina, so refusing costs detail and not the state."""
+    raw = FIXTURE.read_bytes().decode(nc.ENCODING, errors="replace")
+    mangled = raw.replace("ACCEPTED - EXCEPTION", "RETURNED SIDEWAYS")
+    monkeypatch.setattr(nc._net, "get", lambda *a, **k: _zip_bytes(mangled))
+    with pytest.raises(SchemaDrift, match="cannot classify"):
+        nc.NCScraper().fetch(2026, date(2026, 9, 5))
+
+
+def test_a_known_non_cast_status_is_excluded_without_complaint(monkeypatch):
+    """The other half: PENDING and SPOILED are not drift, they are simply not
+    ballots cast. The gate must not fire on them."""
+    raw = FIXTURE.read_bytes().decode(nc.ENCODING, errors="replace")
+    mangled = raw.replace("ACCEPTED - EXCEPTION", "SPOILED")
+    monkeypatch.setattr(nc._net, "get", lambda *a, **k: _zip_bytes(mangled))
+    result = nc.NCScraper().fetch(2026, date(2026, 9, 5))
+    assert result.state_rows[-1].ballots_total == 8
+
+
 @pytest.fixture
 def parsed(monkeypatch):
     monkeypatch.setattr(nc._net, "get", lambda *a, **k: _zip_bytes())

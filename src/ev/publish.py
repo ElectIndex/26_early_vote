@@ -386,6 +386,25 @@ def derive_prior_finals(out_dir: Path) -> dict[tuple[str, str], str]:
             reaches_election_day.add(key)
         if not raw:
             continue
+        # ⚠️ NOTHING AFTER ELECTION DAY, and this function was the last reader in
+        # the repo not to say so. `estimate.read_state_daily`,
+        # `estimate.read_county_ballots`, `counterfactual.read_series`,
+        # `turnout.Curve` and `regress.Series` all refuse `days_to_election < 0`;
+        # this one took a plain max over every row -- and it is the ONE that
+        # defines "this state's final early vote", which the site divides by.
+        #
+        # Five state-cycles were inflated by it: FL 2022 by 5.6%, FL 2024 by 1.2%,
+        # IA 2024 by 0.7%, WI 2024 by 1.2%. Colorado 2024 by EIGHTY-NINE PERCENT
+        # -- it votes almost entirely by mail, so its post-election row is
+        # effectively the full count, 3,276,257 against 1,731,171 cast early.
+        # CO escaped shipping only because it has no day-0 row to satisfy the
+        # completeness gate below; backfilling one would have published it.
+        try:
+            dte = int((row.get("days_to_election") or "").strip())
+        except ValueError:
+            continue
+        if dte < 0:
+            continue
         try:
             value = int(raw)
         except ValueError:

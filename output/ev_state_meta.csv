@@ -2,16 +2,16 @@ state,name,election_date,ev_start_2026,ev_end_2026,has_party_reg,dims_available,
 AK,Alaska,2026-11-03,,,true,method,,167263,,,,"statewide only; published by ballot type, not by borough"
 AL,Alabama,2026-11-03,,,false,,,,,,,not tracked in 2026
 AR,Arkansas,2026-11-03,,,false,,,,,,,not tracked in 2026
-AZ,Arizona,2026-11-03,,,true,county|party|method,,,,,,
+AZ,Arizona,2026-11-03,,,true,county,,,,,,registers by party; the SoS Sent/Accepted table publishes neither the party split nor a mail/in-person split -- county totals only
 CA,California,2026-11-03,,,true,county|method,,,,,,"registers by party, but the state workbook does not break it out"
 CO,Colorado,2026-11-03,,,true,county|party|method,,,,,,
 CT,Connecticut,2026-11-03,,,true,,,,,,,not tracked in 2026
 DC,District of Columbia,2026-11-03,,,true,,,,,,,not tracked in 2026
 DE,Delaware,2026-11-03,,,true,,,,,,,not tracked in 2026
-FL,Florida,2026-11-03,,,true,county|party|method,,8392165,,,,
+FL,Florida,2026-11-03,,,true,county|party|method,,8289955,,,,
 GA,Georgia,2026-11-03,,,false,county|method|age|race|sex,,4031303,,,,
 HI,Hawaii,2026-11-03,,,false,,,,,,,not tracked in 2026
-IA,Iowa,2026-11-03,,,true,county|party|method,,680297,,,,
+IA,Iowa,2026-11-03,,,true,county|party|method,,675464,,,,
 ID,Idaho,2026-11-03,,,true,,,,,,,not tracked in 2026
 IL,Illinois,2026-11-03,,,false,county|method,,,,,,
 IN,Indiana,2026-11-03,,,false,,,,,,,not tracked in 2026
@@ -37,7 +37,7 @@ NY,New York,2026-11-03,,,true,county|method,,,,,,New York City only (5 of 62 cou
 OH,Ohio,2026-11-03,,,false,county|method,1473983,2620750,,,,
 OK,Oklahoma,2026-11-03,,,true,,,,,,,not tracked in 2026
 OR,Oregon,2026-11-03,,,true,,,,,,,not tracked in 2026
-PA,Pennsylvania,2026-11-03,,,true,county|party|method,,1960226,,,,
+PA,Pennsylvania,2026-11-03,,,true,county|party|method,1229449,1960226,,,,
 RI,Rhode Island,2026-11-03,,,true,,,,,,,not tracked in 2026
 SC,South Carolina,2026-11-03,,,false,county|method,,1579112,,,,
 SD,South Dakota,2026-11-03,,,true,party|method,,,,,,
@@ -47,6 +47,6 @@ UT,Utah,2026-11-03,,,true,,,,,,,not tracked in 2026
 VA,Virginia,2026-11-03,,,false,county|method,992231,2376938,,,,
 VT,Vermont,2026-11-03,,,false,,,,,,,not tracked in 2026
 WA,Washington,2026-11-03,,,false,county|method|sex,,,,,,"registers by party, but the state file's party column is empty"
-WI,Wisconsin,2026-11-03,,,false,county|method,,1558257,,,,
+WI,Wisconsin,2026-11-03,,,false,county|method,,1540288,,,,
 WV,West Virginia,2026-11-03,,,true,,,,,,,not tracked in 2026
 WY,Wyoming,2026-11-03,,,true,,,,,,,not tracked in 2026
