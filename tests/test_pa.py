@@ -16,6 +16,19 @@ by asking for fewer rows rather than by editing what came back:
   same three counties, including the file's real 1947 and 1954 keying typos.
 * `2022_returned_cameron_*.json` -- the older vocabulary, where PA still
   published "NF" for no affiliation next to a long free-text tail.
+* `catalog_2020_general.json` -- the 2020 general is still posted under the same
+  naming convention, three results deep. The SECOND result is a derived view
+  ("View - 2020 General Election Mail Ballot Request by County...") sitting right
+  next to the real dataset, which is why discovery matches a prefix rather than a
+  substring.
+* `2020_returned_cameron_all_parties.json` -- Cameron's whole 2020 returned
+  curve. `ballotreturneddate` is a CALENDAR DATE in this vintage and text in the
+  next two, so this is the fixture that keeps the timestamp branch of `_day`
+  honest.
+* `2020_mailed_apps_cameron.json` / `2022_mailed_apps_cameron.json` -- the
+  ballot-mailed request query for the vintages with no disposition column: `n` is
+  the applications PA mailed a ballot for and `apps` is every application filed
+  that day, which is what the coverage guard weighs.
 """
 
 from __future__ import annotations
@@ -224,11 +237,14 @@ def test_applications_filed_before_the_axis_are_carried_not_dropped(gen2024):
     assert opening.ballots_total == 0        # but no ballot had come back yet
 
 
-def test_mail_requested_is_blank_when_approval_cannot_be_told():
-    """The 2022 dataset has no disposition column, so counting its applications
-    would silently include the declined ones."""
-    _, columns = pa.discover(raw("catalog_2022_general.json"), 2022)
-    assert pa.DISPOSITION not in columns
+def test_mail_requested_is_blank_when_nothing_can_evidence_approval():
+    """`build` publishes no request count at all when the loader hands it none.
+
+    That is the only remaining route to a blank: a file with neither a
+    disposition column nor a ballot-mailed date can say nothing about which
+    applications were approved, and a count of all of them would silently include
+    the declined ones.
+    """
     result = pa.build(load("2022_returned_cameron_dem_rep_nf.json"), None,
                       2022, date(2022, 11, 8))
     assert all(row.mail_requested is None for row in result.state_rows)
@@ -313,3 +329,195 @@ def test_non_json_from_socrata_is_a_source_error():
 def test_adapter_identity():
     scraper = pa.PAScraper()
     assert (scraper.state, scraper.name, scraper.tier) == ("PA", "pa-dos", 1)
+
+
+# --------------------------------------------------------------------------
+# 2020: a third cycle, discovered by the same convention
+# --------------------------------------------------------------------------
+def test_the_2020_general_is_discoverable_by_the_same_name():
+    """PA has named these the same way since 2020, so the 2020 general needs no
+    new code to reach -- and the derived VIEW sitting next to it in the same
+    answer must not be picked up, which is why the match is a prefix."""
+    dataset, columns = pa.discover(raw("catalog_2020_general.json"), 2020)
+    assert dataset == "mcba-yywm"
+    pa.check_columns(columns, dataset)
+    # A different column type from 2024's, on the same column, in the same parser.
+    assert columns[pa.RETURNED] == "calendar date"
+
+
+def test_2020_has_no_disposition_column_but_does_carry_a_ballot_mailed_date():
+    """The whole basis for filling `mail_requested` on the older vintages: PA
+    never says "Approved" before 2024, but it has always published the date it
+    put the ballot in the post, which is approval carried out."""
+    _, columns = pa.discover(raw("catalog_2020_general.json"), 2020)
+    assert pa.DISPOSITION not in columns
+    assert columns[pa.SENT] == "calendar date"
+
+
+@pytest.fixture(scope="module")
+def gen2020():
+    return pa.build(load("2020_returned_cameron_all_parties.json"),
+                    load("2020_mailed_apps_cameron.json"), 2020, date(2020, 11, 3))
+
+
+def test_2020_speaks_the_same_free_text_vocabulary_as_2022(gen2020):
+    """2020 predates the cleaned five-value list, so it is read with the same
+    PA_PARTY table 2022 needs -- and leaves the same kind of residue.
+
+    Cameron's 722 returned ballots: 312 D, 343 R, 64 across the no-affiliation
+    family (NF + I + NO + NON + NOP), 2 OTH, and one "C" that is counted in the
+    total and in no bucket at all.
+    """
+    final = gen2020.state_rows[-1]
+    assert final.ballots_total == 722
+    assert (final.party_dem, final.party_rep) == (312, 343)
+    assert final.party_npa == 64
+    assert final.party_oth == 2
+    assert (final.party_dem + final.party_rep + final.party_npa
+            + final.party_oth) == final.ballots_total - 1
+
+
+def test_2020_reports_the_unaffiliated_where_2024_cannot(gen2020):
+    """The blank in 2024 is PA's vocabulary changing, not this parser's habit."""
+    assert gen2020.state_rows[-1].party_npa is not None
+    assert all(row.inperson is None for row in gen2020.state_rows)
+
+
+def test_2020_counties_are_fips_keyed(gen2020):
+    counties = {row.county_fips for row in gen2020.county_rows}
+    assert counties == {"42023"}
+    assert gen2020.county_rows[-1].county_name == "Cameron County"
+    assert gen2020.county_rows[-1].ballots_total == 722
+
+
+def test_2020_runs_the_same_120_day_axis_as_the_other_cycles(gen2020):
+    days = [row.day for row in gen2020.state_rows]
+    assert days[0] == date(2020, 7, 6)      # election day - MAX_SPAN_DAYS
+    assert days[-1] == date(2020, 11, 3)
+    assert len(days) == 121
+
+
+# --------------------------------------------------------------------------
+# mail_requested from the ballot PA actually mailed
+# --------------------------------------------------------------------------
+def test_a_mailed_ballot_evidences_the_approval_the_old_files_never_state(gen2020):
+    """Cameron 2020: 803 of the 810 applications filed got a ballot in the post,
+    and 722 of those came back."""
+    final = gen2020.state_rows[-1]
+    assert final.mail_requested == 803
+    assert final.mail_returned == 722
+
+
+def test_2022_gets_a_request_count_too():
+    """The cycle this module used to blank outright. Cameron 2022: 421
+    applications, every one of them mailed a ballot, 407 returned."""
+    result = pa.build(load("2022_returned_cameron_all_parties.json"),
+                      load("2022_mailed_apps_cameron.json"), 2022, date(2022, 11, 8))
+    final = result.state_rows[-1]
+    assert final.mail_requested == 421
+    assert final.ballots_total == 407
+
+
+def test_requests_filed_before_the_axis_are_carried_into_day_one(gen2020):
+    """Cameron's first 2020 applications are dated March, 235 days out. They are
+    real requests as of day one of the published axis, not a reason to widen it."""
+    opening = gen2020.state_rows[0]
+    assert opening.mail_requested == 389
+    assert opening.ballots_total == 0
+
+
+def test_a_file_whose_ballots_are_not_in_the_post_yet_blanks_the_count():
+    """⚠️ THE PROXY IS ONLY HONEST ON A FILE THAT HAS BEEN MAILED OUT.
+
+    Run the same query in August, before a ballot has been printed, and "PA
+    mailed one" evidences almost nothing: publishing it would say 3,000
+    Pennsylvanians had requested a ballot on a day 600,000 had. Below
+    MIN_BALLOT_MAILED_SHARE it goes blank -- THE BLANK RULE -- not low.
+    """
+    rows = [{"countyname": "CAMERON", "party": "DEM", "d": "2022-10-01", "n": "1"}]
+    mid_flight = [{"d": "2022-08-01", "n": "3000", "apps": "600000"}]
+    result = pa.build(rows, mid_flight, 2022, date(2022, 11, 8))
+    assert all(row.mail_requested is None for row in result.state_rows)
+
+
+def test_a_mailed_out_file_is_published():
+    """The other side of the same threshold, so the blank above is a rule rather
+    than a parser that never fills the column. 2020 and 2022 measure 99.42% and
+    99.60%; even a file shaped like 2024's, 6.7% of it declined outright, is at
+    92.61%."""
+    rows = [{"countyname": "CAMERON", "party": "DEM", "d": "2022-10-01", "n": "1"}]
+    mailed = [{"d": "2022-08-01", "n": "92610", "apps": "100000"}]
+    result = pa.build(rows, mailed, 2022, date(2022, 11, 8))
+    assert result.state_rows[-1].mail_requested == 92610
+
+
+def test_the_disposition_query_is_never_coverage_gated(gen2024):
+    """A file that STATES the disposition needs no proxy and no guard on it: the
+    2024 request rows carry no `apps` column and must not be second-guessed."""
+    apps = load("2024_approved_apps_by_day.json")
+    assert all(pa.APPLICATIONS not in row for row in apps)
+    assert gen2024.state_rows[-1].mail_requested is not None
+
+
+# --------------------------------------------------------------------------
+# fetch / fetch_history parity
+# --------------------------------------------------------------------------
+class _FrozenToday(date):
+    """`date` with a today() we choose. See az.py's _refuse_a_stale_table for why
+    the history path needs the same guards the live path has."""
+
+    @classmethod
+    def today(cls):
+        return date(2024, 10, 15)
+
+
+def _recording_get(calls):
+    def fake_get(url, **kwargs):
+        calls.append((url, kwargs.get("use_cache")))
+        if url == pa.CATALOG_URL:
+            return raw("catalog_2024_general.json")
+        if "approved" in kwargs.get("filename", ""):
+            return raw("2024_approved_apps_by_day.json")
+        return raw("2024_returned_by_county_party_day.json")
+    return fake_get
+
+
+def test_history_never_publishes_a_day_that_has_not_happened(monkeypatch):
+    """⚠️ `backfill --cycle <the running cycle>` is allowed by argparse, and this
+    path used to run to Election Day whatever the date was -- emitting weeks of
+    rows carrying today's cumulative total as though the days had happened."""
+    calls: list[tuple[str, bool | None]] = []
+    monkeypatch.setattr(pa, "get", _recording_get(calls))
+    monkeypatch.setattr(pa, "date", _FrozenToday)
+
+    result = pa.PAScraper().fetch_history(2024)
+    assert result.state_rows[-1].day == date(2024, 10, 15)
+    assert all(row.day <= date(2024, 10, 15) for row in result.county_rows)
+
+
+def test_history_does_not_serve_a_cached_copy_of_an_unfinished_cycle(monkeypatch):
+    """`_net.get(use_cache=True)` is only for a file whose contents can never
+    change, which a running cycle's dataset is not."""
+    calls: list[tuple[str, bool | None]] = []
+    monkeypatch.setattr(pa, "get", _recording_get(calls))
+    monkeypatch.setattr(pa, "date", _FrozenToday)
+
+    pa.PAScraper().fetch_history(2024)
+    assert calls and all(cached is False for _, cached in calls)
+
+
+def test_history_still_caches_and_runs_to_election_day_for_a_finished_cycle(monkeypatch):
+    calls: list[tuple[str, bool | None]] = []
+    monkeypatch.setattr(pa, "get", _recording_get(calls))
+
+    result = pa.PAScraper().fetch_history(2024)
+    assert result.state_rows[-1].day == date(2024, 11, 5)
+    assert calls and all(cached is True for _, cached in calls)
+
+
+def test_a_ballot_mailed_column_that_stops_being_a_date_raises_drift():
+    """It is date-compared like the other two, so it is type-checked like them."""
+    columns = {pa.COUNTY: "text", pa.PARTY: "text", pa.RETURNED: "text",
+               pa.REQUESTED: "calendar date", pa.SENT: "number"}
+    with pytest.raises(SchemaDrift, match="not a date"):
+        pa.check_columns(columns, "mcba-yywm")

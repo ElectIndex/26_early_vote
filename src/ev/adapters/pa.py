@@ -4,17 +4,24 @@ PA publishes one Socrata dataset per election holding ONE ROW PER MAIL BALLOT
 APPLICATION -- county, party, application request date, ballot mailed date,
 ballot returned date, and the application's disposition. Being Socrata means we
 never download the 2.4-million-row table: SoQL aggregates server-side, so the
-entire daily county x party curve comes back as ~8,400 grouped rows in one
-request, and the whole history is reconstructible from any single run exactly as
-it is for North Carolina.
+entire daily county x party curve comes back in ONE request -- 8,429 grouped rows
+for 2024, 11,010 for 2022, 15,607 for 2020, none of them near `PAGE` -- and the
+whole history is reconstructible from any single run exactly as it is for North
+Carolina.
 
 **The dataset id is discovered, never constructed.** Each election gets a fresh
-four-character id (2022 general `uhfm-zhus`, 2024 general `3q5t-ddp8`) that
-cannot be guessed, so we ask Socrata's catalog API for the dataset whose name
-starts with "<cycle> General Election Mail Ballot Requests". No such dataset
-means PA has not opened the cycle's file yet, which is NotYetPublished. The
-catalog answer also carries the dataset's column names and types, so one call
-does discovery and the schema check together.
+four-character id (2020 general `mcba-yywm`, 2022 general `uhfm-zhus`, 2024
+general `3q5t-ddp8`) that cannot be guessed, so we ask Socrata's catalog API for
+the dataset whose name starts with "<cycle> General Election Mail Ballot
+Requests". No such dataset means PA has not opened the cycle's file yet, which is
+NotYetPublished. The catalog answer also carries the dataset's column names and
+types, so one call does discovery and the schema check together.
+
+**Three cycles reach this far back, not two.** The naming convention has held
+since 2020, so the same discovery finds the 2020 general -- 3,079,710
+applications, 2,648,056 of them returned, 67 counties, the same free-text party
+vocabulary 2022 uses. It is the only pre-2022 early-vote series in this repo and
+the only one that can give a model two CONSECUTIVE completed cycles below 2024.
 
 Three judgement calls worth naming:
 
@@ -31,17 +38,56 @@ Three judgement calls worth naming:
   not 0: 0 would claim no unaffiliated Pennsylvanian has voted, when the truth is
   that PA stopped reporting the distinction. See THE BLANK RULE in schema.py.
 
-* **`mail_requested` is APPROVED APPLICATIONS, not ballots mailed.** PA's own
-  dashboard headline is approved applications, and it is a live number from the
-  first day of the cycle, months before a ballot exists to mail. (Michigan and
-  Ohio fill the same field with ballots issued because that is all their reports
-  give.) A file with no disposition column -- the 2020 and 2022 vintages -- gets
-  a blank rather than a count of applications we cannot tell were approved.
+* **`mail_requested` is APPROVED APPLICATIONS, and older vintages prove approval
+  a different way.** PA's own dashboard headline is approved applications, and it
+  is a live number from the first day of the cycle, months before a ballot exists
+  to mail. (Michigan and Ohio fill the same field with ballots issued because
+  that is all their reports give.) From 2024 the file says so outright in
+  `ballot_application_disposition`.
+
+  The 2020 and 2022 files have no disposition column and no status column of any
+  name -- verified against the full column list, 11 columns in 2020 and 16 in
+  2022, not just the catalog summary. What they do carry, and what this module
+  did not look at for two cycles, is `ballotsentdate`: THE DATE PENNSYLVANIA
+  MAILED THE BALLOT. A mailed ballot is not a guess about approval, it is
+  approval carried out, so an application with one is counted and an application
+  without one is not. See `MIN_BALLOT_MAILED_SHARE` for the one thing that can go
+  wrong with that and the guard that stops it.
+
+  The two readings are close enough to compare across cycles and the gap is
+  measured, not assumed. 2024 is the only vintage that publishes both: 2,242,055
+  approved applications, of which 2,225,938 got a ballot mailed, so the
+  ballot-mailed reading recovers **99.28%** of approvals and is a floor rather
+  than an estimate. It also admits almost nothing it should not -- of 162,036
+  DECLINED 2024 applications only 282 (0.17%) have a mailed ballot.
 
 * **`inperson` is always blank.** Pennsylvania has no in-person early voting.
   Voting "on demand" at a county office is legally a mail ballot applied for,
   issued and returned in one visit, and this file does not mark it, so there is
   no in-person number to report -- which is not the same as zero.
+
+WHAT THIS FILE COULD SUPPORT AND THE SCHEMA CANNOT HOLD. `countyname` is on
+every application row, so everything statewide here is available per county for
+the asking -- one `$group` term, no new source and no join. Three of them have
+nowhere to go today:
+
+  * ballots MAILED per county per day. `CountyDay` has no request/sent column at
+    all (civicapi.py says the same thing at its line 393), so `mail_requested` is
+    a StateDay-only field. Adding one field to `CountyDay`, `COUNTY_DAILY_COLUMNS`
+    and `county_row_to_dict` would give PA a 67-county sent-vs-returned pair for
+    2020, 2022 and 2024 -- the denominator estimate.py says it does not have.
+    The query is the one in `_load` with `{COUNTY},` prepended to `$select` and
+    `$group`, and it is cheap: 9,360 grouped rows for 2020, 8,670 for 2022 and
+    11,286 for 2024, one page each, one extra request per cycle.
+  * `dateofbirth`, populated on 99.93% of 2020 rows and 99.99% of 2022 rows,
+    which would give PA an `age` DemoDay series. It needs a documented rule for
+    the confidentiality placeholder PA's own dataset description declares -- a
+    protected voter's birth date is published as 1/1/1800, which
+    `normalize.age_band` would silently bucket as 65+. Measured, that is 60 rows
+    in 2020 and 3 in 2022, so it is a correctness detail rather than a volume
+    problem; `AGE_BANDS` has no `unknown` band to put them in either way.
+  * `congressional`, `senate` and `legislative` -- district, not county. There is
+    no district table in schema.py.
 """
 
 from __future__ import annotations
@@ -82,7 +128,7 @@ DATASET_PREFIX = "{cycle} General Election Mail Ballot Requests"
 #: and 2022 files are free text: the registration form offers Democratic,
 #: Republican and "No Affiliation", and everything else is typed into an Other
 #: box, so the 2022 general carries 146 distinct labels for 1.4 million
-#: applications.
+#: applications and the 2020 general carries 208 for 3.1 million.
 #:
 #: These are the ones that are a READING rather than a guess -- PA's official
 #: abbreviations and the unmistakable spellings of "none":
@@ -123,18 +169,48 @@ PARTY = "party"
 RETURNED = "ballotreturneddate"
 REQUESTED = "appissuedate"
 
-#: Present from the 2024 vintage on; absent in 2020/2022, where mail_requested
-#: is therefore blank rather than a guess.
+#: Present from the 2024 vintage on; absent in 2020/2022, where approval is read
+#: off SENT instead. See the module docstring.
 DISPOSITION = "ballot_application_disposition"
 APPROVED = "Approved"
 
+#: "Ballot Mailed Date", present in every vintage 2020-2024. Non-null means PA
+#: put a ballot in the post for this application, which is approval carried out.
+SENT = "ballotsentdate"
+
+#: SoQL alias for "every application filed that day, mailed a ballot or not".
+#: Only the ballot-mailed query selects it, and its presence in a row is how
+#: `build` knows which of the two request queries it is reading.
+APPLICATIONS = "apps"
+
 REQUIRED_COLUMNS = (COUNTY, PARTY, RETURNED, REQUESTED)
 
+#: How much of a file's applications must already have a MAILED BALLOT before
+#: ballots-mailed is allowed to stand in for approved applications.
+#:
+#: ⚠️ THIS IS A GUARD AGAINST THE PROXY BEING RIGHT ONLY IN HINDSIGHT. Counting
+#: applications PA has mailed a ballot for is a floor on approvals, and a floor is
+#: only useful once it is close to the thing. On a FINISHED file it is: 99.42% of
+#: 2020's applications and 99.60% of 2022's have a mailed ballot, and even a file
+#: shaped like 2024's -- 6.7% of its applications declined outright -- sits at
+#: 92.61%. Run the same query in August, before a single ballot has been printed,
+#: and it is ~0%: a live cycle whose file lost its disposition column would
+#: otherwise publish "3,000 requested" on a day 600,000 Pennsylvanians had
+#: applied, which is not a cautious number, it is a wrong one.
+#:
+#: Below the threshold `mail_requested` goes BLANK -- THE BLANK RULE, we cannot
+#: tell yet -- rather than being published low. The same pattern and the same
+#: reasoning as MAX_UNKNOWN_PARTY_SHARE above: a material threshold, anchored on
+#: measurements, refusing rather than guessing.
+MIN_BALLOT_MAILED_SHARE = 0.90
+
 #: Socrata reports these two types for the date columns and has used both for
-#: the same column between cycles (`ballotreturneddate` was text in 2022 and
-#: 2024, a calendar date in 2026). Both render ISO-8601, so both compare and
-#: sort correctly against a 'YYYY-MM-DD' literal; anything else must not be
-#: silently string-compared.
+#: the same column between cycles -- MEASURED, from the catalog answers this
+#: module already asks for: `ballotreturneddate` is a calendar date in 2020 and
+#: text in 2022 and 2024, while `appissuedate` and `ballotsentdate` are calendar
+#: dates in 2020 and 2022 and `ballotsentdate` turns to text in 2024. Both render
+#: ISO-8601, so both compare and sort correctly against a 'YYYY-MM-DD' literal;
+#: anything else must not be silently string-compared.
 DATE_TYPES = frozenset({"text", "calendar date", "calendar_date", "date"})
 
 #: Socrata's hard ceiling per response. We page until a short page comes back;
@@ -143,9 +219,12 @@ DATE_TYPES = frozenset({"text", "calendar date", "calendar_date", "date"})
 PAGE = 50000
 
 #: How far back the published daily curve runs. PA's permanent mail-ballot list
-#: carries applications filed a year earlier (and the file holds keying typos
-#: dated 1947), so the axis is capped and everything older is folded into the
-#: first day's cumulative total rather than dropped.
+#: carries applications filed a year earlier, and the file holds keying typos at
+#: both ends: the earliest application date is 1922-04-10 in 2020, 1940-07-07 in
+#: 2022 and 1933-12-06 in 2024, and 2020's LATEST is 7020-08-21. So the axis is
+#: capped, everything older is folded into the first day's cumulative total
+#: rather than dropped, and anything after `as_of` -- the year 7020 included --
+#: is filtered out by the same rule that stops us publishing tomorrow.
 MAX_SPAN_DAYS = 120
 
 _PARTY_FIELD = {
@@ -197,8 +276,13 @@ def check_columns(columns: dict[str, str], dataset: str) -> None:
     missing = [c for c in REQUIRED_COLUMNS if c not in columns]
     if missing:
         raise SchemaDrift(f"PA: dataset {dataset} is missing columns {missing}")
-    for column in (RETURNED, REQUESTED):
-        kind = columns[column]
+    # SENT is optional -- it is only consulted when the file has no disposition
+    # column -- but if it is there it is date-compared like the others, so it is
+    # type-checked on the same terms rather than trusted.
+    for column in (RETURNED, REQUESTED, SENT):
+        kind = columns.get(column)
+        if kind is None:
+            continue
         if kind not in DATE_TYPES:
             # A numeric or timestamp-with-zone column would still answer a
             # `<=` comparison, just not the one we mean.
@@ -257,9 +341,12 @@ def build(returned: list[dict], requested: list[dict] | None,
           cycle: int, as_of: date) -> FetchResult:
     """Turn PA's two grouped SoQL answers into the canonical daily rows.
 
-    `returned` is one row per (county, party, return date); `requested` is one
-    row per application date, or None when the dataset cannot tell us which
-    applications were approved.
+    `returned` is one row per (county, party, return date). `requested` is one
+    row per application date whose `n` is approved applications, or None when the
+    dataset cannot tell us which applications were approved at all. A `requested`
+    row that also carries `APPLICATIONS` came from the ballot-mailed query rather
+    than the disposition query, and is coverage-checked before it is trusted --
+    see MIN_BALLOT_MAILED_SHARE.
     """
     by_state: dict[date, _Bucket] = defaultdict(_Bucket)
     by_county: dict[tuple[str, date], _Bucket] = defaultdict(_Bucket)
@@ -329,11 +416,41 @@ def build(returned: list[dict], requested: list[dict] | None,
     apps: dict[date, int] | None = None
     if requested is not None:
         apps = defaultdict(int)
+        approved = filed = 0
         for row in requested:
             day = _day(row.get("d"))
             if day is None or day > as_of:
                 continue
-            apps[day] += _count(row.get("n"))
+            count = _count(row.get("n"))
+            apps[day] += count
+            approved += count
+            # Only the ballot-mailed query carries `apps` (every application on
+            # that day, mailed or not). The disposition query does not, and
+            # needs no coverage guard: the file states the disposition outright.
+            if APPLICATIONS in row:
+                filed += _count(row.get(APPLICATIONS))
+
+        if filed:
+            share = approved / filed
+            if share < MIN_BALLOT_MAILED_SHARE:
+                # Not enough of this file's ballots are in the post yet for
+                # "PA mailed one" to stand in for "PA approved it". Blank, not a
+                # low number. See MIN_BALLOT_MAILED_SHARE.
+                log.info(
+                    "PA %s: only %d of %d applications on or before %s have a "
+                    "mailed ballot (%.1f%%, floor %.0f%%); mail_requested stays "
+                    "blank rather than understating approvals",
+                    cycle, approved, filed, as_of.isoformat(),
+                    share * 100, MIN_BALLOT_MAILED_SHARE * 100,
+                )
+                apps = None
+            else:
+                log.info(
+                    "PA %s: mail_requested is the %d applications PA has mailed "
+                    "a ballot for, %.2f%% of the %d filed -- this file has no "
+                    "disposition column",
+                    cycle, approved, share * 100, filed,
+                )
 
     # Which canonical buckets this file's vocabulary can even express. A bucket
     # the vocabulary cannot express is blank, not 0 -- see the module docstring
@@ -491,9 +608,26 @@ class PAScraper(Adapter):
                 tag="approved",
                 use_cache=use_cache,
             )
+        elif SENT in columns:
+            # No disposition column, so approval is read off the ballot PA
+            # actually mailed. `n` counts the applications with one and `apps`
+            # counts them all, in ONE grouped answer, so `build` can check how
+            # much of the file the proxy covers before publishing it.
+            requested = self._soql(
+                dataset,
+                {
+                    "$select": (f"{REQUESTED} AS d,count({SENT}) AS n,"
+                                f"count(*) AS {APPLICATIONS}"),
+                    "$where": f"{REQUESTED} IS NOT NULL",
+                    "$group": "d",
+                    "$order": "d",
+                },
+                tag="mailed",
+                use_cache=use_cache,
+            )
         else:
-            log.info("PA: dataset %s has no %s column; mail_requested stays blank",
-                     dataset, DISPOSITION)
+            log.info("PA: dataset %s has neither a %s nor a %s column; "
+                     "mail_requested stays blank", dataset, DISPOSITION, SENT)
         return returned, requested
 
     # ------------------------------------------------------------------
@@ -514,13 +648,35 @@ class PAScraper(Adapter):
 
         Every ballot in PA's file carries its own return date, so an archived
         cycle needs no daily snapshots -- the same two queries rebuild the curve
-        from scratch. 2020 and 2022 do not survive this path: those vintages
-        publish the raw free-text registration string, and normalize.party
-        refuses to bucket labels like "NOP" or "INDE", which is SchemaDrift by
-        design rather than a mis-mapped party split.
+        from scratch. That reaches 2020, 2022 and 2024: all three survive this
+        path, and 2022's 1.2 million returned ballots have been published from it
+        since MAX_UNKNOWN_PARTY_SHARE stopped the old raise-on-first-unreadable-
+        label rule from refusing the cycle. (This docstring claimed the opposite
+        for a year after that stopped being true.)
+
+        ⚠️ TWO GUARDS THAT `fetch` HAS AND THIS PATH DID NOT, both of which bite
+        on `backfill --cycle <the current cycle>`, which argparse allows:
+
+        1. `fetch` never publishes a day that has not happened; this ran to
+           `election_date(cycle)` unconditionally. Asked for 2026 on 2026-09-07
+           it emitted rows dated every day through 2026-11-03, each carrying
+           today's cumulative total -- fifty-seven days of invented flat curve
+           that `publish.py` would happily merge. The cap is now the earlier of
+           Election Day and today, which is the same rule `fetch` obeys.
+        2. `_net.get(use_cache=True)` is only for a file whose contents can never
+           change, which a running cycle's dataset is not; it is now only passed
+           for a cycle that is over.
+
+        az.py's `_refuse_a_stale_table` is the same lesson learned the same way:
+        a validation on one path and not its sibling meant the backfill published
+        what the live path refuses.
         """
-        returned, requested = self._load(cycle, use_cache=True)
-        result = build(returned, requested, cycle, election_date(cycle))
+        # One reading of the clock, so a run crossing midnight cannot pick the
+        # cache on one line and a later cap on the next.
+        today = date.today()
+        day_zero = election_date(cycle)
+        returned, requested = self._load(cycle, use_cache=day_zero < today)
+        result = build(returned, requested, cycle, min(day_zero, today))
         if not result:
             raise NotYetPublished(f"PA: the {cycle} mail-ballot dataset is empty")
         return result
