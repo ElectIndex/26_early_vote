@@ -684,6 +684,153 @@ def test_the_scale_is_fitted_leave_one_state_out(tmp_path, monkeypatch):
     assert scores["BB"].scaled_gain < 0
 
 
+# --------------------------------------------------------------------------
+# THE REACH BOUND -- what county geography is arithmetically able to say
+# --------------------------------------------------------------------------
+def test_the_reach_bound_is_a_bound_and_it_is_tight(nc_baseline):
+    """|shift| <= TV(county mix) x (widest county margin - narrowest), exactly.
+
+    Two counties are the case where the bound is ATTAINED: every county gaining
+    share is the most Democratic one and every county losing it the most
+    Republican, which is what the bound is the supremum over.
+    """
+    dem, rep = MECKLENBURG, ALLEGHANY
+    span = cf.county_margin(nc_baseline.get(dem)) - cf.county_margin(
+        nc_baseline.get(rep))
+    assert span > 0
+
+    # A complete swap: TV = 1, so the bound is the whole span, and the shift is
+    # the whole span too.
+    now, ref = {dem: 100, rep: 0}, {dem: 0, rep: 100}
+    assert cf.mix_distance(now, ref, nc_baseline) == pytest.approx(1.0)
+    assert cf.margin_span(now, ref, nc_baseline) == pytest.approx(span)
+    assert cf.reach_bound(now, ref, nc_baseline) == pytest.approx(span)
+    shift = (cf.composition_margin(now, nc_baseline)[0]
+             - cf.composition_margin(ref, nc_baseline)[0])
+    assert shift == pytest.approx(span)
+
+    # A ten-point move of share: TV = 0.10, and the shift is a tenth of the span.
+    now, ref = {dem: 60, rep: 40}, {dem: 50, rep: 50}
+    assert cf.mix_distance(now, ref, nc_baseline) == pytest.approx(0.10)
+    bound = cf.reach_bound(now, ref, nc_baseline)
+    assert bound == pytest.approx(0.10 * span)
+    shift = (cf.composition_margin(now, nc_baseline)[0]
+             - cf.composition_margin(ref, nc_baseline)[0])
+    assert shift == pytest.approx(bound)
+
+    # A third county in the middle takes share without moving the margin as far,
+    # so the bound stops being attained -- but it is still a bound.
+    now, ref = {dem: 50, ALAMANCE: 30, rep: 20}, {dem: 50, ALAMANCE: 20, rep: 30}
+    bound = cf.reach_bound(now, ref, nc_baseline)
+    shift = (cf.composition_margin(now, nc_baseline)[0]
+             - cf.composition_margin(ref, nc_baseline)[0])
+    assert 0 < abs(shift) < bound
+
+
+def test_a_county_with_no_baseline_cannot_widen_the_reach(nc_baseline):
+    """The bound's support is the counties that can carry weight, not the map."""
+    now, ref = {MECKLENBURG: 60, ALLEGHANY: 40}, {MECKLENBURG: 50, ALLEGHANY: 50}
+    plain = cf.reach_bound(now, ref, nc_baseline)
+    with_stranger = cf.reach_bound({**now, "99999": 0}, {**ref, "99999": 0},
+                                   nc_baseline)
+    assert with_stranger == pytest.approx(plain)
+
+
+def test_within_reach_is_measured_on_the_final_matched_day():
+    """The same day `estimate.within_reach` uses: the formed early electorate."""
+    reachable = [cf.ScoredDay(cycle=2024, state="AA", days_to_election=d,
+                              shift=0.0, truth=truth, ballots=1e6,
+                              reference_ballots=1e6, reach=10.0)
+                 for d, truth in ((10, -30.0), (0, -4.0))]
+    assert cf.within_reach(reachable) is True          # the last day is 4 < 10
+    beyond = [cf.ScoredDay(cycle=2024, state="AA", days_to_election=d,
+                           shift=0.0, truth=truth, ballots=1e6,
+                           reference_ballots=1e6, reach=10.0)
+              for d, truth in ((10, -4.0), (0, -30.0))]
+    assert cf.within_reach(beyond) is False
+    assert cf.within_reach([]) is False
+    # No bound computable is not "in reach"; it is not a measurement at all.
+    assert cf.within_reach([cf.ScoredDay(cycle=2024, state="AA",
+                                         days_to_election=0, shift=0.0,
+                                         truth=1.0, ballots=1e6,
+                                         reference_ballots=1e6)]) is False
+
+
+@pytest.mark.skipif(not (REPO_OUTPUT / "ev_state_daily.csv").exists(),
+                    reason="no published output/ tree in this checkout")
+def test_every_series_whose_composition_moved_is_beyond_the_dimensions_reach(
+        full_baseline):
+    """THE FINDING, in its strongest form, and the consistency check behind it.
+
+    `estimate.py` shows-but-does-not-average one series (PA 2022) whose answer
+    sits further from its counties than `MAX_ADJUSTMENT` lets the model move,
+    because averaging it prices the cap rather than the method. The analogous
+    question here has an answer, and it is not "Pennsylvania": every series whose
+    composition demonstrably moved is one county geography could not have
+    reported under ANY reweighting of its counties. Only Colorado, whose
+    registration shifted 1.98 points, sits inside its own bound.
+
+    Pinned as "the out-of-reach series are the ones that moved", not as a count,
+    so a future backfill that adds another quiet state does not fail it and a
+    future backfill that puts a MOVING state in reach does. If the second ever
+    happens, that series is the first honest measurement of how well this method
+    estimates a real compositional change and docs/counterfactual.md has to say
+    so.
+    """
+    scores = cf.validate(REPO_OUTPUT, full_baseline)
+    assert scores
+    assert all(r.reach is not None for r in scores)
+    moved = [r for r in scores if abs(r.final_truth) >= 4.0]
+    assert moved, "the published tree should still hold a state that moved"
+    assert not any(r.in_range for r in moved), (
+        "county geography can now reach a state whose composition really moved: "
+        + ", ".join(f"{r.state} truth {abs(r.final_truth):.2f} vs reach {r.reach:.2f}"
+                    for r in moved if r.in_range)
+    )
+    # And the bound is a bound: no scored day's modelled shift ever exceeds it.
+    for days in cf.score_panel(REPO_OUTPUT, full_baseline).values():
+        for day in days:
+            assert abs(day.shift) <= day.reach + 1e-9
+
+
+def test_reach_is_reported_and_is_never_a_filter():
+    """⚠️ THE TRAP THIS TEST EXISTS TO KEEP SHUT.
+
+    `estimate.format_validation` drops its out-of-reach series from the mean and
+    falls back to keeping everything when that would empty the list. The same
+    rule was written here, and on 2026-09-07 Colorado arrived as the one in-reach
+    fold and switched the fallback off: the headline silently became Colorado's
+    own 2.29 over a single series while the all-fold mean was 10.39.
+
+    `in_range` here is a condition ON THE TRUTH, so filtering on it selects the
+    folds whose composition barely moved. The headline averages every scored
+    series and says so; the bound is a diagnostic beside it.
+    """
+    def series(state, truth, reach):
+        return cf.ScoredDay(cycle=2024, state=state, days_to_election=0,
+                            shift=0.0, truth=truth, ballots=1e6,
+                            reference_ballots=1e6, reach=reach)
+
+    quiet = cf.Validation(
+        cycle=2024, state="QQ", days=1, final_shift=0.0, final_truth=-2.0,
+        final_error=2.0, mean_abs_error=2.0, null_mean_abs_error=2.0,
+        mean_abs_shift=0.0, mean_abs_truth=2.0, correlation=None,
+        sign_agreement=0.0, reach=9.0, in_range=True)
+    loud = cf.Validation(
+        cycle=2024, state="ZZ", days=1, final_shift=0.0, final_truth=-30.0,
+        final_error=30.0, mean_abs_error=30.0, null_mean_abs_error=30.0,
+        mean_abs_shift=0.0, mean_abs_truth=30.0, correlation=None,
+        sign_agreement=0.0, reach=4.0, in_range=False)
+    assert cf.within_reach([series("QQ", -2.0, 9.0)]) is True
+    assert cf.within_reach([series("ZZ", -30.0, 4.0)]) is False
+
+    printed = "\n".join(cf.format_validation([quiet, loud]))
+    # The mean is over BOTH, not over the one series that was in reach.
+    assert "mean MAE = 16.00 pp" in printed
+    assert "REACH: 1 of 2 series" in printed
+    assert "still\nAVERAGED" in printed or "still AVERAGED" in printed
+
+
 @pytest.mark.skipif(not (REPO_OUTPUT / "ev_state_daily.csv").exists(),
                     reason="no published output/ tree in this checkout")
 def test_the_measured_gain_does_not_clear_the_bar(full_baseline):
