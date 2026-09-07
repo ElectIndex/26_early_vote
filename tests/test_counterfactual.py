@@ -285,8 +285,18 @@ def test_the_published_table_never_carries_an_immature_row(full_baseline):
         pytest.skip("no published output/ tree in this checkout")
     assert all(r.completeness >= cf.MATURE_FRACTION for r in rows)
     assert all(r.reference_completeness >= cf.MATURE_FRACTION for r in rows)
-    # The shift's honest range. Every row above five points was a phase artefact.
-    assert max(abs(r.shift_pp) for r in rows) < 5.0
+    # ⚠️ THIS BOUND USED TO BE A FLAT 5.0, on the reasoning that every row above
+    # five points was a phase artefact. Pennsylvania proved that was a fact about
+    # the panel, not a law: PA publishes +10.48 on a day that clears both halves
+    # of the gate with room to spare, and it is not immature -- it is just wrong,
+    # by 22.6 points and in the wrong direction, and it is wrong by about that
+    # much on every other day of PA's window too.
+    #
+    # So the bound that means something is the one tied to the model's own stated
+    # error. The whole argument of docs/counterfactual.md is that the band IS the
+    # number; a published shift larger than the band would be this model making a
+    # claim, which is precisely what it has not earned.
+    assert max(abs(r.shift_pp) for r in rows) < cf.MODEL_ERROR_PP
 
 
 def test_a_missing_state_never_produces_a_zero_shift(tmp_path, nc_baseline):
@@ -703,18 +713,21 @@ def test_the_measured_gain_does_not_clear_the_bar(full_baseline):
 def test_the_fitted_scale_does_not_agree_with_itself_across_states(full_baseline):
     """A unit gap would be fixable by a scale. This is not a unit gap.
 
-    ⚠️ THE ARGUMENT CHANGED WHEN THE MATURITY GATE LANDED, and it is worth
-    knowing which half of it was real. It used to be that the multiplier fitting
-    Kentucky and Maryland was the NEGATIVE of the one fitting Maine and North
-    Carolina -- signs pointing both ways, which is about as clean a "there is no
-    signal here" as a fitted constant can give. Once the immature days came out,
-    every fold's multiplier is positive.
+    ⚠️ THIS ARGUMENT HAS NOW BEEN WRONG IN BOTH DIRECTIONS, which is the most
+    useful thing about it. Originally the multiplier fitting Kentucky and
+    Maryland was the NEGATIVE of the one fitting Maine and North Carolina. The
+    maturity gate made every fold's multiplier positive, and this docstring duly
+    recorded that the sign half of the argument had been noise. Adding
+    Pennsylvania put the signs back: FL -0.17, KY +0.40, MD +0.58, ME -0.92,
+    NC -1.01, PA +2.62.
 
-    What survives is the magnitude. The scales still disagree by more than an
-    order of magnitude (0.24 in North Carolina against 7.28 in Maryland), and
-    applying the one fitted on the other states still makes three of the five
-    folds worse and lifts none of them over MIN_GAIN. A signal in the wrong unit
-    would be fixed by ONE number; nothing here is one number.
+    Read that as a warning about the panel rather than a discovery about the
+    model. Five folds were few enough that the sign pattern could flip on one
+    state either way; what has never flipped is the magnitude. The scales still
+    disagree by more than an order of magnitude (0.17 in Florida against 2.62 in
+    Pennsylvania), and applying the one fitted on the other states still lifts no
+    fold over MIN_GAIN. A signal in the wrong unit would be fixed by ONE number;
+    nothing here is one number, in either sign.
     """
     scores = [r for r in cf.validate(REPO_OUTPUT, full_baseline)
               if r.fitted_scale is not None]

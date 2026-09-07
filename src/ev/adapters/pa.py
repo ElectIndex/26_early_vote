@@ -19,10 +19,12 @@ does discovery and the schema check together.
 Three judgement calls worth naming:
 
 * **Party is whatever PA's current vocabulary is, and npa may be unreportable.**
-  The 2020 and 2022 files carry the raw registration string, including PA's "NF"
-  (no affiliation) which normalize maps to `npa`, plus a long tail of free-text
-  values ("NOP", "INDE", "CT") that normalize does not recognise -- so those
-  cycles raise SchemaDrift here rather than being bucketed. From 2024 on PA
+  The 2020 and 2022 files carry the raw registration string: PA's "NF" (no
+  affiliation) which normalize maps to `npa`, PA's own abbreviations ("NOP",
+  "INDE", "LN") which `PA_PARTY` below maps, and a ~0.1% tail of one-off typos
+  which nothing maps. That tail is counted in the ballot total and EXCLUDED from
+  every party bucket -- never folded into `other` -- and the cycle is refused
+  only when there is more of it than `MAX_UNKNOWN_PARTY_SHARE`. From 2024 on PA
   publishes a cleaned five-value vocabulary, DEM/REP/OTH/LIB/GRN, in which the
   unaffiliated are folded into OTH and are no longer separable. When the file's
   vocabulary contains no unaffiliated label at all, `party_npa` is written BLANK,
@@ -72,6 +74,49 @@ DOMAIN = "data.pa.gov"
 #: "NO FURTHER UPDATES" appended once the election is over. We match the prefix
 #: so the suffix can change without breaking discovery.
 DATASET_PREFIX = "{cycle} General Election Mail Ballot Requests"
+
+#: PENNSYLVANIA'S OWN ABBREVIATIONS, consulted BEFORE normalize.party().
+#:
+#: normalize.py's own note says an adapter for a state whose vocabulary it does
+#: not share must bring its own table -- or.py and ct.py already do. PA's 2020
+#: and 2022 files are free text: the registration form offers Democratic,
+#: Republican and "No Affiliation", and everything else is typed into an Other
+#: box, so the 2022 general carries 146 distinct labels for 1.4 million
+#: applications.
+#:
+#: These are the ones that are a READING rather than a guess -- PA's official
+#: abbreviations and the unmistakable spellings of "none":
+#:
+#:   NOP NO NON None UND UNK NOPA   the no-affiliation family, 1.35% of 2022
+#:   LN LI                          Libertarian (PA's own abbreviation is LN)
+#:   GR                             Green
+#:   INDE                           as IND, which normalize already reads as npa
+#:
+#: ⚠️ NOTHING AMBIGUOUS GOES IN HERE. The residue -- `C`, `S`, `CL`, `KEY`,
+#: `RF`, `DS`, `AI` and a long tail of one-off typos, together about 0.1% -- is
+#: left unrecognised on purpose. It is counted, reported and EXCLUDED from every
+#: bucket; it is never folded into `other`, which is rule 3 in CLAUDE.md.
+PA_PARTY: dict[str, str] = {
+    "nop": PARTY_NPA, "no": PARTY_NPA, "non": PARTY_NPA, "none": PARTY_NPA,
+    "und": PARTY_NPA, "unk": PARTY_NPA, "nopa": PARTY_NPA, "inde": PARTY_NPA,
+    "ln": PARTY_OTH, "li": PARTY_OTH, "gr": PARTY_OTH,
+}
+
+#: How much of a file's applications may carry a label we cannot read before the
+#: whole cycle is refused.
+#:
+#: ⚠️ THIS EXISTS BECAUSE THE OLD RULE COST US A CYCLE. A single unreadable label
+#: raised SchemaDrift, so PA 2022 -- 1.4 million applications, 67 counties, the
+#: longest county series any party-reporting state has -- was refused outright
+#: over roughly 0.1% of free-text noise, and both models lost a fold they could
+#: have been measured on. Refusing a state over a rounding error is not caution;
+#: it is a different way of publishing the wrong thing.
+#:
+#: The threshold is deliberately tight. Above it the vocabulary really has moved
+#: and a mapping would be invention; below it the recognised buckets are
+#: published, the residue is excluded rather than bucketed, and the share is
+#: logged so it is auditable rather than silent.
+MAX_UNKNOWN_PARTY_SHARE = 0.005
 
 COUNTY = "countyname"
 PARTY = "party"
@@ -162,6 +207,18 @@ def check_columns(columns: dict[str, str], dataset: str) -> None:
             )
 
 
+def _party_of(raw: str) -> str | None:
+    """PA's label -> a canonical bucket, or None when we cannot read it.
+
+    PA's own table first, then the shared vocabulary. None is a real answer and
+    the caller counts it; it never becomes `other`.
+    """
+    key = " ".join(str(raw).strip().lower().split())
+    if not key:
+        return None
+    return PA_PARTY.get(key) or normalize_party(key)
+
+
 def _day(raw) -> date | None:
     """Socrata renders both column types ISO-first: "2024-10-11" or
     "2026-04-20T00:00:00.000"."""
@@ -209,6 +266,8 @@ def build(returned: list[dict], requested: list[dict] | None,
     county_names: dict[str, str] = {}
     unknown_counties: set[str] = set()
     labels: set[str] = set()
+    unreadable_labels: set[str] = set()
+    counted = unreadable = 0
 
     for row in returned:
         # The county name and the party label are checked for every row, before
@@ -225,19 +284,42 @@ def build(returned: list[dict], requested: list[dict] | None,
 
         raw_party = str(row.get(PARTY) or "").strip()
         labels.add(raw_party)
-        bucket_key = normalize_party(raw_party) if raw_party else None
-        if raw_party and bucket_key is None:
-            raise SchemaDrift(f"PA: unrecognised party label {raw_party!r}")
+        bucket_key = _party_of(raw_party) if raw_party else None
 
         day = _day(row.get("d"))
         if day is None or day > as_of:
             continue
 
         count = _count(row.get("n"))
+        # Counted whether or not we can read the label: `total` is ballots
+        # RETURNED, which is a fact about the ballot and not about the party
+        # written on the registration behind it.
         for bucket in (by_state[day], by_county[(fips, day)]):
             bucket.total += count
             if bucket_key:
                 bucket.party[bucket_key] += count
+        counted += count
+        if raw_party and bucket_key is None:
+            unreadable += count
+            unreadable_labels.add(raw_party)
+
+    # ⚠️ A LABEL WE CANNOT READ IS COUNTED AND EXCLUDED, NEVER BUCKETED, and the
+    # cycle is refused only when there is enough of it to matter. See
+    # MAX_UNKNOWN_PARTY_SHARE for what the old raise-on-first-sight rule cost.
+    if counted and unreadable:
+        share = unreadable / counted
+        if share > MAX_UNKNOWN_PARTY_SHARE:
+            raise SchemaDrift(
+                f"PA: {share:.2%} of applications carry a party label this "
+                f"adapter cannot read ({sorted(unreadable_labels)[:8]}); the "
+                f"vocabulary has moved and a mapping would be invention"
+            )
+        log.info(
+            "PA %s: %d of %d applications (%.3f%%) carry an unreadable party "
+            "label and are excluded from the party split, not bucketed: %s",
+            cycle, unreadable, counted, share * 100,
+            ", ".join(sorted(unreadable_labels)[:12]),
+        )
 
     if unknown_counties:
         # PA has 67 counties and they do not change; a name we cannot place is a
@@ -256,7 +338,7 @@ def build(returned: list[dict], requested: list[dict] | None,
     # Which canonical buckets this file's vocabulary can even express. A bucket
     # the vocabulary cannot express is blank, not 0 -- see the module docstring
     # on PA folding the unaffiliated into OTH from 2024 on.
-    expressible = {normalize_party(label) for label in labels if label}
+    expressible = {_party_of(label) for label in labels if label}
     expressible.discard(None)
 
     return _emit(by_state, by_county, county_names, apps, expressible, cycle, as_of)

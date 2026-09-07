@@ -180,11 +180,11 @@ MIN_REFERENCE_BALLOTS = THIN_BALLOTS
 #: It is the mean absolute distance, over mature days and averaged across the
 #: state-cycles that can be scored at all, between the compositional shift this
 #: model reports and the shift the same states' own reported party registration
-#: says actually happened (10.4 points; rounded up). That is not a like-for-like
+#: says actually happened (11.74 points; rounded up). That is not a like-for-like
 #: unit -- a registration point is not a presidential point -- and it is the
 #: closest thing to a measurement that exists. Read it as "the size of the
 #: compositional change that county geography does not see", because that is
-#: what it is: the geography moves about a point and the registration moves ten.
+#: what it is: the geography moves about a point and the registration moves twelve.
 #:
 #: This is a MEASUREMENT, not a constant, and it moves when the tracker learns
 #: more, or when the domain it is measured over is corrected. Its history:
@@ -198,13 +198,28 @@ MIN_REFERENCE_BALLOTS = THIN_BALLOTS
 #:         curve. The immature days this removed were not hard cases the model
 #:         was failing, they were phase differences it was never entitled to
 #:         call composition.
+#:   12.0  PENNSYLVANIA (measured 11.74). PA 2022 had been refused outright over
+#:         0.04% of unreadable party labels, and a 2024 fold cannot exist without
+#:         a 2022 reference, so the panel had been fitted with the most volatile
+#:         state in the country missing from it. PA's mail electorate moved 27.6
+#:         points of margin between 2022 and 2024 -- more than twice the next
+#:         largest -- as Republicans who had boycotted mail voting in 2022 came
+#:         back to it. County geography sees none of that: the model reports
+#:         -1.26 where the registration moved -27.64, and early in the window it
+#:         reports +10.48 while the truth is already -12.08, wrong by 22.6 points
+#:         AND pointing the wrong way.
 #:
-#: The verdict does not move: the gain over the no-change null is +0.07 pp and
-#: the bar is +1.00.
+#:         ⚠️ THIS IS NOT AN OUTLIER TO BE TRIMMED. 2026 is a midterm and 2022 is
+#:         the only midterm reference the panel has; a band fitted without the
+#:         hardest midterm case is a band that will be wrong exactly when it is
+#:         read. The number got worse because the measurement got honest.
+#:
+#: The verdict does not move, and moved further the wrong way: the gain over the
+#: no-change null is -0.15 pp and the bar is +1.00.
 #:
 #: `test_model_error_matches_the_measured_validation` refits it from output/ and
 #: fails if the data moves away from it.
-MODEL_ERROR_PP = 9.5
+MODEL_ERROR_PP = 12.0
 
 #: With complete coverage on both sides the band's half-width is exactly
 #: MODEL_ERROR_PP, so the confidence threshold has to sit strictly above it or it

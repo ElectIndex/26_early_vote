@@ -110,7 +110,12 @@ SOURCE_NAME = "electindex-estimate/pres2024-county-returns"
 #: has county rows; see docs/party-estimate.md for the leave-one-state-out score.
 #: `test_fitted_constants_still_match_the_data` refits and fails if the data
 #: moves away from these.
-MAIL_SELECTION = 0.366
+#:
+#: 0.366 on the twelve-series panel; 0.406 once Pennsylvania 2022 joined it. Note
+#: what this does and does not do: it changes what 2026 PUBLISHES, and it changes
+#: no number in the validation table, because every fold there refits on its own
+#: nine or twelve series regardless. A constant cannot improve its own score.
+MAIL_SELECTION = 0.406
 
 #: How fast that advantage decays as mail reaches more of the electorate. Fitted
 #: on the same panel over a 1.00-8.00 grid; every leave-one-state-out fold picks
@@ -119,7 +124,10 @@ MAIL_SELECTION = 0.366
 #: are 12 points more Democratic than their counties) from Colorado (mail reaches
 #: everybody, so there is nobody left for it to select and the correction is
 #: under a point).
-MAIL_DECAY = 5.0
+#:
+#: 5.00 on the twelve-series panel, 4.75 with Pennsylvania 2022 in it -- one grid
+#: step, on the state the term was built to explain and now with two cycles of it.
+MAIL_DECAY = 4.75
 
 #: The correction never exceeds this, in share points. The largest gap between a
 #: state's reported party split and its geography on any day this model was
@@ -140,16 +148,25 @@ MIDTERM_TURNOUT = 0.73
 
 #: Empirical, not statistical, and applied as a flat half-width because the error
 #: is structural rather than sampling noise. Measured leave-one-state-out on days
-#: with at least THIN_BALLOTS ballots in, the model above is off by a mean of 3.4
-#: points and a 90th percentile of about 7; per state-cycle the mean is 3.1 and
-#: the worst is 6.0. Five points sits above the mean deliberately, because the
-#: mail term assumes a DIRECTION (mail voters lean Democratic) that 2022 and 2024
-#: both support and that 2026 need not repeat. It was 10 points when the model
-#: was geography alone.
+#: with at least THIN_BALLOTS ballots in, the model above is off by a mean of 4.4
+#: points and a 90th percentile of 9.5; per state-cycle the mean is 4.09 and the
+#: worst is 13.4. Six points sits above the mean deliberately, because the mail
+#: term assumes a DIRECTION (mail voters lean Democratic) that 2022 and 2024 both
+#: support and that 2026 need not repeat. It was 10 points when the model was
+#: geography alone.
+#:
+#: ⚠️ IT WAS 5 UNTIL PENNSYLVANIA 2022 JOINED THE PANEL, and the way it got stuck
+#: there is the lesson. 5 was chosen as "1.6 points above the measured 3.4", but
+#: nothing refitted it, so when the panel gained the hardest midterm series in the
+#: country the measured error went to 4.4 and the deliberate headroom quietly
+#: became a rounding error. The counterfactual's band has had a refit guard since
+#: the day it was set; this one did not, which is why it drifted and that one
+#: could not. `test_model_error_is_refitted_from_the_panel` is that guard, and it
+#: is the reason 5 -> 6 is a measurement rather than a preference.
 #:
 #: `ev.adapters.az.MODEL_ERROR` is a copy of this, kept because the ingest path
 #: must never import this module; `test_model_error_tracks_estimate` guards it.
-MODEL_ERROR = 0.05
+MODEL_ERROR = 0.06
 
 #: Below this many ballots the day is thin enough that the composition of the
 #: returned ballots is nothing like the composition of the eventual early vote.
