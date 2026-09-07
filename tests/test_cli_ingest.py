@@ -178,6 +178,37 @@ def test_the_status_file_records_the_run(tmp_path, stub_ladder):
     assert status["summary"]["ok"] == 1
 
 
+def test_the_status_file_says_when_each_state_was_last_CHECKED(tmp_path, stub_ladder):
+    """⚠️ This is the site's only freshness source, and nothing wrote it until
+    2026-09-07.
+
+    ev-core.js has always read `s.status.retrievedAt || s.latest.retrieved_at`
+    -- written that way on purpose -- but the status file carried no such field,
+    so every stale badge was computed from the DATA ROW's timestamp. That was
+    survivable only while every run rewrote every row. Once an unchanged row
+    started keeping its original stamp, a state reporting the same number for two
+    days would have badged STALE at 36 hours while we were checking it every two.
+
+    The two facts now live in different places: the row says when the NUMBER last
+    changed, this says when we last LOOKED.
+    """
+    stub_ladder(StubScraper)
+    cli.cmd_ingest(args(tmp_path))
+    status = json.loads((tmp_path / "output" / "ev_status.json").read_text())
+    assert status["states"]["NC"]["retrieved_at"] == status["generated_at"]
+
+
+def test_a_pending_state_is_stamped_too(tmp_path, stub_ladder):
+    """"We checked Montana and it still has nothing" is exactly as much a
+    freshness fact as a count is -- and pending is the whole board in
+    September, so a badge that cannot age is a badge that says nothing."""
+    stub_ladder(SilentScraper)
+    cli.cmd_ingest(args(tmp_path))
+    status = json.loads((tmp_path / "output" / "ev_status.json").read_text())
+    assert status["states"]["NC"]["status"] == "pending"
+    assert status["states"]["NC"]["retrieved_at"] == status["generated_at"]
+
+
 # --------------------------------------------------------------------------
 # The normal case, which must not look like a failure
 # --------------------------------------------------------------------------
