@@ -301,9 +301,16 @@ def test_fitted_constants_still_match_the_data():
         pytest.skip("no published output/ tree in this checkout")
     full = est.load_baseline()
     panel = est.observations(out, full)
+    # The same two exclusions `validate` applies: a series the capped model
+    # cannot reach, and a universal vote-by-mail state whose mail_share is ~1.00
+    # by law rather than by choice. Refitting on a different panel than the one
+    # the constants were fitted on would make this guard fail for a reason that
+    # is not drift.
     trainable = [
-        est.mature_days(v) for v in panel.values()
+        est.mature_days(v) for k, v in panel.items()
         if len(v) >= 2 and max(o.ballots for o in v) >= est.THIN_BALLOTS
+        and est.within_reach(est.mature_days(v))
+        and k[1] not in est.UNIVERSAL_VBM
     ]
     fitted = est.fit_mail_selection(trainable)
     if fitted is None:

@@ -308,15 +308,34 @@ class COScraper(Adapter):
         Colorado keeps each day's file under its own dated name rather than
         overwriting one workbook, so a past cycle really does backfill as a daily
         series. The days it skipped simply 404 and are skipped here too.
+
+        ⚠️ AND ONE UNREADABLE DAY MUST NOT COST THE WHOLE CYCLE, which it did.
+        `parse` was called unguarded inside this loop, so the two POST-ELECTION
+        2022 workbooks -- 2022-11-09 and 2022-11-13, which restyle the sheet and
+        raise `SchemaDrift: unrecognised party code 'VOTER COUNTS'` -- aborted the
+        walk. `cmd_backfill` caught the drift, logged a warning and fell through
+        to a weaker tier, so ELEVEN good days that parse perfectly with this same
+        function were thrown away and Colorado 2022 has never existed in
+        `output/`. It is a fold for both models.
+        A day we cannot read is skipped and counted; a cycle where we could read
+        NOTHING is still refused below. `fl.py` and `wi.py` already do this.
         """
         election = election_date(cycle)
         result = FetchResult()
+        unreadable: list[str] = []
         for offset in range(-HISTORY_BEFORE, HISTORY_AFTER + 1):
             day = election + timedelta(days=offset)
             body = self._load(day, use_cache=True)
             if body is None:
                 continue
-            result.extend(parse(body, cycle, day))
+            try:
+                result.extend(parse(body, cycle, day))
+            except SchemaDrift as exc:
+                unreadable.append(f"{day.isoformat()} ({exc})")
+                continue
+        if unreadable:
+            log.info("CO %s: %d archived workbook(s) skipped as unreadable: %s",
+                     cycle, len(unreadable), "; ".join(unreadable[:4]))
         if not result:
             raise NotYetPublished(f"CO: no archived election activity workbooks for {cycle}")
         return result

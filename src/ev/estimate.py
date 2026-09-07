@@ -111,13 +111,15 @@ SOURCE_NAME = "electindex-estimate/pres2024-county-returns"
 #: `test_fitted_constants_still_match_the_data` refits and fails if the data
 #: moves away from these.
 #:
-#: 0.366 on the twelve-series panel, 0.406 when Pennsylvania 2022 briefly trained
-#: it too, and 0.382 now: PA 2022 is scored but no longer fitted on
+#: 0.366 / 0.406 / 0.382 on earlier panels; 0.332 now that neither an
+#: out-of-reach series nor a universal vote-by-mail state trains it. Colorado's
+#: days were all mail_share ~1.00 with no selection behind them, which is exactly
+#: the shape that inflates this. PA 2022 is scored but no longer fitted on
 #: (`within_reach`), and the readers stop at Election Day. Note what this does and
 #: does not do: it changes what 2026 PUBLISHES, and it changes no number in the
 #: validation table, because every fold there refits on its own eleven or twelve
 #: series regardless. A constant cannot improve its own score.
-MAIL_SELECTION = 0.382
+MAIL_SELECTION = 0.332
 
 #: How fast that advantage decays as mail reaches more of the electorate. Fitted
 #: on the same panel over a 1.00-8.00 grid; every leave-one-state-out fold picks
@@ -127,12 +129,13 @@ MAIL_SELECTION = 0.382
 #: everybody, so there is nobody left for it to select and the correction is
 #: under a point).
 #:
-#: 5.00 on the twelve-series panel and 4.75 while Pennsylvania 2022 was training
+#: 5.00, then 5.75; 4.75 on the eleven series that can now teach it. See
+#: UNIVERSAL_VBM. Historically: 4.75 while Pennsylvania 2022 was training
 #: it -- PA 2022 alone asks for 1.00, the shallowest the grid allows, because in
 #: that cycle mail stayed Democratic however far it reached. That is the 2020-22
 #: mail regime talking, not a shape 2026 will repeat, and `within_reach` is why
 #: it no longer sets this constant. 5.75 on the corrected panel.
-MAIL_DECAY = 5.75
+MAIL_DECAY = 4.75
 
 #: The correction never exceeds this, in share points. The largest gap between a
 #: state's reported party split and its geography on any day this model was
@@ -150,6 +153,38 @@ MAX_ADJUSTMENT = 0.20
 #: ratio of ballots cast in 2022 to 2024. The result barely depends on it: the
 #: out-of-sample gain runs 3.4 to 3.7 points across the whole range 0.50 to 1.00.
 MIDTERM_TURNOUT = 0.73
+
+#: States that mail a ballot to EVERY registered voter without being asked.
+#:
+#: ⚠️ THE MAIL TERM MUST NOT FIRE HERE, AND IT WAS FIRING AT THE CAP. The term is
+#: `alpha * mail_share * (1 - reach) ** decay`, and it prices a CHOICE: asking for
+#: a mail ballot is a Democratic act, and it stops meaning anything once everyone
+#: is mailed one whether they want it or not. In a universal vote-by-mail state
+#: nobody asks, so `mail_share` is ~1.00 by law rather than by selection and
+#: carries no information about the voter at all.
+#:
+#: `reach` was supposed to catch this and cannot, because it divides ballots
+#: RETURNED by the electorate. On day one of Colorado's window every voter
+#: already HAS a ballot, but few have sent it back, so reach reads 0.08 and the
+#: term fires at its 20-point ceiling. Colorado 2022 opened with the model
+#: asserting a 20-point Democratic skew that does not exist: its estimate
+#: travelled 10.8 points across the window while the reported split moved 0.6.
+#:
+#: Ballots SENT would be the right denominator and is not available -- Colorado,
+#: North Carolina and Pennsylvania 2022 publish no `mail_requested` at all, which
+#: is the same "only where the data is richest" trap that has now disqualified
+#: three other candidate terms. Whether a state mails everyone a ballot is not a
+#: daily measurement, though. It is a fact about the state, and it is knowable.
+#:
+#: Measured leave-one-state-out: excluding these states from the term AND from
+#: the fit is worth +0.39 pp overall, and takes Colorado 2022 from 6.49 to 2.26
+#: and Colorado 2024 from 4.89 to 3.23. That is below MIN_GAIN, and MIN_GAIN is
+#: the bar for adding a DIMENSION; this is the removal of a term from states
+#: where it was never meaningful. The score is the confirmation, not the argument.
+#:
+#: Vermont mails every voter for GENERAL elections, which is the only kind this
+#: tracker follows.
+UNIVERSAL_VBM = frozenset({"CO", "CA", "DC", "HI", "NV", "OR", "UT", "VT", "WA"})
 
 #: Empirical, not statistical, and applied as a flat half-width because the error
 #: is structural rather than sampling noise. Measured leave-one-state-out on days
@@ -555,6 +590,10 @@ class Observation:
                               alpha=1.0, decay=decay, cap=float("inf"))
 
     def predict(self, alpha: float, decay: float) -> float:
+        # Universal vote-by-mail: mail_share is ~1.00 by law, not by choice, so
+        # there is no selection for the term to price. See UNIVERSAL_VBM.
+        if self.state in UNIVERSAL_VBM:
+            return self.geo
         if self.mail is None or self.inperson is None:
             return self.geo
         adjustment = mail_selection(self.mail, self.inperson, self.electorate,
@@ -1320,7 +1359,11 @@ def validate(
         k: mature_days(v) for k, v in scoreable.items()
         if max(o.ballots for o in v) >= THIN_BALLOTS
     }
-    trainable = {k: v for k, v in thick.items() if within_reach(v)}
+    # ...and a universal vote-by-mail state cannot TEACH the term either: its
+    # days are all mail_share ~1.00 with no selection behind them, which is
+    # exactly the shape that inflates alpha for everyone else. See UNIVERSAL_VBM.
+    trainable = {k: v for k, v in thick.items()
+                 if within_reach(v) and k[1] not in UNIVERSAL_VBM}
 
     results: list[Validation] = []
     for (cycle, state), series in sorted(scoreable.items()):
@@ -1352,7 +1395,13 @@ def validate(
             baseline=last.baseline_dem_share * 100,
             fitted=(alpha, decay), held_out=held_out,
             scored=(cycle, state) in thick,
-            in_range=(cycle, state) not in thick or (cycle, state) in trainable,
+            # ⚠️ FROM `within_reach` DIRECTLY, never from `trainable` membership.
+            # They came apart the moment a second reason not to train on a series
+            # existed: a universal vote-by-mail state is untrainable but perfectly
+            # in range, and deriving this from `trainable` dropped Colorado out of
+            # the headline average AND printed the reach explanation against it,
+            # which is the wrong reason for the wrong state.
+            in_range=(cycle, state) not in thick or within_reach(thick[(cycle, state)]),
         ))
     return results
 
