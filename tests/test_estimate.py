@@ -288,6 +288,79 @@ def test_fit_returns_none_rather_than_a_number_when_there_is_nothing_to_fit():
     assert est.fit_mail_selection([[]]) is None
 
 
+def test_geography_ceiling_is_the_top_slice_of_the_county_map(baseline):
+    """The arithmetic, on a baseline small enough to check by hand.
+
+    The NC fixture is Mecklenburg (D), Alamance (R) and Alleghany (R). At a
+    reach that takes exactly Mecklenburg the ceiling is Mecklenburg's own share;
+    at reach 1.0 it is the whole fixture's, which is the statewide share -- the
+    bound has to collapse to "no selection left" when the channel has reached
+    everybody.
+    """
+    counties = baseline.counties("NC")
+    total = sum(c.two_party for c in counties)
+    top = max(counties, key=lambda c: c.dem_share)
+
+    assert est.geography_ceiling("NC", top.two_party / total, baseline) == (
+        pytest.approx(top.dem_share)
+    )
+    assert est.geography_ceiling("NC", 1.0, baseline) == (
+        pytest.approx(baseline.state_dem_share("NC"))
+    )
+    # A ceiling is monotone down in reach: more of the electorate means less
+    # room to have been selective.
+    walk = [est.geography_ceiling("NC", r / 10, baseline) for r in range(1, 11)]
+    assert walk == sorted(walk, reverse=True)
+    # No reach, no bound -- never a silent zero.
+    assert est.geography_ceiling("NC", 0.0, baseline) is None
+    assert est.geography_ceiling("ZZ", 0.5, baseline) is None
+
+
+def test_pennsylvania_is_past_county_geography_not_past_the_cap():
+    """THE ARGUMENT FOR NOT CHASING PENNSYLVANIA FURTHER, PINNED.
+
+    PA 2020 and PA 2022 are the two series `within_reach` excludes from
+    training, and the reason usually given is `MAX_ADJUSTMENT` -- their early
+    electorates finished further from their counties than 20 points. That
+    invites the obvious fix, and the obvious fix does nothing: the cap is flat
+    from 0.20 upward on this panel, because what actually bounds those two is
+    not the constant.
+
+    Their mail electorates finished MORE DEMOCRATIC THAN THE MOST DEMOCRATIC
+    SLICE OF PENNSYLVANIA THEY COULD HAVE COME FROM. At PA 2022's final reach,
+    the most Democratic quarter of the state's 2024 two-party electorate is
+    69.2% Democratic; the ballots back registered 76.5%. No weighting of county
+    leans reaches that, so no cap, no decay and no reparameterisation of the
+    mail term reaches it either -- only a term that knows something county
+    geography does not.
+
+    If a future baseline or backfill changes that, this fails rather than
+    letting docs/party-estimate.md keep saying it.
+    """
+    root = Path(__file__).resolve().parents[1]
+    out = root / "output"
+    if not (out / "ev_state_daily.csv").exists():
+        pytest.skip("no published output/ tree in this checkout")
+    full = est.load_baseline()
+    results = {(r.cycle, r.state): r for r in est.validate(out, full)}
+    beyond = [(r.cycle, r.state) for r in results.values()
+              if r.scored and not r.in_range]
+    if not beyond:
+        pytest.skip("no out-of-reach series in output/ yet")
+
+    for key in beyond:
+        row = results[key]
+        assert row.geo_ceiling is not None, (
+            f"{row.state} {row.cycle} is out of reach and carries no ceiling"
+        )
+        assert row.final_truth > row.geo_ceiling, (
+            f"{row.state} {row.cycle} finished at {row.final_truth:.1f} against "
+            f"a ceiling of {row.geo_ceiling:.1f}: it is inside county geography "
+            f"after all, so raising MAX_ADJUSTMENT would reach it and "
+            f"docs/party-estimate.md has to be re-measured"
+        )
+
+
 def test_fitted_constants_still_match_the_data():
     """The shipped constants are a measurement, and measurements go stale.
 

@@ -213,7 +213,22 @@ UNIVERSAL_VBM = frozenset({"CO", "CA", "DC", "HI", "NV", "OR", "UT", "VT", "WA"}
 #:
 #: `ev.adapters.az.MODEL_ERROR` is a copy of this, kept because the ingest path
 #: must never import this module; `test_model_error_tracks_estimate` guards it.
-MODEL_ERROR = 0.05
+#: ⚠️ THE RULE, WRITTEN DOWN SO THIS STOPS BEING A JUDGEMENT CALL. This constant
+#: has moved 10 -> 5 -> 6 -> 5 -> 6 and every move was measured, but "sits above
+#: the mean deliberately" is not a rule, it is a preference wearing one. It is:
+#:
+#:     MODEL_ERROR = the measured panel mean, plus ~1.5 points of headroom for
+#:     the mail term's DIRECTION assumption, rounded to the nearest point.
+#:
+#: The headroom is not slack. The term assumes mail voters lean Democratic --
+#: which 2020, 2022 and 2024 all support and which 2026 need not repeat -- and if
+#: that assumption inverts, the error is the term's whole magnitude rather than
+#: its residual. A band equal to the mean has no allowance for that.
+#:
+#: 6 because the panel measures 4.62 (4.62 + 1.5 = 6.1). At 5 the headroom was
+#: 0.4, which is a rounding error rather than an allowance. Expect this to move
+#: again: the panel gained three series today and each hard one lifts the mean.
+MODEL_ERROR = 0.06
 
 #: Below this many ballots the day is thin enough that the composition of the
 #: returned ballots is nothing like the composition of the eventual early vote.
@@ -1185,6 +1200,12 @@ class Validation:
     #: structural at EVERY parameter value. Shown, and never averaged in --
     #: averaging it prices the cap rather than the method. See `within_reach`.
     in_range: bool = True
+    #: The most Democratic the mail channel COULD be at this series' final reach
+    #: if it drew only the state's most Democratic counties, in order. Points of
+    #: Dem two-party share, or None where there is no mail term to bound. It says
+    #: WHICH KIND of out-of-range a series is: past a constant someone chose, or
+    #: past everything county geography can express. See `geography_ceiling`.
+    geo_ceiling: float | None = None
 
     @property
     def gain(self) -> float:
@@ -1249,6 +1270,51 @@ def observations(
     for series in panel.values():
         series.sort(key=lambda o: o.day)
     return dict(panel)
+
+
+def geography_ceiling(state: str, reach: float, baseline: Baseline) -> float | None:
+    """The most Democratic a channel that has reached `reach` of the state COULD be.
+
+    Sort the state's counties from most to least Democratic and take the top
+    `reach` of its 2024 two-party electorate. That slice's own Democratic share
+    is the ceiling of anything the geography term can express at that reach: it
+    is what the model would say if every ballot returned so far had come from
+    the most Democratic counties in the state, in order, and from nowhere else.
+    It falls to the statewide share as `reach` goes to 1, because by then there
+    is nowhere left to be selective.
+
+    ⚠️ THIS IS A DIAGNOSTIC AND DELIBERATELY NOT THE CAP, and both alternatives
+    were measured leave-one-state-out on the fifteen-series panel:
+
+      * as the cap (`min(k * (ceiling - geo), ...)` in place of MAX_ADJUSTMENT)
+        it scores 5.53 against the shipped 4.62 -- far worse, because it is
+        generous exactly where reach is small and the model is least trustworthy
+        (North Carolina's 5%-of-the-electorate mail channel gets a 29-point
+        allowance) and tight where the model is fine.
+      * as the `within_reach` rule in place of MAX_ADJUSTMENT it scores 4.81
+        against 4.62, because it also excludes Maine 2022 from training, and
+        Maine 2022 teaches the term more than its own residual costs.
+
+    What it is for is saying, in the units of the model's own weights, HOW a
+    series left the model's range -- whether the answer merely exceeded a
+    constant someone chose, or exceeded everything county geography can say.
+    Pennsylvania is the case that needs the distinction; see `within_reach`.
+    """
+    counties = sorted(baseline.counties(state), key=lambda c: -c.dem_share)
+    total = sum(c.two_party for c in counties)
+    if not counties or total <= 0 or reach <= 0:
+        return None
+    target = min(1.0, reach) * total
+    taken = dem = 0.0
+    for c in counties:
+        if taken + c.two_party >= target:
+            share = (target - taken) / c.two_party
+            dem += share * c.votes_dem
+            taken = target
+            break
+        taken += c.two_party
+        dem += c.votes_dem
+    return dem / taken if taken > 0 else None
 
 
 def within_reach(series: Sequence[Observation]) -> bool:
@@ -1402,6 +1468,12 @@ def validate(
             # the headline average AND printed the reach explanation against it,
             # which is the wrong reason for the wrong state.
             in_range=(cycle, state) not in thick or within_reach(thick[(cycle, state)]),
+            geo_ceiling=(
+                None if last.mail is None or not last.electorate
+                else (lambda c: None if c is None else c * 100)(
+                    geography_ceiling(state, min(1.0, last.mail / last.electorate),
+                                      baseline))
+            ),
         ))
     return results
 
@@ -1460,14 +1532,32 @@ def format_validation(results: Sequence[Validation]) -> Iterator[str]:
         yield ("BEYOND THE MODEL'S REACH, and averaged in anyway: "
                + ", ".join(f"{r.state} {r.cycle} at {r.mean_abs_error:.1f} pp"
                            for r in out)
-               + ". Its early electorate finished further from its counties than "
-                 "the model is allowed to move, so part of that error is "
+               + ". Their early electorates finished further from their counties "
+                 "than the model is allowed to move, so part of that error is "
                  "structural at every parameter value. That is a fact about the "
                  "series and NOT a reason to drop it: the same test that says a "
                  "series is out of reach is the test that says the most happened "
                  "there, so excluding it would report the quiet half of the "
                  "panel. It is in the mean, and it is why the band is not "
                  "narrower than it is.")
+        # ...and for the ones that are past county geography ITSELF, say so. A
+        # series can leave the model's range in two different ways and only one
+        # of them is about MAX_ADJUSTMENT: see `geography_ceiling`.
+        beyond = [r for r in out
+                  if r.geo_ceiling is not None and r.final_truth > r.geo_ceiling]
+        if beyond:
+            yield ("...and raising the cap would not reach "
+                   + ", ".join(f"{r.state} {r.cycle}" for r in beyond)
+                   + " either: "
+                   + ", ".join(f"{r.state} {r.cycle} finished at "
+                               f"{r.final_truth:.1f} against a ceiling of "
+                               f"{r.geo_ceiling:.1f}" for r in beyond)
+                   + ". The ceiling is what this model would say if every ballot "
+                     "back so far had come from the most Democratic counties in "
+                     "the state, in order, and from nowhere else. Finishing above "
+                     "it is past everything the county map can express rather "
+                     "than past a constant someone chose, so no cap and no "
+                     "reparameterisation of the mail term reaches it.")
     scored = keep
     yield (f"mean |final error| = {sum(abs(r.final_error) for r in scored) / n:.1f} pp   "
            f"mean MAE = {sum(r.mean_abs_error for r in scored) / n:.1f} pp   "
