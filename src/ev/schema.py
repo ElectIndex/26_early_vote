@@ -156,6 +156,9 @@ class TownDay:
         return (int(self.cycle), self.state.upper(), self.town_geoid, self.day.isoformat())
 
 
+DEMO_DIMENSIONS = ("age", "race", "sex")
+
+
 @dataclass
 class DemoDay:
     """Ballots cast within one demographic bucket on one day.
@@ -172,6 +175,25 @@ class DemoDay:
     ballots_total: int | None = None
     provenance: Provenance | None = None
 
+    def __post_init__(self) -> None:
+        # ⚠️ CHECKED AT CONSTRUCTION, NOT AT WRITE TIME, and that is the whole
+        # point. `demo_row_to_dict` has always refused an unknown dimension -- but
+        # it runs in the PUBLISH phase, after `ev_state_daily.csv` has been
+        # written and before `ev_status.json` is, so one adapter emitting
+        # `dimension="ethnicity"` aborted the run for all thirty-five states and
+        # left the page holding new data with a status file that never advanced
+        # and no explanation anywhere.
+        #
+        # Raised here it happens inside `adapter.fetch`, which `ladder.run_state`
+        # wraps: the attempt is recorded, the ladder falls through to civicAPI,
+        # and every other state publishes normally. Same rule, same message, four
+        # tiers earlier -- exactly what TownDay already does with its GEOID.
+        if self.dimension not in DEMO_DIMENSIONS:
+            raise ValueError(
+                f"unknown demographic dimension {self.dimension!r}; "
+                f"expected one of {DEMO_DIMENSIONS}"
+            )
+
     def key(self) -> tuple:
         return (
             int(self.cycle),
@@ -181,8 +203,6 @@ class DemoDay:
             self.bucket,
         )
 
-
-DEMO_DIMENSIONS = ("age", "race", "sex")
 
 STATE_DAILY_COLUMNS = [
     "cycle", "state", "date", "days_to_election",

@@ -30,15 +30,18 @@ from __future__ import annotations
 
 import csv
 import json
-from datetime import date
+from datetime import date, datetime, timezone
 from pathlib import Path
 
 import pytest
 
 from ev import cli
 from ev.adapters import _towns
-from ev.adapters.base import Adapter, FetchResult, NotYetPublished
-from ev.schema import CountyDay, DemoDay, StateDay, TownDay, TIER_SCRAPER
+from ev.adapters.base import Adapter, FetchResult, NotYetPublished, SourceError
+from ev.adapters.manual import ManualAdapter
+from ev.schema import (
+    CountyDay, DemoDay, Provenance, StateDay, TownDay, TIER_CIVIC, TIER_SCRAPER,
+)
 
 AS_OF = date(2026, 10, 20)
 CYCLE = 2026
@@ -178,7 +181,45 @@ def test_the_status_file_records_the_run(tmp_path, stub_ladder):
     assert status["summary"]["ok"] == 1
 
 
-def test_the_status_file_says_when_each_state_was_last_CHECKED(tmp_path, stub_ladder):
+class UnchangingScraper(Adapter):
+    """A state that reports the SAME number every run, restamped each time.
+
+    Which is what every state does most days: the file is re-fetched, the numbers
+    have not moved, and the adapter builds a row with a fresh `retrieved_at`.
+    `publish.merge_rows` then keeps the row it already had, stamp included.
+    """
+
+    name = "stub-unchanging"
+    tier = TIER_SCRAPER
+    runs = 0
+
+    def fetch(self, cycle: int, as_of: date) -> FetchResult:
+        type(self).runs += 1
+        stamp = f"2026-10-20T{4 + 2 * type(self).runs:02d}:00:00+00:00"
+        return FetchResult(state_rows=[StateDay(
+            cycle=cycle, state=self.state, day=as_of, ballots_total=1_200,
+            provenance=Provenance(TIER_SCRAPER, self.name, retrieved_at=stamp),
+        )])
+
+
+@pytest.fixture()
+def ticking_clock(monkeypatch):
+    """Two hours per run, so two runs cannot land on the same second."""
+    ticks = iter([datetime(2026, 10, 20, hour, 0, tzinfo=timezone.utc)
+                  for hour in (6, 8, 10, 12)])
+
+    class _Datetime:
+        @staticmethod
+        def now(tz=None):
+            return next(ticks)
+
+        strptime = staticmethod(datetime.strptime)
+
+    monkeypatch.setattr(cli, "datetime", _Datetime)
+
+
+def test_the_status_file_says_when_each_state_was_last_CHECKED(
+        tmp_path, stub_ladder, ticking_clock):
     """⚠️ This is the site's only freshness source, and nothing wrote it until
     2026-09-07.
 
@@ -189,13 +230,47 @@ def test_the_status_file_says_when_each_state_was_last_CHECKED(tmp_path, stub_la
     started keeping its original stamp, a state reporting the same number for two
     days would have badged STALE at 36 hours while we were checking it every two.
 
-    The two facts now live in different places: the row says when the NUMBER last
-    changed, this says when we last LOOKED.
+    ⚠️ AND THE ASSERTION HAD TO BE REWRITTEN, BECAUSE IT COULD NOT FAIL. It read
+
+        assert status["states"]["NC"]["retrieved_at"] == status["generated_at"]
+
+    and `cmd_ingest` assigns both sides from the SAME local `checked_at`. It was
+    a tautology about one variable, not a test of the regression it is named for
+    -- which is a difference between two files that only appears on the SECOND
+    run of an unchanged state.
+
+    So: run twice, two hours apart, with the number unmoved. The CSV row's stamp
+    must FREEZE (that fact is "when the number last changed") while the status
+    file's stamp must ADVANCE (that fact is "when we last looked"). One assertion
+    each, and they now genuinely disagree.
     """
-    stub_ladder(StubScraper)
+    UnchangingScraper.runs = 0
+    stub_ladder(UnchangingScraper)
+
     cli.cmd_ingest(args(tmp_path))
-    status = json.loads((tmp_path / "output" / "ev_status.json").read_text())
-    assert status["states"]["NC"]["retrieved_at"] == status["generated_at"]
+    out = tmp_path / "output"
+    first_row = list(csv.DictReader((out / "ev_state_daily.csv").open()))[0]
+    first_status = json.loads((out / "ev_status.json").read_text())
+
+    cli.cmd_ingest(args(tmp_path))
+    second_row = list(csv.DictReader((out / "ev_state_daily.csv").open()))[0]
+    second_status = json.loads((out / "ev_status.json").read_text())
+
+    # The adapter offered a NEW stamp on the second run and the merge refused it,
+    # because the numbers did not move.
+    assert second_row["ballots_total"] == first_row["ballots_total"] == "1200"
+    assert second_row["retrieved_at"] == first_row["retrieved_at"], (
+        "an unchanged row was restamped; the file now churns every run")
+
+    # ...and the status file advanced anyway, which is the whole point.
+    assert second_status["generated_at"] != first_status["generated_at"]
+    assert (second_status["states"]["NC"]["retrieved_at"]
+            == second_status["generated_at"])
+    assert (second_status["states"]["NC"]["retrieved_at"]
+            != first_status["states"]["NC"]["retrieved_at"]), (
+        "the freshness stamp froze with the data row; every state would badge "
+        "STALE while we were checking it every two hours")
+    assert second_status["states"]["NC"]["retrieved_at"] != second_row["retrieved_at"]
 
 
 def test_a_pending_state_is_stamped_too(tmp_path, stub_ladder):
@@ -226,6 +301,128 @@ def test_a_state_that_has_not_opened_is_pending_and_exits_zero(tmp_path, stub_la
 def test_pending_is_not_a_failure_even_under_strict(tmp_path, stub_ladder):
     stub_ladder(SilentScraper)
     assert cli.cmd_ingest(args(tmp_path, strict=True)) == 0
+
+
+# --------------------------------------------------------------------------
+# ...AND A REAL FAILURE, WHICH `--strict` COULD NOT SEE UNTIL NOW
+# --------------------------------------------------------------------------
+class BrokenScraper(Adapter):
+    """A state whose own file is unreachable. `SourceError` falls through."""
+
+    name = "stub-broken"
+    tier = TIER_SCRAPER
+
+    def fetch(self, cycle: int, as_of: date) -> FetchResult:
+        raise SourceError("502 from the Secretary of State")
+
+
+@pytest.fixture()
+def dead_ladder(tmp_path, monkeypatch):
+    """The real production shape of a total outage: every tier broken, and the
+    real `ManualAdapter` on the floor with nothing hand-typed in it."""
+    monkeypatch.setattr(cli, "ladder", lambda state: [
+        BrokenScraper(state=state),
+        ManualAdapter(state=state, data_dir=tmp_path / "no-manual-entries"),
+    ])
+
+
+def test_a_state_that_used_no_tier_at_all_is_failed_and_strict_exits_one(
+        tmp_path, dead_ladder):
+    """⚠️ `test_pending_is_not_a_failure_even_under_strict` ABOVE STILL PASSES IF
+    `--strict` IS REPLACED BY `return 0`. It asserts one half of a branch.
+
+    This is the other half, and until the ladder learned that a NotYetPublished
+    from the FLOOR is not a state that has not started voting, it could not be
+    written at all: `ManualAdapter` is always the last rung and always declines,
+    so `run_state` returned PENDING for a total outage. `ev_status.json`'s failed
+    count was structurally 0, ingest.yml's "Every tier failed for:" line could
+    never print, and this exit code could never be 1.
+    """
+    assert cli.cmd_ingest(args(tmp_path, strict=True)) == 1
+
+    status = json.loads((tmp_path / "output" / "ev_status.json").read_text())
+    assert status["states"]["NC"]["status"] == "failed"
+    assert status["summary"]["failed"] == 1 and status["summary"]["pending"] == 0
+    # The attempts carry the reason, which is what reachability.yml reads.
+    assert [a["result"] for a in status["states"]["NC"]["attempts"]] == [
+        "SourceError", "not_yet_published"]
+
+
+def test_a_total_outage_without_strict_still_exits_zero(tmp_path, dead_ladder):
+    """The scheduled job runs without `--strict` on purpose. It must still say so
+    in the file and in the summary line rather than exiting non-zero."""
+    assert cli.cmd_ingest(args(tmp_path)) == 0
+    status = json.loads((tmp_path / "output" / "ev_status.json").read_text())
+    assert status["states"]["NC"]["status"] == "failed"
+
+
+def test_a_failed_state_publishes_no_row_of_zeros(tmp_path, dead_ladder):
+    """A failure is a gap, exactly like pending. It is never a zero."""
+    cli.cmd_ingest(args(tmp_path))
+    assert not (tmp_path / "output" / "ev_state_daily.csv").exists()
+
+
+# --------------------------------------------------------------------------
+# ONE BAD ADAPTER MUST NOT ABORT THE PUBLISH PHASE FOR EVERYONE
+# --------------------------------------------------------------------------
+class BadDimensionScraper(Adapter):
+    """Emits a demographic dimension outside DEMO_DIMENSIONS.
+
+    The realistic version of this is an adapter that learns to read an
+    `ethnicity` column, or a normalize.py vocabulary that grows a bucket the
+    schema has not been told about.
+    """
+
+    name = "stub-bad-dimension"
+    tier = TIER_SCRAPER
+
+    def fetch(self, cycle: int, as_of: date) -> FetchResult:
+        return FetchResult(
+            state_rows=[StateDay(cycle=cycle, state=self.state, day=as_of,
+                                 ballots_total=1_200)],
+            demo_rows=[DemoDay(cycle=cycle, state=self.state, day=as_of,
+                               dimension="ethnicity", bucket="hispanic",
+                               ballots_total=5)],
+        )
+
+
+def test_an_unknown_dimension_costs_one_tier_not_the_status_file(tmp_path, monkeypatch):
+    """⚠️ THIS USED TO KILL THE RUN AT THE WORST POSSIBLE MOMENT.
+
+    `demo_row_to_dict` refuses an unknown dimension, and it runs in the PUBLISH
+    phase -- AFTER `ev_state_daily.csv` is written and BEFORE `ev_status.json`
+    is. So one adapter's new column aborted the run for all thirty-five states
+    and left the page holding half-new data behind a status file that never
+    advanced, with no message anywhere. Proven by construction: the state CSV
+    existed on disk and the status file did not.
+
+    The check now happens when the row is built, inside `adapter.fetch`, which
+    `run_state` wraps -- so it is an ordinary fall-through and every other state
+    publishes normally.
+    """
+    class Fallback(StubScraper):
+        name = "stub-fallback"
+        tier = TIER_CIVIC
+
+    monkeypatch.setattr(cli, "ladder", lambda state: [
+        BadDimensionScraper(state=state), Fallback(state=state)])
+
+    assert cli.cmd_ingest(args(tmp_path)) == 0
+    out = tmp_path / "output"
+    status = json.loads((out / "ev_status.json").read_text())
+    assert status["states"]["NC"]["status"] == "ok"
+    assert status["states"]["NC"]["attempts"][0]["result"] == "crash"
+    assert (out / "ev_state_daily.csv").exists()
+
+
+def test_an_unknown_dimension_with_no_fallback_still_writes_the_status_file(
+        tmp_path, stub_ladder):
+    """The status file is the page's only explanation, so it is the last thing
+    that may be allowed to go missing."""
+    stub_ladder(BadDimensionScraper)
+    assert cli.cmd_ingest(args(tmp_path)) == 0
+    status = json.loads((tmp_path / "output" / "ev_status.json").read_text())
+    assert status["states"]["NC"]["status"] == "failed"
 
 
 # --------------------------------------------------------------------------
@@ -270,6 +467,89 @@ def test_every_subcommand_parses(tmp_path):
     ):
         parsed = parser.parse_args(argv)
         assert callable(parsed.func), argv
+
+
+# --------------------------------------------------------------------------
+# PROBE, which is the whole payload of reachability.yml
+# --------------------------------------------------------------------------
+# `probe` lives here rather than in a file of its own for the reason this module
+# exists: it is a CLI seam nothing else executes, and the workflow that runs it
+# parses its stdout line by line.
+class ForbiddenScraper(Adapter):
+    """A state behind a bot wall, which is what reachability.yml goes looking for."""
+
+    name = "stub-403"
+    tier = TIER_SCRAPER
+
+    def fetch(self, cycle: int, as_of: date) -> FetchResult:
+        raise SourceError(
+            "NC: https://sos.example.gov/reports/daily.csv returned HTTP 403")
+
+
+def _probe(tmp_path, monkeypatch, rungs):
+    monkeypatch.setattr(cli, "ladder", lambda state: rungs(state))
+    parsed = cli.build_parser().parse_args(
+        ["probe", "--cycle", str(CYCLE), "--as-of", AS_OF.isoformat(),
+         "--state", "NC"])
+    return cli.cmd_probe(parsed)
+
+
+def test_probe_prints_the_refusal_reachability_exists_to_find(
+        tmp_path, monkeypatch, capsys):
+    """⚠️ A 403 AT EVERY TIER USED TO PRINT AS `pending` WITH NO "403" ANYWHERE.
+
+    reachability.yml exists for exactly one question -- can an Actions runner
+    reach each state's source, given that Colorado, Ohio, Arizona and Nevada were
+    all fixed against IP-SENSITIVE blocks proven from a residential address? It
+    answers it by reading `probe`'s stdout. But `probe` printed only `status` and
+    `message`, and the refusals sat unread on `outcome.attempts`, so the one
+    thing the workflow was built to surface was the one thing it could not see.
+    """
+    assert _probe(tmp_path, monkeypatch, lambda state: [
+        ForbiddenScraper(state=state),
+        ManualAdapter(state=state, data_dir=tmp_path / "none"),
+    ]) == 0
+
+    out = capsys.readouterr().out.strip()
+    assert "403" in out
+    assert "stub-403" in out
+    assert out.startswith("NC ")
+    # ⚠️ ONE LINE PER STATE. reachability.yml greps `^[A-Z]{2} ` to build its job
+    # summary, so a refusal on a continuation line is a refusal nobody sees.
+    assert "\n" not in out
+
+
+def test_probe_keeps_one_state_on_one_line_however_the_detail_is_shaped(
+        tmp_path, monkeypatch, capsys):
+    """An adapter's message is free text -- a PDF parser's complaint, a pasted
+    response body -- and a newline in it would split one state's verdict in two."""
+    class Chatty(Adapter):
+        name, tier = "stub-chatty", TIER_SCRAPER
+
+        def fetch(self, cycle, as_of):
+            raise SourceError("line one\nline two\n" + "x" * 900)
+
+    _probe(tmp_path, monkeypatch, lambda state: [
+        Chatty(state=state), ManualAdapter(state=state, data_dir=tmp_path / "none")])
+    out = capsys.readouterr().out.strip()
+    assert "\n" not in out
+    assert "line one line two" in out
+    assert len(out) < 600, "the detail is truncated, not dumped"
+
+
+def test_probe_says_nothing_extra_about_a_state_that_simply_has_not_opened(
+        tmp_path, monkeypatch, capsys):
+    """The September answer for most states. It must stay quiet, or the signal
+    the workflow is looking for drowns."""
+    _probe(tmp_path, monkeypatch, lambda state: [SilentScraper(state=state)])
+    out = capsys.readouterr().out.strip()
+    assert "-> pending" in out and "|" not in out
+
+
+def test_probe_reports_the_tier_that_answered(tmp_path, monkeypatch, capsys):
+    _probe(tmp_path, monkeypatch, lambda state: [StubScraper(state=state)])
+    out = capsys.readouterr().out.strip()
+    assert "-> ok via stub" in out and "|" not in out
 
 
 # --------------------------------------------------------------------------

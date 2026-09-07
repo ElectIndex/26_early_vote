@@ -477,11 +477,32 @@ def write_status(out_dir: Path, payload: dict, *, partial: bool = False) -> None
 
     if partial:
         existing_path = out_dir / "ev_status.json"
+        unreadable = False
         if existing_path.exists():
             try:
                 existing = json.loads(existing_path.read_text(encoding="utf-8"))
-            except (ValueError, OSError):
+            except (ValueError, OSError) as exc:
+                # ⚠️ THE ONE PATH WHERE `partial` DOES THE VERY THING IT EXISTS TO
+                # PREVENT. An unreadable file merges into nothing, so the scoped
+                # run's two states become the whole file and the other nineteen
+                # vanish -- the exact bug in this function's docstring, arrived at
+                # from the other side and, until this branch said so, in silence:
+                # the run still exited 0 and still printed `ok=1 pending=0`.
+                #
+                # We still write, because a page with no status file at all is
+                # worse than one that is short. But it is written LOUDLY (an
+                # ERROR in the job log) and it says so in the payload, so a reader
+                # of the file can tell a state that is missing from a state that
+                # was never asked. The fix is to re-run unscoped, which rebuilds
+                # every state from scratch.
+                log.error(
+                    "%s is unreadable (%s); a scoped run cannot merge into it, so "
+                    "this write covers only %s. Re-run `ev ingest` unscoped to "
+                    "rebuild the whole file.",
+                    existing_path.name, exc, sorted(payload.get("states") or {}),
+                )
                 existing = {}
+                unreadable = True
             merged_states = dict(existing.get("states") or {})
             merged_states.update(payload.get("states") or {})
             payload = dict(payload)
@@ -499,6 +520,10 @@ def write_status(out_dir: Path, payload: dict, *, partial: bool = False) -> None
             summary = dict(payload.get("summary") or {})
             summary.update(counts)
             summary["partial_run"] = True
+            if unreadable:
+                # The counts above describe this run's slice and nothing else,
+                # because there was nothing else to count. Say so in the file.
+                summary["merge_failed"] = True
             payload["summary"] = summary
     fd, tmp = tempfile.mkstemp(dir=str(out_dir), prefix="ev_status", suffix=".tmp")
     with os.fdopen(fd, "w", encoding="utf-8") as fh:

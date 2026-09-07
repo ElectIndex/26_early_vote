@@ -19,8 +19,8 @@ from ev.calendar import days_to_election, election_date
 from ev.ladder import STATUS_FAILED, STATUS_OK, STATUS_PENDING, run_state
 from ev.publish import merge_rows, mark_restatements
 from ev.schema import (
-    STATE_KEY, Provenance, StateDay, TIER_AGGREGATOR, TIER_MANUAL, TIER_SCRAPER,
-    state_row_to_dict,
+    DEMO_DIMENSIONS, STATE_KEY, DemoDay, Provenance, StateDay, TIER_AGGREGATOR,
+    TIER_CIVIC, TIER_MANUAL, TIER_SCRAPER, demo_row_to_dict, state_row_to_dict,
 )
 
 
@@ -69,6 +69,61 @@ def test_reported_zero_survives_as_zero():
 def test_row_without_provenance_is_refused():
     with pytest.raises(ValueError, match="provenance"):
         state_row_to_dict(StateDay(2026, "NC", date(2026, 10, 1)))
+
+
+# --------------------------------------------------------------------------
+# schema: an unknown demographic dimension, refused four tiers earlier
+# --------------------------------------------------------------------------
+def test_an_unknown_demographic_dimension_is_refused_when_the_row_is_built():
+    """⚠️ THIS USED TO BE A WRITE-TIME CRASH, AND WRITE TIME IS THE WORST MOMENT.
+
+    `demo_row_to_dict` has always refused a dimension outside DEMO_DIMENSIONS,
+    but it runs in the PUBLISH phase -- after `ev_state_daily.csv` has been
+    written and BEFORE `ev_status.json` is. One adapter emitting
+    `dimension="ethnicity"` therefore aborted the run for all thirty-five states
+    and left the page holding half-new data behind a status file that never
+    advanced, with no message anywhere saying why.
+
+    Checked in `__post_init__` it happens inside `adapter.fetch`, which
+    `run_state` wraps, so it becomes an ordinary fall-through. Same rule, same
+    message, four tiers earlier -- exactly what TownDay already does with its
+    GEOID.
+    """
+    with pytest.raises(ValueError, match="unknown demographic dimension"):
+        DemoDay(cycle=2026, state="NC", day=date(2026, 10, 20),
+                dimension="ethnicity", bucket="hispanic", ballots_total=5)
+
+
+def test_every_declared_dimension_is_accepted():
+    for dimension in DEMO_DIMENSIONS:
+        assert DemoDay(cycle=2026, state="NC", day=date(2026, 10, 20),
+                       dimension=dimension, bucket="x").dimension == dimension
+
+
+def test_the_write_time_check_still_stands():
+    """Belt and braces: the guard moved earlier, it did not move away."""
+    row = DemoDay(cycle=2026, state="NC", day=date(2026, 10, 20),
+                  dimension="sex", bucket="female", ballots_total=5,
+                  provenance=Provenance(TIER_SCRAPER, "nc-sbe"))
+    row.dimension = "ethnicity"  # smuggled past __post_init__
+    with pytest.raises(ValueError, match="unknown demographic dimension"):
+        demo_row_to_dict(row)
+
+
+def test_a_bad_dimension_costs_one_tier_not_the_whole_run():
+    """The point of moving the check: the ladder handles it like any other bug."""
+    class BadDimension(Adapter):
+        state, name, tier = "NC", "nc-sbe", TIER_SCRAPER
+
+        def fetch(self, cycle, as_of):
+            return FetchResult(demo_rows=[DemoDay(
+                cycle=cycle, state="NC", day=as_of,
+                dimension="ethnicity", bucket="hispanic", ballots_total=5)])
+
+    _, outcome = run_state("NC", [BadDimension(), _Answers()],
+                           2026, date(2026, 10, 20))
+    assert outcome.status == STATUS_OK and outcome.tier == TIER_AGGREGATOR
+    assert outcome.attempts[0]["result"] == "crash"
 
 
 # --------------------------------------------------------------------------
@@ -162,10 +217,122 @@ def test_a_crashing_adapter_does_not_abort_the_state():
     assert outcome.attempts[0]["result"] == "crash"
 
 
-def test_all_tiers_failing_is_reported_as_failed():
-    _, outcome = run_state("NC", [_Raises(SourceError("a")), _Raises(SourceError("b"), TIER_MANUAL, "m")],
-                           2026, date(2026, 10, 20))
+def _manual(tmp_path):
+    """The REAL floor of every ladder, pointed at an empty data dir.
+
+    Not a stub: `ManualAdapter` is what actually sits at tier 4 for all thirty-five
+    states, and what it does with nothing to say is the whole subject below. The
+    directory is empty rather than the repo's, so these assertions are about the
+    adapter and not about whatever anyone types into data/manual/ tomorrow -- the
+    three cases (no file, no row for this state, no row on or before today) all
+    raise NotYetPublished alike.
+    """
+    from ev.adapters.manual import ManualAdapter
+
+    return ManualAdapter(state="NC", data_dir=tmp_path)
+
+
+def test_the_floor_of_the_ladder_says_not_yet_published_when_nobody_typed_a_number(tmp_path):
+    """The fact that made STATUS_FAILED unreachable, asserted directly."""
+    with pytest.raises(NotYetPublished):
+        _manual(tmp_path).fetch(2026, date(2026, 10, 20))
+
+
+def test_all_tiers_failing_is_reported_as_failed(tmp_path):
+    """⚠️ REWRITTEN. THE SHAPE THIS USED TO ASSERT CANNOT OCCUR IN PRODUCTION.
+
+    It walked two SourceError raisers and let the loop fall off the end. Every
+    real ladder is four rungs ending in `ManualAdapter`, and the manual file has
+    no 2026 rows -- so the last rung raises NotYetPublished, the loop never
+    reaches its end, and the walk returned PENDING. STATUS_FAILED was therefore
+    unreachable outside this test: `ev_status.json`'s failed count was
+    structurally 0, ingest.yml's "Every tier failed for:" line could never print,
+    and `ingest --strict` could never return 1. A state whose scraper, civicAPI
+    and the aggregator all broke in the middle of early voting badged as "early
+    voting has not opened yet".
+
+    So this now walks the real floor.
+    """
+    rungs = [
+        _Raises(SourceError("502 from the SoS"), TIER_SCRAPER, "nc-sbe"),
+        _Raises(SourceError("no capabilities document"), TIER_CIVIC, "civicapi"),
+        _Raises(SourceError("tracker unreachable"), TIER_AGGREGATOR, "uf-election-lab"),
+        _manual(tmp_path),
+    ]
+    _, outcome = run_state("NC", rungs, 2026, date(2026, 10, 20))
+
     assert outcome.status == STATUS_FAILED
+    assert [a["tier"] for a in outcome.attempts] == [
+        TIER_SCRAPER, TIER_CIVIC, TIER_AGGREGATOR, TIER_MANUAL]
+    # The message has to name the outage, not the manual file's opinion of it.
+    assert "every tier failed" in outcome.message
+
+
+def test_the_loop_falling_off_the_end_is_still_a_failure(tmp_path):
+    """The original path, kept: a last rung that ERRORS rather than declining."""
+    _, outcome = run_state(
+        "NC", [_Raises(SourceError("a")), _Raises(SourceError("b"), TIER_MANUAL, "m")],
+        2026, date(2026, 10, 20))
+    assert outcome.status == STATUS_FAILED
+
+
+def test_a_not_yet_published_from_a_rung_that_can_see_the_state_is_still_pending(tmp_path):
+    """⚠️ AND THE NEW RULE MUST NOT FIRE HERE. This is the GA/MT/NV shape.
+
+    Georgia's own scraper raises SourceError BY DESIGN -- the SoS's only
+    machine-readable file is behind a single-use reCAPTCHA token, so it cannot be
+    collected unattended -- and civicAPI does not carry Georgia at all. The walk
+    therefore reaches the aggregator, which affirmatively reports that no ballots
+    have been cast in Georgia yet. That is a true statement about the world made
+    by a source that CAN see the state, so `pending` is the honest answer.
+
+    Three states (GA, MT, NV) were in exactly this shape on the day this was
+    written. A rule that alarmed on them would be permanently red, and a badge
+    that is always red is a badge nobody reads in November.
+    """
+    rungs = [
+        _Raises(SourceError("needs a live captcha token"), TIER_SCRAPER, "ga-sos"),
+        _Raises(SourceError("no capabilities document"), TIER_CIVIC, "civicapi"),
+        _Raises(NotYetPublished("UF tracker reports no ballots cast in GA"),
+                TIER_AGGREGATOR, "uf-election-lab"),
+        _manual(tmp_path),
+    ]
+    _, outcome = run_state("GA", rungs, 2026, date(2026, 9, 6))
+    assert outcome.status == STATUS_PENDING
+    assert "no ballots cast" in outcome.message
+
+
+def test_a_one_rung_ladder_that_declines_is_pending_not_failed(tmp_path):
+    """Nothing failed above it, because there is nothing above it."""
+    _, outcome = run_state("NC", [_Raises(NotYetPublished("not open"))],
+                           2026, date(2026, 9, 20))
+    assert outcome.status == STATUS_PENDING
+
+
+def test_an_adapter_that_forgot_its_tier_falls_through_instead_of_killing_the_run():
+    """⚠️ ONE MISSING LINE IN A NEW ADAPTER USED TO ABORT ALL THIRTY-FIVE STATES.
+
+    `Adapter.tier` defaults to 0 and `schema.Provenance` refuses a tier that is
+    not one of TIER_LABELS, so an adapter that implements `fetch` perfectly and
+    forgets `tier = TIER_SCRAPER` raises ValueError from `adapter.provenance()`.
+    That call sat OUTSIDE `run_state`'s try block -- so the exception escaped the
+    one function whose stated contract is that one bad parser must not take down
+    the other states, aborting the ingest walk and taking the `ev_status.json`
+    write with it. The page would then hold whatever it last had, with no
+    explanation anywhere.
+    """
+    class ForgotTier(Adapter):
+        name = "new-state-scraper"  # ...and no `tier`
+
+        def fetch(self, cycle, as_of):
+            return FetchResult(state_rows=[
+                StateDay(cycle, "NC", as_of, ballots_total=10)])
+
+    _, outcome = run_state("NC", [ForgotTier("NC"), _Answers()],
+                           2026, date(2026, 10, 20))
+    assert outcome.status == STATUS_OK and outcome.tier == TIER_AGGREGATOR
+    assert outcome.attempts[0]["result"] == "crash"
+    assert "unknown source tier" in outcome.attempts[0]["detail"]
 
 
 def test_empty_result_falls_through_to_next_tier():
@@ -378,6 +545,61 @@ def test_scoped_run_merges_status_instead_of_replacing(tmp_path):
     # The summary describes the whole file, not the slice that was run.
     assert out["summary"]["ok"] == 1 and out["summary"]["pending"] == 4
     assert out["summary"]["partial_run"] is True
+
+
+def test_a_healthy_scoped_run_does_not_claim_the_merge_failed(tmp_path):
+    import json
+    from ev.publish import write_status
+
+    write_status(tmp_path, {"states": {"NC": {"status": "ok"}, "TX": {"status": "pending"}},
+                            "summary": {}})
+    write_status(tmp_path, {"states": {"NC": {"status": "ok"}}, "summary": {}},
+                 partial=True)
+    out = json.loads((tmp_path / "ev_status.json").read_text())
+    assert "merge_failed" not in out["summary"]
+
+
+def test_a_scoped_run_over_an_unreadable_status_file_says_so(tmp_path, caplog):
+    """⚠️ THE ONE PATH WHERE `partial` DOES THE VERY THING IT EXISTS TO PREVENT.
+
+    `partial=True` merges so that a `--state NC` run cannot drop the other
+    twenty. But if the file on disk will not parse -- a killed process between
+    the temp write and the rename, a bad hand-edit -- the merge falls back to
+    `existing = {}` and the scoped run's one state becomes the whole file. The
+    other twenty vanish from the file the page reads, which is precisely the bug
+    that once showed nineteen tracked states as "not tracked", arrived at from
+    the other side.
+
+    The loss itself is unavoidable: an unreadable file has no states to keep, and
+    writing nothing at all would leave the page with no status. What was
+    unacceptable was that it happened in silence -- the run exited 0 and printed
+    a cheerful `ok=1`. Now it logs an ERROR and marks the file, so a reader can
+    tell a state that is MISSING from a state that was never ASKED, and the fix
+    (re-run unscoped) is in the log.
+    """
+    import json
+    import logging
+    from ev.publish import write_status
+
+    write_status(tmp_path, {
+        "generated_at": "2026-10-20T06:00:00+00:00",
+        "states": {s: {"status": "ok"} for s in ("NC", "FL", "GA", "TX", "IL")},
+        "summary": {"ok": 5, "pending": 0, "failed": 0},
+    })
+    (tmp_path / "ev_status.json").write_text('{"generated_at": "2026-10-2')  # truncated
+
+    with caplog.at_level(logging.ERROR, logger="ev.publish"):
+        write_status(tmp_path, {
+            "generated_at": "2026-10-20T08:00:00+00:00",
+            "states": {"NC": {"status": "ok"}},
+            "summary": {"ok": 1, "pending": 0, "failed": 0},
+        }, partial=True)
+
+    out = json.loads((tmp_path / "ev_status.json").read_text())
+    assert set(out["states"]) == {"NC"}, "nothing recoverable was on disk"
+    assert out["summary"]["merge_failed"] is True, "...but it must not be silent"
+    assert out["summary"]["partial_run"] is True
+    assert "unreadable" in caplog.text and "ev_status.json" in caplog.text
 
 
 def test_unscoped_run_replaces_status_wholesale(tmp_path):
