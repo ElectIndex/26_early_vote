@@ -20,15 +20,16 @@ mean of **6.9 points** and beat "quote the state's 2024 presidential result and
 stop" by **0.72**, which is to say it was laundering a known election result
 through today's ballot counts. Adding the second term — a correction for the fact
 that the people who *ask for a mail ballot* are not a random draw from their
-county — takes the measured error to **4.09 points** and the gain over that same
-null to **+4.37**, out of sample, leave-one-state-out. Pennsylvania 2024, the
+county — takes the measured error to **3.28 points** and the gain over that same
+null to **+3.46**, out of sample, leave-one-state-out. Pennsylvania 2024, the
 worst state in the old table at 15.5, is **4.2**.
 
-Two numbers, not one, because the panel now spans two mail-voting regimes. On
-the **2024 folds — the cycle whose regime 2026 shares — it is 3.38**; on the 2022
-folds it is 5.24, and all of that gap is Pennsylvania 2022 (2022 without PA is
-2.9, better than 2024). If 2026 votes by mail the way 2024 did, expect the first
-number. The second is what it costs to be wrong about that.
+That average is over the twelve series **this model can be measured on**.
+Pennsylvania 2022 is the thirteenth, it scores **13.9**, and it is printed in
+the table and left out of every mean — see
+[the reach rule](#two-corrections-behind-those-figures-2026-09-07). There is no
+"midterms are harder" effect underneath that: the 2022 series score 3.07 and the
+2024 series 3.38.
 
 Those figures moved on 2026-09-06 and both directions are worth knowing. The
 gain fell from +4.44 because a three-day, eight-ballot series had been averaged
@@ -391,7 +392,7 @@ Carolina 2024.
 | 2024 | ME | 121 | 57.9 | 60.2 | 53.5 | **−2.4** | 1.6 | 7.4 | 8.7 | +5.8 | +7.1 | 12.1 | 5.6 |
 | 2022 | NC | 61 | 51.6 | 55.1 | 48.4 | **−3.5** | 3.8 | 6.3 | 7.0 | +2.5 | +3.2 | 1.2 | 1.7 |
 | 2024 | NC | 47 | 50.5 | 49.4 | 48.4 | **+1.1** | 0.9 | 0.9 | 1.1 | +0.0 | +0.2 | 1.0 | 2.0 |
-| 2022 | PA | 70 | 57.2 | 76.5 | 49.1 | **−19.3** | 13.9 | 27.7 | 29.1 | +13.8 | +15.2 | 13.4 | 3.4 |
+| 2022 | PA | 70 | 57.2 | 76.5 | 49.1 | **−19.3** | 13.9 | 27.7 | 29.1 | +13.8 | +15.2 | 13.4 | 3.4 |  ⟵ shown, not averaged
 | 2024 | PA | 70 | 54.5 | 62.7 | 49.1 | **−8.2** | 4.2 | 15.5 | 17.9 | +11.3 | +13.7 | 20.7 | 11.2 |
 
 All figures are percentage points of the **Democratic two-party share**. `est`
@@ -405,21 +406,29 @@ this one replaces:**
 
 | | geography only | **+ mail term** |
 | --- | ---: | ---: |
-| mean absolute final-day error | 7.49 | **4.93** |
-| signed mean final-day error | −6.20 | **−3.47** |
-| RMSE of final-day error | 10.10 | **6.92** |
-| worst final-day error | 27.42 (PA 2022) | **19.34** (PA 2022) |
-| mean MAE, mature days | 7.78 | **4.09** |
-| mean MAE of the null model | 8.46 | 8.46 |
-| **gain over the null** | **+0.68** | **+4.37** |
-| **gain over the geography-only model** | — | **+3.69** |
-| how far the estimate moved across a window | 1.24 | 8.18 |
-| how far the reported party split moved | 3.86 | 3.86 |
+| mean absolute final-day error | 5.81 | **3.73** |
+| signed mean final-day error | −4.88 | **−2.15** |
+| RMSE of final-day error | 7.05 | **4.55** |
+| worst final-day error | 12.11 (PA 2024) | **8.50** (ME 2022) |
+| mean MAE, mature days | 6.12 | **3.28** |
+| mean MAE of the null model | 6.74 | 6.74 |
+| **gain over the null** | **+0.62** | **+3.46** |
+| **gain over the geography-only model** | — | **+2.85** |
+| how far the estimate moved across a window | 1.07 | 7.75 |
+| how far the reported party split moved | 3.90 | 3.90 |
 
-**Two different signed biases, and they say different things.** The −3.47 above
+(Over the twelve in-range series. Pennsylvania 2022, shown and not averaged,
+scores 13.9 against a geography-only 27.7.)
+
+**Two different signed biases, and they say different things.** The −2.15 above
 is measured on each series' LAST day. Averaged over every mature day instead it
-is **−2.77** — the model leans Republican throughout and a little more so at the
-close. Neither number rescues a flat
+is smaller — the model leans Republican at the close and less so through the
+middle of a window, which is consistent with the mail term doing most of its
+work early and decaying out. ⚠️ **A flat correction for it does not survive
+leave-one-state-out** and was re-measured on this panel: adding the other
+states' mean bias as an intercept moves the headline 3.28 → 3.28, and makes the
+2024 folds worse (3.38 → 3.64). The bias is real per state and does not transfer
+between them, which is a statement about there being no single missing constant. Neither number rescues a flat
 correction (see [What else was tried](#what-else-was-tried)), and the smaller
 one is a reason there is less left to correct than this document used to think.
 
@@ -440,13 +449,27 @@ regime is over: PA's own mail electorate was 62.7% Democratic by 2024.
 
 The rule is stated on the data, not on the state. Measured leave-one-state-out,
 removing it from **training** is worth 0.24 points overall and 0.45 on the 2024
-folds. It is still **scored**, at 13.9, because what this model does when the
-world moves outside its range belongs in the headline even though it cannot
-teach the constants anything.
+folds.
 
-⚠️ `scored` and `trainable` are now different sets and conflating them is a bug
-worth naming: it silently dropped PA 2022 out of the headline entirely, which is
-the opposite of the intent.
+**It is also left out of the AVERAGE, and printed at full size beside it.** That
+is the same rule this document already applies to North Carolina 2026, whose
+entry says it plainly: *a series that cannot fit the constants cannot be 1/N of
+their error either.* NC 2026 cannot fit them because it is eight ballots; PA 2022
+cannot fit them because no value of α reaches it. Both are shown; neither is
+averaged. Averaging PA 2022 in prices **the cap**, not the method — at least 5.3
+of its 13.9 points are there at every parameter value.
+
+⚠️ **This is the number a sceptical reader should go to first, so it is not
+buried.** It is on the Info tab beside the headline, it is in the validation
+table, and `--validate` prints a paragraph about it. The honest summary is two
+sentences, not one: across the twelve series this model can reach it is off by
+3.28 points; on the one series that left its range it was off by 13.9, and that
+is what a state moving outside the model's assumptions costs.
+
+⚠️ Three sets, not one, and conflating any two is a bug: `scored` is thickness,
+`in_range` is reach, `trainable` is both. An early version folded `in_range` into
+`scored` and silently deleted PA 2022 from the table altogether, which is the
+opposite of the intent.
 
 **2. The readers stop at Election Day.** `counterfactual.read_series` has
 filtered `days_to_election < 0` since it was written and this module did not.
@@ -465,6 +488,50 @@ as much as the fit was being dragged by Pennsylvania, and the headline barely
 moved because the two corrections point opposite ways. `MODEL_ERROR` went 5 → 6
 → 5 across the same day for the same reason, and only the refit guard makes
 either move a measurement rather than a preference.
+
+### Vote-method polarisation, measured three ways
+
+The standing objection to this model is that it does not account for **vote-method
+polarisation** — Democrats vote by mail, Republicans in person, and the model
+treats that with a single global `MAIL_SELECTION`. The objection is right about
+the mechanism. All three ways of acting on it were measured and none survives
+leave-one-state-out.
+
+| what was tried | in-range MAE | vs shipped |
+| --- | ---: | ---: |
+| **shipped: one global α** | **3.28** | — |
+| α fitted within the cycle | 3.69 | −0.41 |
+| county mail-share × county lean, as a polarisation index | — | wrong sign, r = −0.20 |
+| mail-weighted geography minus pooled geography (β = 1.0) | 3.17 | **+0.11** |
+
+* **A per-cycle α** is the obvious move if polarisation collapsed between 2022
+  and 2024, and it is worse. The fitted intensities overlap heavily across the
+  two cycles (2022: 0.34–0.62, 2024: 0.28–0.46), so there is no cycle constant to
+  find — the variation is between STATES, not between cycles.
+
+* **A polarisation index off the county map.** If mail voting were polarised,
+  Democratic counties would mail at higher rates than Republican ones, and that
+  is measurable with no party registration anywhere. It correlates with the
+  adjustment actually needed at **−0.20 — the wrong sign** — and, more
+  decisively, it is undefined exactly where the need is largest: Pennsylvania is
+  all-mail, so every county's mail share is 1.00 and there is no variance to
+  measure while the required correction is 25.3 points.
+
+* **The mail-weighted geography differential** is the one with a real signal. It
+  asks whether mail ballots come from more Democratic counties than the early
+  vote as a whole, and adding it at β = 1.0 — the principled value, meaning "use
+  the mail electorate's own geography" — is worth **+0.11 points**. That is an
+  order of magnitude under `MIN_GAIN`, and it is **structurally unavailable in
+  2 of the 13 folds**: Maryland, Pennsylvania and Iowa publish no county-level
+  method split, and they are three of the four hardest series. This is the same
+  disqualification the county-level mail term earned above, and it is worth
+  naming as a pattern for a third time: *a term that validates only where the
+  data is richest is not a term this model can use.*
+
+The mechanism is real and this model prices it crudely, with one constant. What
+the panel says is that no sharper instrument for it is available from the data a
+non-reporting state actually publishes — which is the same reason the feature
+needs a model at all.
 
 ### A thirteenth series that is shown and not scored
 
