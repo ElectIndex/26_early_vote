@@ -210,6 +210,59 @@ def test_tier_upgrade_applies():
     assert replaced == 1 and rows[0]["source_tier"] == "1"
 
 
+def test_an_unchanged_row_keeps_its_original_timestamp():
+    """⚠️ A state that has not moved is not an update, and must not look like one.
+
+    Every run re-fetches the same file and rebuilds the same rows with a fresh
+    `retrieved_at`. Writing them made the published CSVs differ on every run for
+    no reason: at a two-hourly cadence, 418 lines across the county and
+    demographic tables per run -- roughly 291,000 lines of nothing between
+    2026-09-06 and Election Day, in a log whose only job is to show when the
+    data moved.
+
+    `retrieved_at` on an unchanged row now reads "this has been the state's
+    answer since then" rather than "we looked again", which is the more useful
+    of the two. Whether the job ran at all is `ev_status.json`'s `generated_at`,
+    rewritten unconditionally every run so no data row has to carry it.
+    """
+    prior = {"cycle": "2026", "state": "NC", "date": "2026-10-20",
+             "ballots_total": "800", "source_tier": "1", "source_name": "nc-sbe",
+             "retrieved_at": "2026-10-20T06:00:00+00:00"}
+    same = dict(prior, retrieved_at="2026-10-20T08:00:00+00:00")
+
+    rows, replaced, better, richer = merge_rows([prior], [same], ("cycle", "state", "date"))
+    assert (replaced, better, richer) == (0, 0, 0), "an unchanged row is not a replacement"
+    assert rows[0]["retrieved_at"] == prior["retrieved_at"]
+
+    # A row whose CONTENT moved is a real update and takes the new stamp.
+    moved = dict(same, ballots_total="900")
+    rows, replaced, _, _ = merge_rows([prior], [moved], ("cycle", "state", "date"))
+    assert replaced == 1
+    assert (rows[0]["ballots_total"], rows[0]["retrieved_at"]) == (
+        "900", same["retrieved_at"])
+
+
+def test_the_no_churn_rule_never_hides_a_tier_upgrade():
+    """A better tier with identical numbers still wins -- provenance IS content.
+
+    Georgia reaching the page through the aggregator and later through its own
+    file are the same figure from different authorities, and the badge a reader
+    sees is built from `source_tier`. `_same_but_for_stamp` compares every
+    column but the timestamp, so the tier difference makes them unequal and the
+    upgrade applies. This test exists because a sloppier rule -- "same
+    ballots_total, skip" -- would have silently frozen the worse provenance.
+    """
+    aggregator = {"cycle": "2026", "state": "GA", "date": "2026-10-20",
+                  "ballots_total": "500", "source_tier": "3",
+                  "source_name": "uf-election-lab", "retrieved_at": "t0"}
+    own_file = dict(aggregator, source_tier="1", source_name="ga-sos",
+                    retrieved_at="t1")
+    rows, replaced, _, _ = merge_rows([aggregator], [own_file],
+                                      ("cycle", "state", "date"))
+    assert replaced == 1
+    assert (rows[0]["source_tier"], rows[0]["retrieved_at"]) == ("1", "t1")
+
+
 def test_restatement_is_flagged_not_dropped():
     """States restate counts; a decrease is real data worth annotating."""
     series = [{"cycle": "2026", "state": "NC", "date": f"2026-10-2{i}",

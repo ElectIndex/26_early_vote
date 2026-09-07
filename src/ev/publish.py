@@ -131,7 +131,23 @@ def merge_rows(
     back reporting FEWER fields than the one on disk: a genuine update does not
     lose columns, so that is a truncated download and the richer row is kept.
 
-    Returns (rows, replaced, kept_better, kept_richer).
+    ⚠️ AND A ROW THAT REPORTS THE SAME NUMBERS IS NOT AN UPDATE AT ALL. A state
+    that has not moved since the last run re-publishes an identical row with a
+    fresh `retrieved_at`, and rewriting it made the file differ on every run for
+    no reason. At a two-hourly cadence that was 418 lines a run across the county
+    and demographic tables -- roughly 291,000 lines of nothing between here and
+    Election Day, in a log whose only job is to show when the data moved.
+
+    So an unchanged row keeps the one it has, and `retrieved_at` on it means
+    "this has been the state's answer since then" rather than "we looked again".
+    That is the more useful of the two readings and it is the one the site's
+    curve is built on. Liveness -- did the job run at all -- is `ev_status.json`'s
+    `generated_at`, which is rewritten unconditionally every run precisely so
+    that no data row has to carry it. `publish_table`'s rebuild path applies the
+    same rule to the derived tables for the same reason.
+
+    Returns (rows, replaced, kept_better, kept_richer). An unchanged row counts
+    as none of the three: nothing was replaced, and nothing was rejected.
     """
     merged: dict[tuple, dict[str, str]] = {_key_of(r, key_cols): r for r in existing}
     replaced = kept_better = kept_richer = 0
@@ -151,6 +167,9 @@ def merge_rows(
         if guard and new_tier == old_tier and _populated(row) < _populated(prior):
             # Same source, fewer reported fields -> truncated fetch, not an update.
             kept_richer += 1
+            continue
+        if _same_but_for_stamp(prior, row):
+            # Same answer, later look. Keep the row and its original timestamp.
             continue
 
         merged[k] = row

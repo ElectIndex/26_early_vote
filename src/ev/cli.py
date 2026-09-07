@@ -98,15 +98,35 @@ def cmd_ingest(args) -> int:
 
         # Written unconditionally: a status file that stops advancing is itself
         # the signal the page uses to show a stale badge.
+        checked_at = datetime.now(timezone.utc).replace(microsecond=0).isoformat()
         publish.write_status(out_dir, {
-            "generated_at": datetime.now(timezone.utc).replace(microsecond=0).isoformat(),
+            "generated_at": checked_at,
             "as_of": as_of.isoformat(),
             "cycle": args.cycle,
             "days_to_election": days_to_election(args.cycle, as_of),
             "states": {
+                # ⚠️ `retrieved_at` HERE IS THE SITE'S ONLY FRESHNESS SOURCE, and
+                # until 2026-09-07 nothing wrote it. ev-core.js has always read
+                # `s.status.retrievedAt || s.latest.retrieved_at` -- written that
+                # way on purpose -- but the status file carried no such field, so
+                # every stale badge on the page was computed from the DATA ROW's
+                # timestamp instead.
+                #
+                # That was survivable only while every run rewrote every row.
+                # Now that an unchanged row keeps its original stamp (see
+                # publish.merge_rows), a state reporting the same number for two
+                # days would badge STALE at 36 hours while we were in fact
+                # checking it every two hours. The two facts are different and
+                # they now live in different places: the row says when the NUMBER
+                # last changed, this says when we last LOOKED.
+                #
+                # Written for every state the run touched, including pending and
+                # failed ones -- "we checked Montana and it still has nothing" is
+                # exactly as much a freshness fact as a count is.
                 o.state: {
                     "status": o.status, "tier": o.tier, "source": o.source_name,
                     "rows": o.rows, "message": o.message, "attempts": o.attempts,
+                    "retrieved_at": checked_at,
                 }
                 for o in sorted(outcomes, key=lambda o: o.state)
             },
