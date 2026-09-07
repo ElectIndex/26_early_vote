@@ -136,11 +136,17 @@ from collections import defaultdict
 from dataclasses import dataclass, field
 from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
-from typing import Iterable, Iterator, Sequence
+from typing import Callable, Iterable, Iterator, Sequence
 
 from . import publish
 from .calendar import CYCLES, election_date
-from .estimate import Baseline, CountyLean, county_count, load_baseline
+from .estimate import (
+    Baseline,
+    CountyLean,
+    county_count,
+    load_baseline,
+    method_split,
+)
 
 log = logging.getLogger(__name__)
 
@@ -611,6 +617,228 @@ def mix_split(
     return between, within
 
 
+# --------------------------------------------------------------------------
+# THE DIMENSIONS THAT VARY *INSIDE* A COUNTY
+#
+# `mix_split` proves the county dimension is empty: 84% to 135% of every measured
+# compositional change happened between voters of the SAME county. That is a
+# statement about counties, and the obvious next question is whether anything
+# this tracker collects that varies WITHIN a county can see what counties cannot.
+# There are three candidates, and all three were measured on 2026-09-07.
+#
+#   METHOD (mail vs in-person).  Collected everywhere -- `mail_returned` and
+#   `inperson` are on every state row -- and it is the mechanism the Pennsylvania
+#   finding names. `method_mix_distance` measures how far it moved and the answer
+#   kills it: THE METHOD MIX IS FROZEN IN EXACTLY THE FOLDS THE FINDING LIVES IN.
+#   Pennsylvania has no early in-person voting AT ALL -- `pa.py` writes `inperson
+#   = None` and the law is why -- so its observed early electorate is 100% mail in
+#   2020, 2022 and 2024 and the mix moves 0.00 points. Maryland reaches the same
+#   place for a lesser reason: its published file is the in-person centres and its
+#   mail file is served as a corrupt zip, so `mail_returned` is NOT REPORTED and
+#   the split lands at 0.000 mail on both sides. Three of the eight folds have no
+#   method dimension to look at, and PA 2024's -27.64 is two of them -- the channel
+#   switch that produced it was FROM ELECTION DAY, which this tracker does not
+#   observe and never will.
+#
+#   AGE / RACE / SEX.  `output/demo/*.csv`, and the coverage is thinner than the
+#   method split: over the eight scoreable folds it is age and race in North
+#   Carolina alone and sex in NC and Maryland. GA and MI hold one 2024 day each
+#   with no reference cycle; South Carolina has no party registration to be
+#   scored against and its 2022 curve is the 16,975-ballot stub the maturity gate
+#   already refuses. `DemoDay` also carries NO party split, and no vendored table
+#   in this repo prices a demographic band, so the between-band term cannot be
+#   computed at all -- only bounded. See `required_span`.
+#
+#   SUB-COUNTY GEOGRAPHY.  `output/towns/*.csv` is Maine and only Maine, and it
+#   is the one within-county dimension that carries the truth's own unit, so the
+#   decomposition is EXACT there. `nested_split` is that measurement and it is
+#   the most decisive of the three: 463 towns inside 16 counties -- a partition
+#   twenty-nine times finer, in the most town-fragmented state in the country --
+#   move the geographic share of Maine's -13.99 from 5.2% to 11.9%. The other
+#   87% happened inside individual Maine towns.
+#
+# None of the three clears MIN_GAIN and none of them ever could; the numbers are
+# in docs/counterfactual.md. What is in the code is the machinery that measures
+# the refusal rather than arguing it, which is the same job `reach_bound`,
+# `mix_split`, `fit_scale` and `fit_constant` already do.
+# --------------------------------------------------------------------------
+def method_mix(row: dict[str, str] | None) -> float | None:
+    """Mail's share of the ballots a state has returned so far, 0 to 1.
+
+    Reads the split through `estimate.method_split`, which is the canonical
+    reader and whose ORDER matters: the state's own mail figure is believed and
+    everything else in its headline is treated as in-person. North Carolina
+    reports 297,034 mail, `inperson = 0` and a headline of 4,520,768 -- its
+    one-stop votes are simply not in that column -- so reading `inperson` first
+    would make North Carolina a 100% mail state.
+    """
+    if not row:
+        return None
+    split = method_split(_num(row.get("ballots_total")),
+                         _num(row.get("mail_returned")),
+                         _num(row.get("inperson")))
+    if split is None:
+        return None
+    mail, inperson = split
+    total = mail + inperson
+    return None if total <= 0 else mail / total
+
+
+def method_mix_distance(
+    now: dict[str, str] | None, reference: dict[str, str] | None
+) -> float | None:
+    """How far the MAIL/IN-PERSON mix moved between two days, in points.
+
+    The same total-variation statistic `composition_distance` reports for
+    age/race/sex and `mix_distance` for counties. Over two bands it collapses to
+    the absolute change in mail's share, which is what makes it directly
+    comparable with them.
+
+    ⚠️ AND ON THE FINAL MATCHED DAY OF THE EIGHT SCOREABLE FOLDS IT IS ZERO IN
+    THREE OF THEM, INCLUDING BOTH PENNSYLVANIAS. PA 2022 0.00, PA 2024 0.00, MD
+    0.00, NC 1.52, CO 1.60, KY 7.83, ME 12.61, FL 17.44 -- against county-mix
+    distances of 2.41 to 8.34. Pennsylvania has no early in-person voting, so its
+    observed early electorate is 100% mail in every cycle; Maryland publishes only
+    its in-person centres, so its mail side is unreported rather than absent and a
+    working mail file would give it a mix. The dimension the Pennsylvania finding
+    names is the one dimension Pennsylvania does not have.
+
+    ⚠️ AND WHERE IT DOES MOVE, MOST OF THE MOVEMENT IS PHASE. Kentucky's mix
+    "moves" 58 points at seven days out, because its 2022 reference series is a
+    single day near the close while 2024 is still mail-only at that point. That
+    is a calendar fact about when in-person voting opens, not a compositional
+    one, and it is why the fitted specification scores -15.91 on Kentucky. The
+    maturity gate exists for the same reason and does not catch this, because
+    both days are mature.
+    """
+    here, there = method_mix(now), method_mix(reference)
+    if here is None or there is None:
+        return None
+    return abs(here - there) * 100.0
+
+
+def required_span(distance: float | None, change: float) -> float | None:
+    """The band-margin span a dimension would need to carry `change` on its own.
+
+    `reach_bound` inverted, and the form that makes an unpriced dimension
+    answerable. For ANY partition into bands, the between-band term is
+    `Σ (w_now,g - w_ref,g)·m_ref,g` and the weight differences sum to zero, so
+
+        |between|  <=  TV(band mix)  ×  (widest band margin - narrowest)
+
+    exactly as for counties. Turn it round and a dimension whose mix moved
+    `distance` points can only have carried a change of `change` points if its
+    bands' registration margins span at least `change / distance`. A registration
+    margin lives in [-100, +100], SO NO SPAN CAN EXCEED 200 AND ANY REQUIREMENT
+    ABOVE THAT IS ARITHMETICALLY IMPOSSIBLE.
+
+    That is the whole answer for the dimensions this repo cannot price. On the
+    final matched day of each fold:
+
+        method   PA 2022 inf, PA 2024 inf, MD inf (the mix did not move at all),
+                 NC 752, KY 169, CO 124, ME 111, FL 28
+        age      NC 91          race  NC 271        sex  NC 468, MD 872
+
+    Four of the eight folds put the method dimension past the 200-point ceiling.
+    Three more need 111 to 169, against a channel gap of 18 to 42 points measured
+    directly in the five series whose window opens mail-only -- on a pure-mail day
+    the reported margin IS the mail channel's, and the in-person channel's follows
+    from the final day's identity. Only Florida's 28 is inside anything observed.
+
+    Returns None when the mix did not move, which is the "arithmetically
+    impossible" case and is reported as such rather than as a large number.
+    """
+    if distance is None or distance <= 0:
+        return None
+    return abs(change) / (distance / 100.0)
+
+
+def nested_split(
+    now: dict[str, tuple[int, int]],
+    reference: dict[str, tuple[int, int]],
+    group_of: Callable[[str], str],
+) -> tuple[float, float, float] | None:
+    """`mix_split` with a level of geography inserted UNDERNEATH the county.
+
+    THE ANSWER TO "IS IT THE COUNTY PARTITION THAT IS TOO COARSE?", and it is no.
+
+    Same construction, same exactness, one more term. Write a unit's two-party
+    registration base as `n_u` and its margin as `m_u`, let `W_c` be a group's
+    share and `M_c` its margin; then the measured change decomposes with no
+    residual into three parts rather than two:
+
+        M_now - M_ref  =  Σ_c (W_now,c - W_ref,c)·M_ref,c            BETWEEN GROUPS
+                       +  Σ_c W_now,c·Σ_{u∈c}(w_now,u|c - w_ref,u|c)·m_ref,u
+                                                             BETWEEN UNITS IN A GROUP
+                       +  Σ_u w_now,u·(m_now,u - m_ref,u)              WITHIN UNITS
+
+    The first term is `mix_split`'s between-county term. The second is the whole
+    of what a finer geography adds. `group_of` maps a unit key to its group; for
+    Maine's towns that is the first five digits of the ten-digit county
+    subdivision GEOID, which is the county by construction and never a name join.
+
+    ⚠️ MEASURED ON MAINE -- THE ONLY STATE IN THIS REPO WITH A SUB-COUNTY UNIT
+    CARRYING PARTY -- THE SECOND TERM IS 0.94 POINTS OF A 13.99-POINT MOVE.
+
+        measured change              -13.99
+        between counties              -0.73   ( 5.2%)
+        between towns within counties -0.94   ( 6.7%)
+        inside towns                 -12.21   (87.3%)
+
+    463 towns inside 16 counties. Twenty-nine times finer than the county
+    partition, in the most town-fragmented state in the country, and it takes
+    geography from 5% of the answer to 12%. The between-town term is larger than
+    the between-county term -- 0.70 against 0.45 averaged over Maine's 21 scored
+    days -- and both are an order of magnitude short of the thing they are
+    standing in for. Refining the geography does not refine the finding; it
+    confirms it. And a town term is available in ONE of the eight folds, which is
+    the disqualification this repo applies to every term that is only defined
+    where the data is richest.
+
+    Returns (between groups, between units within groups, within units) over the
+    units BOTH days reported a party split for -- THE BLANK RULE, and what keeps
+    all three terms over one common support so they add up.
+    """
+    shared = {
+        u for u in set(now) & set(reference)
+        if now[u][0] + now[u][1] > 0 and reference[u][0] + reference[u][1] > 0
+    }
+    if not shared:
+        return None
+
+    def parts(reg: dict[str, tuple[int, int]]):
+        base = {u: reg[u][0] + reg[u][1] for u in shared}
+        total = sum(base.values())
+        if total <= 0:
+            return None
+        return ({u: base[u] / total for u in shared},
+                {u: 100.0 * (reg[u][0] - reg[u][1]) / base[u] for u in shared})
+
+    here, there = parts(now), parts(reference)
+    if here is None or there is None:
+        return None
+    w_now, m_now = here
+    w_ref, m_ref = there
+
+    members: dict[str, list[str]] = defaultdict(list)
+    for unit in shared:
+        members[group_of(unit)].append(unit)
+
+    between_groups = between_units = 0.0
+    for group, units in members.items():
+        share_now = sum(w_now[u] for u in units)
+        share_ref = sum(w_ref[u] for u in units)
+        if share_now <= 0 or share_ref <= 0:
+            continue
+        group_margin_ref = sum(w_ref[u] * m_ref[u] for u in units) / share_ref
+        between_groups += (share_now - share_ref) * group_margin_ref
+        between_units += share_now * sum(
+            (w_now[u] / share_now - w_ref[u] / share_ref) * m_ref[u] for u in units
+        )
+    within_units = sum(w_now[u] * (m_now[u] - m_ref[u]) for u in shared)
+    return between_groups, between_units, within_units
+
+
 def completeness(ballots: dict[str, int], reference_final: int) -> float | None:
     """How far along a day is, measured against a FINISHED early-vote curve.
 
@@ -720,6 +948,11 @@ class DayIndex:
     state_rows: dict[int, dict[str, str]] = field(default_factory=dict)
     #: days_to_election -> {dimension: {bucket: ballots}}
     demo: dict[int, dict[str, dict[str, int]]] = field(default_factory=dict)
+    #: days_to_election -> {10-digit cousub GEOID: (party_dem, party_rep)}. Read
+    #: only for `nested_split`, which needs a unit BELOW the county carrying the
+    #: truth's own dimension. Maine is the only state that has one. Never an
+    #: input to `shift_pp`.
+    town_party: dict[int, dict[str, tuple[int, int]]] = field(default_factory=dict)
 
     def day_of(self, dte: int) -> date:
         return election_date(self.cycle) - timedelta(days=dte)
@@ -771,6 +1004,16 @@ def read_series(out_dir: Path, state: str) -> dict[int, DayIndex]:
         if cycle is None or dte is None or dte < 0:
             continue
         slot(cycle).state_rows[dte] = row
+
+    for row in _read_csv(out_dir / "towns" / f"{state.lower()}.csv"):
+        cycle, dte = _num(row.get("cycle")), _num(row.get("days_to_election"))
+        geoid = (row.get("town_geoid") or "").strip()
+        dem, rep = _num(row.get("party_dem")), _num(row.get("party_rep"))
+        if cycle is None or dte is None or dte < 0 or len(geoid) != 10:
+            continue
+        if dem is None or rep is None or dem + rep <= 0:
+            continue
+        slot(cycle).town_party.setdefault(dte, {})[geoid] = (dem, rep)
 
     for row in _read_csv(out_dir / "demo" / f"{state.lower()}.csv"):
         cycle, dte = _num(row.get("cycle")), _num(row.get("days_to_election"))

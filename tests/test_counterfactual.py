@@ -1212,3 +1212,226 @@ def test_counties_total_is_the_census_count(nc_out, nc_baseline):
     assert rows
     assert all(r.counties_total == len(_fips.CENSUS_COUNTIES["NC"]) for r in rows)
     assert rows[0].counties_total == 100
+
+
+# --------------------------------------------------------------------------
+# THE DIMENSIONS THAT VARY *INSIDE* A COUNTY
+#
+# `mix_split` proved the county dimension empty: 84% to 135% of every measured
+# compositional change happened between voters of the same county. These six pin
+# what happened when the three within-county dimensions this tracker collects
+# were measured against that gap, and the answer was that none of them can carry
+# it. They fail loudly if a future backfill changes any of it.
+# --------------------------------------------------------------------------
+def test_the_nested_split_is_exact():
+    """`mix_split` with a level of geography inserted UNDER the county.
+
+    Three hand-built pairs where the whole move is known to be in one term, so
+    each term is pinned on its own rather than only in aggregate.
+    """
+    group = lambda unit: unit[0]           # noqa: E731 -- "a1" and "a2" are group a
+
+    # 1. The whole move is BETWEEN groups: group a doubles, nothing else changes.
+    ref = {"a1": (80, 20), "b1": (20, 80)}
+    now = {"a1": (160, 40), "b1": (20, 80)}
+    between_groups, between_units, within_units = cf.nested_split(now, ref, group)
+    assert between_groups == pytest.approx(20.0)
+    assert between_units == pytest.approx(0.0)
+    assert within_units == pytest.approx(0.0)
+
+    # 2. The whole move is BETWEEN UNITS OF ONE GROUP: the group's own share is
+    #    unchanged at 1.0, so no county-level method could see any of it.
+    ref = {"a1": (80, 20), "a2": (20, 80)}
+    now = {"a1": (160, 40), "a2": (20, 80)}
+    between_groups, between_units, within_units = cf.nested_split(now, ref, group)
+    assert between_groups == pytest.approx(0.0)
+    assert between_units == pytest.approx(20.0)
+    assert within_units == pytest.approx(0.0)
+
+    # 3. The whole move is INSIDE a unit: same units, same weights, different
+    #    registrants. Neither level of geography can see it.
+    ref = {"a1": (80, 20), "a2": (20, 80)}
+    now = {"a1": (50, 50), "a2": (20, 80)}
+    between_groups, between_units, within_units = cf.nested_split(now, ref, group)
+    assert between_groups == pytest.approx(0.0)
+    assert between_units == pytest.approx(0.0)
+    assert within_units == pytest.approx(-30.0)
+
+
+def test_a_unit_reported_on_one_side_only_is_dropped_from_the_nested_split():
+    """THE BLANK RULE, and what keeps all three terms over one common support."""
+    group = lambda unit: unit[0]           # noqa: E731
+    ref = {"a1": (80, 20), "a2": (20, 80)}
+    now = {"a1": (80, 20), "a2": (20, 80), "a3": (900, 100)}
+    assert cf.nested_split(now, ref, group) == pytest.approx((0.0, 0.0, 0.0))
+    assert cf.nested_split({"a9": (1, 1)}, ref, group) is None
+
+
+@pytest.mark.skipif(not (REPO_OUTPUT / "towns" / "me.csv").exists(),
+                    reason="no published town table in this checkout")
+def test_finer_geography_does_not_rescue_the_county_dimension(full_baseline):
+    """THE ANSWER TO "IS THE COUNTY PARTITION SIMPLY TOO COARSE?", AND IT IS NO.
+
+    Maine is the only state in this repo with a sub-county unit carrying party
+    registration -- 463 towns inside 16 counties, twenty-nine times finer than
+    the county partition, in the most town-fragmented state in the country. If
+    the county dimension were failing because counties are large and mixed, a
+    town-level split would recover the missing movement. It recovers 0.94 points
+    of a 13.99-point move, taking geography from 5% of the answer to 12%, and
+    leaves 87% inside individual Maine towns.
+
+    Pinned as a ceiling on every scored day rather than as one number, so a
+    backfill that lengthens the series does not fail it and a state whose change
+    really was sub-county geography does.
+    """
+    panel = cf.score_panel(REPO_OUTPUT, full_baseline, states=["ME"])
+    days = panel.get((2024, "ME"))
+    assert days, "Maine's 2024 fold should still be scoreable"
+    series = cf.read_series(REPO_OUTPUT, "ME")
+    now, reference = series[2024], series[2022]
+    seen = 0
+    for day in days:
+        ref_dte = reference.at(day.days_to_election, cf.DTE_MATCH_TOLERANCE)
+        split = cf.nested_split(now.town_party.get(day.days_to_election, {}),
+                                reference.town_party.get(ref_dte, {}),
+                                lambda geoid: geoid[:5])
+        if split is None:
+            continue
+        seen += 1
+        between_groups, between_units, within_units = split
+        measured = between_groups + between_units + within_units
+        geography = abs(between_groups + between_units)
+        assert geography < 0.25 * abs(measured), (
+            f"ME {day.days_to_election} days out: geography now carries "
+            f"{geography:.2f} of {measured:.2f} -- the town dimension has started "
+            f"to see the change, and docs/counterfactual.md has to be revisited")
+        # The finer level is bigger than the county level and still nowhere near.
+        assert abs(within_units) > 3 * geography
+    assert seen >= 15, "Maine's town series should still cover its scored days"
+
+
+@pytest.mark.skipif(not (REPO_OUTPUT / "ev_state_daily.csv").exists(),
+                    reason="no published output/ tree in this checkout")
+def test_the_method_mix_is_frozen_where_the_finding_lives(full_baseline):
+    """THE MAIL/IN-PERSON DIMENSION DOES NOT EXIST IN PENNSYLVANIA.
+
+    docs/counterfactual.md attributes PA 2024's -27.64 to "the same voters, in
+    the same places, choosing a different channel", which makes the method split
+    the obvious next dimension to try. It cannot be tried there: Pennsylvania has
+    no early in-person voting at all, so its observed early electorate is 100%
+    mail in 2020, 2022 and 2024 and the mix moves EXACTLY zero. The channel those
+    voters switched from was ELECTION DAY, which this tracker does not observe.
+
+    Maryland reaches the same place for a lesser reason -- it publishes only its
+    in-person centres and its mail file is served as a corrupt zip -- so three of
+    the eight folds have no method dimension to look at, and the panel's largest
+    measured change is two of them. Only Pennsylvania's zero is asserted here,
+    because only Pennsylvania's is structural.
+    """
+    panel = cf.score_panel(REPO_OUTPUT, full_baseline)
+    frozen = []
+    for (cycle, state), days in panel.items():
+        series = cf.read_series(REPO_OUTPUT, state)
+        reference = series[cf.REFERENCE_CYCLE[cycle]]
+        distances = [
+            cf.method_mix_distance(
+                series[cycle].state_rows.get(day.days_to_election),
+                reference.state_rows.get(
+                    reference.at(day.days_to_election, cf.DTE_MATCH_TOLERANCE)))
+            for day in days
+        ]
+        if distances and all(d == 0.0 for d in distances if d is not None):
+            frozen.append((cycle, state))
+    assert (2024, "PA") in frozen and (2022, "PA") in frozen, (
+        "Pennsylvania's method mix is no longer frozen -- it has gained an "
+        "in-person early channel, and the method dimension is worth re-measuring")
+    biggest = max(
+        (max(days, key=lambda d: abs(d.truth)) for days in panel.values()),
+        key=lambda d: abs(d.truth))
+    assert (biggest.cycle, biggest.state) in frozen, (
+        f"the panel's largest measured change is now {biggest.state} "
+        f"{biggest.cycle}, which HAS a method dimension -- re-measure it")
+
+
+@pytest.mark.skipif(not (REPO_OUTPUT / "ev_state_daily.csv").exists(),
+                    reason="no published output/ tree in this checkout")
+def test_no_within_county_dimension_covers_the_panel(full_baseline):
+    """THE DISQUALIFICATION THIS REPO APPLIES TO EVERY THIN TERM.
+
+    A term available only where the data is richest is not a term either model
+    can use -- docs/party-estimate.md names that pattern five times. Counted over
+    the folds the counterfactual can actually be scored on, every within-county
+    dimension is thinner than the county one, which is present in all of them:
+
+        method mix that MOVES at all   5 of 8   (frozen in PA 2022, PA 2024, MD)
+        age, race                      1 of 8   (North Carolina)
+        sex                            2 of 8   (North Carolina, Maryland)
+        sub-county geography           1 of 8   (Maine)
+
+    If a backfill ever makes one of them cover the panel, this fails and the
+    dimension is worth building on rather than only measuring.
+    """
+    panel = cf.score_panel(REPO_OUTPUT, full_baseline)
+    folds = len(panel)
+    assert folds >= 8, "the panel should still hold every scoreable fold"
+    moving_method = demo = towns = 0
+    for (cycle, state), days in panel.items():
+        series = cf.read_series(REPO_OUTPUT, state)
+        now, reference = series[cycle], series[cf.REFERENCE_CYCLE[cycle]]
+        matched = [(d.days_to_election,
+                    reference.at(d.days_to_election, cf.DTE_MATCH_TOLERANCE))
+                   for d in days]
+        if any((cf.method_mix_distance(now.state_rows.get(a),
+                                       reference.state_rows.get(b)) or 0.0) > 0
+               for a, b in matched):
+            moving_method += 1
+        if any(cf.composition_distance(now.demo.get(a, {}).get(dim, {}),
+                                       reference.demo.get(b, {}).get(dim, {}))
+               is not None
+               for a, b in matched for dim in cf.DEMO_DIMENSIONS):
+            demo += 1
+        if any(now.town_party.get(a) and reference.town_party.get(b)
+               for a, b in matched):
+            towns += 1
+    assert moving_method <= folds - 3, (
+        f"the method mix now moves in {moving_method} of {folds} folds")
+    assert demo <= folds // 2, f"demographics now cover {demo} of {folds} folds"
+    assert towns <= folds // 2, f"towns now cover {towns} of {folds} folds"
+
+
+@pytest.mark.skipif(not (REPO_OUTPUT / "ev_state_daily.csv").exists(),
+                    reason="no published output/ tree in this checkout")
+def test_the_unpriced_dimensions_cannot_reach_the_largest_changes(full_baseline):
+    """`required_span`, and the ceiling that makes an unpriced dimension answerable.
+
+    Neither the method split nor `output/demo/*.csv` carries a party split, so
+    the between-band term cannot be computed -- but it is bounded by
+    TV(band mix) x (band-margin span), and a registration margin lives in
+    [-100, +100], so no span can exceed 200. Turn that round and each fold names
+    the span its dimension would need. On the final matched day the method
+    dimension needs an infinite one in PA 2022, PA 2024 and MD (the mix does not
+    move), 752 in NC, 169 in KY, 124 in CO, 111 in ME and 28 in FL -- against a
+    mail-minus-in-person registration gap of 18 to 42 points measured directly in
+    the five series whose window opens mail-only.
+
+    Asserted on the folds whose measured change is large, because those are the
+    ones the dimension would have to explain.
+    """
+    panel = cf.score_panel(REPO_OUTPUT, full_baseline)
+    WIDEST_OBSERVED_CHANNEL_GAP = 42.0
+    for (cycle, state), days in sorted(panel.items()):
+        day = min(days, key=lambda d: d.days_to_election)
+        if abs(day.truth) < 10.0:
+            continue                       # CO, FL and MD: little happened to explain
+        series = cf.read_series(REPO_OUTPUT, state)
+        reference = series[cf.REFERENCE_CYCLE[cycle]]
+        distance = cf.method_mix_distance(
+            series[cycle].state_rows.get(day.days_to_election),
+            reference.state_rows.get(
+                reference.at(day.days_to_election, cf.DTE_MATCH_TOLERANCE)))
+        needed = cf.required_span(distance, day.truth)
+        assert needed is None or needed > WIDEST_OBSERVED_CHANNEL_GAP, (
+            f"{state} {cycle}: the method mix moved {distance:.2f} points and "
+            f"would need only a {needed:.0f}-point channel gap to carry "
+            f"{day.truth:+.2f} -- inside what this repo can observe, so the "
+            f"dimension is worth pricing")
