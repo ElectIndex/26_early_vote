@@ -76,19 +76,27 @@ THE MEASURED ANSWER, BEFORE ANYTHING ELSE
 `python -m ev counterfactual --validate` runs the identical machinery on the 2024
 early electorate against the 2022 one, and scores it against the only
 compositional ground truth that exists: the party registration those same states
-reported for those same ballots. Four state-cycles qualify (KY, MD, ME, NC).
+reported for those same ballots. Seven state-cycles qualify (CO, FL, KY, MD, ME,
+NC, PA).
 
-    mean absolute error, mature days   11.2 points of margin
-    the same for the "nothing changed" null   11.1 points
-    what county geography buys        -0.1 points
+    mean absolute error, mature days   10.39 points of margin
+    the same for the "nothing changed" null   10.24 points
+    what county geography buys        -0.15 points
 
 It does not beat the null. Fitting a scale factor to it leave-one-state-out
-makes it worse still, and the fitted scale flips sign between folds (+4.1, -1.6).
-The mechanism is the one `docs/party-estimate.md` already found: every tracked
-state publishes every one of its counties, so the ballot weights are close to
-proportional to county size and the weighted mean is arithmetically pinned near
-the state's own last result. County geography moves about a point across a
-window while the composition it is standing in for moves twelve.
+makes it worse still (-0.94), and the fitted scales disagree by two orders of
+magnitude and in both signs (-1.03 to +2.56). The mechanism is the one
+`docs/party-estimate.md` already found: every tracked state publishes every one
+of its counties, so the ballot weights are close to proportional to county size
+and the weighted mean is arithmetically pinned near the state's own last result.
+County geography moves one point across a window while the composition it is
+standing in for moves ten.
+
+`reach_bound` says the same thing without needing any ground truth at all, and
+says it harder: |shift_pp| can never exceed the county mix's total-variation
+distance times the state's widest-minus-narrowest county margin, and SIX OF THE
+SEVEN measured compositional changes are larger than that ceiling. The only one
+inside it is Colorado, whose registration moved 1.98 points.
 
 Read docs/counterfactual.md before putting any of this on a page. The
 recommendation there is that the modelled margin should not ship, and that the
@@ -180,11 +188,12 @@ MIN_REFERENCE_BALLOTS = THIN_BALLOTS
 #: It is the mean absolute distance, over mature days and averaged across the
 #: state-cycles that can be scored at all, between the compositional shift this
 #: model reports and the shift the same states' own reported party registration
-#: says actually happened (11.74 points; rounded up). That is not a like-for-like
-#: unit -- a registration point is not a presidential point -- and it is the
-#: closest thing to a measurement that exists. Read it as "the size of the
-#: compositional change that county geography does not see", because that is
-#: what it is: the geography moves about a point and the registration moves twelve.
+#: says actually happened (10.39 points, rounded up to the next half point). That
+#: is not a like-for-like unit -- a registration point is not a presidential
+#: point -- and it is the closest thing to a measurement that exists. Read it as
+#: "the size of the compositional change that county geography does not see",
+#: because that is what it is: the geography moves one point and the registration
+#: moves ten.
 #:
 #: This is a MEASUREMENT, not a constant, and it moves when the tracker learns
 #: more, or when the domain it is measured over is corrected. Its history:
@@ -213,13 +222,30 @@ MIN_REFERENCE_BALLOTS = THIN_BALLOTS
 #:         the only midterm reference the panel has; a band fitted without the
 #:         hardest midterm case is a band that will be wrong exactly when it is
 #:         read. The number got worse because the measurement got honest.
+#:   10.5  COLORADO (measured 10.39). `co.fetch_history` had been aborting its
+#:         whole walk on one post-election workbook, so CO 2022 did not exist and
+#:         CO 2024 had no reference; recovering it added a SEVENTH fold.
 #:
-#: The verdict does not move, and moved further the wrong way: the gain over the
-#: no-change null is -0.15 pp and the bar is +1.00.
+#:         ⚠️ READ THIS DROP AS DILUTION, NOT AS THE MODEL IMPROVING. Nothing
+#:         about the method changed and no existing fold moved: Colorado's early
+#:         electorate simply barely moved between 2022 and 2024 (its registration
+#:         shifted 1.98 points against Pennsylvania's 27.64), and a mean over
+#:         series falls when an easy series joins. The band's job is unchanged
+#:         and Pennsylvania's 24.99-point error is still inside the panel it is
+#:         fitted on; +-10.5 does not cover that error and never claimed to. This
+#:         is a MEAN absolute error, not a maximum.
+#:
+#:         Colorado earns its place for a second reason, though: it is the first
+#:         and only series this method was arithmetically ABLE to reach -- see
+#:         `within_reach` -- and it promptly demonstrated why reach must never be
+#:         used to filter the headline.
+#:
+#: The verdict does not move at all: the gain over the no-change null is -0.15 pp
+#: on six folds and -0.15 pp on seven, and the bar is +1.00.
 #:
 #: `test_model_error_matches_the_measured_validation` refits it from output/ and
 #: fails if the data moves away from it.
-MODEL_ERROR_PP = 12.0
+MODEL_ERROR_PP = 10.5
 
 #: With complete coverage on both sides the band's half-width is exactly
 #: MODEL_ERROR_PP, so the confidence threshold has to sit strictly above it or it
@@ -349,6 +375,88 @@ def ballots_in(ballots: dict[str, int]) -> int:
     None, has not reported -- it is not a county with zero ballots.
     """
     return sum(v for v in ballots.values() if v is not None)
+
+
+def mix_distance(
+    now: dict[str, int], reference: dict[str, int], baseline: Baseline
+) -> float | None:
+    """Total-variation distance between two days' COUNTY ballot mixes, 0 to 1.
+
+    Half the sum of absolute differences in each county's share of the day's
+    ballots, over the counties that can be weighted at all. It is the same
+    statistic `composition_distance` reports for age/race/sex, on the one
+    dimension that is priced -- and here it is not published as a distance but
+    used to bound what that dimension is arithmetically able to say. See
+    `reach_bound`.
+    """
+    keys = {f for f in set(now) | set(reference) if f in baseline}
+    here = sum(v for f, v in now.items() if f in keys and v is not None and v >= 0)
+    there = sum(
+        v for f, v in reference.items() if f in keys and v is not None and v >= 0
+    )
+    if here <= 0 or there <= 0:
+        return None
+    return 0.5 * sum(
+        abs(max(now.get(f) or 0, 0) / here - max(reference.get(f) or 0, 0) / there)
+        for f in keys
+    )
+
+
+def margin_span(
+    now: dict[str, int], reference: dict[str, int], baseline: Baseline
+) -> float | None:
+    """The most Democratic minus the most Republican county EITHER day can use.
+
+    The support of the comparison, not the state: a county that reported on
+    neither day cannot carry weight on either side, so it cannot widen what the
+    difference is able to reach.
+    """
+    margins = [
+        county_margin(lean)
+        for lean in (baseline.get(f) for f in set(now) | set(reference))
+        if lean is not None
+    ]
+    return (max(margins) - min(margins)) if margins else None
+
+
+def reach_bound(
+    now: dict[str, int], reference: dict[str, int], baseline: Baseline
+) -> float | None:
+    """The largest |shift_pp| county geography COULD report on this pair of days.
+
+    ⚠️ THIS IS A HARD BOUND, NOT AN ESTIMATE, and it is the counterfactual's
+    version of `estimate.within_reach`.
+
+    `shift_pp` is `sum_c (w_now,c - w_ref,c) * margin_c`, where the two weight
+    vectors each sum to one. Write `d_c` for the difference; then `sum_c d_c = 0`,
+    so subtracting any constant from every margin leaves the sum unchanged. Take
+    the midpoint of the county margins and every recentred margin is at most half
+    the span in absolute value, which gives
+
+        |shift_pp|  <=  TV(county mix)  x  (widest county margin - narrowest)
+
+    and the bound is TIGHT -- attained when every county gaining share is the most
+    Democratic one and every county losing it the most Republican. `mix_distance`
+    is the first factor and `margin_span` the second.
+
+    What makes it worth computing: it is a statement about the DIMENSION rather
+    than about this method's parameters, it needs no ground truth, and it is
+    available live. Given how little the county mix actually moved between two
+    cycles, no reweighting of the counties -- no alternative early electorate over
+    the same map -- could have produced a compositional margin shift larger than
+    this. When the measured compositional change is larger than the bound, part of
+    the error is structural at every possible county weighting, exactly the way
+    `estimate.within_reach` is structural at every value of MAIL_SELECTION.
+
+    Measured on the published tree it binds on SIX OF THE SEVEN scoreable
+    state-cycles -- every one whose composition actually moved -- and on 65 of
+    their 83 days. See `within_reach` and docs/counterfactual.md.
+    """
+    distance = mix_distance(now, reference, baseline)
+    span = margin_span(now, reference, baseline)
+    if distance is None or span is None:
+        return None
+    return distance * span
 
 
 def completeness(ballots: dict[str, int], reference_final: int) -> float | None:
@@ -1020,6 +1128,10 @@ class ScoredDay:
     truth: float          # what reported party registration says moved, points
     ballots: float
     reference_ballots: float
+    #: The largest |shift| the county mix change on this pair of days could have
+    #: produced under ANY reweighting of the counties -- see `reach_bound`. A day
+    #: whose `truth` exceeds it is one the dimension could not have reached.
+    reach: float | None = None
 
 
 @dataclass
@@ -1042,6 +1154,15 @@ class Validation:
     fitted_scale: float | None = None
     scaled_mean_abs_error: float | None = None
     held_out: bool = True
+    #: `reach_bound` on the final matched day: the largest |shift| the county mix
+    #: change could have produced there under any reweighting of the counties.
+    reach: float | None = None
+    #: False when the measured compositional change on that day is LARGER than
+    #: the bound -- the dimension could not have reached the answer, so part of
+    #: the error is structural at every county weighting. The exact analogue of
+    #: `estimate.Validation.in_range`, and see `within_reach` for what it does
+    #: and deliberately does not do to the headline.
+    in_range: bool = True
 
     @property
     def gain(self) -> float:
@@ -1128,23 +1249,90 @@ def score_panel(
                     shift=here[0] - there[0],
                     truth=truth_now - truth_ref,
                     ballots=float(here[2]), reference_ballots=float(there[2]),
+                    reach=reach_bound(now.counties[dte],
+                                      reference.counties[ref_dte], baseline),
                 ))
     for series_days in panel.values():
         series_days.sort(key=lambda d: -d.days_to_election)
     return dict(panel)
 
 
+def within_reach(days: Sequence[ScoredDay]) -> bool:
+    """Could county geography have reached this series' answer at all?
+
+    The counterfactual's version of `estimate.within_reach`, measured the same
+    way -- on the final matched day, which is the fully-formed early electorate
+    and the least noisy point in the series -- and asking the same question: does
+    the answer sit further from the model's inputs than the model is
+    structurally able to move? There it is a chosen cap, `MAX_ADJUSTMENT`. Here
+    it is `reach_bound`, which is not a choice but the dimension's own arithmetic
+    limit given the county mix change that actually happened.
+
+    ⚠️ AND THE ANSWER, ON THE PUBLISHED TREE, IS "NO" ON EVERY SERIES WHOSE
+    COMPOSITION ACTUALLY MOVED. FL 4.94 against a bound of 3.76, KY 13.22 against
+    8.57, MD 6.28 against 6.17, ME 13.99 against 1.68, NC 11.42 against 5.48, PA
+    27.64 against 4.57. Only Colorado, whose registration moved 1.98 points, sits
+    inside its own bound. That is the finding in a stronger form than the MAE
+    ever managed: Pennsylvania is not an outlier this method happened to miss, it
+    is the extreme of a limit that binds wherever there was anything to see.
+
+    ⚠️ SO THIS PREDICATE IS REPORTED AND IS NEVER A FILTER, WHICH IS WHERE IT
+    PARTS COMPANY WITH `estimate.within_reach`. There, an out-of-reach series is
+    shown and not averaged, because MAX_ADJUSTMENT is a chosen cap and averaging
+    such a series prices the cap instead of the method. Here the limit is not a
+    parameter but the dimension's own arithmetic, and `|truth| > reach` is a
+    condition on the TRUTH: dropping those folds selects the ones whose
+    composition barely moved. It was tried, on 2026-09-07, and it reported this
+    model's accuracy off Colorado alone -- 2.29 against a null of 2.14 -- while
+    discarding Pennsylvania's 27.64-point move. See `format_validation`.
+    """
+    if not days:
+        return False
+    last = min(days, key=lambda d: d.days_to_election)
+    return last.reach is not None and abs(last.truth) <= last.reach
+
+
 def fit_scale(series: Iterable[Sequence[ScoredDay]]) -> float | None:
     """The multiplier k minimising Σ (truth - k·shift)², series-weighted.
 
     Weighted least squares through the origin: each state-cycle counts once, not
-    once per day. There is no intercept, because an intercept would be a constant
-    national shift and the null already owns that.
+    once per day.
 
     This exists to give the method its best possible case. If the only thing
     wrong with county geography were that its unit is presidential points and the
     truth's is registration points, a fitted k would absorb the difference.
     Returns None rather than a number when nothing is fittable.
+
+    ⚠️ THERE IS NO INTERCEPT, AND THE REASON WRITTEN HERE USED TO BE WRONG. It
+    said an intercept was "a constant national shift, and the null already owns
+    that". The null is zero. It owns no such thing, and the difference is not
+    small: fitted leave-one-state-out on this panel, an intercept ALONE -- "every
+    state's early electorate moved by whatever the other states' registration
+    moved" -- scores 6.75 against the null's 10.24, a gain of +3.49 pp, three and
+    a half times the bar this feature is held to. Adding `shift` on top of it
+    buys a further +0.29.
+
+    The honest reason to refuse the intercept is a different and better one: the
+    panel contains exactly ONE cycle transition. All seven folds are 2024-vs-2022,
+    so leave-one-STATE-out never holds out the transition, and the constant is
+    fitted on the very thing it would be tested on. What it has learned is that
+    2022 -> 2024 was a one-off normalisation -- Republicans returning to a mail
+    channel they had boycotted -- which is a fact about that transition, not a
+    law about early electorates, and applying it to 2024 -> 2026 would assert the
+    same move happens twice. Leave-one-cycle-out is the test that would settle
+    it, and it needs a 2020 county backfill this repo does not have.
+
+    Colorado made the fragility visible the moment it arrived: the constant
+    scored +5.31 on the six folds that preceded it and costs -7.28 points on
+    Colorado alone, because Colorado is a state whose composition did not move
+    and the constant insists that it did.
+
+    Record it, do not ship it, and do not let it be mistaken for the county term
+    working. Every predictor swept on this panel that beats the no-change null
+    turns out to be a noisier estimate of that same constant, and none of them
+    beats the constant alone; the county term's entire incremental value ON TOP
+    of the constant is +0.29 pp, against a bar of +1.00. See
+    docs/counterfactual.md.
     """
     numerator = denominator = 0.0
     for one in series:
@@ -1213,6 +1401,8 @@ def validate(
                 else sum(abs(scale * s - t) for s, t in zip(shifts, truths)) / n
             ),
             held_out=scale is not None,
+            reach=last.reach,
+            in_range=within_reach(days),
         ))
     return results
 
@@ -1220,31 +1410,69 @@ def validate(
 def format_validation(results: Sequence[Validation]) -> Iterator[str]:
     yield (f"{'cycle':>5s} {'st':3s} {'days':>4s} {'shift':>7s} {'truth':>7s} "
            f"{'final':>7s} {'MAE':>6s} {'null':>6s} {'gain':>6s} "
-           f"{'|shift|':>7s} {'|truth|':>7s} {'r':>6s} {'sign':>5s} "
+           f"{'|shift|':>7s} {'|truth|':>7s} {'reach':>6s} {'r':>6s} {'sign':>5s} "
            f"{'k':>6s} {'k-MAE':>6s} {'k-gain':>7s}")
     for r in sorted(results, key=lambda r: (r.state, r.cycle)):
         yield (f"{r.cycle:5d} {r.state:3s} {r.days:4d} {r.final_shift:+7.2f} "
                f"{r.final_truth:+7.2f} {r.final_error:+7.2f} "
                f"{r.mean_abs_error:6.2f} {r.null_mean_abs_error:6.2f} "
                f"{r.gain:+6.2f} {r.mean_abs_shift:7.2f} {r.mean_abs_truth:7.2f} "
+               + (f"{r.reach:6.2f}" if r.reach is not None else "   n/a")
+               + " "
                + (f"{r.correlation:+6.2f}" if r.correlation is not None else "   n/a")
                + f" {r.sign_agreement:5.0%} "
                + (f"{r.fitted_scale:+6.2f}" if r.fitted_scale is not None else "   n/a")
                + (f" {r.scaled_mean_abs_error:6.2f}"
                   if r.scaled_mean_abs_error is not None else "    n/a")
                + (f" {r.scaled_gain:+7.2f}" if r.scaled_gain is not None else "     n/a")
-               + ("" if r.held_out else "  (in sample: no other state to fit on)"))
+               + ("" if r.held_out else "  (in sample: no other state to fit on)")
+               + ("" if r.in_range else "  (beyond what county geography can reach)"))
     if not results:
         yield ("(no state-cycle in output/ has BOTH a county early series in two "
                "consecutive cycles AND a reported party split to score against)")
         return
 
+    # ⚠️ REACH IS REPORTED AND IS NEVER A FILTER, AND THAT IS THE ONE PLACE THIS
+    # MODEL MUST NOT COPY `estimate.py`.
+    #
+    # There, a series whose answer sits beyond MAX_ADJUSTMENT is shown and not
+    # averaged, because MAX_ADJUSTMENT is a CHOSEN CAP and averaging such a
+    # series prices the cap rather than the method. The same rule was written
+    # here for consistency and then measured, and it is wrong here for two
+    # reasons the measurement made obvious within the hour:
+    #
+    #   1. `in_range` is a condition ON THE TRUTH. Dropping the folds where
+    #      |truth| exceeds the bound selects the folds where the compositional
+    #      change was SMALL -- selection on the outcome, and it flatters nothing
+    #      so much as a method that cannot move.
+    #   2. It was tried. On the tree of 2026-09-07, Colorado arrived as a seventh
+    #      fold and is the only one inside its bound, so the exclusion rule
+    #      reported this model's accuracy off Colorado alone -- 2.29 against a
+    #      null of 2.14 -- and threw away Pennsylvania's 27.64-point move. An
+    #      "improvement" that discards the hardest six sevenths of the evidence.
+    #
+    # There is no cap to avoid pricing here. `reach_bound` is not a parameter of
+    # the model, it is the dimension's own arithmetic, so a series beyond it is
+    # not a series this method was measured unfairly on -- it is the finding.
+    beyond = [r for r in results if not r.in_range]
     n = len(results)
     mae = sum(r.mean_abs_error for r in results) / n
     null = sum(r.null_mean_abs_error for r in results) / n
     gain = sum(r.gain for r in results) / n
     scaled = [r for r in results if r.scaled_mean_abs_error is not None]
     yield ""
+    if beyond:
+        yield (f"REACH: {len(beyond)} of {len(results)} series moved further than "
+               "county geography could have reported under ANY reweighting of "
+               "their counties ("
+               + ", ".join(f"{r.state} {abs(r.final_truth):.2f} vs {r.reach:.2f}"
+                           for r in beyond)
+               + "). reach = TV(county mix) x (widest county margin - narrowest), "
+                 "a hard bound needing no ground truth. Every one is still "
+                 "AVERAGED below -- unlike estimate.py, which drops its "
+                 "out-of-reach series: there the limit is a chosen cap, here it "
+                 "is the dimension itself, and dropping on it would select the "
+                 "folds whose composition barely moved.")
     yield (f"mean MAE = {mae:.2f} pp   null (composition unchanged) = {null:.2f} pp   "
            f"gain = {gain:+.2f} pp")
     yield (f"county geography moves {sum(r.mean_abs_shift for r in results) / n:.2f} pp "
@@ -1263,7 +1491,9 @@ def format_validation(results: Sequence[Validation]) -> Iterator[str]:
            "days with >=25% of each series' early vote in; truth is the change in "
            "the state's OWN reported party REGISTRATION of the same ballots -- a "
            "different unit, which is why k is fitted and reported; sign = share of "
-           "days the modelled shift agrees in direction with the measured one.")
+           "days the modelled shift agrees in direction with the measured one; "
+           "reach = the largest |shift| county geography could have reported on "
+           "the last matched day, whatever the counties had done.")
 
 
 def cmd_counterfactual(args) -> int:

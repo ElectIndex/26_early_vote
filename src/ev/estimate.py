@@ -1433,7 +1433,20 @@ def format_validation(results: Sequence[Validation]) -> Iterator[str]:
     # Carolina 2026. It is the same rule, and it now also covers Pennsylvania
     # 2022, whose early electorate finished 25.3 points from its counties when
     # the model may move 20.
-    keep = [r for r in results if r.scored and r.in_range] or list(results)
+    # ⚠️ THE HEADLINE AVERAGES EVERY SCORED SERIES, AND `in_range` IS A REPORTED
+    # DIAGNOSTIC, NEVER A FILTER. It briefly was a filter here, and
+    # counterfactual.py talked me out of it with the better argument: reach is a
+    # condition on the TRUTH, so filtering on it systematically selects the
+    # states where least happened and reports a headline for the quiet half of
+    # the panel. That the exclusion is justified per-series -- part of PA 2022's
+    # error really is structural at any parameter value -- does not make the
+    # SELECTION unbiased, because the same test is what makes a series hard.
+    #
+    # It also cost 0.74 points of reported error for no change in the model,
+    # which is the shape of a number improving because of how it is counted.
+    # The two models now answer this the same way; sibling modules disagreeing
+    # about one concept is the bug class that produced the worst defects here.
+    keep = [r for r in results if r.scored] or list(results)
     n = len(keep)
     yield ""
     thin = [r for r in results if not r.scored]
@@ -1444,15 +1457,17 @@ def format_validation(results: Sequence[Validation]) -> Iterator[str]:
                + " shown above and left out: a series that cannot fit the "
                  f"constants cannot be 1/{n + 1} of their error either.")
     if out:
-        yield ("SHOWN, NOT AVERAGED, and this is the number to argue with: "
+        yield ("BEYOND THE MODEL'S REACH, and averaged in anyway: "
                + ", ".join(f"{r.state} {r.cycle} at {r.mean_abs_error:.1f} pp"
                            for r in out)
                + ". Its early electorate finished further from its counties than "
                  "the model is allowed to move, so part of that error is "
-                 "structural at every parameter value -- averaging it in prices "
-                 "the cap rather than the method. It is the standing example of "
-                 "what this model does when a state leaves its range, and it is "
-                 "the reason the published band is not narrower than it is.")
+                 "structural at every parameter value. That is a fact about the "
+                 "series and NOT a reason to drop it: the same test that says a "
+                 "series is out of reach is the test that says the most happened "
+                 "there, so excluding it would report the quiet half of the "
+                 "panel. It is in the mean, and it is why the band is not "
+                 "narrower than it is.")
     scored = keep
     yield (f"mean |final error| = {sum(abs(r.final_error) for r in scored) / n:.1f} pp   "
            f"mean MAE = {sum(r.mean_abs_error for r in scored) / n:.1f} pp   "
