@@ -57,7 +57,36 @@ REQUIRED = frozenset({
 })
 
 #: Only these count as a ballot cast. See the module docstring.
-ACCEPTED = frozenset({"ACCEPTED", "ACCEPTED - CURED"})
+#:
+#: ⚠️ THIS WAS A SET OF TWO LITERALS AND IT DROPPED REAL BALLOTS. North Carolina
+#: qualifies its accepted status -- "ACCEPTED - CURED" for a deficiency the voter
+#: fixed, "ACCEPTED - EXCEPTION" for one accepted under an exception -- and the
+#: set listed only the first two spellings. `ACCEPTED - EXCEPTION` is in this
+#: repo's OWN fixture: 2 of its 10 rows, so the adapter published 8. A 20%
+#: undercount of the first state to report in 2026, and Wayne County vanished
+#: from the county file entirely because its only ballot carried that status.
+#:
+#: The prefix is the rule now. NC's own label says ACCEPTED; a qualifier after it
+#: says WHY, not WHETHER.
+ACCEPTED_PREFIX = "ACCEPTED"
+
+#: Statuses we know are NOT a ballot cast. Listed so that a status which is
+#: neither accepted nor known-rejected can be recognised as drift instead of
+#: silently discarded -- rule 3. See MAX_UNKNOWN_STATUS_SHARE.
+KNOWN_NOT_CAST = frozenset({
+    "PENDING", "SPOILED", "CANCELLED", "CANCELED", "VOID", "DUPLICATE",
+    "RETURNED UNDELIVERABLE", "NOT VOTED", "WRONG VOTER", "WITNESS INFO INCOMPLETE",
+    "ASSISTANT INFO INCOMPLETE", "SIGNATURE DIFFERENT", "NOT PROPERLY NOTARIZED",
+})
+
+#: How much of a file may carry a status this adapter cannot classify before the
+#: whole read is refused. Same judgement, and the same shape, as
+#: `pa.MAX_UNKNOWN_PARTY_SHARE`: a handful of odd rows must not take North
+#: Carolina off the page, and a wholesale relabelling must not be counted past.
+#:
+#: SchemaDrift here FALLS THROUGH to civicAPI, which carries NC -- so refusing
+#: costs detail, not the state.
+MAX_UNKNOWN_STATUS_SHARE = 0.005
 
 _PARTY_FIELD = {
     PARTY_DEM: "party_dem", PARTY_REP: "party_rep",
@@ -162,8 +191,19 @@ class NCScraper(Adapter):
         county_names: dict[str, str] = {}
         unknown_counties: set[str] = set()
 
+        counted = unreadable = 0
+        unknown_statuses: set[str] = set()
+
         for row in rows:
-            if (row.get("ballot_rtn_status") or "").strip().upper() not in ACCEPTED:
+            status = " ".join((row.get("ballot_rtn_status") or "").strip().upper().split())
+            counted += 1
+            if not status.startswith(ACCEPTED_PREFIX):
+                if status and status not in KNOWN_NOT_CAST:
+                    # Neither accepted nor a status we know means "not cast". We
+                    # cannot tell whether this ballot counts, and guessing either
+                    # way publishes a confident wrong total.
+                    unreadable += 1
+                    unknown_statuses.add(status)
                 continue
             day = _parse_day(row.get("ballot_rtn_dt", ""))
             if day is None or day > as_of:
@@ -190,6 +230,26 @@ class NCScraper(Adapter):
 
             for dimension, value in self._demographics(row):
                 by_demo[(day, dimension, value)] += 1
+
+        # ⚠️ A STATUS WE CANNOT CLASSIFY IS DRIFT, NOT A ROW TO DROP. Whether a
+        # ballot counts is the headline number; silently discarding the rows we
+        # cannot read understates the state and says nothing. Refused only when
+        # there is enough of it to matter, exactly as pa.py treats an unreadable
+        # party label -- and SchemaDrift falls through to civicAPI, which has NC.
+        if counted and unreadable:
+            share = unreadable / counted
+            if share > MAX_UNKNOWN_STATUS_SHARE:
+                raise SchemaDrift(
+                    f"NC: {share:.2%} of rows carry a ballot status this adapter "
+                    f"cannot classify ({sorted(unknown_statuses)[:8]}); it is "
+                    f"neither an ACCEPTED form nor a known non-cast status"
+                )
+            log.info(
+                "NC %s: %d of %d rows (%.3f%%) carry an unclassifiable status and "
+                "are not counted as cast: %s",
+                cycle, unreadable, counted, share * 100,
+                ", ".join(sorted(unknown_statuses)[:12]),
+            )
 
         if unknown_counties:
             # A name we cannot map is drift, not a row to silently drop -- NC has
