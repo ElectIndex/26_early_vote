@@ -1,7 +1,7 @@
 state,name,election_date,ev_start_2026,ev_end_2026,has_party_reg,dims_available,ev_2022_total,ev_2024_total,turnout_2022_total,turnout_2024_total,reg_voters_2026,notes
 AK,Alaska,2026-11-03,,,true,method,,167263,,,,"statewide only; published by ballot type, not by borough"
 AL,Alabama,2026-11-03,,,false,,,,,,,not tracked in 2026
-AR,Arkansas,2026-11-03,,,false,,,,,,,not tracked in 2026
+AR,Arkansas,2026-11-03,,,true,,,,,,,"not tracked in 2026; registers by party but 87% of registrants sit in an optional no-party column, so the D/R split describes 13% of the file"
 AZ,Arizona,2026-11-03,,,true,county,,,,,,registers by party; the SoS Sent/Accepted table publishes neither the party split nor a mail/in-person split -- county totals only
 CA,California,2026-11-03,,,true,county|method,,,,,,"registers by party, but the state workbook does not break it out"
 CO,Colorado,2026-11-03,,,true,county|party|method,,,,,,
@@ -23,7 +23,7 @@ MD,Maryland,2026-11-03,,,true,county|party|sex,,,,,,
 ME,Maine,2026-11-03,,,true,town|county|party|method,236972,378760,,,,reports by municipality; counties summed from towns
 MI,Michigan,2026-11-03,,,false,county|method,,3319560,,,,
 MN,Minnesota,2026-11-03,,,false,county|method,,,,,,
-MO,Missouri,2026-11-03,,,true,,,,,,,not tracked in 2026
+MO,Missouri,2026-11-03,,,false,,,,,,,"not tracked in 2026; the party field has been optional only since 2023 and no breakdown is published, so there is nothing to report"
 MS,Mississippi,2026-11-03,,,false,,,,,,,not tracked in 2026
 MT,Montana,2026-11-03,,,false,,,,,,,not tracked in 2026
 NC,North Carolina,2026-11-03,,,true,county|party|method|age|race|sex,2187856,4520768,,,,
@@ -46,7 +46,7 @@ TX,Texas,2026-11-03,,,false,county|method,,,,,,largest counties only (~30 of 254
 UT,Utah,2026-11-03,,,true,,,,,,,not tracked in 2026
 VA,Virginia,2026-11-03,,,false,county|method,992231,2376938,,,,
 VT,Vermont,2026-11-03,,,false,,,,,,,not tracked in 2026
-WA,Washington,2026-11-03,,,false,county|method|sex,,,,,,"registers by party, but the state file's party column is empty"
+WA,Washington,2026-11-03,,,false,county|method|sex,,,,,,"does not register by party at all -- Top Two primary, so there is no affiliation on the record"
 WI,Wisconsin,2026-11-03,,,false,county|method,,1540288,,,,
 WV,West Virginia,2026-11-03,,,true,,,,,,,not tracked in 2026
 WY,Wyoming,2026-11-03,,,true,,,,,,,not tracked in 2026
