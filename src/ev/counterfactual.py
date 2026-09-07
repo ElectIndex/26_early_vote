@@ -74,29 +74,54 @@ row this module can write, it reads `county`.
 THE MEASURED ANSWER, BEFORE ANYTHING ELSE
 -----------------------------------------
 `python -m ev counterfactual --validate` runs the identical machinery on the 2024
-early electorate against the 2022 one, and scores it against the only
+early electorate against the 2022 one -- and, since Pennsylvania's 2020 curve
+landed, on the 2022 one against 2020 -- and scores it against the only
 compositional ground truth that exists: the party registration those same states
-reported for those same ballots. Seven state-cycles qualify (CO, FL, KY, MD, ME,
-NC, PA).
+reported for those same ballots. EIGHT state-cycles qualify: CO, FL, KY, MD, ME,
+NC and PA on 2024-vs-2022, plus PA alone on 2022-vs-2020.
 
-    mean absolute error, mature days   10.39 points of margin
-    the same for the "nothing changed" null   10.24 points
-    what county geography buys        -0.15 points
+    mean absolute error, mature days   9.99 points of margin
+    the same for the "nothing changed" null   9.27 points
+    what county geography buys        -0.73 points
 
-It does not beat the null. Fitting a scale factor to it leave-one-state-out
-makes it worse still (-0.94), and the fitted scales disagree by two orders of
-magnitude and in both signs (-1.03 to +2.56). The mechanism is the one
-`docs/party-estimate.md` already found: every tracked state publishes every one
-of its counties, so the ballot weights are close to proportional to county size
-and the weighted mean is arithmetically pinned near the state's own last result.
-County geography moves one point across a window while the composition it is
-standing in for moves ten.
+It does not beat the null. Fitting a scale factor to it leave-one-state-out makes
+it worse still (-2.10), and the fitted scales disagree by a factor of fifty and in
+both signs (-0.65 to +2.56). The mechanism is the one `docs/party-estimate.md`
+already found: every tracked state publishes every one of its counties, so the
+ballot weights are close to proportional to county size and the weighted mean is
+arithmetically pinned near the state's own last result. County geography moves one
+and a half points across a window while the composition it is standing in for
+moves nine.
 
 `reach_bound` says the same thing without needing any ground truth at all, and
 says it harder: |shift_pp| can never exceed the county mix's total-variation
 distance times the state's widest-minus-narrowest county margin, and SIX OF THE
-SEVEN measured compositional changes are larger than that ceiling. The only one
-inside it is Colorado, whose registration moved 1.98 points.
+EIGHT measured compositional changes are larger than that ceiling. The two inside
+it are Colorado, whose registration moved 1.98 points, and PA 2022, which moved
+5.57 against a bound of 6.28 -- and on that one the model HAD the room and
+reported -3.11 where the truth was +5.57, which is the other half of the finding:
+being able to say a thing is not saying it.
+
+`mix_split` is that bound with the inequality replaced by an equality. The truth
+column is itself a weighted mean over counties, so it decomposes exactly into the
+part the county mix moved and the part that moved between voters of the SAME
+county -- and the second part is 84% to 135% of it on every scoreable series,
+Pennsylvania 2024 96% (-26.54 of -27.64). The first part is `shift_pp`'s own
+construction with the unit gap removed, valued in the registration points the
+truth is measured in rather than presidential ones, and it buys -0.05 pp over the
+null (+0.30 on the seven folds that preceded PA 2022, and +0.03 there with North
+Carolina dropped). So county geography is not measuring the right thing in the
+wrong unit. There was nothing in that dimension to measure, and Pennsylvania is
+where that is easiest to see: the same voters, in the same places, choosing a
+different channel, which is BEHAVIOUR and is exactly what this construction
+freezes.
+
+`fit_constant` closes the last open question in the file. The strongest thing ever
+measured on this panel was a fitted constant, +3.49 pp leave-one-STATE-out, and
+the only objection to it was that the panel held ONE cycle transition so a state
+holdout never held the transition out. PA 2020 made a second one, the two point
+opposite ways (+5.57 then -27.64), and held out on a cycle the constant scores
+-3.35.
 
 Read docs/counterfactual.md before putting any of this on a page. The
 recommendation there is that the modelled margin should not ship, and that the
@@ -131,8 +156,22 @@ BEHAVIOUR_CYCLE = 2024
 
 #: Which cycle each target cycle is compared against. The reference is always the
 #: previous comparable early electorate, never the full electorate -- see the
-#: trap above. 2022 has no predecessor in this repo, so it is never a target.
-REFERENCE_CYCLE: dict[int, int] = {2026: 2024, 2024: 2022}
+#: trap above.
+#:
+#: 2022 became a target on 2026-09-07, when `pa.py` recovered Pennsylvania's 2020
+#: mail curve. Until then every fold in the panel was 2024-vs-2022 -- ONE cycle
+#: transition -- which is the fact that disqualified the fitted constant: leave-
+#: one-STATE-out never holds a transition out, so a constant learned from one
+#: transition was being scored on itself. PA is the only state that can reach
+#: 2020 and every other state simply produces no 2022 row, which is the same
+#: refusal a state with no reference series has always got.
+#:
+#: ⚠️ AND THE SECOND TRANSITION IS THE OPPOSITE OF THE FIRST. PA's early
+#: electorate moved +5.57 registration points from 2020 to 2022 and -27.64 from
+#: 2022 to 2024. The constant fitted on the seven 2024 folds is -10.22; held out
+#: on the 2022 fold it scores 12.62 against a null of 2.48, a gain of -10.14. See
+#: `fit_constant`.
+REFERENCE_CYCLE: dict[int, int] = {2026: 2024, 2024: 2022, 2022: 2020}
 
 METHOD = "pres2024-county-composition-diff"
 SOURCE_NAME = "electindex-counterfactual/pres2024-county-returns"
@@ -184,6 +223,12 @@ MIN_REFERENCE_BALLOTS = THIN_BALLOTS
 #: The measured error of this method, in percentage points of margin, applied as
 #: a flat half-width because it is structural rather than sampling noise -- it
 #: does NOT shrink as more ballots come in.
+#:
+#: TWO RULES SET IT, and the second has bound since 2026-09-07: it is the measured
+#: mean absolute error rounded up to the next half point, and it is NEVER NARROWER
+#: THAN THE LARGEST |shift_pp| THIS MODEL PUBLISHES. A band that does not contain
+#: the model's own output would be the model making a claim outside its stated
+#: error.
 #:
 #: It is the mean absolute distance, over mature days and averaged across the
 #: state-cycles that can be scored at all, between the compositional shift this
@@ -239,9 +284,40 @@ MIN_REFERENCE_BALLOTS = THIN_BALLOTS
 #:         and only series this method was arithmetically ABLE to reach -- see
 #:         `within_reach` -- and it promptly demonstrated why reach must never be
 #:         used to filter the headline.
+#:   10.5  PENNSYLVANIA 2020 (measured 9.99, AND THE BAND DID NOT MOVE). `pa.py`
+#:         rebuilt PA's 2020 mail curve
+#:         from the application-level file, which made 2022 a target cycle and gave
+#:         the panel its SECOND CYCLE TRANSITION -- an eighth fold, PA 2022-vs-2020.
 #:
-#: The verdict does not move at all: the gain over the no-change null is -0.15 pp
-#: on six folds and -0.15 pp on seven, and the bar is +1.00.
+#:         ⚠️ THIS IS DILUTION FOR THE SECOND TIME RUNNING, AND HARDER TO READ THAN
+#:         THE LAST ONE, BECAUSE THE BAND AND THE VERDICT MOVED IN OPPOSITE
+#:         DIRECTIONS. The new fold's own MAE is 7.21, below the panel mean, so the
+#:         mean falls. Its GAIN is -4.73, the worst in the panel, and the headline
+#:         went -0.15 -> -0.73. Nothing improved. A mean absolute error is a
+#:         statement about typical size, not about whether the model is any good,
+#:         and these two entries are the clearest demonstration in this file that
+#:         the two questions are separate.
+#:
+#:         The fold earns its place several times over. It is the first series this
+#:         method was able to reach whose composition actually MOVED -- 5.57 points
+#:         against a bound of 6.28 -- and the model still gets it wrong by 8.68 and
+#:         POINTS THE WRONG WAY, agreeing in sign on 7% of its days. And it makes
+#:         leave-one-CYCLE-out possible for the first time; see `fit_constant`.
+#:
+#:         ⚠️ AND THE VALUE STAYS AT 10.5, WHICH IS WHY THIS ENTRY EXISTS. The rule
+#:         has always been "the measured mean, rounded up to the next half point",
+#:         and there is a second clause that has never bound before and binds now:
+#:         THE BAND MAY NEVER BE NARROWER THAN THE LARGEST SHIFT THIS MODEL
+#:         PUBLISHES. Pennsylvania publishes +10.48. A band of 10.0 would mean the
+#:         model had published a claim outside its own stated error, which is the
+#:         one thing docs/counterfactual.md says it has not earned. So 9.99 rounds
+#:         to 10.0 and the floor holds it at 10.5.
+#:         `test_the_published_table_never_carries_an_immature_row` is where that
+#:         floor is asserted, and it is the test that caught this.
+#:
+#: The verdict does not move toward shipping at any point: the gain over the
+#: no-change null is -0.15 pp on six folds, -0.15 pp on seven and -0.73 pp on
+#: eight, and the bar is +1.00.
 #:
 #: `test_model_error_matches_the_measured_validation` refits it from output/ and
 #: fails if the data moves away from it.
@@ -448,15 +524,91 @@ def reach_bound(
     the error is structural at every possible county weighting, exactly the way
     `estimate.within_reach` is structural at every value of MAIL_SELECTION.
 
-    Measured on the published tree it binds on SIX OF THE SEVEN scoreable
-    state-cycles -- every one whose composition actually moved -- and on 65 of
-    their 83 days. See `within_reach` and docs/counterfactual.md.
+    Measured on the published tree it binds on SIX OF THE EIGHT scoreable
+    state-cycles and on 65 of their 98 days.
+
+    ⚠️ AND IT IS A BOUND ON THE MODEL'S MAGNITUDE, NEVER ON ITS ACCURACY. Two
+    series sit inside their own bound. One is Colorado, where nothing happened.
+    The other is PA 2022, where 5.57 points happened against a bound of 6.28 --
+    the county mix had the room -- and the model reported -3.11, the opposite
+    direction, for the worst gain in the panel. Refusing to publish where the
+    bound is small was measured for the same reason and is worse still: it keeps
+    the days where the mix moved most, which early in a window is phase rather
+    than composition, and on this panel it keeps PA 2024's +10.48 and scores
+    -3.15. See `within_reach` and docs/counterfactual.md.
     """
     distance = mix_distance(now, reference, baseline)
     span = margin_span(now, reference, baseline)
     if distance is None or span is None:
         return None
     return distance * span
+
+
+def mix_split(
+    now: dict[str, tuple[int, int]], reference: dict[str, tuple[int, int]]
+) -> tuple[float, float] | None:
+    """Split the MEASURED compositional change into between- and within-county.
+
+    ⚠️ THIS IS THE REACH BOUND'S EXACT TWIN, AND IT IS TIGHTER. `reach_bound` says
+    how far county geography COULD have moved at the worst case; this says how far
+    it ACTUALLY did, in the truth's own unit, with no inequality and no slack.
+
+    The truth column is the state's reported party registration of returned
+    ballots, `(D-R)/(D+R)`. Write a county's two-party registration base as
+    `n_c = d_c + r_c` and its registration margin as `m_c = 100(d_c-r_c)/n_c`;
+    then the statewide figure is itself a weighted mean, `M = Σ w_c m_c` with
+    `w_c = n_c / Σ n`, and the measured change decomposes EXACTLY:
+
+        M_now - M_ref  =  Σ (w_now,c - w_ref,c) · m_ref,c     BETWEEN counties
+                       +  Σ w_now,c · (m_now,c - m_ref,c)     WITHIN counties
+
+    The first term is `shift_pp`'s own construction -- the same county mix change,
+    against the same counties -- valued in REGISTRATION points instead of
+    presidential ones. So it is the county dimension with the unit gap removed:
+    if county geography were measuring the right thing in the wrong unit, this
+    term would carry the answer. The second term is everything that happened
+    inside counties, which no county-level model of any kind can see.
+
+    ⚠️ AND ON THE PUBLISHED TREE THE SECOND TERM IS THE WHOLE THING. On the final
+    matched day it is 84% (NC) to 135% (PA 2022) of the measured change --
+    Pennsylvania 2024 96.0%, -26.54 of -27.64. The between-county term never
+    exceeds 1.98 points in any fold, against measured changes of 1.98 to 27.64.
+    Scored as a predictor of the truth it buys -0.05 pp over the no-change null on
+    the eight folds; on the seven that preceded PA 2022 it bought +0.30, and even
+    that was carried by one state -- dropping North Carolina left +0.03.
+
+    PA 2022 is worth reading on its own: between -1.98, within +7.55, measured
+    +5.57. THE COUNTY MIX MOVED THE WRONG WAY, which is why `shift_pp` reports
+    -3.11 there. Small and blind is one failure mode; small, blind and
+    anticorrelated is the one that produces a -4.73. See docs/counterfactual.md.
+
+    Returns (between, within) over the counties BOTH days reported a party split
+    for, or None when there are none. A county with a party split on one side only
+    is dropped rather than guessed at -- THE BLANK RULE -- which is also what
+    keeps the identity exact: both terms are over one common support.
+    """
+    shared = set(now) & set(reference)
+    if not shared:
+        return None
+
+    def parts(reg: dict[str, tuple[int, int]]) -> tuple[dict[str, float], dict[str, float]] | None:
+        base = {f: reg[f][0] + reg[f][1] for f in shared}
+        total = sum(base.values())
+        if total <= 0:
+            return None
+        return (
+            {f: base[f] / total for f in shared},
+            {f: 100.0 * (reg[f][0] - reg[f][1]) / base[f] for f in shared},
+        )
+
+    here, there = parts(now), parts(reference)
+    if here is None or there is None:
+        return None
+    w_now, m_now = here
+    w_ref, m_ref = there
+    between = sum((w_now[f] - w_ref[f]) * m_ref[f] for f in shared)
+    within = sum(w_now[f] * (m_now[f] - m_ref[f]) for f in shared)
+    return between, within
 
 
 def completeness(ballots: dict[str, int], reference_final: int) -> float | None:
@@ -559,6 +711,11 @@ class DayIndex:
     state: str
     #: days_to_election -> {5-digit FIPS: cumulative ballots}
     counties: dict[int, dict[str, int]] = field(default_factory=dict)
+    #: days_to_election -> {5-digit FIPS: (party_dem, party_rep)} of the ballots
+    #: that county has returned. Read only for `mix_split`, which needs the TRUTH
+    #: dimension one level below the state total; it is never an input to
+    #: `shift_pp`, which is county geography and nothing else.
+    county_party: dict[int, dict[str, tuple[int, int]]] = field(default_factory=dict)
     #: days_to_election -> the state's own published row for that day
     state_rows: dict[int, dict[str, str]] = field(default_factory=dict)
     #: days_to_election -> {dimension: {bucket: ballots}}
@@ -598,7 +755,12 @@ def read_series(out_dir: Path, state: str) -> dict[int, DayIndex]:
         cycle, dte = _num(row.get("cycle")), _num(row.get("days_to_election"))
         fips = (row.get("county_fips") or "").strip()
         total = _num(row.get("ballots_total"))
-        if cycle is None or dte is None or dte < 0 or total is None or len(fips) != 5:
+        if cycle is None or dte is None or dte < 0 or len(fips) != 5:
+            continue
+        dem, rep = _num(row.get("party_dem")), _num(row.get("party_rep"))
+        if dem is not None and rep is not None and dem + rep > 0:
+            slot(cycle).county_party.setdefault(dte, {})[fips] = (dem, rep)
+        if total is None:
             continue
         slot(cycle).counties.setdefault(dte, {})[fips] = total
 
@@ -1132,6 +1294,14 @@ class ScoredDay:
     #: produced under ANY reweighting of the counties -- see `reach_bound`. A day
     #: whose `truth` exceeds it is one the dimension could not have reached.
     reach: float | None = None
+    #: `mix_split` on this pair of days: how much of the MEASURED change was the
+    #: county mix moving (`mix_only`, the same construction as `shift` but valued
+    #: in the truth's own registration unit) and how much happened INSIDE counties
+    #: (`inside`), where no county-level model can see it. They sum to the
+    #: county-derived truth exactly. Both are None where the state does not report
+    #: party on county rows.
+    mix_only: float | None = None
+    inside: float | None = None
 
 
 @dataclass
@@ -1163,11 +1333,59 @@ class Validation:
     #: `estimate.Validation.in_range`, and see `within_reach` for what it does
     #: and deliberately does not do to the headline.
     in_range: bool = True
+    #: `mix_split` on the final matched day, plus the between-county term's own
+    #: score over the whole series. `mix_only` is `shift`'s own construction with
+    #: THE UNIT GAP REMOVED -- the same county mix change, the same counties,
+    #: valued in the registration points the truth is measured in -- so
+    #: `mix_gain` is what county geography buys when it is not being asked to
+    #: cross a unit at all. REPORTED, NEVER A FILTER: it does not enter `gain`,
+    #: which stays the published method's, and it changes no headline.
+    final_mix_only: float | None = None
+    final_inside: float | None = None
+    mean_abs_mix_only: float | None = None
+    mix_mean_abs_error: float | None = None
+    #: LEAVE ONE CYCLE OUT. The constant fitted on the folds from every OTHER
+    #: cycle transition, and what it scores on this one. None when the panel holds
+    #: a single transition and there is no other cycle to fit on -- which is
+    #: precisely the objection that disqualified the constant, encoded rather than
+    #: argued. See `fit_constant`.
+    cycle_constant: float | None = None
+    cycle_constant_mean_abs_error: float | None = None
 
     @property
     def gain(self) -> float:
         """Points of accuracy the geography buys over "nothing changed"."""
         return self.null_mean_abs_error - self.mean_abs_error
+
+    @property
+    def inside_share(self) -> float | None:
+        """Share of the final day's MEASURED change that happened inside counties.
+
+        1.0 means the county mix contributed nothing at all and every point of the
+        move happened between voters of the same county. It can exceed 1.0, which
+        says the two terms point opposite ways and the county mix moved the wrong
+        direction.
+        """
+        if self.final_mix_only is None or self.final_inside is None:
+            return None
+        total = self.final_mix_only + self.final_inside
+        if abs(total) < 1e-9:
+            return None
+        return abs(self.final_inside) / abs(total)
+
+    @property
+    def mix_gain(self) -> float | None:
+        """What the county mix buys in the truth's own unit. See `mix_split`."""
+        if self.mix_mean_abs_error is None:
+            return None
+        return self.null_mean_abs_error - self.mix_mean_abs_error
+
+    @property
+    def cycle_constant_gain(self) -> float | None:
+        """What a constant learned from ANOTHER cycle transition buys here."""
+        if self.cycle_constant_mean_abs_error is None:
+            return None
+        return self.null_mean_abs_error - self.cycle_constant_mean_abs_error
 
     @property
     def scaled_gain(self) -> float | None:
@@ -1244,6 +1462,8 @@ def score_panel(
                 truth_ref = party_margin(reference.state_rows.get(ref_dte))
                 if truth_now is None or truth_ref is None:
                     continue
+                split = mix_split(now.county_party.get(dte, {}),
+                                  reference.county_party.get(ref_dte, {}))
                 panel[(cycle, state)].append(ScoredDay(
                     cycle=cycle, state=state, days_to_election=dte,
                     shift=here[0] - there[0],
@@ -1251,6 +1471,8 @@ def score_panel(
                     ballots=float(here[2]), reference_ballots=float(there[2]),
                     reach=reach_bound(now.counties[dte],
                                       reference.counties[ref_dte], baseline),
+                    mix_only=None if split is None else split[0],
+                    inside=None if split is None else split[1],
                 ))
     for series_days in panel.values():
         series_days.sort(key=lambda d: -d.days_to_election)
@@ -1268,13 +1490,20 @@ def within_reach(days: Sequence[ScoredDay]) -> bool:
     it is `reach_bound`, which is not a choice but the dimension's own arithmetic
     limit given the county mix change that actually happened.
 
-    ⚠️ AND THE ANSWER, ON THE PUBLISHED TREE, IS "NO" ON EVERY SERIES WHOSE
-    COMPOSITION ACTUALLY MOVED. FL 4.94 against a bound of 3.76, KY 13.22 against
-    8.57, MD 6.28 against 6.17, ME 13.99 against 1.68, NC 11.42 against 5.48, PA
-    27.64 against 4.57. Only Colorado, whose registration moved 1.98 points, sits
-    inside its own bound. That is the finding in a stronger form than the MAE
-    ever managed: Pennsylvania is not an outlier this method happened to miss, it
-    is the extreme of a limit that binds wherever there was anything to see.
+    ⚠️ AND THE ANSWER, ON THE PUBLISHED TREE, IS "NO" ON SIX OF THE EIGHT. FL 4.94
+    against a bound of 3.76, KY 13.22 against 8.57, MD 6.28 against 6.17, ME 13.99
+    against 1.68, NC 11.42 against 5.48, PA 2024 27.64 against 4.57. That is the
+    finding in a stronger form than the MAE ever managed: PA 2024 is not an
+    outlier this method happened to miss, it is the extreme of a limit that binds
+    wherever there was much to see.
+
+    ⚠️ AND WHERE IT DOES NOT BIND, THE MODEL STILL FAILS -- WHICH IS WHY THIS
+    PREDICATE IS NOT A COMPETENCE TEST. Colorado is inside its bound because its
+    registration moved 1.98 points; nothing happened there. PA 2022 is inside its
+    bound with 5.57 points against 6.28, so the county mix had room to report it,
+    and the model reported -3.11: wrong by 8.68, pointing the opposite way, sign
+    agreement 7%, gain -4.73, the worst fold in the panel. A dimension being ABLE
+    to say something is not the same as it saying it.
 
     ⚠️ SO THIS PREDICATE IS REPORTED AND IS NEVER A FILTER, WHICH IS WHERE IT
     PARTS COMPANY WITH `estimate.within_reach`. There, an out-of-reach series is
@@ -1306,25 +1535,30 @@ def fit_scale(series: Iterable[Sequence[ScoredDay]]) -> float | None:
     ⚠️ THERE IS NO INTERCEPT, AND THE REASON WRITTEN HERE USED TO BE WRONG. It
     said an intercept was "a constant national shift, and the null already owns
     that". The null is zero. It owns no such thing, and the difference is not
-    small: fitted leave-one-state-out on this panel, an intercept ALONE -- "every
-    state's early electorate moved by whatever the other states' registration
-    moved" -- scores 6.75 against the null's 10.24, a gain of +3.49 pp, three and
-    a half times the bar this feature is held to. Adding `shift` on top of it
-    buys a further +0.29.
+    small: fitted leave-one-state-out on the seven-fold panel, an intercept ALONE
+    -- "every state's early electorate moved by whatever the other states'
+    registration moved" -- scores 6.75 against the null's 10.24, a gain of
+    +3.49 pp, three and a half times the bar this feature is held to. Adding
+    `shift` on top of it buys a further +0.29.
 
-    The honest reason to refuse the intercept is a different and better one: the
-    panel contains exactly ONE cycle transition. All seven folds are 2024-vs-2022,
-    so leave-one-STATE-out never holds out the transition, and the constant is
-    fitted on the very thing it would be tested on. What it has learned is that
-    2022 -> 2024 was a one-off normalisation -- Republicans returning to a mail
-    channel they had boycotted -- which is a fact about that transition, not a
-    law about early electorates, and applying it to 2024 -> 2026 would assert the
-    same move happens twice. Leave-one-cycle-out is the test that would settle
-    it, and it needs a 2020 county backfill this repo does not have.
+    The honest reason to refuse the intercept was a different and better one: the
+    panel contained exactly ONE cycle transition. All seven folds were
+    2024-vs-2022, so leave-one-STATE-out never held out the transition, and the
+    constant was fitted on the very thing it would be tested on. What it had
+    learned was that 2022 -> 2024 was a one-off normalisation -- Republicans
+    returning to a mail channel they had boycotted -- which is a fact about that
+    transition, not a law about early electorates, and applying it to
+    2024 -> 2026 would assert the same move happens twice.
 
-    Colorado made the fragility visible the moment it arrived: the constant
-    scored +5.31 on the six folds that preceded it and costs -7.28 points on
-    Colorado alone, because Colorado is a state whose composition did not move
+    ⚠️ THAT WAS AN ARGUMENT UNTIL 2026-09-07 AND IT IS NOW A MEASUREMENT, BECAUSE
+    PENNSYLVANIA'S 2020 CURVE GAVE THE PANEL A SECOND TRANSITION. Held out on a
+    cycle rather than a state, the +3.49 becomes -3.35, and -10.14 on the fold the
+    constant was not fitted on. The two transitions point opposite ways. See
+    `fit_constant`, which exists to keep that measurement in the code.
+
+    Colorado made the fragility visible before that, the moment it arrived: the
+    constant scored +5.31 on the six folds that preceded it and costs -7.28 points
+    on Colorado alone, because Colorado is a state whose composition did not move
     and the constant insists that it did.
 
     Record it, do not ship it, and do not let it be mistaken for the county term
@@ -1342,6 +1576,47 @@ def fit_scale(series: Iterable[Sequence[ScoredDay]]) -> float | None:
         for day in one:
             numerator += weight * day.shift * day.truth
             denominator += weight * day.shift * day.shift
+    return numerator / denominator if denominator > 0 else None
+
+
+def fit_constant(series: Iterable[Sequence[ScoredDay]]) -> float | None:
+    """The intercept `fit_scale` refuses: the series-weighted mean measured change.
+
+    "This state's early electorate moved by whatever the OTHER states' moved."
+    Never used in the published path and never will be. It exists so the refusal
+    can be measured rather than argued, the same job `fit_scale` does.
+
+    ⚠️ AND IT IS NOW MEASURED, WHICH IT COULD NOT BE UNTIL 2026-09-07. Fitted
+    leave-one-STATE-out this constant scores +3.49 pp over the no-change null,
+    three and a half times MIN_GAIN and better than every predictor swept on this
+    panel -- and the objection recorded against it was that the panel held exactly
+    one cycle transition, so leave-one-state-out never held the transition out and
+    the constant was fitted on the very thing it would be tested on. That was an
+    argument. Pennsylvania's 2020 backfill turned it into a test:
+
+        constant fitted on the 2024-vs-2022 transition (7 states)   -10.22 pp
+        constant fitted on the 2022-vs-2020 transition (PA)          +2.40 pp
+        the first, held out on the second   MAE 12.62 vs null 2.48   -10.14 pp
+        the second, held out on the first   MAE 12.62 vs null 10.24   -2.38 pp
+
+    THE TWO TRANSITIONS POINT OPPOSITE WAYS. What the constant learns from
+    2022 -> 2024 is that Republicans came back to a mail channel they had
+    boycotted; what 2020 -> 2022 says is that they left it. A constant is a claim
+    that the same move happens every cycle, and the first time this panel was able
+    to check that claim it was wrong by ten points against a null of two and a
+    half. Leave-one-state-out was flattering it, exactly as suspected.
+
+    Record it, do not ship it, and do not let it be mistaken for the county term
+    working. See `fit_scale` and docs/counterfactual.md.
+    """
+    numerator = denominator = 0.0
+    for one in series:
+        if not one:
+            continue
+        weight = 1.0 / len(one)
+        for day in one:
+            numerator += weight * day.truth
+            denominator += weight
     return numerator / denominator if denominator > 0 else None
 
 
@@ -1377,12 +1652,19 @@ def validate(
             continue
         others = [v for k, v in panel.items() if k[1] != state]
         scale = fit_scale(others) if others else None
+        # LEAVE ONE CYCLE OUT: the constant learned from every OTHER transition.
+        other_cycles = [v for k, v in panel.items() if k[0] != cycle]
+        constant = fit_constant(other_cycles) if other_cycles else None
         shifts = [d.shift for d in days]
         truths = [d.truth for d in days]
         errors = [abs(s - t) for s, t in zip(shifts, truths)]
         nulls = [abs(t) for t in truths]
         n = len(days)
         last = min(days, key=lambda d: d.days_to_election)
+        # `mix_split`, the county dimension with the unit gap removed. Only over
+        # the days that have it; a state that reports no county party split
+        # leaves every one of these None rather than a zero.
+        splits = [d for d in days if d.mix_only is not None]
         results.append(Validation(
             cycle=cycle, state=state, days=n,
             final_shift=last.shift, final_truth=last.truth,
@@ -1403,8 +1685,30 @@ def validate(
             held_out=scale is not None,
             reach=last.reach,
             in_range=within_reach(days),
+            final_mix_only=last.mix_only,
+            final_inside=last.inside,
+            mean_abs_mix_only=(
+                None if not splits
+                else sum(abs(d.mix_only) for d in splits) / len(splits)
+            ),
+            mix_mean_abs_error=(
+                None if not splits
+                else sum(abs(d.mix_only - d.truth) for d in splits) / len(splits)
+            ),
+            cycle_constant=constant,
+            cycle_constant_mean_abs_error=(
+                None if constant is None
+                else sum(abs(constant - d.truth) for d in days) / n
+            ),
         ))
     return results
+
+
+def _fold(r: Validation) -> str:
+    """A series' name. The cycle is part of it: since Pennsylvania's 2020 curve
+    landed the panel holds TWO PA folds pointing opposite ways, and a line that
+    said "PA" twice would read as a duplicate rather than as the point."""
+    return f"{r.state}{r.cycle}"
 
 
 def format_validation(results: Sequence[Validation]) -> Iterator[str]:
@@ -1465,7 +1769,7 @@ def format_validation(results: Sequence[Validation]) -> Iterator[str]:
         yield (f"REACH: {len(beyond)} of {len(results)} series moved further than "
                "county geography could have reported under ANY reweighting of "
                "their counties ("
-               + ", ".join(f"{r.state} {abs(r.final_truth):.2f} vs {r.reach:.2f}"
+               + ", ".join(f"{_fold(r)} {abs(r.final_truth):.2f} vs {r.reach:.2f}"
                            for r in beyond)
                + "). reach = TV(county mix) x (widest county margin - narrowest), "
                  "a hard bound needing no ground truth. Every one is still "
@@ -1478,11 +1782,49 @@ def format_validation(results: Sequence[Validation]) -> Iterator[str]:
     yield (f"county geography moves {sum(r.mean_abs_shift for r in results) / n:.2f} pp "
            f"while the composition it stands in for moves "
            f"{sum(r.mean_abs_truth for r in results) / n:.2f} pp")
+
+    # ⚠️ INSIDE COUNTIES. `mix_split` splits the MEASURED change into the part the
+    # county mix moved and the part that happened between voters of the same
+    # county, exactly. The first term is `shift`'s own construction valued in the
+    # truth's own registration unit, so it is the county dimension WITH THE UNIT
+    # GAP REMOVED -- the one excuse the reach bound could not close. It is
+    # reported here and it is NEVER A FILTER: `gain` above is the published
+    # method's and is a mean over every scored series.
+    split = [r for r in results if r.inside_share is not None]
+    if split:
+        yield ("inside counties: "
+               + ", ".join(f"{_fold(r)} {r.inside_share:.0%}" for r in split)
+               + " of the measured change happened between voters of the SAME "
+                 "county, where no county-level model can see it")
+        mixed = [r for r in results if r.mix_gain is not None]
+        if mixed:
+            mix_gain = sum(r.mix_gain for r in mixed) / len(mixed)
+            yield (f"the same county mix valued in the truth's OWN unit "
+                   f"(no unit gap) moves "
+                   f"{sum(r.mean_abs_mix_only for r in mixed) / len(mixed):.2f} pp "
+                   f"and buys {mix_gain:+.2f} pp over the null")
     if scaled:
         k_gain = sum(r.scaled_gain for r in scaled) / len(scaled)
         yield (f"leave-one-state-out fitted scale: "
-               + ", ".join(f"{r.state} k={r.fitted_scale:+.2f}" for r in scaled)
+               + ", ".join(f"{_fold(r)} k={r.fitted_scale:+.2f}" for r in scaled)
                + f"   mean gain {k_gain:+.2f} pp")
+
+    # ⚠️ LEAVE ONE CYCLE OUT. The one test a fitted constant has never been able to
+    # take on this panel, and the reason it was never allowed to ship. It is blank
+    # while the panel holds a single cycle transition -- which is itself the
+    # finding, so it says so rather than printing nothing.
+    held = [r for r in results if r.cycle_constant_gain is not None]
+    if held:
+        yield ("leave-one-CYCLE-out constant: "
+               + ", ".join(f"{_fold(r)} c={r.cycle_constant:+.2f} "
+                           f"gain {r.cycle_constant_gain:+.2f}" for r in held)
+               + f"   mean gain {sum(r.cycle_constant_gain for r in held) / len(held):+.2f}"
+                 " pp -- a constant fitted leave-one-STATE-out scores +3.49, and"
+                 " this is what it is worth once a TRANSITION is held out")
+    else:
+        yield ("leave-one-CYCLE-out constant: not computable -- every fold in this "
+               "panel is the same cycle transition, so a fitted constant would be "
+               "scored on the transition it was learned from")
     yield ""
     yield (f"VERDICT: {'SHIPS' if gain >= MIN_GAIN else 'NOTHING SHIPS'} "
            f"(bar is {MIN_GAIN:+.2f} pp of gain over the no-change null; "

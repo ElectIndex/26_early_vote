@@ -397,9 +397,23 @@ def test_a_2026_row_appears_once_2024_reaches_the_same_days_out(tmp_path, nc_bas
     assert [(r.cycle, r.reference_cycle) for r in rows] == [(2026, 2024)]
 
 
-def test_2022_is_never_a_target_cycle(tmp_path, nc_baseline):
-    """It has no earlier early electorate in this repo to be compared against."""
-    assert 2022 not in cf.REFERENCE_CYCLE
+def test_2022_became_a_target_cycle_when_a_2020_reference_arrived(tmp_path,
+                                                                 nc_baseline):
+    """The rule never changed; the data did.
+
+    This test used to read `assert 2022 not in cf.REFERENCE_CYCLE`, on the true
+    statement that 2022 had no earlier early electorate in this repo to be
+    compared against. On 2026-09-07 `pa.py` rebuilt Pennsylvania's 2020 mail
+    curve from the application-level file and it does. So 2022 is a target, PA is
+    the only state that can answer it, and every other state gets exactly the
+    refusal a state with no reference series has always got -- which is what the
+    second half of this test pins.
+
+    It matters more than one extra fold. Every fold in the panel had been
+    2024-vs-2022 -- ONE cycle transition -- which is the fact that disqualified
+    the fitted constant. See `test_the_constant_does_not_survive_a_held_out_cycle`.
+    """
+    assert cf.REFERENCE_CYCLE[2022] == 2020
     counties = _county(2022, 10, {MECKLENBURG: 1000})
     assert cf.build(_tree(tmp_path, counties), nc_baseline) == []
 
@@ -758,39 +772,85 @@ def test_within_reach_is_measured_on_the_final_matched_day():
 
 @pytest.mark.skipif(not (REPO_OUTPUT / "ev_state_daily.csv").exists(),
                     reason="no published output/ tree in this checkout")
-def test_every_series_whose_composition_moved_is_beyond_the_dimensions_reach(
+def test_the_series_that_came_into_reach_is_the_one_that_points_the_wrong_way(
         full_baseline):
-    """THE FINDING, in its strongest form, and the consistency check behind it.
+    """THE FINDING, and the case it said would have to be reported if it arrived.
 
-    `estimate.py` shows-but-does-not-average one series (PA 2022) whose answer
-    sits further from its counties than `MAX_ADJUSTMENT` lets the model move,
-    because averaging it prices the cap rather than the method. The analogous
-    question here has an answer, and it is not "Pennsylvania": every series whose
-    composition demonstrably moved is one county geography could not have
-    reported under ANY reweighting of its counties. Only Colorado, whose
-    registration shifted 1.98 points, sits inside its own bound.
+    This test used to assert that EVERY series whose composition demonstrably
+    moved was one county geography could not have reported under any reweighting
+    of its counties, and its docstring said: "a future backfill that puts a MOVING
+    state in reach" should fail it, and "if that ever happens, that series is the
+    first honest measurement of how well this method estimates a real
+    compositional change and docs/counterfactual.md has to say so."
 
-    Pinned as "the out-of-reach series are the ones that moved", not as a count,
-    so a future backfill that adds another quiet state does not fail it and a
-    future backfill that puts a MOVING state in reach does. If the second ever
-    happens, that series is the first honest measurement of how well this method
-    estimates a real compositional change and docs/counterfactual.md has to say
-    so.
+    It happened, on 2026-09-07, when Pennsylvania's 2020 curve made 2022 a target
+    cycle. PA 2022-vs-2020 moved 5.57 registration points against a reach bound of
+    6.28: in range, and not quiet. And the honest measurement is worse than the
+    out-of-reach ones. The model reports -3.11 where the truth is +5.57 -- wrong
+    by 8.68 and pointing the OPPOSITE WAY -- for a gain of -4.73, the worst fold
+    in the panel, agreeing in sign on 7% of its days.
+
+    So the finding is not weakened by a series coming into reach; it is sharpened.
+    Being arithmetically able to report an answer is not the same as reporting it,
+    and this is the one series where the two can be told apart.
     """
     scores = cf.validate(REPO_OUTPUT, full_baseline)
     assert scores
     assert all(r.reach is not None for r in scores)
     moved = [r for r in scores if abs(r.final_truth) >= 4.0]
     assert moved, "the published tree should still hold a state that moved"
-    assert not any(r.in_range for r in moved), (
-        "county geography can now reach a state whose composition really moved: "
-        + ", ".join(f"{r.state} truth {abs(r.final_truth):.2f} vs reach {r.reach:.2f}"
-                    for r in moved if r.in_range)
+
+    reachable = [r for r in moved if r.in_range]
+    assert reachable, (
+        "no moving series is in reach any more; this test's whole subject is gone "
+        "and docs/counterfactual.md has to be re-derived"
     )
-    # And the bound is a bound: no scored day's modelled shift ever exceeds it.
+    # Being in reach buys nothing: every one of them still fails, and they fail
+    # at least as badly as the series that were out of reach.
+    for r in reachable:
+        assert r.gain < cf.MIN_GAIN, f"{r.state} {r.cycle} now clears the bar"
+    assert min(r.gain for r in reachable) <= min(r.gain for r in moved), (
+        "the in-reach series are no longer among the worst folds in the panel"
+    )
+    # And the bound is still a bound: no scored day's modelled shift exceeds it.
     for days in cf.score_panel(REPO_OUTPUT, full_baseline).values():
         for day in days:
             assert abs(day.shift) <= day.reach + 1e-9
+
+
+@pytest.mark.skipif(not (REPO_OUTPUT / "ev_state_daily.csv").exists(),
+                    reason="no published output/ tree in this checkout")
+def test_the_constant_does_not_survive_a_held_out_cycle(full_baseline):
+    """THE TEST THE CONSTANT HAS NEVER BEEN ABLE TO TAKE, and it fails it.
+
+    A fitted constant -- "this state's early electorate moved by whatever the
+    other states' did" -- scores +3.49 pp leave-one-STATE-out, three and a half
+    times MIN_GAIN and better than every predictor ever swept on this panel. It
+    was refused anyway, on the argument that all seven folds were the same cycle
+    transition, so leave-one-state-out never held the transition out and the
+    constant was being scored on the thing it was fitted to.
+
+    Pennsylvania's 2020 curve turned that argument into a measurement. The two
+    transitions point OPPOSITE ways -- PA's early electorate moved +5.57
+    registration points from 2020 to 2022 and -27.64 from 2022 to 2024 -- so the
+    constant learned from one is worse than useless on the other.
+    """
+    scores = cf.validate(REPO_OUTPUT, full_baseline)
+    held = [r for r in scores if r.cycle_constant_gain is not None]
+    assert held, (
+        "the panel holds one cycle transition again, so the constant cannot be "
+        "held out; docs/counterfactual.md's refusal is back to being an argument"
+    )
+    assert {r.cycle for r in scores} > {2024}, "expected more than one transition"
+    gain = sum(r.cycle_constant_gain for r in held) / len(held)
+    assert gain < 0, (
+        f"a constant now survives a held-out cycle at {gain:+.2f} pp; that is the "
+        "one objection docs/counterfactual.md rests its refusal on"
+    )
+    # Every fold, not just on average.
+    assert all(r.cycle_constant_gain < cf.MIN_GAIN for r in held)
+    printed = "\n".join(cf.format_validation(scores))
+    assert "leave-one-CYCLE-out constant" in printed
 
 
 def test_reach_is_reported_and_is_never_a_filter():
@@ -829,6 +889,167 @@ def test_reach_is_reported_and_is_never_a_filter():
     assert "mean MAE = 16.00 pp" in printed
     assert "REACH: 1 of 2 series" in printed
     assert "still\nAVERAGED" in printed or "still AVERAGED" in printed
+
+
+# --------------------------------------------------------------------------
+# Inside the counties: the reach bound's exact twin
+# --------------------------------------------------------------------------
+def test_the_mix_split_is_exact(nc_out, nc_baseline):
+    """between + within reproduces the measured change to floating-point noise.
+
+    `reach_bound` is an inequality that needs no ground truth. `mix_split` is the
+    matching EQUALITY that does: it takes the truth column apart into the part
+    the county mix moved and the part that moved between voters of the same
+    county, and the two sum to the measured change exactly.
+    """
+    # Both counties sit at +20 and -20 registration margin on both days; only the
+    # weights move, from 2:7 to 1:1, so the whole change is the mix.
+    now = {MECKLENBURG: (60, 40), ALLEGHANY: (40, 60)}
+    ref = {MECKLENBURG: (30, 20), ALLEGHANY: (70, 105)}
+    between, within = cf.mix_split(now, ref)
+    assert within == pytest.approx(0.0, abs=1e-9)
+    assert between == pytest.approx(100.0 / 9, abs=1e-9)
+
+    # And one where every point of it is INSIDE the counties: the shares are
+    # identical and only the registration behind them moved.
+    now = {MECKLENBURG: (60, 40), ALLEGHANY: (60, 40)}
+    ref = {MECKLENBURG: (50, 50), ALLEGHANY: (50, 50)}
+    between, within = cf.mix_split(now, ref)
+    assert between == pytest.approx(0.0, abs=1e-9)
+    assert within == pytest.approx(20.0, abs=1e-9)
+
+    # On the real North Carolina slice the identity holds against the STATE's own
+    # reported party split, which is a different file from the county one.
+    for day in cf.score_panel(nc_out, nc_baseline)[(2024, "NC")]:
+        assert day.mix_only + day.inside == pytest.approx(day.truth, abs=1e-6)
+
+
+def test_a_county_reporting_party_on_one_side_only_is_dropped(nc_baseline):
+    """THE BLANK RULE, and it is also what keeps the identity exact.
+
+    Both terms have to be summed over one common support or they stop adding up
+    to the measured change. A county the reference cycle never gave a party split
+    for is not a county with no Democrats.
+    """
+    now = {MECKLENBURG: (60, 40), ALAMANCE: (10, 90)}
+    ref = {MECKLENBURG: (50, 50)}
+    between, within = cf.mix_split(now, ref)
+    # Alamance is dropped, so this is Mecklenburg against itself: no mix change.
+    assert between == pytest.approx(0.0, abs=1e-9)
+    assert within == pytest.approx(20.0, abs=1e-9)
+    assert cf.mix_split({}, ref) is None
+    assert cf.mix_split(now, {}) is None
+
+
+def test_the_north_carolina_split_is_pinned(nc_out, nc_baseline):
+    """The real numbers, in the truth's own unit.
+
+    County geography reports -1.25 points on the final day. Give the SAME county
+    mix change the counties' own registration margins instead of their
+    presidential ones -- removing the unit gap that the fitted scale exists to
+    absorb -- and it reports -1.85 against a measured -11.42. The remaining
+    -9.57 happened between voters of the same county.
+    """
+    got = cf.validate(nc_out, nc_baseline)[0]
+    assert got.final_mix_only == pytest.approx(-1.85, abs=0.01)
+    assert got.final_inside == pytest.approx(-9.57, abs=0.01)
+    assert got.inside_share == pytest.approx(0.84, abs=0.01)
+    # Removing the unit gap does not rescue it: 2.00 points on a bar of 1.00, in
+    # the single most flattering state in the panel and in sample.
+    assert got.mix_gain == pytest.approx(2.00, abs=0.05)
+    printed = "\n".join(cf.format_validation([got]))
+    assert "inside counties: NC2024 84%" in printed
+
+
+@pytest.mark.skipif(not (REPO_OUTPUT / "ev_state_daily.csv").exists(),
+                    reason="no published output/ tree in this checkout")
+def test_the_measured_change_happened_inside_the_counties(full_baseline):
+    """THE FINDING, tighter than the reach bound and in the truth's own unit.
+
+    `reach_bound` says county geography COULD NOT have reported these moves. This
+    says what actually carried them: on every scoreable series, the great majority
+    of the measured compositional change happened between voters of the SAME
+    county. Pennsylvania 2024 is 96% -- -26.54 of -27.64 -- which is the answer to
+    "why is PA the worst fold": it is not geography, and nothing keyed on geography
+    can reach it.
+
+    Pinned as a floor on every series rather than as eight numbers, so a backfill
+    that adds a state does not fail it and a state whose change really was
+    geographic does.
+    """
+    scores = cf.validate(REPO_OUTPUT, full_baseline)
+    split = [r for r in scores if r.inside_share is not None]
+    assert split, "the published tree should still hold a county party split"
+    assert all(r.inside_share > 0.5 for r in split), (
+        "a series' compositional change is now mostly BETWEEN counties: "
+        + ", ".join(f"{r.state} {r.cycle} {r.inside_share:.0%} inside"
+                    for r in split if r.inside_share <= 0.5)
+    )
+
+
+@pytest.mark.skipif(not (REPO_OUTPUT / "ev_state_daily.csv").exists(),
+                    reason="no published output/ tree in this checkout")
+def test_closing_the_unit_gap_does_not_clear_the_bar_either(full_baseline):
+    """The one excuse the reach bound could not close, closed.
+
+    `fit_scale` exists because a registration point is not a presidential point,
+    and a signal in the wrong unit would be fixed by one number. `mix_only` needs
+    no number: it is `shift`'s own construction -- the same county mix change over
+    the same counties -- valued in registration points directly. On the seven
+    2024-vs-2022 folds it bought +0.30, and +0.03 with North Carolina dropped;
+    with Pennsylvania's second transition in the panel it is -0.05.
+    """
+    scores = [r for r in cf.validate(REPO_OUTPUT, full_baseline)
+              if r.mix_gain is not None]
+    assert len(scores) >= 2
+    gain = sum(r.mix_gain for r in scores) / len(scores)
+    assert gain < cf.MIN_GAIN, (
+        f"the county mix in the truth's own unit now buys {gain:+.2f} pp; "
+        "docs/counterfactual.md says the dimension is blind and must be re-derived"
+    )
+    # And it does not survive dropping a state either, which is the check that
+    # turned the flow specification's +1.59 into +0.27.
+    worst = min(
+        sum(r.mix_gain for r in scores if r.state != drop)
+        / len([r for r in scores if r.state != drop])
+        for drop in {r.state for r in scores}
+    )
+    assert worst < cf.MIN_GAIN
+
+
+def test_the_split_is_reported_and_is_never_a_filter():
+    """The same trap `test_reach_is_reported_and_is_never_a_filter` keeps shut.
+
+    `inside_share` is a condition on the TRUTH, exactly like `in_range`, so a rule
+    that dropped the series whose change was mostly within-county would select the
+    series whose change was geographic -- which is to say the quiet ones. The
+    headline is the published method's `gain` over every scored series and neither
+    `mix_gain` nor `inside_share` may touch it.
+    """
+    geographic = cf.Validation(
+        cycle=2024, state="QQ", days=1, final_shift=0.0, final_truth=-2.0,
+        final_error=2.0, mean_abs_error=2.0, null_mean_abs_error=2.0,
+        mean_abs_shift=0.0, mean_abs_truth=2.0, correlation=None,
+        sign_agreement=0.0, reach=9.0, in_range=True,
+        final_mix_only=-1.8, final_inside=-0.2,
+        mean_abs_mix_only=1.8, mix_mean_abs_error=0.2)
+    inside = cf.Validation(
+        cycle=2024, state="ZZ", days=1, final_shift=0.0, final_truth=-30.0,
+        final_error=30.0, mean_abs_error=30.0, null_mean_abs_error=30.0,
+        mean_abs_shift=0.0, mean_abs_truth=30.0, correlation=None,
+        sign_agreement=0.0, reach=4.0, in_range=False,
+        final_mix_only=-0.5, final_inside=-29.5,
+        mean_abs_mix_only=0.5, mix_mean_abs_error=29.5)
+    assert geographic.inside_share == pytest.approx(0.10)
+    assert inside.inside_share == pytest.approx(29.5 / 30.0)
+
+    printed = "\n".join(cf.format_validation([geographic, inside]))
+    # The mean is over BOTH, and it is the PUBLISHED method's, not mix_only's.
+    assert "mean MAE = 16.00 pp" in printed
+    assert "gain = +0.00 pp" in printed
+    assert "inside counties: QQ2024 10%, ZZ2024 98%" in printed
+    assert "buys +1.15 pp over the null" in printed
+    assert "NOTHING SHIPS" in printed
 
 
 @pytest.mark.skipif(not (REPO_OUTPUT / "ev_state_daily.csv").exists(),
