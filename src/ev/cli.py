@@ -208,6 +208,22 @@ def cmd_backfill(args) -> int:
     return 0
 
 
+#: How much of one refusal `probe` prints. Long enough to keep the part that
+#: matters -- the URL and the status code -- on the line.
+PROBE_DETAIL_CHARS = 240
+
+
+def _one_line(text: str | None) -> str:
+    """Collapse an adapter's detail onto one line, truncated.
+
+    `probe`'s output is grepped line-by-line by reachability.yml, so a detail
+    carrying a newline (a PDF parser's message, a stack-ish string) must not be
+    able to split one state's verdict into two lines.
+    """
+    flat = " ".join(str(text or "").split())
+    return flat if len(flat) <= PROBE_DETAIL_CHARS else flat[:PROBE_DETAIL_CHARS - 1] + "…"
+
+
 def cmd_probe(args) -> int:
     as_of = (
         datetime.strptime(args.as_of, "%Y-%m-%d").date() if args.as_of else date.today()
@@ -216,9 +232,28 @@ def cmd_probe(args) -> int:
         rungs = ladder(state)
         tiers = ",".join(f"{a.tier}:{a.name}" for a in rungs) or "(none)"
         _, outcome = run_state(state, rungs, args.cycle, as_of)
+        # ⚠️ THE REFUSALS ARE WHY THIS COMMAND EXISTS, and it used to print only
+        # `status` and `message`. A state whose every tier answered 403 from an
+        # Actions runner printed as `pending` with the word "403" nowhere on the
+        # line -- and reachability.yml's whole job is to notice exactly that,
+        # because Colorado, Ohio, Arizona and Nevada were all fixed against
+        # IP-SENSITIVE blocks proven from a residential address. The failures are
+        # already on `outcome.attempts`; nothing was reading them.
+        #
+        # Appended to the SAME line on purpose: reachability.yml greps
+        # `^[A-Z]{2} `, so a continuation line would be filtered out of the job
+        # summary it writes.
+        refused = [a for a in outcome.attempts
+                   if a.get("result") not in ("ok", "not_yet_published")]
+        detail = "".join(
+            f"  |{a.get('tier')}:{a.get('name')} {a.get('result')}: "
+            f"{_one_line(a.get('detail'))}"
+            for a in refused
+        )
         print(f"{state:3s} [{tiers}] -> {outcome.status}"
               + (f" via {outcome.source_name}" if outcome.ok else "")
-              + (f" ({outcome.message})" if outcome.message else ""))
+              + (f" ({outcome.message})" if outcome.message else "")
+              + detail)
     return 0
 
 

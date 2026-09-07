@@ -6,6 +6,13 @@ Two rules, and they are the whole design:
      no data at ANY tier, so falling through would only let a weaker source
      manufacture a zero. "Nothing yet" is recorded as a status, not as a row.
 
+     One refinement, and it is about the STATUS only, never the walk: raised by
+     the LAST rung it is recorded as STATUS_FAILED rather than STATUS_PENDING.
+     Getting that far means every rung above it failed, and the last rung is the
+     hand-entered file, which has no opinion about whether a state has started
+     voting -- only about whether anybody typed a number. See the note at the
+     handler.
+
   2. SourceError / SchemaDrift FALL THROUGH to the next tier. We wanted data and
      could not get it here, so a worse source beats no source -- and every row
      carries the tier it came from, so the page can say which.
@@ -61,19 +68,58 @@ def run_state(
         outcome.message = f"no adapters registered for {state}"
         return FetchResult(), outcome
 
-    for adapter in adapters:
+    last_rung = len(adapters) - 1
+    for index, adapter in enumerate(adapters):
         label = adapter.name or type(adapter).__name__
         try:
             result = adapter.fetch(cycle, as_of)
+            # ⚠️ `provenance()` BELONGS INSIDE THE TRY, and did not used to be.
+            # It builds a `schema.Provenance`, which REFUSES a tier that is not
+            # one of TIER_LABELS -- and `Adapter.tier` defaults to 0. So a new
+            # adapter that implements `fetch` correctly and forgets one line
+            # (`tier = TIER_SCRAPER`) raised ValueError out of the one function
+            # whose entire contract is "one bad adapter must not kill the run",
+            # aborting the walk for every state after it and taking the status
+            # write with it. Computed here, that is just another crash: the
+            # attempt is recorded and the ladder falls through to civicAPI.
+            provenance = adapter.provenance()
         except NotYetPublished as exc:
             # RULE 1: stop. There is no better source for data that does not exist.
-            outcome.status = STATUS_PENDING
-            outcome.message = str(exc)
             outcome.attempts.append(
                 {"tier": adapter.tier, "name": label, "result": "not_yet_published",
                  "detail": str(exc)}
             )
-            log.info("%s: not yet published (%s)", state, label)
+            if index and index == last_rung:
+                # ⚠️ ...EXCEPT FROM THE FLOOR OF THE LADDER, WHICH KNOWS NOTHING
+                # ABOUT THE WORLD.
+                #
+                # Reaching the last rung at all means every rung above it failed
+                # to produce data -- NotYetPublished anywhere higher would have
+                # returned already. And the last rung is always `ManualAdapter`,
+                # whose "not yet published" means "nobody has typed a number into
+                # data/manual/", not "the state has not started voting". Reading
+                # that as PENDING made STATUS_FAILED unreachable in production:
+                # `ev_status.json`'s failed count was structurally 0, ingest.yml's
+                # "Every tier failed for:" line could never print, and
+                # `ingest --strict` could never return 1. A state whose scraper,
+                # civicAPI and the aggregator all broke in the middle of early
+                # voting badged as "early voting has not opened".
+                #
+                # The WALK is unchanged -- nothing below this rung is consulted,
+                # because there is nothing below it -- and no row is published
+                # either way. Only the label on the outcome changes, and it
+                # changes to the one that is true.
+                outcome.status = STATUS_FAILED
+                outcome.message = (
+                    f"every tier failed for {state}; the floor of the ladder "
+                    f"({label}) has nothing either: {exc}"
+                )
+                log.error("%s: every tier failed; %s has nothing either (%s)",
+                          state, label, exc)
+            else:
+                outcome.status = STATUS_PENDING
+                outcome.message = str(exc)
+                log.info("%s: not yet published (%s)", state, label)
             return FetchResult(), outcome
         except SourceError as exc:
             # RULE 2: fall through to the next tier.
@@ -108,7 +154,6 @@ def run_state(
             log.warning("%s: %s returned no rows", state, label)
             continue
 
-        provenance = adapter.provenance()
         result.stamp(provenance)
         # ...AND THE FOURTH TABLE, which `FetchResult.stamp` cannot reach.
         # Town rows ride on the result as an ATTRIBUTE rather than a field (see
