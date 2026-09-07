@@ -468,7 +468,7 @@ REGISTRATION_SHARE: dict[str, float] = {
 #: It was 0.10 while the model was county geography alone. It is 0.05 since the
 #: model gained a mail-selection term, whose measured leave-one-state-out error
 #: is 3.85 points across thirteen completed series; see docs/party-estimate.md.
-MODEL_ERROR = 0.05
+MODEL_ERROR = 0.06
 
 #: How Arizona spells its parties, mapped onto a spelling `normalize.party()`
 #: already knows. Only labels normalize does NOT recognise belong here; anything

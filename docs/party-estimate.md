@@ -20,16 +20,20 @@ mean of **6.9 points** and beat "quote the state's 2024 presidential result and
 stop" by **0.72**, which is to say it was laundering a known election result
 through today's ballot counts. Adding the second term — a correction for the fact
 that the people who *ask for a mail ballot* are not a random draw from their
-county — takes the measured error to **3.28 points** and the gain over that same
-null to **+3.46**, out of sample, leave-one-state-out. Pennsylvania 2024, the
-worst state in the old table at 15.5, is **4.2**.
+county — takes the measured error to **4.62 points** and the gain over that same
+null to **+4.80**, out of sample, leave-one-state-out. Pennsylvania 2024, the
+worst state in the old table at 15.5, is **3.8**.
 
-That average is over the twelve series **this model can be measured on**.
-Pennsylvania 2022 is the thirteenth, it scores **13.9**, and it is printed in
-the table and left out of every mean — see
-[the reach rule](#two-corrections-behind-those-figures-2026-09-07). There is no
-"midterms are harder" effect underneath that: the 2022 series score 3.07 and the
-2024 series 3.38.
+That average is over the fifteen series **this model can be measured on**, and
+two of them — Pennsylvania 2020 at **15.3** and Pennsylvania 2022 at **13.5** —
+finished beyond anything the model can say. They are averaged in anyway and
+flagged; see [the reach rule](#two-corrections-behind-those-figures-2026-09-07)
+for why they cannot TRAIN it and
+[The Pennsylvania problem](#the-pennsylvania-problem-measured-to-its-ceiling-2026-09-07)
+for why nothing reaches them. Without Pennsylvania entirely the panel measures
+**3.10**. There is no "midterms are harder" effect underneath any of it: the
+2022 folds score 4.83, the 2024 folds 3.14, and the whole of the difference is
+Pennsylvania 2022.
 
 Those figures moved on 2026-09-06 and both directions are worth knowing. The
 gain fell from +4.44 because a three-day, eight-ballot series had been averaged
@@ -381,19 +385,25 @@ Carolina 2024.
 
 | cycle | state | days | est | truth | 2024 base | **final error** | MAE | geo MAE | null MAE | gain vs geo | gain vs null | est moved | truth moved |
 | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| 2024 | CO | 4 | 55.9 | 51.6 | 55.6 | **+4.3** | 4.9 | 3.2 | 3.8 | −1.7 | −1.1 | 1.9 | 0.3 |
-| 2022 | FL | 17 | 46.3 | 45.8 | 43.4 | **+0.4** | 1.9 | 4.0 | 4.0 | +2.1 | +2.1 | 11.0 | 6.0 |
-| 2024 | FL | 22 | 46.2 | 43.4 | 43.4 | **+2.8** | 4.5 | 0.8 | 0.9 | −3.7 | −3.6 | 8.3 | 4.5 |
-| 2024 | IA | 15 | 45.4 | 48.9 | 43.3 | **−3.6** | 3.1 | 6.8 | 7.5 | +3.7 | +4.4 | 16.2 | 4.2 |
-| 2024 | KY | 13 | 38.1 | 44.7 | 34.5 | **−6.7** | 6.0 | 10.6 | 10.5 | +4.6 | +4.6 | 3.4 | 0.9 |
+| 2020 | PA | 121 | 54.6 | 73.7 | 49.1 | **−19.1** | 15.3 | 23.9 | 28.4 | +8.6 | +13.1 | 22.0 | 8.2 |  ⟵ beyond the model's reach
+| 2022 | CO | 11 | 55.4 | 52.4 | 55.6 | **+3.0** | 2.3 | 2.3 | 2.9 | +0.0 | +0.7 | 0.9 | 0.6 |
+| 2024 | CO | 4 | 55.1 | 51.6 | 55.6 | **+3.5** | 3.2 | 3.2 | 3.8 | +0.0 | +0.6 | 0.2 | 0.3 |
+| 2022 | FL | 17 | 47.1 | 45.8 | 43.4 | **+1.2** | 2.8 | 4.0 | 4.0 | +1.2 | +1.2 | 10.7 | 6.0 |
+| 2024 | FL | 22 | 46.7 | 43.4 | 43.4 | **+3.3** | 5.0 | 0.8 | 0.9 | −4.2 | −4.1 | 8.0 | 4.5 |
+| 2024 | IA | 15 | 46.2 | 48.9 | 43.3 | **−2.7** | 2.7 | 6.8 | 7.5 | +4.1 | +4.8 | 15.6 | 4.2 |
+| 2024 | KY | 13 | 37.8 | 44.7 | 34.5 | **−7.0** | 6.4 | 10.6 | 10.5 | +4.2 | +4.1 | 3.0 | 0.9 |
 | 2022 | MD | 8 | 63.8 | 66.3 | 64.8 | **−2.5** | 1.9 | 1.9 | 0.5 | +0.0 | −1.4 | 1.4 | 2.2 |
 | 2024 | MD | 8 | 64.1 | 63.2 | 64.8 | **+1.0** | 1.8 | 1.8 | 2.9 | +0.0 | +1.1 | 1.0 | 2.8 |
-| 2022 | ME | 121 | 58.7 | 67.2 | 53.5 | **−8.5** | 4.6 | 14.1 | 15.9 | +9.5 | +11.3 | 14.9 | 5.4 |
-| 2024 | ME | 121 | 57.9 | 60.2 | 53.5 | **−2.4** | 1.6 | 7.4 | 8.7 | +5.8 | +7.1 | 12.1 | 5.6 |
-| 2022 | NC | 61 | 51.6 | 55.1 | 48.4 | **−3.5** | 3.8 | 6.3 | 7.0 | +2.5 | +3.2 | 1.2 | 1.7 |
-| 2024 | NC | 47 | 50.5 | 49.4 | 48.4 | **+1.1** | 0.9 | 0.9 | 1.1 | +0.0 | +0.2 | 1.0 | 2.0 |
-| 2022 | PA | 70 | 57.2 | 76.5 | 49.1 | **−19.3** | 13.9 | 27.7 | 29.1 | +13.8 | +15.2 | 13.4 | 3.4 |  ⟵ shown, not averaged
-| 2024 | PA | 70 | 54.5 | 62.7 | 49.1 | **−8.2** | 4.2 | 15.5 | 17.9 | +11.3 | +13.7 | 20.7 | 11.2 |
+| 2022 | ME | 121 | 59.3 | 67.2 | 53.5 | **−8.0** | 4.4 | 14.1 | 15.9 | +9.8 | +11.5 | 13.6 | 5.4 |
+| 2024 | ME | 121 | 58.3 | 60.2 | 53.5 | **−1.9** | 1.4 | 7.4 | 8.7 | +6.0 | +7.3 | 11.2 | 5.6 |
+| 2022 | NC | 61 | 51.4 | 55.1 | 48.4 | **−3.7** | 4.1 | 6.3 | 7.0 | +2.2 | +3.0 | 1.0 | 1.7 |
+| 2024 | NC | 47 | 50.3 | 49.4 | 48.4 | **+0.9** | 0.7 | 0.9 | 1.1 | +0.2 | +0.3 | 0.9 | 2.0 |
+| 2022 | PA | 70 | 57.9 | 76.5 | 49.1 | **−18.6** | 13.5 | 27.7 | 29.1 | +14.2 | +15.6 | 12.7 | 3.4 |  ⟵ beyond the model's reach
+| 2024 | PA | 70 | 55.2 | 62.7 | 49.1 | **−7.5** | 3.8 | 15.5 | 17.9 | +11.7 | +14.1 | 20.0 | 11.2 |
+
+(North Carolina 2026 — four days and eight ballots — is printed by `--validate`
+and is not in this table or any mean. See
+[A thirteenth series](#a-thirteenth-series-that-is-shown-and-not-scored).)
 
 All figures are percentage points of the **Democratic two-party share**. `est`
 and `truth` are the last day of the series. `MAE`, `geo MAE` and `null MAE` are
@@ -401,24 +411,28 @@ averaged over the days on which at least 25% of that series' final early vote wa
 in. `geo` is the geography-only model this one replaced; `null` is quoting the
 state's 2024 presidential result and stopping.
 
-**Summary across the twelve completed series, and the same figures for the model
+**Summary across the fifteen scored series, and the same figures for the model
 this one replaces:**
 
 | | geography only | **+ mail term** |
 | --- | ---: | ---: |
-| mean absolute final-day error | 5.81 | **3.73** |
-| signed mean final-day error | −4.88 | **−2.15** |
-| RMSE of final-day error | 7.05 | **4.55** |
-| worst final-day error | 12.11 (PA 2024) | **8.50** (ME 2022) |
-| mean MAE, mature days | 6.12 | **3.28** |
-| mean MAE of the null model | 6.74 | 6.74 |
-| **gain over the null** | **+0.62** | **+3.46** |
-| **gain over the geography-only model** | — | **+2.85** |
-| how far the estimate moved across a window | 1.07 | 7.75 |
-| how far the reported party split moved | 3.90 | 3.90 |
+| mean absolute final-day error | 7.31 | **5.60** |
+| signed mean final-day error | −6.30 | **−3.88** |
+| RMSE of final-day error | 10.29 | **7.95** |
+| worst final-day error | 25.30 (PA 2022) | **19.13** (PA 2020) |
+| mean MAE, mature days | 8.48 | **4.62** |
+| mean MAE of the null model | 9.42 | 9.42 |
+| **gain over the null** | **+0.94** | **+4.80** |
+| **gain over the geography-only model** | — | **+3.86** |
+| how far the estimate moved across a window | 1.18 | 8.15 |
+| how far the reported party split moved | 3.93 | 3.93 |
 
-(Over the twelve in-range series. Pennsylvania 2022, shown and not averaged,
-scores 13.9 against a geography-only 27.7.)
+Every scored series is in those means, including the two beyond the model's
+reach. `in_range` is a reported diagnostic and has never been a filter — the
+test that says a series is out of reach is the test that says the most happened
+there, so filtering on it would report the quiet half of the panel. Drop
+Pennsylvania altogether and the panel measures **3.10**; that is the honest way
+to see the size of it, and it is a jackknife row rather than a headline.
 
 **Two different signed biases, and they say different things.** The −2.15 above
 is measured on each series' LAST day. Averaged over every mature day instead it
@@ -779,6 +793,236 @@ original entry gives, not better.
   precisely where it cannot be trusted and barely touching it where it can,
   which is what a cap is for. Both smooth saturations and no cap at all score
   worse, on the mature days and on every day.
+
+### The Pennsylvania problem, measured to its ceiling, 2026-09-07
+
+Pennsylvania is the whole of this model's remaining error and always has been.
+On the fifteen-series panel PA 2020 scores 15.3, PA 2022 scores 13.5 and PA 2024
+scores 3.8 — 32.6 of the panel's 69.3 points of total error, from one state.
+Drop Pennsylvania and the model measures **3.10** instead of 4.62.
+
+This section is the record of a search for a specification that fixes it. **None
+was found, and the reason is now a measurement rather than an opinion.**
+
+#### The three Pennsylvanias, which is the whole finding
+
+The mail term is `α · mail_share · (1 − mail_reach)^decay`. Pennsylvania has no
+in-person early voting at all, so `mail_share` is exactly 1.000 in every cycle,
+and `mail_reach` is the only input the model has left. Here are its three
+series:
+
+| | mail_share | mail_reach | correction needed |
+| --- | ---: | ---: | ---: |
+| PA 2020 | 1.000 | 0.370 | **+21.0** |
+| PA 2022 | 1.000 | 0.242 | **+25.3** |
+| PA 2024 | 1.000 | 0.281 | **+12.1** |
+
+**`mail_reach` does not even ORDER what Pennsylvania needs.** 2020 has the
+highest reach and the second-largest correction; 2024 sits between the other two
+on reach and needs half of what either of them does. No monotone function of
+reach — no decay, no exponential, no saturation, no cap — passes through those
+three points, because no function passes through a non-monotone relation.
+
+Cross-state it is the same story. Four series in the panel have `mail_share`
+1.000, so the mail term reduces to a curve in reach alone, and the four points
+are PA 2020 (0.370, 21.0), PA 2022 (0.242, 25.3), PA 2024 (0.281, 12.1) and
+Iowa 2024 (0.413, 5.2). PA 2024 → IA 2024 implies a decay exponent of 4.2. PA
+2022 → PA 2024 implies 14. PA 2020 → PA 2022 implies a *negative* one. They are
+not one curve, and `MAIL_DECAY` is a single number.
+
+What separates the three is the thing the tracker cannot see: how partisan the
+act of requesting a mail ballot was that year. PA's mail electorate registered
+73.7% Democratic in 2020, 76.5% in 2022 and 62.7% in 2024, against counties
+saying 49–53 throughout. That is a regime, it is not in any ballot count, and
+`docs/regression.md` is this repo's standing account of what happens when you go
+looking for a signal that is not there.
+
+#### Past county geography, not past the cap
+
+The usual account of PA 2022 is that its answer sits further from its counties
+than `MAX_ADJUSTMENT` allows the model to move, which invites the obvious fix.
+The obvious fix does nothing — the cap is flat from 0.20 upward on this panel
+(0.20 → 4.623, 0.25 → 4.614, 0.30 and above → 4.611, and removing it entirely
+→ 4.611) — and the reason it does nothing is that the cap is not what binds.
+
+`geography_ceiling()` puts a number on the real bound, and it needs nothing the
+vendored baseline does not already carry. Sort a state's counties from most to
+least Democratic and take the top `mail_reach` of its 2024 two-party electorate:
+that slice's own Democratic share is the most this model could possibly say, the
+answer it would give if every ballot back so far had come from the most
+Democratic counties in the state, in order, and from nowhere else.
+
+| | reach | ceiling | truth | |
+| --- | ---: | ---: | ---: | --- |
+| PA 2020 | 0.370 | 65.8 | **73.7** | beyond county geography |
+| PA 2022 | 0.242 | 69.2 | **76.5** | beyond county geography |
+| ME 2022 | 0.284 | 67.1 | **67.2** | exactly at the line |
+| PA 2024 | 0.281 | 68.0 | 62.7 | inside |
+| NC 2024 | 0.053 | 78.2 | 49.4 | far inside |
+
+Pennsylvania 2020 and 2022 finished **more Democratic than the most Democratic
+counties they could have drawn from**. That is not a cap being too tight, a
+decay being too steep or a constant being too small. It is the statement that
+the quantity being predicted is not a fact about where the ballots came from,
+and county weights are all this model has. `--validate` now prints it, and
+`test_pennsylvania_is_past_county_geography_not_past_the_cap` fails if a future
+baseline or backfill makes it untrue.
+
+`geography_ceiling` is a diagnostic and deliberately neither the cap nor the
+`within_reach` rule; both were measured and both are worse. As the cap it scores
+**5.53** against 4.62, because it is generous exactly where reach is small and
+the model is least trustworthy — North Carolina's 5%-of-the-electorate mail
+channel would get a 29-point allowance — and tight where the model is already
+fine. As the `within_reach` rule it scores **4.81**, because it also throws Maine
+2022 out of training, and Maine 2022 teaches the term more than its own residual
+costs.
+
+#### The ceiling on the whole family
+
+Two bounds, both computed on the fifteen-series panel, and between them they
+close the question.
+
+**Any global reparameterisation is worth at most +0.59, in sample.** Sweeping
+`(α, decay)` over the entire plane and scoring every series with the pair that
+suits the panel best — no leave-one-out, no honesty at all, the constants
+allowed to see their own answers — the best the family can do is **4.03** against
+the shipped out-of-sample 4.62. `MIN_GAIN` is 1.0. No rearrangement of these two
+constants can clear the bar, and every specification below lands inside that
+bound, as it must.
+
+**Any state-varying term is worth at most +2.94, with perfect foresight.** Give
+every series its own α and decay, chosen knowing its answers, and the panel
+measures **1.688** — PA 2022 at 7.69, which is where the cap finally does bind.
+So the headroom for a better *instrument* is real and large. What does not exist
+is the instrument: every candidate for one is below.
+
+#### Every candidate, leave-one-state-out, α and decay refitted in every fold
+
+| specification | panel MAE | vs shipped | why not |
+| --- | ---: | ---: | --- |
+| **shipped: `α·mail_share·(1−mail_reach)^5`, capped** | **4.62** | — | — |
+| registration anchor, w = 0.5 (see below) | 4.16 | +0.46 | jackknife −0.01 to +0.99; undefined for PA 2020; disqualified on the publish side |
+| `mail_share·(1−TOTAL reach)^d` | 4.54 | +0.09 | jackknife −0.77 to +0.79 — sign-unstable, and carried by PA |
+| `mail_share·exp(−k·mail_reach)` | 4.59 | +0.03 | noise |
+| decay grid widened from 8.0 to 16.0 | 4.62 | 0.00 | no fold ever selects a decay above 8 |
+| `mail_share·(1−mail_reach)^d1·(1−total_reach)^d2` | 4.67 | −0.04 | d2 fits to 0 in six of seven folds |
+| `mail_share^p·(1−mail_reach)^d` | 4.84 | −0.22 | worse |
+| fit the CAPPED objective rather than the uncapped regressor | 4.75 | −0.13 | worse |
+| ...and drop `within_reach` with it | 5.44 | −0.82 | much worse |
+| `within_reach` restated on `geography_ceiling` | 4.81 | −0.18 | worse; loses ME 2022 from training |
+| cap = k·(`geography_ceiling` − geo) | 5.53 | −0.90 | worse |
+| `mail_reach` against ballots REQUESTED, falling back to returned | 5.20 | −0.58 | worse — and see below |
+| `mail_reach` against ballots REQUESTED, no fallback | 5.44 | −0.82 | PA 2022 gets no mail term at all and scores 27.7 |
+
+**The requested-ballot term deserves its own paragraph, because it is the trap
+this document has now named five times and this is the cleanest example of it.**
+`mail_requested` is the right denominator for reach — it is ballots SENT, and
+selection happens at the request, not at the return. Pennsylvania publishes it
+for 2024. Pennsylvania does not publish it for 2022 or 2020, and neither does
+North Carolina, Colorado or Maryland.
+
+With a fallback to ballots returned where it is missing, PA 2022 improves
+enormously — 13.5 → 12.1 — and it improves **for a reason that is not real**.
+The fold's α is calibrated on other states' *requested* scale, where reach is
+larger and the regressor smaller, so α comes out bigger; that bigger α is then
+applied to PA 2022 on the *returned* scale. It is a units mismatch that happens
+to point the right way, and the panel says so: 5.20 against 4.62. Without the
+fallback there is no mismatch and no illusion — PA 2022 loses its mail term
+entirely and scores 27.7. *A term available only where the data is richest is
+not a term this model can use*, and Pennsylvania is exactly the state missing
+the richest fields.
+
+#### The registration anchor, and why it does not ship
+
+`data/meta/party_registration.csv` (2026-09-07) carries statewide party
+registration for every state in the panel, which makes a real gap measurable for
+the first time: the model predicts a **presidential**-anchored two-party share
+and is scored against a **registration** share, and those differ per state by
+anything from −2.9 (Colorado) to +13.1 (Kentucky). Correcting for half of it —
+`w = 0.5`, the interior optimum — takes the panel from 4.62 to **4.16**.
+
+It does not ship, for four reasons, in ascending order of how decisive they are.
+
+1. **+0.46 is under `MIN_GAIN`.**
+
+2. **The jackknife is not uniform.** Drop each state in turn and refit: FL +0.99,
+   MD +0.56, NC +0.40, IA +0.39, CO +0.31, PA +0.18, KY +0.04, **ME −0.01**. The
+   gain is 83% Kentucky — the one state whose error this document already
+   attributes to the registration-versus-vote gap by name — and it goes to
+   nothing when either Kentucky or Maine leaves.
+
+   ⚠️ It looked much better than that under a protocol that pins α and decay to
+   the values fitted on the *uncorrected* target and then moves the yardstick.
+   That double-counts: α was already absorbing the panel's average registration
+   gap, so adding the gap on top pays for it twice. Under that protocol PA 2022
+   reads 13.5 → 9.0 and the jackknife is uniformly positive. Refit α and decay
+   against the corrected target, as every other fold in this document does, and
+   PA 2022 reads 13.5 → 12.8 and the Kentucky drop reads +0.04. **The whole of
+   the apparent Pennsylvania rescue was the fit being held still.**
+
+3. **It is undefined for PA 2020**, because statewide registration was collected
+   from 2022. PA 2020 is the panel's worst series and it gets *worse* under the
+   correction (15.3 → 15.7), since its fold's α shrinks and no gap arrives to
+   replace it.
+
+4. **The disqualification, which is the real one, and it depends on which side
+   the term goes.** On the PREDICTION side the term is undefined in nine of the
+   ten states this model publishes for — they do not register by party at all —
+   so it would improve the score without touching a single published number
+   except Arizona's. That is the "validates only where the data is richest"
+   pattern in its purest form. On the TRUTH side — correcting the yardstick
+   rather than the model, which is arithmetically identical and conceptually
+   opposite — it is defined wherever a panel series can exist, since a series
+   needs reported party registration to be scoreable at all. But then measure
+   what it actually does to the model: train α and decay against the
+   gap-corrected target and score against what states really report, and the
+   panel goes **4.62 → 4.84, worse**. The correction buys nothing for the
+   published estimate. It only relabels part of the existing error.
+
+   There is no third measurement that separates those, because the states this
+   model publishes for have no registration and never will. That is a real limit
+   on what this panel can settle, and it is worth writing down rather than
+   resolving by preference.
+
+The finding the file does support is a description, not a term: **roughly half
+of what looks like model error in the low-mail states is the yardstick.** Colorado
+and Maryland get no mail term at all, so their whole residual is geography versus
+registration, and across their four series a regression of residual on
+registration gap has a slope of 0.59 — which is why w = 0.5 is where the optimum
+sits. Kentucky's −7.0 is 13.1 points of registration gap and 3.0 points of
+model. None of that is fixable by this model and none of it can exist in Texas.
+
+#### What would actually move it
+
+Not arithmetic. The oracle bound says a state-varying instrument is worth up to
++2.94, and the three that have been tried — cycle, county mail polarisation,
+statewide registration — are each worse than nothing out of sample. What is
+missing is a measurement of **how partisan requesting a mail ballot was this
+year**, which is a live quantity, not a historical one:
+
+* **A party split BY METHOD**, from any state that publishes one. It would
+  measure `MAIL_SELECTION` directly instead of inferring it from how the gap
+  moves when in-person opens. No state we track publishes it.
+* **Live cross-sectional fitting.** In October 2026 several states will be
+  reporting a real party split by mail while the publish states report none, so
+  the current cycle's selection intensity is measurable *as the cycle runs*.
+  That is a different model from this one — it cannot be validated
+  leave-one-state-out on completed cycles, because the whole point is that the
+  constant is not transferable between them — and it is the only proposal on
+  this page that addresses the actual mechanism.
+
+Until one of those exists, Pennsylvania's error is the honest price of a model
+that knows where ballots came from and not who sent them, and `MODEL_ERROR` and
+the `SHOWN, NOT AVERAGED` flag are how the page says so.
+
+⚠️ **One consequence of PA 2020 arriving, for whoever owns the band.** The panel
+now measures 4.62 against a `MODEL_ERROR` of 5.0. The band still sits above the
+error, which is the rule `test_model_error_is_refitted_from_the_panel` enforces,
+but the headroom that was 1.15 points is now 0.4 — and that headroom is the
+whole of the allowance for the mail term's direction assumption failing in 2026.
+It has not been moved here: the 5 → 6 → 5 round trip this document already
+records is what moving it on a judgement rather than a measurement looks like,
+and the measurement has not yet said 6.
 
 ### When it is most wrong
 
