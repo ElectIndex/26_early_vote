@@ -20,9 +20,9 @@ mean of **6.9 points** and beat "quote the state's 2024 presidential result and
 stop" by **0.72**, which is to say it was laundering a known election result
 through today's ballot counts. Adding the second term — a correction for the fact
 that the people who *ask for a mail ballot* are not a random draw from their
-county — takes the measured error to **3.06 points** and the gain over that same
-null to **+3.59**, out of sample, leave-one-state-out. Pennsylvania, the worst
-state in the old table at 15.5, is **3.7**.
+county — takes the measured error to **4.09 points** and the gain over that same
+null to **+4.29**, out of sample, leave-one-state-out. Pennsylvania 2024, the
+worst state in the old table at 15.5, is **3.7**.
 
 Those figures moved on 2026-09-06 and both directions are worth knowing. The
 gain fell from +4.44 because a three-day, eight-ballot series had been averaged
@@ -374,17 +374,18 @@ Carolina 2024.
 
 | cycle | state | days | est | truth | 2024 base | **final error** | MAE | geo MAE | null MAE | gain vs geo | gain vs null | est moved | truth moved |
 | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| 2024 | CO | 5 | 55.7 | 52.0 | 55.6 | **+3.7** | 4.9 | 3.3 | 3.8 | −1.5 | −1.1 | 2.4 | 0.4 |
-| 2022 | FL | 24 | 45.8 | 46.3 | 43.4 | **−0.5** | 1.4 | 3.6 | 3.6 | +2.2 | +2.2 | 11.4 | 6.0 |
-| 2024 | FL | 32 | 46.1 | 43.5 | 43.4 | **+2.6** | 3.5 | 0.4 | 0.5 | −3.1 | −3.0 | 8.5 | 4.5 |
-| 2024 | IA | 16 | 45.7 | 48.9 | 43.3 | **−3.2** | 3.0 | 6.7 | 7.4 | +3.7 | +4.4 | 16.4 | 4.2 |
-| 2024 | KY | 13 | 38.1 | 44.7 | 34.5 | **−6.7** | 5.9 | 10.6 | 10.5 | +4.6 | +4.6 | 3.4 | 0.9 |
+| 2024 | CO | 5 | 55.7 | 52.0 | 55.6 | **+3.7** | 5.6 | 3.3 | 3.8 | −2.3 | −1.8 | 3.8 | 0.4 |
+| 2022 | FL | 24 | 46.9 | 46.3 | 43.4 | **+0.6** | 2.5 | 3.6 | 3.6 | +1.0 | +1.0 | 13.4 | 6.0 |
+| 2024 | FL | 32 | 47.0 | 43.5 | 43.4 | **+3.5** | 4.5 | 0.4 | 0.5 | −4.2 | −4.1 | 9.7 | 4.5 |
+| 2024 | IA | 16 | 47.3 | 48.9 | 43.3 | **−1.6** | 3.5 | 6.7 | 7.4 | +3.2 | +3.9 | 16.7 | 4.2 |
+| 2024 | KY | 13 | 38.7 | 44.7 | 34.5 | **−6.1** | 5.1 | 10.6 | 10.5 | +5.4 | +5.4 | 4.0 | 0.9 |
 | 2022 | MD | 8 | 63.8 | 66.3 | 64.8 | **−2.5** | 1.9 | 1.9 | 0.5 | +0.0 | −1.4 | 1.4 | 2.2 |
 | 2024 | MD | 8 | 64.1 | 63.2 | 64.8 | **+1.0** | 1.8 | 1.8 | 2.9 | +0.0 | +1.1 | 1.0 | 2.8 |
-| 2022 | ME | 121 | 59.2 | 67.2 | 53.5 | **−8.0** | 4.2 | 14.1 | 15.9 | +9.9 | +11.7 | 14.5 | 5.4 |
-| 2024 | ME | 121 | 58.3 | 60.2 | 53.5 | **−2.0** | 1.6 | 7.4 | 8.7 | +5.8 | +7.1 | 11.9 | 5.6 |
-| 2022 | NC | 61 | 51.6 | 55.1 | 48.4 | **−3.5** | 3.9 | 6.3 | 7.0 | +2.4 | +3.1 | 1.1 | 1.7 |
-| 2024 | NC | 47 | 50.4 | 49.4 | 48.4 | **+1.0** | 0.9 | 0.9 | 1.1 | +0.1 | +0.2 | 1.0 | 2.0 |
+| 2022 | ME | 121 | 61.4 | 67.2 | 53.5 | **−5.8** | 2.8 | 14.1 | 15.9 | +11.3 | +13.1 | 14.0 | 5.4 |
+| 2024 | ME | 121 | 60.2 | 60.2 | 53.5 | **−0.1** | 3.4 | 7.4 | 8.7 | +4.0 | +5.3 | 12.7 | 5.6 |
+| 2022 | NC | 61 | 51.9 | 55.1 | 48.4 | **−3.2** | 3.6 | 6.3 | 7.0 | +2.7 | +3.5 | 1.3 | 1.7 |
+| 2024 | NC | 47 | 50.7 | 49.4 | 48.4 | **+1.3** | 1.1 | 0.9 | 1.1 | −0.2 | −0.0 | 1.1 | 2.0 |
+| 2022 | PA | 70 | 57.8 | 76.5 | 49.1 | **−18.7** | 13.4 | 27.7 | 29.1 | +14.3 | +15.7 | 12.8 | 3.4 |
 | 2024 | PA | 70 | 55.1 | 62.7 | 49.1 | **−7.6** | 3.7 | 15.5 | 17.9 | +11.7 | +14.1 | 20.1 | 11.2 |
 
 All figures are percentage points of the **Democratic two-party share**. `est`
@@ -398,22 +399,22 @@ this one replaces:**
 
 | | geography only | **+ mail term** |
 | --- | ---: | ---: |
-| mean absolute final-day error | 5.81 | **3.52** |
-| signed mean final-day error | −4.88 | **−2.15** |
-| RMSE of final-day error | 7.05 | **4.30** |
-| worst final-day error | 12.11 (PA) | **8.04** (ME 2022) |
-| mean MAE, mature days | 6.04 | **3.06** |
-| mean MAE of the null model | 6.65 | 6.65 |
-| **gain over the null** | **+0.61** | **+3.59** |
-| **gain over the geography-only model** | — | **+2.98** |
-| how far the estimate moved across a window | 1.07 | 7.75 |
-| how far the reported party split moved | 3.90 | 3.90 |
+| mean absolute final-day error | 7.42 | **4.27** |
+| signed mean final-day error | −6.13 | **−2.74** |
+| RMSE of final-day error | 10.02 | **6.35** |
+| worst final-day error | 27.42 (PA 2022) | **18.66** (PA 2022) |
+| mean MAE, mature days | 7.71 | **4.09** |
+| mean MAE of the null model | 8.38 | 8.38 |
+| **gain over the null** | **+0.67** | **+4.29** |
+| **gain over the geography-only model** | — | **+3.62** |
+| how far the estimate moved across a window | 1.24 | 8.61 |
+| how far the reported party split moved | 3.86 | 3.86 |
 
-**Two different signed biases, and they say different things.** The −2.15 above
+**Two different signed biases, and they say different things.** The −2.74 above
 is measured on each series' LAST day. Averaged over every mature day instead it
-is **−0.46** — the model leans Republican at the close and is close to unbiased
-through the middle of a window, which is consistent with the mail term doing
-most of its work early and decaying out. Neither number rescues a flat
+is **−1.06** — the model leans Republican at the close and much less so through
+the middle of a window, which is consistent with the mail term doing most of its
+work early and decaying out. Neither number rescues a flat
 correction (see [What else was tried](#what-else-was-tried)), and the smaller
 one is a reason there is less left to correct than this document used to think.
 
@@ -428,7 +429,8 @@ a series that thin would count for as much as Pennsylvania's seventy days. **It
 was not excluded from the headline error, and it should have been by the same
 sentence.** It scored an MAE of 13.6 and dragged the reported mean from 3.06 to
 3.87 — nearly a point of this model's published accuracy, decided by eight
-ballots.
+ballots. (Both figures are from the twelve-series panel of that day; the
+headline is 4.09 now that Pennsylvania 2022 is in it.)
 
 ⚠️ **`mature_days()` cannot catch this, and the reason generalises.** It
 normalises by the SERIES' OWN maximum, so all three of those days are 100% of
@@ -482,16 +484,24 @@ spec beat even the crude null.
 
 | removed | model MAE | geography only | null | gain vs geo | gain vs null |
 | --- | ---: | ---: | ---: | ---: | ---: |
-| CO | 2.88 | 7.25 | 7.99 | +4.37 | +5.11 |
-| IA | 3.28 | 6.88 | 7.60 | +3.59 | +4.32 |
-| KY | 2.82 | 6.44 | 7.25 | +3.63 | +4.43 |
-| MD | 3.46 | 8.10 | 9.04 | +4.65 | +5.58 |
-| ME | 3.30 | 5.87 | 6.39 | +2.57 | +3.09 |
-| NC | 3.30 | 7.67 | 8.45 | +4.37 | +5.15 |
-| PA | 3.29 | 5.90 | 6.43 | +2.61 | +3.14 |
+| CO | 3.96 | 8.07 | 8.76 | +4.11 | +4.80 |
+| FL | 4.19 | 8.75 | 9.53 | +4.56 | +5.35 |
+| IA | 4.14 | 7.79 | 8.46 | +3.66 | +4.33 |
+| KY | 4.00 | 7.47 | 8.20 | +3.47 | +4.20 |
+| MD | 4.49 | 8.77 | 9.59 | +4.28 | +5.10 |
+| ME | 4.26 | 7.15 | 7.66 | +2.88 | +3.40 |
+| NC | 4.41 | 8.45 | 9.16 | +4.05 | +4.76 |
+| PA | 3.28 | 5.18 | 5.63 | +1.91 | +2.35 |
 
-The gain over the geography-only model never falls below **+2.57** whichever
-state is removed, including Pennsylvania.
+The gain over the geography-only model never falls below **+1.91** whichever
+state is removed — and that floor is Pennsylvania, which is the row worth
+pausing on. Removing PA takes the model's error from 4.09 to **3.28**, the best
+any single removal achieves. It is simultaneously the state this model is most
+wrong about and the state where it earns most of its keep, because the null it
+is being measured against is even more wrong there. Both facts are the same
+fact: PA's mail electorate is the furthest from its counties of any state we can
+score, which is precisely what the mail term is for and precisely why what is
+left over is large.
 
 **Are the constants stable?** Every leave-one-state-out fold, so each of these
 was fitted without the state named:
@@ -594,6 +604,38 @@ corrected twelve-fold panel, all leave-one-state-out:
 | `x/(1+x/cap)` saturation instead of the hard cap | 3.58 | −0.52 |
 | no cap at all | 3.17 | −0.11 |
 
+#### Re-measured on the thirteen-fold panel, 2026-09-07
+
+Pennsylvania 2022 is the most extreme case in the panel — the largest gap
+between a state's counties and its mail electorate anywhere we can score — and
+the cap is the constant that governs exactly that case. So the three saturation
+candidates were re-run rather than inherited. They land in the same order, at the
+same distance:
+
+| candidate | MAE | vs shipped |
+| --- | ---: | ---: |
+| **shipped: statewide mail × reach⁵, hard cap 0.20** | **4.09** | — |
+| `tanh` saturation | 4.12 | −0.03 |
+| no cap at all | 4.10 | −0.01 |
+| `x/(1+x/cap)` saturation | 4.62 | −0.53 |
+
+And the cap's own value is flat wherever it stops binding hard:
+
+| cap | 0.10 | 0.15 | **0.20** | 0.25 | 0.30 | 0.40 |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| MAE | 4.48 | 4.17 | **4.09** | 4.10 | 4.10 | 4.10 |
+
+0.18 measures 4.08, which is +0.01 — noise against a `MIN_GAIN` of 1.0, and not a
+reason to move a constant. `MAX_ADJUSTMENT` stays at 0.20.
+
+⚠️ **The other two candidates were NOT re-measured, and the reason is that they
+cannot move.** Both need in-person early voting to say anything new, and
+**Pennsylvania reports none at all** — legally it has none (see `pa.py`). The
+in-person reach term sees an identical panel plus 70 days of zero, and the
+county-level mail term falls back to geography-only in PA exactly as it already
+did for 2024. Adding PA 2022 makes the second one worse for the reason the
+original entry gives, not better.
+
 * **The in-person reach term.** This document already rejected one, but only
   inside the LINEAR family (5.39 against 4.55). It is worse in the reach⁵ family
   too, monotonically in β, and it destroys Maryland — a state the model is
@@ -609,7 +651,7 @@ corrected twelve-fold panel, all leave-one-state-out:
   Maine 2022 goes 5.0 → 10.0 and Iowa 2.4 → 6.7. And it is **structurally
   unavailable exactly where it is needed** — Pennsylvania's county file carries
   mail and no in-person at all, so PA falls back to geography-only and scores
-  15.5. That is the same trap the midterm baseline died on, and it is worth
+  15.5 in 2024 (and 27.7 in 2022). That is the same trap the midterm baseline died on, and it is worth
   naming as a pattern: a term that validates only where the data is richest is
   not a term this model can use.
 

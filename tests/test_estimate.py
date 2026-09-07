@@ -317,6 +317,39 @@ def test_fitted_constants_still_match_the_data():
     )
 
 
+def test_model_error_is_refitted_from_the_panel():
+    """The published band is a measurement too, and it is the one that drifted.
+
+    ⚠️ THIS TEST EXISTS BECAUSE ITS ABSENCE COST SOMETHING. `MODEL_ERROR` was set
+    to 5 points as "deliberately above the measured 3.4", and then nothing ever
+    checked it again. When Pennsylvania 2022 joined the panel the measured error
+    went to 4.4 and the headroom silently became a rounding error -- the band was
+    still called conservative on the page while it had stopped being conservative.
+    `counterfactual.py`'s band has been refit-guarded since the day it was set,
+    which is exactly why that one never drifted and this one did.
+
+    Two assertions, and the second is the one that matters: the band may sit
+    above the measured error (it is meant to -- the mail term assumes a direction
+    2026 need not repeat), but it may never sit below it.
+    """
+    root = Path(__file__).resolve().parents[1]
+    out = root / "output"
+    if not (out / "ev_state_daily.csv").exists():
+        pytest.skip("no published output/ tree in this checkout")
+    scored = [r for r in est.validate(out, est.load_baseline()) if r.scored]
+    if not scored:
+        pytest.skip("nothing scoreable yet")
+    measured = sum(r.mean_abs_error for r in scored) / len(scored) / 100
+
+    assert est.MODEL_ERROR == pytest.approx(measured, abs=0.02), (
+        f"the panel now measures {measured * 100:.2f} points against a shipped "
+        f"band of {est.MODEL_ERROR * 100:.0f}; re-measure docs/party-estimate.md"
+    )
+    assert est.MODEL_ERROR >= measured, (
+        "the band must never be narrower than the error it stands for"
+    )
+
+
 # --------------------------------------------------------------------------
 # No data means no row. Never a 50/50 default.
 # --------------------------------------------------------------------------

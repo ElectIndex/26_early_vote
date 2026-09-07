@@ -126,13 +126,41 @@ def test_a_bucket_that_is_blank_is_never_a_zero(gen2024):
         assert row.inperson is None
 
 
-def test_free_text_party_labels_are_not_bucketed_into_other():
-    """The 2020 and 2022 files carry the raw registration string, including
-    "CL", "NOP" and "NON". Quietly dropping those into party_oth would publish a
-    confident wrong third-party share; refusing is the whole point of rule 3."""
-    with pytest.raises(SchemaDrift, match="unrecognised party label"):
-        pa.build(load("2022_returned_cameron_all_parties.json"), None,
-                 2022, date(2022, 11, 8))
+def test_free_text_party_labels_are_excluded_never_bucketed():
+    """The 2020 and 2022 files carry the raw registration string. PA's own
+    abbreviations are in PA_PARTY; the residue ("CL" here) is not, and the one
+    thing that must never happen to it is landing in party_oth -- that would
+    publish a confident wrong third-party share, which is rule 3.
+
+    Cameron 2022 is the whole argument in 407 ballots: 177 D, 190 R, 38 across
+    the no-affiliation family, 1 OTH -- and 1 "CL" that is counted in the total
+    and in NO bucket at all. The buckets fall one short of the total on purpose.
+    """
+    result = pa.build(load("2022_returned_cameron_all_parties.json"), None,
+                      2022, date(2022, 11, 8))
+    final = result.state_rows[-1]
+
+    assert final.ballots_total == 407
+    assert (final.party_dem, final.party_rep) == (177, 190)
+    assert final.party_npa == 38          # NF + I + NO + NON + NOP
+    assert final.party_oth == 1           # the OTH row, and ONLY the OTH row
+
+    # The gap is the point: "CL" is a returned ballot, so it counts; it is not a
+    # party we can name, so it is in no party bucket.
+    assert (final.party_dem + final.party_rep + final.party_npa
+            + final.party_oth) == final.ballots_total - 1
+
+
+def test_too_much_unreadable_party_is_still_refused():
+    """Excluding a rounding error is not the same as tolerating drift. Past
+    MAX_UNKNOWN_PARTY_SHARE the vocabulary really has moved, and publishing a
+    party split off the remainder would be inventing one."""
+    rows = [{"countyname": "CAMERON", "party": "DEM", "d": "2022-10-01",
+             "n": "1000"},
+            {"countyname": "CAMERON", "party": "ZZQ", "d": "2022-10-01",
+             "n": "50"}]
+    with pytest.raises(SchemaDrift, match="cannot read"):
+        pa.build(rows, None, 2022, date(2022, 11, 8))
 
 
 def test_pennsylvania_has_no_in_person_early_voting(state):

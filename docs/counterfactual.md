@@ -15,15 +15,15 @@ table, never into the reported columns of `ev_state_daily.csv`.
 
 **The headline finding, before anything else.** Measured against the only
 compositional change anyone can actually observe — the party registration those
-same states reported for those same ballots — the method is off by **9.09
+same states reported for those same ballots — the method is off by **11.74
 percentage points of margin** and the null model *"the composition has not
-changed at all"* is off by **9.16**. It buys **+0.07 points**, against a bar of
-+1.00. County geography moves **0.95 points** across a window while the
-composition it is standing in for moves **9.16**. Fitting a scale factor to close
-the gap, leave-one-state-out, makes three of the five states worse and produces
-multipliers of **+0.24, +0.40, +2.30, +4.20 and +7.28** — a thirty-fold spread.
-A signal in the wrong unit would be fixed by one number. Nothing here is one
-number.
+changed at all"* is off by **11.59**. It is **−0.15 points worse than saying
+nothing**, against a bar of +1.00. County geography moves **1.14 points** across
+a window while the composition it is standing in for moves **11.59**. Fitting a
+scale factor to close the gap, leave-one-state-out, makes every one of the six
+states worse and produces multipliers of **−1.01, −0.92, −0.17, +0.40, +0.58 and
++2.62** — pointing both ways, across a fifteen-fold spread. A signal in the wrong
+unit would be fixed by one number. Nothing here is one number.
 
 For comparison, `docs/party-estimate.md` recommended **against** shipping a model
 that bought 0.79 points, and `docs/regression.md` declined one at +0.17.
@@ -257,38 +257,39 @@ that clear [the maturity gate](#the-maturity-gate) on both sides.
 
 | cycle | state | days | shift (final) | truth (final) | **MAE** | **null** | **gain** | mean \|shift\| | mean \|truth\| | r | sign | LOO k | k-MAE | k-gain |
 | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| 2024 | FL | 8 | +0.04 | −4.94 | 6.89 | 7.15 | **+0.26** | 0.29 | 7.15 | +0.89 | 62% | +2.30 | 6.55 | +0.60 |
-| 2024 | KY | 6 | +1.43 | −13.22 | 7.10 | 6.54 | **−0.56** | 0.70 | 6.54 | −0.84 | 17% | +4.20 | 9.34 | −2.80 |
-| 2024 | MD | 6 | +0.70 | −6.28 | 7.16 | 5.60 | **−1.56** | 1.56 | 5.60 | +0.97 | 0% | +7.28 | 16.99 | −11.39 |
-| 2024 | ME | 21 | −1.18 | −13.99 | 13.39 | 14.37 | **+0.98** | 0.98 | 14.37 | −0.62 | 100% | +0.40 | 13.98 | +0.39 |
-| 2024 | NC | 15 | −1.25 | −11.42 | 10.91 | 12.14 | **+1.23** | 1.23 | 12.14 | +0.60 | 100% | +0.24 | 11.84 | +0.30 |
+| 2024 | FL | 8 | +0.04 | −4.94 | 6.89 | 7.15 | **+0.26** | 0.29 | 7.15 | +0.89 | 62% | −0.17 | 7.19 | −0.04 |
+| 2024 | KY | 6 | +1.43 | −13.22 | 7.10 | 6.54 | **−0.56** | 0.70 | 6.54 | −0.84 | 17% | +0.40 | 6.75 | −0.21 |
+| 2024 | MD | 6 | +0.70 | −6.28 | 7.16 | 5.60 | **−1.56** | 1.56 | 5.60 | +0.97 | 0% | +0.58 | 6.52 | −0.91 |
+| 2024 | ME | 21 | −1.18 | −13.99 | 13.39 | 14.37 | **+0.98** | 0.98 | 14.37 | −0.62 | 100% | −0.92 | 15.27 | −0.90 |
+| 2024 | NC | 15 | −1.25 | −11.42 | 10.91 | 12.14 | **+1.23** | 1.23 | 12.14 | +0.60 | 100% | −1.01 | 13.39 | −1.25 |
+| 2024 | PA | 23 | −1.26 | −27.64 | 24.99 | 23.72 | **−1.27** | 2.09 | 23.72 | +0.98 | 52% | +2.62 | 27.06 | −3.34 |
 
 | | |
 | --- | ---: |
-| mean MAE | **9.09 pp** |
-| mean MAE of the null (composition unchanged) | **9.16 pp** |
-| **what county geography buys** | **+0.07 pp** |
-| pooled by day rather than by series (56 days) | +0.51 pp |
-| how far the modelled shift moves | **0.95 pp** |
-| how far the composition it stands in for moves | **9.16 pp** |
-| leave-one-state-out fitted scale, mean gain | **−2.58 pp** |
+| mean MAE | **11.74 pp** |
+| mean MAE of the null (composition unchanged) | **11.59 pp** |
+| **what county geography buys** | **−0.15 pp** |
+| pooled by day rather than by series (79 days) | −0.01 pp |
+| how far the modelled shift moves | **1.14 pp** |
+| how far the composition it stands in for moves | **11.59 pp** |
+| leave-one-state-out fitted scale, mean gain | **−1.11 pp** |
 
 `--validate` prints its own verdict rather than leaving it to this page:
 
 ```
-VERDICT: NOTHING SHIPS (bar is +1.00 pp of gain over the no-change null; measured +0.07)
+VERDICT: NOTHING SHIPS (bar is +1.00 pp of gain over the no-change null; measured -0.15)
 ```
 
 The bar, `MIN_GAIN = 1.0`, is in code. It is the same bar `regress.py` sets.
 
 ### The three things in that table that decide it
 
-**1. It does not beat the null.** +0.07 points on five states against a bar of
-+1.00, and it is negative on two of them. `docs/party-estimate.md` declined at
+**1. It does not beat the null.** −0.15 points on six states against a bar of
++1.00, and it is negative on three of them. `docs/party-estimate.md` declined at
 +0.79 and `docs/regression.md` declined at +0.17.
 
-**2. It barely moves.** The modelled shift travels 0.95 points while the measured
-composition travels 9.16. This is the same mechanism `docs/party-estimate.md`
+**2. It barely moves.** The modelled shift travels 1.14 points while the measured
+composition travels 11.59. This is the same mechanism `docs/party-estimate.md`
 found for `lean_vs_baseline`: **every state we track publishes every one of its
 counties**, so once coverage is complete the ballot weights are close to
 proportional to county size and the weighted mean is arithmetically pinned near
@@ -309,6 +310,48 @@ number would convert it.
 > the immature days were contributing was noise with a sign, and removing them
 > removed the sign disagreement along with it. The magnitude disagreement is what
 > survives, and it is the part that was ever load-bearing.
+
+### What Pennsylvania cost
+
+Pennsylvania was the sixth fold, and it arrived late for a reason worth writing
+down. `pa.py` refused the 2022 file outright — one unreadable free-text party
+label was enough to raise `SchemaDrift` — and a 2024 fold cannot exist without a
+2022 reference to compare it against. So the panel that fitted this model's error
+band had been fitted with **the most volatile mail electorate in the country
+missing from it**, and the reason it was missing was 0.04% of typos.
+
+What PA turned out to be worth:
+
+| | |
+| --- | ---: |
+| the shift PA's own registration measured, 2022 → 2024 | **−27.64 pp** |
+| next largest in the panel (ME) | −13.99 pp |
+| what this model reported for PA on the final day | −1.26 pp |
+| what it reported 22 days out, while truth was already −12.08 | **+10.48 pp** |
+| its MAE, against a null of 23.72 | **24.99 pp** |
+
+The 2022 → 2024 move is real and it is not subtle: Republicans who had boycotted
+mail voting in 2022 came back to it, and PA's mail electorate went from 76.5% to
+62.7% Democratic by registration. County geography sees none of it, because the
+counties barely moved — the same people's neighbours voted a different way.
+
+Two things follow, and only one of them is about Pennsylvania.
+
+**The band was understated, and now it is not.** `MODEL_ERROR_PP` went 9.5 → 12.0.
+That is the largest single move it has made, and it moved because the measurement
+got honest rather than because the model got worse.
+
+**The +10.48 row is the one to look at.** It clears the maturity gate on both
+sides with room to spare — 43.6% and 25.8% of a finished curve — so it is not a
+phase artefact, which is what every previous row above five points turned out to
+be. It is a mature day on which this model points the wrong way by 22.6 points.
+That is the difference between a model that is imprecise and a model that is
+blind, and it is why the recommendation below is unchanged rather than softened.
+
+⚠️ **The temptation here is to call PA an outlier and trim it. Do not.** 2026 is a
+midterm and 2022 is the only midterm reference the panel has. A band fitted
+without the hardest midterm case is a band that will be wrong in exactly the
+cycle it is read in.
 
 ### Seven specifications, none of which rescue it
 
@@ -388,15 +431,20 @@ outruns the last one reads above 100%, which is true and worth seeing.
 
 ### What it changed
 
-| | before | after |
-| --- | ---: | ---: |
-| published rows | 260 | **78** |
-| mean \|shift_pp\| | 4.80 | **1.09** |
-| max \|shift_pp\| | **26.16** | **3.65** |
-| rows above 5 points | 94 | **0** |
-| rows labelled `confidence: low` | 157 | **0** |
-| validation MAE | 10.37 | **9.09** |
-| gain over the null | −0.03 | **+0.07** |
+| | before | after | today, with PA |
+| --- | ---: | ---: | ---: |
+| published rows | 260 | 78 | **101** |
+| mean \|shift_pp\| | 4.80 | 1.09 | **1.20** |
+| max \|shift_pp\| | **26.16** | 3.65 | **10.48** |
+| rows above 5 points | 94 | 0 | **3** |
+| rows labelled `confidence: low` | 157 | **0** | **0** |
+| validation MAE | 10.37 | 9.09 | **11.74** |
+| gain over the null | −0.03 | +0.07 | **−0.15** |
+
+The third column is not the maturity gate coming undone. Every one of those 101
+rows still clears it on both sides; the three above five points are all
+Pennsylvania, they are all mature, and they are all simply wrong — see
+[Pennsylvania](#what-pennsylvania-cost) below.
 
 Not one of the 94 rows above five points survived, and the model's honest range
 turns out to be **±3.65 points**. The `confidence: low` rows went to zero for the
@@ -486,20 +534,22 @@ arithmetic:
    complete coverage on both sides. This is a bound, not a confidence interval.
 
 2. **A flat ±9.5 points of model error**, `MODEL_ERROR_PP`. That is the measured
-   mean absolute error above (9.09), rounded up. It is empirical, not
+   mean absolute error above (11.74), rounded up. It is empirical, not
    statistical, and it does **not** shrink as more ballots come in, because the
    error is structural rather than sampling noise. Read it as *the size of the
    compositional change county geography does not see*, because that is what it
-   is: the geography moves a point and the registration moves nine.
+   is: the geography moves a point and the registration moves twelve.
    `test_model_error_matches_the_measured_validation` refits it from `output/`
-   and fails if the data moves away from it. It has moved twice already —
+   and fails if the data moves away from it. It has moved three times —
    11.5 → 10.5 when Florida became a fifth scoreable state, 10.5 → 9.5 when the
-   maturity gate corrected the domain — and it is a measurement, not a constant.
+   maturity gate corrected the domain, 9.5 → 12.0 when Pennsylvania was unlocked
+   — and it is a measurement, not a constant.
 
-**A ±9.5-point band on a shift that runs −3.65 to +2.34 points across every
-published row is not a caveat on the number. It is the number.** That range is
-now the honest one: before the maturity gate the file also carried shifts out to
-±26, and every one of them was a phase artefact off a sliver of an electorate.
+**A ±12-point band on a shift that runs −2.33 to +10.48 points across every
+published row is not a caveat on the number. It is the number.** Before the
+maturity gate the file also carried shifts out to ±26, and every one of those was
+a phase artefact off a sliver of an electorate. What is left is not: the +10.48
+is Pennsylvania on a mature day, and the band has to hold it.
 
 `confidence` is a label about whether the *inputs* are complete enough for the
 band to mean anything — `low` when either side is under 85% coverage, or under
@@ -592,10 +642,11 @@ the thing being held fixed.
 
 1. **Do not publish `implied_margin_2024`, `shift_pp` or "the early electorate is
    N points more Republican" as a modelled figure in any state.** It is worth
-   +0.07 points against "assume nothing changed" on a bar of +1.00, it moves 0.95
-   points while the thing it describes moves 9.16, and its honest band is ±9.5
-   points on a quantity that spans **six** points across every published row. A
-   band that contains every plausible answer says nothing.
+   −0.15 points against "assume nothing changed" on a bar of +1.00 — it is worse
+   than saying nothing — it moves 1.14 points while the thing it describes moves
+   11.59, and its honest band is ±12 points on a quantity that spans **thirteen**
+   points across every published row. A band that contains every plausible answer
+   says nothing.
 
 2. **`party_margin_shift_pp` is defensible and should ship**, framed as what it
    is — a **count**, not a model:
