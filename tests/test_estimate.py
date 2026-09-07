@@ -336,7 +336,8 @@ def test_model_error_is_refitted_from_the_panel():
     out = root / "output"
     if not (out / "ev_state_daily.csv").exists():
         pytest.skip("no published output/ tree in this checkout")
-    scored = [r for r in est.validate(out, est.load_baseline()) if r.scored]
+    scored = [r for r in est.validate(out, est.load_baseline())
+              if r.scored and r.in_range]
     if not scored:
         pytest.skip("nothing scoreable yet")
     measured = sum(r.mean_abs_error for r in scored) / len(scored) / 100

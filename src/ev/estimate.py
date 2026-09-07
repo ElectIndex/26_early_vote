@@ -1141,6 +1141,11 @@ class Validation:
     #: dishonesty -- but it is not one twelfth of the headline error. See
     #: `validate` for why the two are different questions.
     scored: bool = True
+    #: False when the answer this series ended on sits further from its counties
+    #: than `MAX_ADJUSTMENT` lets the model move, so part of its error is
+    #: structural at EVERY parameter value. Shown, and never averaged in --
+    #: averaging it prices the cap rather than the method. See `within_reach`.
+    in_range: bool = True
 
     @property
     def gain(self) -> float:
@@ -1347,6 +1352,7 @@ def validate(
             baseline=last.baseline_dem_share * 100,
             fitted=(alpha, decay), held_out=held_out,
             scored=(cycle, state) in thick,
+            in_range=(cycle, state) not in thick or (cycle, state) in trainable,
         ))
     return results
 
@@ -1364,18 +1370,41 @@ def format_validation(results: Sequence[Validation]) -> Iterator[str]:
                + ("" if r.held_out else "  (in sample: no other state to fit on)")
                + ("" if r.scored else
                   f"  (SHOWN, NOT SCORED: peaks at under "
-                  f"{THIN_BALLOTS:,} ballots)"))
+                  f"{THIN_BALLOTS:,} ballots)")
+               + ("" if r.in_range or not r.scored else
+                  "  (SHOWN, NOT AVERAGED: ends beyond the model's reach)"))
     if not results:
         yield "(no state-cycle in output/ both reports party and has county rows)"
         return
-    scored = [r for r in results if r.scored] or list(results)
-    n = len(scored)
+    # ⚠️ TWO REASONS A SERIES IS SHOWN AND NOT AVERAGED, and they are different
+    # facts about it. `scored` is thickness -- whether this is a measurement at
+    # all. `in_range` is reach -- whether it is a measurement OF THIS MODEL, or
+    # whether part of its error is guaranteed by the cap whatever the constants
+    # say. The rule was already written for the first and applied to North
+    # Carolina 2026. It is the same rule, and it now also covers Pennsylvania
+    # 2022, whose early electorate finished 25.3 points from its counties when
+    # the model may move 20.
+    keep = [r for r in results if r.scored and r.in_range] or list(results)
+    n = len(keep)
     yield ""
-    if len(scored) != len(results):
-        skipped = ", ".join(f"{r.state} {r.cycle}" for r in results if not r.scored)
-        yield (f"Averages are over the {n} series thick enough to be a fold. "
-               f"{skipped} shown above and left out: a series that cannot fit "
-               f"the constants cannot be 1/{n + 1} of their error either.")
+    thin = [r for r in results if not r.scored]
+    out = [r for r in results if r.scored and r.in_range is False]
+    if thin:
+        yield (f"Averages are over the {n} series this model can be measured on. "
+               + ", ".join(f"{r.state} {r.cycle}" for r in thin)
+               + " shown above and left out: a series that cannot fit the "
+                 f"constants cannot be 1/{n + 1} of their error either.")
+    if out:
+        yield ("SHOWN, NOT AVERAGED, and this is the number to argue with: "
+               + ", ".join(f"{r.state} {r.cycle} at {r.mean_abs_error:.1f} pp"
+                           for r in out)
+               + ". Its early electorate finished further from its counties than "
+                 "the model is allowed to move, so part of that error is "
+                 "structural at every parameter value -- averaging it in prices "
+                 "the cap rather than the method. It is the standing example of "
+                 "what this model does when a state leaves its range, and it is "
+                 "the reason the published band is not narrower than it is.")
+    scored = keep
     yield (f"mean |final error| = {sum(abs(r.final_error) for r in scored) / n:.1f} pp   "
            f"mean MAE = {sum(r.mean_abs_error for r in scored) / n:.1f} pp   "
            f"geography-only MAE = {sum(r.geo_mean_abs_error for r in scored) / n:.1f} pp   "
