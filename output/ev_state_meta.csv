@@ -9,7 +9,7 @@ CT,Connecticut,2026-11-03,,,true,town|county|method,,,,,,"tracked; reports by mu
 DC,District of Columbia,2026-11-03,,,true,,,,,,,not tracked in 2026
 DE,Delaware,2026-11-03,,,true,county|method,78792,247172,,,,"tracked; registers by party but the file publishes no split, so the estimate stands in"
 FL,Florida,2026-11-03,,,true,county|party|method,,8289955,,,,
-GA,Georgia,2026-11-03,,,false,county|method|age|race|sex,,4031303,,,,
+GA,Georgia,2026-11-03,,,false,county|method,,4031303,,,,"Data Hub carries age/race/sex too, but its age bands overlap (35-40 and 40-45 share a year), so none of the three is published"
 HI,Hawaii,2026-11-03,,,false,county|method,,,,,,"tracked; no party registration in Hawaii, so the split is modelled"
 IA,Iowa,2026-11-03,,,true,county|party|method,370546,675464,,,,
 ID,Idaho,2026-11-03,,,true,county|method,,,,,,"registers by party, but the tracker publishes only a primary ballot-choice column, so no split is published"

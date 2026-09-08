@@ -2348,3 +2348,17 @@ Idaho publishes no machine-readable date anywhere (the "Last updated" line and
 the statewide counters are both client-side JavaScript). Undated snapshots that
 `backfill` then stamps with the election date is exactly what `nd.py` and `az.py`
 were both fixed for.
+
+
+---
+
+# Georgia, built 2026-09-08 — `ga:GADataHubScraper` (`ga-datahub`)
+
+The state this project had twice written off. It was never a wall: one row of
+`docs/georgia-source.md`'s own table recorded `sos.ga.gov` as "403 on every
+path", and that page indexes an Election Data Hub whose numbers come out of an
+anonymous Qlik Cloud Government tenant. Full chain, four protocol traps and the
+suppression problem are in **georgia-source.md §7**; the short version is that
+Georgia now publishes county and method like any other tracked state, and the
+reCAPTCHA finding it was rejected for is untouched and still true about the file
+it describes.

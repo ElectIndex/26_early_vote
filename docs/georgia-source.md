@@ -454,11 +454,85 @@ Nothing here goes near it:
    boundary is settled with the Division, or the crosstab will silently
    double-count a five-year cohort.
 
-## What is still unbuilt
+## Built, 2026-09-08 — `ga:GADataHubScraper` (`ga-datahub`)
 
-The token and the app metadata are proven. **Extracting the table is not
-written**: it needs a Qlik client (either the Engine JSON-RPC over WebSocket, or
-the tenant's REST data endpoints) to open the app, select the current election,
-and pull the county × method × party hypercube. Estimated 150–250 lines plus
-fixtures. `ga.py` still raises `SourceError` and the ladder still falls through
-to the aggregator until that exists.
+Written the same day, against the Engine JSON-RPC over WebSocket. It lives in
+`src/ev/adapters/ga.py` BESIDE the mvp route rather than replacing it: the
+registry convention is one module per state, and `GAScraper` still parses the
+richer per-ballot file the moment `$GA_SOS_RECAPTCHA_TOKEN` is set. The registry
+now names the Data Hub because it is the one that runs unattended.
+
+**Proven on the 2024 general**, which is in the model and can therefore be
+checked against reality: 159 counties, **4,054,350** early ballots — 286,235
+absentee returned and 3,768,115 in person — against 345,081 absentee requested.
+Fulton 446,418. The whole session is recorded frame by frame as
+`tests/fixtures/ga/engine_2024_general.json` so the tests never touch the network.
+
+### Four things bit, and three of them produced no error at all
+
+1. ⚠️ **THE APP OPENS ON A SAVED SELECTION, AND IT IS THE 2024 PRIMARY.**
+   `GetCurrentSelections` on a fresh connection reports
+   `Election Date: 1 of 24 -> '03/12/2024'`. Read the county tables without
+   touching it and you get 159 correctly-named Georgia counties with entirely
+   plausible counts from the **March 2024 presidential preference primary**.
+   Same family as Montana's dashboard and Idaho's tracker, but worse: those two
+   at least say on the page which election they are showing.
+
+   **And `ClearAll` does not clear it.** Measured: after
+   `ClearAll(qLockedAlso=True)` the app still reports 03/12/2024 selected. So
+   the adapter selects the target election explicitly and then READS THE
+   SELECTION BACK, and refuses unless exactly the intended date is selected.
+
+2. ⚠️ **`Field.SelectValues` silently selects nothing.** A `FieldValue` is
+   `{qText, qIsNumeric, qNumber}` — there is no element number in it — so
+   passing one is accepted and does nothing, and the method returns false. For a
+   date the field demonstrably contains, that is indistinguishable from "this
+   election does not exist yet", which would have left Georgia permanently and
+   quietly not-yet-published. `ListObject.SelectListObjectValues` with an
+   element number is the call that works.
+
+3. ⚠️ **`SelectListObjectValues` answers `qSuccess`, not `qReturn`.** Almost
+   everything else in the API answers under `qReturn`. Reading the wrong key
+   returns `None` on a selection that actually worked — a refusal invented by
+   the client, on live data, with no error anywhere to notice it by.
+
+4. ⚠️ **The two tables spell the same measure differently.** Both render a
+   column headed "Ballots Accepted", and `qFallbackTitle` agrees — but the
+   early-voting table's `qLabel`, which is what the adapter reads, is
+   `Ballots Accepted (EV)`. One shared constant is a `SchemaDrift` on live data.
+
+### Zero suppression, and why the cube is rebuilt
+
+The published table objects carry `qSuppressZero: True` and
+`qSuppressMissing: True`, which is why absentee returns 158 rows where early
+returns 159: one county had no absentee ballots and Qlik dropped it. A dropped
+row and an unreported row are indistinguishable from outside, and the blank rule
+cannot survive that.
+
+So the measures are not read off the published objects. Their **definitions**
+are, at run time, and are reused in a session hypercube with both suppression
+flags cleared — every county then appears with its real number, including a real
+0. The state's set-analysis is never transcribed into this repo; a test asserts
+that `Ballots_Accepted_Counter` and `Early In-Person` appear nowhere in
+`ga.py`, because a copied expression is a fork that drifts in silence.
+
+### Still not published
+
+* **Age, race and sex.** The model carries `Age Group`, `RACE_DESC` and
+  `Gender_Clean`, and the age bands overlap — `35-40` and `40-45` share a year —
+  so any age crosstab built from them double-counts a cohort silently.
+  `data/meta/states.csv` is corrected from `county|method|age|race|sex` to
+  `county|method` to match, because a dims list promising rows nothing produces
+  is its own kind of wrong.
+* **Party**, which Georgia does not register. The app's `Party` field is a
+  primary ballot choice, exactly as in Idaho.
+* **History.** Every past election is one selection away, which is the trap: the
+  app holds each election's CURRENT position only, with no daily series, so a
+  backfill would stamp one Election-Day figure across a whole window.
+  `fetch_history` refuses by name.
+
+### The phone call is still worth making
+
+(404) 656-2871. One token per run, one socket per run, once or twice a day — the
+mashup's own code handles HTTP 429 with a "receiving unusually high traffic"
+dialog, so the limit is real and visible.
