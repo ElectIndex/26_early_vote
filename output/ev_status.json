@@ -348,22 +348,6 @@
    "status": "ok",
    "tier": 1
   },
-  "NH": {
-   "attempts": [
-    {
-     "detail": "NH: no source for 2026. NH has no early voting and its Secretary of State publishes no statewide absentee request or return file during the voting period; the only counts ever posted were weekly statewide prose in 2020, discontinued after that cycle. There is no machine-readable source to scrape.",
-     "name": "nh-sos",
-     "result": "not_yet_published",
-     "tier": 1
-    }
-   ],
-   "message": "NH: no source for 2026. NH has no early voting and its Secretary of State publishes no statewide absentee request or return file during the voting period; the only counts ever posted were weekly statewide prose in 2020, discontinued after that cycle. There is no machine-readable source to scrape.",
-   "retrieved_at": "2026-09-08T22:24:22+00:00",
-   "rows": 0,
-   "source": null,
-   "status": "pending",
-   "tier": null
-  },
   "NV": {
    "attempts": [
     {
