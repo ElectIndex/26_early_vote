@@ -4,6 +4,11 @@ __pycache__/
 venv/
 .pytest_cache/
 .DS_Store
+# `pip install -e .` drops this beside the package. CI does exactly that on
+# every run, so without this line every scheduled job offers to commit a build
+# artifact -- and ingest.yml's `git add -- output` exists precisely because
+# something like this once nearly rode along.
+*.egg-info/
 *.tmp
 # Raw downloads are re-fetchable and can be hundreds of MB (NC's voter-level
 # absentee zip alone). Only parsed output/ is tracked.
