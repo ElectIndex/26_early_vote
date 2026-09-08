@@ -4,9 +4,10 @@ Iowa publishes absentee requests and returns as a single PDF, refreshed daily
 through the absentee period. The important and slightly surprising thing is that
 it is not a snapshot: each refresh PRE-PENDS a new report to the same file, so
 the 2024 general's `AbsenteeCounty2024.pdf` is 937 pages holding all sixteen
-daily reports, newest first. Like North Carolina, one download therefore
-reconstructs the entire daily curve, and a day we fail to run is not a day of
-Iowa's series that is lost forever.
+daily reports and the 2022 general's is 1,289 pages holding thirty, newest
+first. Like North Carolina, one download therefore reconstructs the entire daily
+curve, and a day we fail to run is not a day of Iowa's series that is lost
+forever.
 
 Each report is one nested outline, three columns wide:
 
@@ -42,12 +43,46 @@ Four judgement calls worth naming:
   (Counter / In-Office, Satellite, Mail, E-Mail, Drop Box, Fax, Health Care
   Facility) describe how an ABSENTEE ballot came back, not a mail-versus-in-person
   split of ballots cast, and folding them into `inperson` would double-count them
-  against `mail_returned`. Unknown method labels still raise drift.
+  against `mail_returned`. Unknown method labels still raise drift, and every
+  method row is added up against the party row it hangs off -- see `_PartyBlock`,
+  which is what makes an unfamiliar leaf label safe to recognise.
 
 * **Iowa's own file carries a leaked junk row.** Four of the sixteen 2024 reports
   contain a receipt-method line labelled `37480`. An all-digit label is treated as
   one of these leaked internal codes and skipped; it can never be a county or a
   party, and the cross-checks above would catch it if it were.
+
+Three things the 2022 file does and the 2024 file does not, all of them shape and
+none of them a different reading of the data:
+
+* **A date can be refreshed twice.** 2022's 1,289 pages are 33 complete passes
+  over the 99 counties carrying only 30 distinct dates: 11/15 and 11/8 are each
+  two 53-page passes and 10/6 is a 26-page pass followed by a 16-page one. A pass
+  always ENDS with Iowa's own Grand Total row, so that -- not a change of date --
+  is where one pass stops and the next begins. `_reports` keeps the FIRST pass
+  over each date, because the file is newest-first and the file says so out loud
+  on the one pair where it can: 11/8's first pass is footed "Data from 5:45 p.m."
+  and its second "Data from night before", election evening ahead of election
+  morning.
+
+* **The date can sit in a different PLACE.** 2022's reports from 10/3 to 10/17 --
+  253 pages, a fifth of the file -- append it to the credit line ("Prepared by
+  the Office of Iowa Secretary of State 10/17/2022") instead of giving it a line
+  of its own. Same date, read off a different line; a page with a date on NEITHER
+  is still SchemaDrift, because a page whose date we cannot find is a page we
+  misread rather than a page to attribute to the previous day.
+
+* **"Mailing" is a receipt method, and is not another word for "Mail".** All 29
+  of its appearances are the same leaf of the same block -- Linn County, No
+  Party, once per pass from 10/6 on -- and 22 of those blocks carry their own
+  "Mail" row as well, side by side with it (on 11/16, "Mail 2057 2057 2057" and
+  "Mailing 2 2 1"). Folding it into Mail would therefore be inventing a mapping,
+  not recognising a spelling. What settles what it IS is `_PartyBlock`: a party's
+  receipt-method leaves sum to the party's own row exactly, in all three columns,
+  in every one of the 11,590 party blocks of the 2022 file and the 7,327 of 2024.
+  A row in the method slot that is really a PARTY is invisible to the county
+  cross-check -- methods contribute nothing to it -- but it breaks that sum by
+  its own counts. "Mailing" does not break it, so it is a method.
 """
 
 from __future__ import annotations
@@ -108,12 +143,24 @@ TOTAL_LABEL = "grand total"
 METHODS = frozenset({
     "counter / in-office", "satellite", "mail", "e-mail", "drop box", "fax",
     "in-person", "health care facility", "ballot not yet returned by voter",
+    # 2022 only, and NOT a second spelling of "mail": 22 of its 29 appearances
+    # are in a block that prints its own "Mail" row alongside it. Mapped as a
+    # method of its own on the evidence of `_PartyBlock` -- the receipt-method
+    # leaves of the block it sits in add up to that block's party row exactly,
+    # which they could not do if this row belonged at any other outline level.
+    # See the module docstring.
+    "mailing",
 })
 
 _ELECTION_LINE = re.compile(r"^([A-Z][a-z]+ \d{1,2}, \d{4})\s+(\w+)\s+Election$")
-#: The report's own as-of date, in the page footer. 2024 prints it bare; 2022
-#: labelled it "report date 11/8/2022".
+#: The report's own as-of date, in the page footer, on a line of its own: 2024
+#: prints it bare ("10/17/2024"), 2022 labelled it ("report date 11/8/2022") on
+#: every report from 10/18 onwards.
 _FOOTER_DATE = re.compile(r"^(?:report date\s+)?(\d{1,2})/(\d{1,2})/(\d{4})$", re.I)
+#: ...and the SAME date appended to a footer line instead, which is how 2022's
+#: 10/3-10/17 reports carry it. Only ever searched on a line already recognised
+#: as page furniture, which is why it can afford to be this loose.
+_FOOTER_TAIL_DATE = re.compile(r"\s(\d{1,2})/(\d{1,2})/(\d{4})$")
 _COUNT_LINE = re.compile(r"^(?P<label>.*?)(?P<nums>(?:\s+\d[\d,]*)+)$")
 
 _PARTY_FIELD = {
@@ -148,6 +195,53 @@ class _County:
         self.party: dict[str, int] = defaultdict(int)
 
 
+class _PartyBlock:
+    """One party row, and the receipt-method leaves hanging off it.
+
+    Iowa prints both and they reconcile EXACTLY -- the leaves sum to the party
+    row in all three columns, in every one of the 11,590 party blocks of the 2022
+    file and the 7,327 of 2024 -- so a mismatch means we read the outline wrong.
+
+    This is the only check that can tell a receipt-method label we have never
+    seen from a PARTY we have never seen. A party misread as a method is
+    invisible to `_emit`'s county cross-check, because methods contribute
+    nothing to it; here it shows up immediately as its own counts going missing
+    from the sum. It is what makes mapping 2022's "Mailing" a fact rather than a
+    guess.
+    """
+
+    __slots__ = ("bucket", "row", "leaves")
+
+    def __init__(self, bucket: str, row: tuple[int, int, int]) -> None:
+        self.bucket = bucket
+        self.row = row
+        self.leaves = [0, 0, 0]
+
+    def add(self, counts: tuple[int, int, int]) -> None:
+        for index, value in enumerate(counts):
+            self.leaves[index] += value
+
+    def close(self) -> None:
+        if tuple(self.leaves) != self.row:
+            raise SchemaDrift(
+                f"IA: the {self.bucket} row reads {self.row} requested/issued/"
+                f"received but its receipt-method rows total "
+                f"{tuple(self.leaves)}"
+            )
+
+
+def _close(block: _PartyBlock | None) -> None:
+    """Check a party block, now that a sibling row has ended it.
+
+    Only a block CLOSED by the next county, party or Grand Total row is checked.
+    A block still open when the pages run out is not wrong, it is unfinished --
+    that is every truncated read, the saved fixtures included -- and there is
+    nothing to compare it against.
+    """
+    if block is not None:
+        block.close()
+
+
 class _Report:
     """One daily report: its counties, and Iowa's own Grand Total row."""
 
@@ -169,6 +263,51 @@ def election_line(text: str) -> tuple[date, str] | None:
     except ValueError:
         return None
     return day, m.group(2)
+
+
+def _report_date(line: str, match: "re.Match[str]") -> date:
+    """The date in a footer match, whichever line it was found on."""
+    month, day_of, year = (int(g) for g in match.groups())
+    try:
+        return date(year, month, day_of)
+    except ValueError as exc:
+        raise SchemaDrift(f"IA: {line!r} is not a report date") from exc
+
+
+def _one_date(existing: date | None, found: date) -> date:
+    """One page carries one report date, wherever it is printed.
+
+    Two that disagree would mean one of them was read off a line that is not the
+    report date -- which is exactly the mistake available here, since 2022 prints
+    its date somewhere 2024 does not.
+    """
+    if existing is not None and existing != found:
+        raise SchemaDrift(
+            f"IA: page carries two different report dates, "
+            f"{existing.isoformat()} and {found.isoformat()}"
+        )
+    return found
+
+
+def _page_date(page_day: date | None, cycle: int) -> date:
+    """The report date a page carries, checked.
+
+    Iowa's reports run from early October into mid-November of the election year
+    -- 2022's span 10/3 to 11/16 and 2024's 10/17 to 11/6 -- and the footer date
+    is the one number on the page with no cross-check of its own, so it is pinned
+    to the cycle it claims to belong to.
+    """
+    if page_day is None:
+        # Every real page carries the date, on its own line or appended to the
+        # credit line; a page with one in NEITHER place is a page we misread,
+        # not a page to attribute to the previous day.
+        raise SchemaDrift("IA: report page carries no 'Data Pulled' date")
+    if page_day.year != int(cycle):
+        raise SchemaDrift(
+            f"IA: page is dated {page_day.isoformat()}, which is not in the "
+            f"{cycle} cycle"
+        )
+    return page_day
 
 
 def _classify(label: str):
@@ -197,12 +336,13 @@ def _classify(label: str):
     raise SchemaDrift(f"IA: unrecognised outline label {label!r}")
 
 
-def _reports(body: bytes, cycle: int, *, limit: int | None = None):
-    """Yield each daily _Report in the file, newest first.
+def _refreshes(body: bytes, cycle: int):
+    """Yield every complete pass over the counties in the file, newest first.
 
-    `limit` stops after that many reports, which is what the daily run wants: the
-    newest report is the first ~45 pages of a file that is hundreds of pages long
-    by November.
+    A "pass" (Iowa's own refresh) opens at the first county row and closes at
+    Iowa's own Grand Total. USUALLY one pass per date -- but 2022's 1,289 pages
+    are 33 passes carrying 30 dates, so a change of date is not a safe boundary
+    on its own. `_reports` is what turns these into one report per date.
     """
     try:
         reader = pypdf.PdfReader(io.BytesIO(body))
@@ -211,7 +351,7 @@ def _reports(body: bytes, cycle: int, *, limit: int | None = None):
 
     report: _Report | None = None
     current: _County | None = None
-    done = 0
+    block: _PartyBlock | None = None
 
     for page in reader.pages:
         lines = page.extract_text().splitlines()
@@ -223,7 +363,16 @@ def _reports(body: bytes, cycle: int, *, limit: int | None = None):
             if not line or line == TITLE:
                 continue
             lowered = line.lower()
-            if lowered == COLUMN_HEADER or lowered.startswith(FOOTER_PREFIXES):
+            if lowered == COLUMN_HEADER:
+                continue
+            if lowered.startswith(FOOTER_PREFIXES):
+                # 2022's October reports append the report date to the credit
+                # line rather than giving it one of its own. A different PLACE,
+                # not a different date -- so read it before the line is dropped
+                # as furniture.
+                tail = _FOOTER_TAIL_DATE.search(line)
+                if tail is not None:
+                    page_day = _one_date(page_day, _report_date(line, tail))
                 continue
 
             found = election_line(line)
@@ -238,11 +387,7 @@ def _reports(body: bytes, cycle: int, *, limit: int | None = None):
 
             m = _FOOTER_DATE.match(line)
             if m:
-                month, day_of, year = (int(g) for g in m.groups())
-                try:
-                    page_day = date(year, month, day_of)
-                except ValueError as exc:
-                    raise SchemaDrift(f"IA: {line!r} is not a report date") from exc
+                page_day = _one_date(page_day, _report_date(line, m))
                 continue
 
             m = _COUNT_LINE.match(line)
@@ -254,48 +399,103 @@ def _reports(body: bytes, cycle: int, *, limit: int | None = None):
             kind, payload = _classify(label)
             entries.append((kind, payload, _counts(m.group("nums"))))
 
-        if page_day is None:
-            # Every real page carries the footer date; a page without one is a
-            # page we misread, not a page to attribute to the previous day.
-            raise SchemaDrift("IA: report page carries no 'Data Pulled' date")
+        page_day = _page_date(page_day, cycle)
 
-        if report is None or page_day != report.day:
-            if report is not None:
-                yield report
-                done += 1
-                if limit is not None and done >= limit:
-                    return
-            report = _Report(page_day)
-            current = None
+        if report is not None and page_day != report.day:
+            yield report
+            report, current, block = None, None, None
 
         for kind, payload, (requested, issued, received) in entries:
+            if kind == "county" and report is not None and report.total is not None:
+                # THE SAME DAY REFRESHED TWICE, which 2022 does three times.
+                # Every pass ends with Iowa's own Grand Total, so a county row
+                # arriving AFTER that total is the top of a new pass. That is
+                # what separates it from the other way a county can repeat --
+                # the same county twice INSIDE one pass, before its Grand Total,
+                # which is real drift and still raises below, because the
+                # duplicate guard only ever looks within one terminated pass.
+                # If Iowa ever drops the Grand Total, a genuine double refresh
+                # raises rather than being guessed at, which is the right way
+                # round.
+                yield report
+                report, current, block = None, None, None
+
+            if report is None:
+                report = _Report(page_day)
+                current, block = None, None
+
             if kind == "total":
+                _close(block)
+                block = None
                 report.total = (requested, issued, received)
                 continue
             if kind == "county":
                 fips, canonical = payload  # type: ignore[misc]
                 if fips in report.counties:
+                    # Checked BEFORE the party block above it is reconciled. A
+                    # county seen twice inside one pass means the outline itself
+                    # repeated, which is the root cause; the half-finished party
+                    # block that repetition interrupts is only its symptom, and
+                    # reporting the symptom would send the next reader looking
+                    # at the wrong row.
                     raise SchemaDrift(
                         f"IA: {canonical} appears twice in the "
                         f"{report.day.isoformat()} report"
                     )
+                _close(block)
+                block = None
                 current = _County(fips, canonical)
                 report.counties[fips] = current
                 current.requested = requested
                 current.issued = issued
                 current.received = received
                 continue
-            if current is None:
-                # A party or method row before this report's first county row:
-                # the tail of a county whose opening row is on a page we do not
-                # have. Only possible on a truncated read.
-                continue
             if kind == "party":
-                current.party[str(payload)] += received
-            # method rows are leaves; nothing to accumulate.
+                _close(block)
+                block = _PartyBlock(str(payload), (requested, issued, received))
+                if current is not None:
+                    current.party[str(payload)] += received
+                # A party row before this report's first county row is the tail
+                # of a county whose opening row is on a page we do not have --
+                # only possible on a truncated read. Its own method leaves still
+                # have to reconcile against it.
+                continue
+            # A receipt-method row: a leaf we do not publish, but one that has to
+            # add up against the party row above it.
+            if block is not None:
+                block.add((requested, issued, received))
 
     if report is not None:
         yield report
+
+
+def _reports(body: bytes, cycle: int, *, limit: int | None = None):
+    """Yield one _Report per report DATE, newest first.
+
+    Iowa prepends each refresh, so the first pass over a date is that date's
+    latest one and a later pass over the same date has been superseded. The file
+    says so out loud on the one pair where it can: 2022-11-08 appears twice,
+    first footed "Data from 5:45 p.m." and then "Data from night before" --
+    election evening ahead of election morning -- and 10/6's two passes likewise
+    run larger then smaller.
+
+    `limit` stops after that many reports, which is what the daily run wants: the
+    newest report is the first ~53 pages of a file that is well over a thousand
+    pages long by November.
+    """
+    seen: set[date] = set()
+    done = 0
+
+    for report in _refreshes(body, cycle):
+        if report.day in seen:
+            log.debug("IA: %s was refreshed more than once; keeping the first "
+                      "(newest) pass", report.day.isoformat())
+            continue
+        seen.add(report.day)
+        yield report
+        done += 1
+        if limit is not None and done >= limit:
+            return
 
 
 def _emit(report: _Report, cycle: int) -> FetchResult:
@@ -418,16 +618,36 @@ class IAScraper(Adapter):
             return None
         raise SchemaDrift("IA: absentee report has no '<date> <kind> Election' title line")
 
-    def fetch(self, cycle: int, as_of: date) -> FetchResult:
-        """Only the newest report -- the rest of the file is yesterday's news."""
-        result = parse(self._load(cycle, use_cache=False), cycle, limit=1)
-        published = result.state_rows[0].day
-        if published > as_of:
+    @staticmethod
+    def _no_later_than(result: FetchResult, horizon: date) -> FetchResult:
+        """Refuse a report dated after `horizon`. Used by BOTH fetch paths.
+
+        This is the check that catches a report date read off the wrong line, and
+        Iowa is a state where that can happen: its 2022 file prints the date
+        somewhere its 2024 file does not, and a fifth of the 2022 pages parsed as
+        dateless until that was fixed. A guard that only ran on the daily path
+        would have left the backfill -- the path that actually reads the 2022
+        file -- with nothing checking it at all.
+        """
+        newest = max(row.day for row in result.state_rows)
+        if newest > horizon:
             raise NotYetPublished(
-                f"IA: report is dated {published.isoformat()}, after {as_of.isoformat()}"
+                f"IA: report is dated {newest.isoformat()}, after {horizon.isoformat()}"
             )
         return result
 
+    def fetch(self, cycle: int, as_of: date) -> FetchResult:
+        """Only the newest report -- the rest of the file is yesterday's news."""
+        return self._no_later_than(
+            parse(self._load(cycle, use_cache=False), cycle, limit=1), as_of)
+
     def fetch_history(self, cycle: int) -> FetchResult:
-        """Every daily report in the archived file -- the whole cycle in one download."""
-        return parse(self._load(cycle, use_cache=True), cycle)
+        """Every daily report in the archived file -- the whole cycle in one download.
+
+        The horizon is TODAY rather than the cycle's election date, which is what
+        the NC-shaped adapters pass: Iowa keeps publishing for more than a week
+        after Election Day, and four of 2022's thirty reports are dated after it
+        and are real.
+        """
+        return self._no_later_than(
+            parse(self._load(cycle, use_cache=True), cycle), date.today())
