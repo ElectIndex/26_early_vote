@@ -33,7 +33,7 @@ reason recorded below.
 | SC | yes — absentee + EV workbooks | XLSX/CSV | county (46) | county, method, **race** | medium-high | rejected: filename drift |
 | IL | yes — pre-election counts CSV/XLSX | CSV/XLSX | 108 election authorities | authority, method | medium-high | rejected: needs 108→102 crosswalk |
 | MT | yes — Tableau CSV export | CSV | county (56) | county, method | medium | rejected: no election provenance |
-| ID | yes — Datawrapper CSVs + a .gov JSON | CSV/JSON | county (44) | county, party*, method, age | medium | rejected: cycle-specific chart IDs |
+| ID | yes — Datawrapper CSVs + a .gov JSON | CSV/JSON | county (44) | county, method (party NOT published, see below) | medium | ~~rejected~~ **BUILT 2026-09-08** `id-sos` |
 | MN | partial — county table, HTML only, bot-protected | HTML | county (87) | county, method | high | rejected: needs a headless browser |
 | SD | partial — weekly HTML, statewide only | HTML | statewide | party, method | high | rejected: no county |
 | KS | partial — Power BI model, statewide only | JSON | statewide | method | high | rejected: no county |
@@ -1849,7 +1849,7 @@ sitting behind a library that was already installed.
 | **OR** | **BUILT** `or-sos` | SoS Daily Ballot Returns PDF | county (36) + statewide | county, party (12), **day** |
 | **MT** | **BUILT** `mt-sos` | SoS Tableau CSV + PDF | county (56) + statewide | county, mail sent/received |
 | **HI** | **BUILT** `hi-oe` | OoE Absentee Reconciliation PDF | county (4) + statewide | county, method |
-| ID | not built — see below | voteidaho.gov + Datawrapper | county (44) | county, party, age |
+| ID | **BUILT 2026-09-08** `id-sos` | voteidaho.gov + Datawrapper | county (44) | county, method |
 | UT | **nothing during the general season** | — | — | — |
 | NM | **nothing**, confirming the earlier survey | — | — | — |
 | WY | **nothing public**; request-gated only | — | — | — |
@@ -2296,3 +2296,55 @@ which is the difference between a gap and a guess.
 
 Nothing in OR, UT, ID, MT, NM, HI or WY was ever blocked. Every 404 recorded in
 this section is an honest 404: the file does not exist yet.
+
+
+---
+
+# Idaho, built 2026-09-08 — `src/ev/adapters/id.py` (`id-sos`)
+
+The West pass left Idaho as the one state it had proved reachable and not built.
+This is that build; everything below was re-verified live on 2026-09-08.
+
+**The survey's objection was right and is answered.** The chart ids really are
+cycle-specific, so nothing is hardcoded to one: `chart_ids()` reads them out of
+the stable `.gov` index on every run, and the county dataset is then picked **by
+its header**, not by id and not by position. Matching on an id would reintroduce
+precisely the fragility that got Idaho rejected twice.
+
+**The version trap, re-measured.** `/{id}/dataset.csv` is 404; `/{id}/{n}/dataset.csv`
+returns 200 for *any* n and silently serves that snapshot forever. `/{id}/` is a
+241-byte stub naming the live version, so it is resolved every run and no version
+is ever pinned. `jshNw` was v51 today against the v39–v49 of its siblings — the
+versions move independently, so even "use the newest number I saw" would be wrong.
+
+**It is holding the primary right now, and that is the whole safety story.** The
+heading reads `Absentee & Early Voting Stats - 2026 Primary Election` and the
+datasets carry `last-modified: Wed, 20 May 2026` — four months stale, and
+completely plausible-looking. Idaho therefore reports `NotYetPublished` today.
+Same shape as Montana's dashboard, same gate, and `tests/test_id.py`'s first
+test is that gate.
+
+**What it publishes**, from `jshNw`
+(`ResCountyDesc,Returned,total_issued,return_rate,early_voting,total_voted`):
+44 counties keyed by FIPS with `mail_returned`, `inperson` and `ballots_total`,
+plus a statewide row at full coverage only. The source's own identity
+`Returned + early_voting == total_voted` is asserted per county — Ada today is
+16,750 + 12,911 = 29,661 exactly — and a break raises `SchemaDrift` rather than
+publishing a plausible wrong total. Statewide on the primary fixture: 46,381
+returned + 40,823 early = 87,204, against 56,084 issued.
+
+**⚠️ PARTY IS DELIBERATELY NOT PUBLISHED, and the summary table above is now
+corrected on this point.** `HCDQQ` really is `ResCountyDesc,Republican,Democratic,Other`
+— but during a primary that is the BALLOT A VOTER CHOSE, which the first survey
+flagged and which the sibling chart `aCECg` states in its own column name,
+`AbsPartySelected`. What the column means in a general has never been observed
+because no general tracker has been published in this cycle. On this page a party
+column means party REGISTRATION, so Idaho ships `county|method` until the general
+tracker is read. Turning it on later is one function.
+
+**Backfill is refused by name.** Datawrapper keeps prior versions addressable, so
+walking them is tempting — but a version is an ordinal, not a timestamp, and
+Idaho publishes no machine-readable date anywhere (the "Last updated" line and
+the statewide counters are both client-side JavaScript). Undated snapshots that
+`backfill` then stamps with the election date is exactly what `nd.py` and `az.py`
+were both fixed for.

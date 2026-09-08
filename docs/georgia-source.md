@@ -5,6 +5,14 @@ surface, then a second pass specifically hunting a workaround (a scripted
 browser, third-party mirrors, the ENR feeds, media distribution). Every URL,
 status code and payload below was observed live, from this machine, on that date.
 
+> ⚠️ **SUPERSEDED 2026-09-08 — the headline below is wrong. Georgia is
+> collectable.** The reCAPTCHA finding stands and is still correct about the
+> file it describes, but that file is not the only machine-readable statewide
+> source: the **Election Data Hub** serves the same numbers out of a Qlik Cloud
+> tenant, and the whole path is anonymous and un-gated. Verified end to end,
+> live, on 2026-09-08 — see [§7](#7-the-election-data-hub-2026-09-08--georgia-is-collectable-after-all).
+> Two rows of the table below are now false and are marked there.
+
 **Headline: no. Georgia has exactly one machine-readable statewide early-vote
 file; it is gated by a server-side reCAPTCHA Enterprise assessment that a
 scripted browser does not pass; no third party mirrors it daily; and nothing
@@ -35,10 +43,11 @@ INFO    ev.ladder: GA: not yet published (uf-election-lab)
 | 1 | `mvp.sos.ga.gov` `getPublicDownloadPresignedContent` | The absentee/advance file. The only statewide ballot-level feed. | **Gated.** reCAPTCHA Enterprise, no bypass |
 | 2 | A scripted browser minting its own token | The obvious workaround | **Token mints, assessment refuses it.** See §1 |
 | 3 | `prod-ga-sos-vr-data-processing-bucket.s3.amazonaws.com` | The bucket the presigned URL points at | **403** on object GET *and* on bucket listing |
+| 3b | `gasos-elections-mashups-mashup-bucket.s3.amazonaws.com` | The bucket the Data Hub's embedded apps live in | **403 bare, 200 with a `Referer: https://sos.ga.gov/`** — ordinary S3 hotlink protection, and the header is the one a browser sends loading that iframe. Listing still 403. See §7 |
 | 4 | `elections.sos.ga.gov/Elections/*.do` | The legacy Java portal | **Gone.** 301 to the gated page, or 403 |
 | 5 | `results.sos.ga.gov` (Enhanced Voting ENR) | Election-night reporting | **Live and open, but has no turnout data** |
 | 6 | `enr.clarityelections.com` | Clarity ENR | **403 to every non-browser client**, and GA no longer uses it statewide |
-| 7 | `sos.ga.gov` CMS pages | Where a daily statistics file would be linked | **403** — Cloudflare challenge on *every* path, `robots.txt` included |
+| 7 | `sos.ga.gov` CMS pages | Where a daily statistics file would be linked | ~~**403** — Cloudflare challenge on *every* path~~ **WRONG as of 2026-09-08: 200, 162,796 b** through `_net.get`. This is where the Election Data Hub lives. See §7 |
 | 8 | Georgia open-data portals | `data.georgia.gov`, `opendata.georgia.gov`, `gis.georgia.gov` | **NXDOMAIN.** They do not exist |
 | 9 | Other `*.sos.ga.gov` hosts | `data`, `api`, `files`, `vote`, `absentee`, `turnout`, `reports`, `ballotstatus` | **NXDOMAIN.** Only `elections`, `mvp`, `results` resolve |
 | 10 | `gaonestop.my.site.com/electionportal` | The Experience Cloud site's other front door | **200, but 301s to `mvp.sos.ga.gov/s/`** — same app |
@@ -358,3 +367,98 @@ the largest remaining cost of running Georgia on the aggregator disappears.
 Do **not** re-run the scripted-browser experiment expecting a different answer
 without first checking (1) — §1 records both headless and headed attempts and
 the fixture pins the refusal.
+
+
+---
+
+# 7. The Election Data Hub, 2026-09-08 — Georgia is collectable after all
+
+Every status, header and payload below was observed live from this machine on
+2026-09-08, in the order written.
+
+**The conclusion first.** Georgia publishes its early-vote numbers through a
+**Qlik Cloud Government** tenant behind the Election Data Hub, and the entire
+path — page, embedded app, access token, tenant API — is **anonymous, un-gated
+and free of reCAPTCHA**. §1's finding about `mvp.sos.ga.gov` is unchanged and
+still correct; it was simply never the only door.
+
+## What was wrong with the earlier survey
+
+Row 7 said `sos.ga.gov` CMS pages 403 on every path. They do not, and the
+difference is not subtle: `https://sos.ga.gov/election-data-hub` returns **200,
+162,796 bytes** through the same `_net.get` the pipeline uses everywhere. Either
+the Cloudflare posture changed between 2026-09-06 and 2026-09-08 or the earlier
+probe hit a transient challenge. Either way the page that indexes the whole hub
+was recorded as unreachable, so nobody looked at what it embeds.
+
+## The chain, with the exact values
+
+| # | Step | Result |
+|---|---|---|
+| 1 | `GET https://sos.ga.gov/page/election-data-hub-unofficial-turnout` | **200**, 163,087 b. One `<iframe>`: `…/DH.ELECTION2024/index.html` |
+| 2 | `GET …mashup-bucket.s3.amazonaws.com/DH.ELECTION2024/index.html` bare | **403** |
+| 3 | ...same, with `Referer: https://sos.ga.gov/` | **200**, 9,255 b |
+| 4 | `GET …/DH.ELECTION2024/js/vars.js` | **200**, 304 b — tenant, web-integration id, app id, token endpoint |
+| 5 | `GET https://fn4akbihvavvcmki6ih67rmuky0ezils.lambda-url.us-east-1.on.aws/` | **201**, 549 b — `{access_token, client_id}`. **No auth, no captcha, no cookie** |
+| 6 | `GET https://sos-ga-gov.us.qlikcloudgov.com/api/v1/apps/7d780725-…` with `Authorization: Bearer <token>` | **200**, 1,213 b |
+
+The constants, transcribed from `js/vars.js` and `js/main.js`:
+
+```
+tenant           https://sos-ga-gov.us.qlikcloudgov.com
+webIntegrationId 7ly2cTMjax8pOd2ESn29F53J7UbIe2US          # "Data Hub"
+tokenEndpoint    https://fn4akbihvavvcmki6ih67rmuky0ezils.lambda-url.us-east-1.on.aws/
+
+# DH.ELECTION2024 -- "GA SOS Voting - All elections", internal name [DH.ELECTION]
+app  7d780725-d407-4db8-b287-005bb85eda87
+  AbsenteeBallots      0bf484c2-bac1-4418-bc14-a07dd0bf7319
+  EarlyVoting          323d9d62-a861-400b-a6e2-4ce4d95a8bf3
+  TurnoutDemographics  5c617993-dbe2-4071-8873-3e94fc7e2c0d
+
+# DH.VOTERS -- registration side, not turnout
+app  f8e3121c-f6be-4871-987e-e31d8589fe89   # Electorate Demographics - Map
+app  05cd3715-6134-4027-8294-95913e7bab73   # Monthly Voter Demographics - DH
+```
+
+**It is live and it is current.** `[DH.ELECTION]` reported
+`lastReloadTime: 2026-09-08T22:50:45Z` — twenty-five minutes before this probe —
+against a `publishTime` of 2026-08-20. This is a daily-reloading app, not a
+2024 artefact that happens to still respond.
+
+## Why this is not the thing §1 declined to do
+
+§1 declined to defeat a reCAPTCHA Enterprise score, and that decision stands.
+Nothing here goes near it:
+
+* **No challenge is answered.** There is no captcha anywhere on this path.
+* **No credential is forged.** The Lambda hands an OAuth2 token to any anonymous
+  caller, by design, because the dashboard it serves is public and has no login.
+* **The `Referer` is the header a browser sends.** The iframe on
+  `sos.ga.gov/election-data-hub` loads that S3 object with exactly that header;
+  the bucket policy is ordinary hotlink protection. Sending it is behaving like
+  the client the resource is published for, which is the line this repo has
+  always drawn — the same line `_net.impersonated_headers()` sits on.
+
+## Before this is built — three things, and one is a phone call
+
+1. **Tell them.** The Elections Division is on **(404) 656-2871**. A once-daily
+   programmatic pull of a public dashboard is the kind of thing worth having
+   acknowledged rather than discovered, and it costs one call.
+2. **Respect the rate limit, which is real and visible.** `main.js` handles
+   **HTTP 429** from the token endpoint with a user-facing "unusually high
+   traffic" dialog. One token per run, cached for its lifetime, once or twice a
+   day. Nothing about this route justifies a two-hourly poll.
+3. **The age bands are ambiguous and must not be published blind.** The earlier
+   research found `Age Group` bands where `35-40` and `40-45` overlap. Publish
+   county/method/party from this source and **no age rows at all** until the
+   boundary is settled with the Division, or the crosstab will silently
+   double-count a five-year cohort.
+
+## What is still unbuilt
+
+The token and the app metadata are proven. **Extracting the table is not
+written**: it needs a Qlik client (either the Engine JSON-RPC over WebSocket, or
+the tenant's REST data endpoints) to open the app, select the current election,
+and pull the county × method × party hypercube. Estimated 150–250 lines plus
+fixtures. `ga.py` still raises `SourceError` and the ladder still falls through
+to the aggregator until that exists.
