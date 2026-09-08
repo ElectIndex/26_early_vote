@@ -86,6 +86,22 @@ VERIFIED 2026-09-06 from this network, via the CDX API and by fetching captures:
 `fetch_history` therefore refuses, loudly and by name, rather than inheriting a
 generic "no archive" from the base class: the refusal is a finding, and if
 Illinois ever restores the static path the failing test is the reminder.
+
+RE-VERIFIED 2026-09-08, three checks, all agreeing with the above:
+
+* The dropdown live today offers exactly `Please Select an Election` (0),
+  `2026 General Election` (78) and `2026 General Primary` (79). No 2022, no
+  2024 -- the SBE really does purge past elections, so there is no postback that
+  could reach them even with a browser driving it.
+* `Downloads/.../Counts/PreElection/Pre-election Ballot Requests.pdf` still
+  returns 404 live, and the CDX index holds FOUR captures under that whole
+  directory -- `.csv`, `.pdf`, `.txt` and `.xlsx` -- **every one of them an
+  archived 404**. Nothing was ever served there in 2022 or 2024 for a crawler
+  to have kept.
+* `PreElectionCounts.aspx` is still at 21 distinct captures, unchanged.
+
+The refusal is not stale. It is structural: an ASP.NET postback page archives as
+the form and never as the answer, and that cannot change retroactively.
 """
 
 from __future__ import annotations

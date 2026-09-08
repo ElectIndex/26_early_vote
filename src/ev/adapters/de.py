@@ -64,10 +64,11 @@ import io
 import json
 import logging
 import re
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 
 import pypdf
 
+from ..calendar import election_date
 from ..schema import TIER_SCRAPER, CountyDay, StateDay
 from . import _fips
 from ._net import Missing, get, looks_like_html
@@ -87,6 +88,11 @@ HOST = "https://elections.delaware.gov"
 #:   .../pdfs/PR2022_VoterCountsByVotingMethod.pdf                  404
 #: The practice starts with the 2024 cycle; there is no 2022 report under any
 #: name we could find, which is why fetch_history refuses 2022 outright.
+#: RE-VERIFIED 2026-09-08 from the other side, against what was ever ARCHIVED
+#: rather than what is served today: a CDX listing of every capture under
+#: `.../reports/pdfs/*` returns 141 distinct files, and the only two whose names
+#: contain "VoterCountsByVotingMethod" are `GE2024_...` and `PR2024_...`. There
+#: is no GE2022 report to go and get.
 REPORT_URL = HOST + "/voter/registrationtotals/reports/pdfs/GE{cycle}_GeneralElectionVoterCountsByVotingMethod.pdf"
 
 #: VERIFIED 2026-09-06: 200, 440,566 B. Delaware links the CURRENT election's
@@ -96,6 +102,12 @@ REPORT_URL = HOST + "/voter/registrationtotals/reports/pdfs/GE{cycle}_GeneralEle
 INDEX_URL = HOST + "/index.html"
 
 FIRST_CYCLE = 2024
+
+#: How long after Election Day a report can still legitimately be describing
+#: that election. Delaware certifies within about two weeks; 30 days is generous
+#: for that and still an order of magnitude short of the mistake this bounds,
+#: which is a report date belonging to a different YEAR. See `_check_window`.
+POST_ELECTION_DAYS = 30
 
 #: The label Delaware prints for each method, mapped to the field it feeds.
 #: An unrecognised label in the table body is SchemaDrift -- if Delaware adds a
@@ -129,6 +141,26 @@ def _collapse(line: str) -> str:
 
 def _int(token: str) -> int:
     return int(token.replace(",", ""))
+
+
+def _total(*values: int | None) -> int | None:
+    """Absentee + early voting, or None if either of them is unknown.
+
+    ⚠️ THE BLANK RULE, and this was written as `(mail or 0) + (inperson or 0)`.
+    A report missing one method row would have published a total silently short
+    by that row; a report missing both would have published a confident `0`
+    alongside two blank method fields, which is the worst version of the
+    mistake -- "nobody has voted early in Delaware" stated as fact, in a state
+    where a quarter of a million people did in 2024.
+
+    It was never wrong, because `_table` refuses a report that is missing
+    either row before a `Report` can exist. That is exactly why it needed
+    changing: the arithmetic must not depend on a guard three functions away
+    that a later edit could relax. Same rule, same shape, as `mi._sum`.
+    """
+    if any(value is None for value in values):
+        return None
+    return sum(values)
 
 
 class Report:
@@ -187,10 +219,40 @@ def parse(body: bytes, cycle: int) -> Report:
         )
 
     as_of = _report_date(lines)
+    _check_window(as_of, cycle)
     counties, header_at = _county_columns(lines)
     rows, stated = _table(lines[header_at + 1:])
     _check_arithmetic(rows, stated)
     return Report(as_of, counties, rows)
+
+
+def _check_window(as_of: date, cycle: int) -> None:
+    """The report's own date must belong to the election it names.
+
+    ⚠️ GUARD PARITY, and this is the half that was missing. `fetch` refuses a
+    report dated after the day being asked for -- it will not publish tomorrow's
+    number today. `fetch_history` had no bound of any kind: it took whatever
+    date the PDF printed and published a row under it, for as many archived
+    captures as the Wayback Machine held. The date is the x-axis of every
+    comparison this repo makes, so one capture of a REPRINT -- Delaware
+    regenerating the 2024 report during a 2025 audit, say, which is a normal
+    thing for an election office to do and which the archive would happily
+    capture -- puts a full 2024 electorate at days_to_election -200 and makes it
+    that cycle's final.
+
+    Bounded the way `aggregator.py` and `civicapi.py` bound their own dates:
+    from the December before the cycle to a month past Election Day. Drift
+    rather than absence, because the title line has already confirmed this IS
+    the cycle's general -- a report that says "2024 General Election" and is
+    dated 2025 is a file we do not understand, not a file that is not there yet.
+    """
+    lo = date(cycle - 1, 12, 1)
+    hi = election_date(cycle) + timedelta(days=POST_ELECTION_DAYS)
+    if not lo <= as_of <= hi:
+        raise SchemaDrift(
+            f"DE: the {cycle} general's report is dated {as_of.isoformat()}, "
+            f"outside {lo.isoformat()}..{hi.isoformat()}"
+        )
 
 
 def _report_date(lines: list[str]) -> date:
@@ -294,7 +356,7 @@ def to_result(report: Report, cycle: int) -> FetchResult:
         cycle=cycle, state="DE", day=report.as_of,
         # NOT Delaware's own Total, which includes the polling place. See the
         # module docstring.
-        ballots_total=(mail or 0) + (inperson or 0),
+        ballots_total=_total(mail, inperson),
         mail_returned=mail,
         inperson=inperson,
         # Delaware registers by party; this report does not break it out.
@@ -305,7 +367,7 @@ def to_result(report: Report, cycle: int) -> FetchResult:
         result.county_rows.append(CountyDay(
             cycle=cycle, state="DE", county_fips=fips, county_name=name,
             day=report.as_of,
-            ballots_total=(county_mail or 0) + (county_inperson or 0),
+            ballots_total=_total(county_mail, county_inperson),
             mail_returned=county_mail,
             inperson=county_inperson,
         ))
@@ -326,17 +388,28 @@ WAYBACK_SNAPSHOT = "https://web.archive.org/web/{stamp}id_/{url}"
 #: VERIFIED 2026-09-06: the CDX API lists 14 captures of the 2024 general's
 #: report, of which 6 have distinct digests -- 2024-10-28, 10-30, 11-01, 11-04,
 #: 11-05 (twice) -- and every one of them fetches back as a real PDF.
+#: RE-RUN 2026-09-08: 7 distinct digests now, collapsing to SIX report dates --
+#: 10-28, 10-29, 11-01, 11-03, 11-04 and 11-05 -- which is the whole Delaware
+#: 2024 curve there will ever be. Delaware overwrites the file on business
+#: mornings, so the curve is as dense as the Internet Archive happened to be.
 MAX_ARCHIVE_PROBES = 40
 
 
-def _archive_stamps(url: str) -> list[str]:
-    """Wayback timestamps of every distinct version of `url`, oldest first."""
+def _archive_stamps(url: str, cycle: int) -> list[str]:
+    """Wayback timestamps of every distinct version of `url`, oldest first.
+
+    Sorted here rather than trusted from the CDX API, because `fetch_history`
+    resolves two captures of one report date by letting the later one win and
+    that is only true if these arrive in order. The cache filename carries the
+    cycle for the same kind of reason: every cycle asks the same endpoint, and
+    one filename for all of them makes the saved copies overwrite each other.
+    """
     query = {
         "url": url, "output": "json", "fl": "timestamp,statuscode,digest",
         "filter": "statuscode:200", "collapse": "digest", "limit": str(MAX_ARCHIVE_PROBES),
     }
     try:
-        body = get(CDX_URL, state="DE", filename="cdx-ge-report.json",
+        body = get(CDX_URL, state="DE", filename=f"cdx-GE{cycle}-report.json",
                    params=query, min_bytes=2)
     except Missing:
         # The CDX API answers "nothing archived" with an empty body, which
@@ -346,7 +419,7 @@ def _archive_stamps(url: str) -> list[str]:
         rows = json.loads(body.decode("utf-8", errors="replace"))
     except ValueError as exc:
         raise SourceError(f"DE: the Wayback CDX index was not JSON: {exc}") from exc
-    return [row[0] for row in rows[1:]]
+    return sorted(str(row[0]) for row in rows[1:])
 
 
 class DEScraper(Adapter):
@@ -430,7 +503,7 @@ class DEScraper(Adapter):
             )
         url = REPORT_URL.format(cycle=cycle)
         by_day: dict[date, Report] = {}
-        for stamp in _archive_stamps(url):
+        for stamp in _archive_stamps(url, cycle):
             snapshot = WAYBACK_SNAPSHOT.format(stamp=stamp, url=url)
             try:
                 # The stamp has to be in the cache filename: every capture is
@@ -443,6 +516,22 @@ class DEScraper(Adapter):
             try:
                 report = parse(body, cycle)
             except NotYetPublished:
+                # A capture of some OTHER election served at this URL. Absence.
+                continue
+            except SchemaDrift:
+                # ⚠️ NEVER SWALLOWED, and it is listed before the SourceError
+                # arm on purpose -- SchemaDrift IS a SourceError, so catching
+                # the parent first would quietly drop the one condition this
+                # module exists to shout about. A report shape we do not
+                # understand, or a report date outside the cycle, makes every
+                # capture suspect and stops the backfill.
+                raise
+            except SourceError as exc:
+                # Bytes we cannot read at all: the Wayback Machine occasionally
+                # answers a capture with an error page under HTTP 200. Same
+                # class as the download failure above and skipped for the same
+                # reason -- one unusable capture must not cost the other six.
+                log.debug("DE: archived capture %s unreadable (%s)", stamp, exc)
                 continue
             by_day[report.as_of] = report
         if not by_day:

@@ -307,3 +307,66 @@ def test_an_unposted_window_stops_the_ladder(monkeypatch):
 def test_history_refuses_the_current_cycle():
     with pytest.raises(NotYetPublished, match="not an archived cycle"):
         wa.WAScraper().fetch_history(date.today().year)
+
+
+# --------------------------------------------------------------------------
+# The archived cycles
+# --------------------------------------------------------------------------
+def test_the_archive_pins_2024_and_deliberately_not_2022():
+    """One entry per cycle, because every ballot is dated and the last snapshot
+    of a cycle therefore contains every earlier day of it."""
+    assert set(wa.ARCHIVED) == {2024}
+    day, stamp = wa.ARCHIVED[2024]
+    assert day == date(2024, 11, 19)
+    assert stamp.startswith("202411") and stamp.isdigit()
+
+
+def test_2022_is_refused_by_name_because_the_file_never_existed():
+    """Not a generic 'no archive' shrug: the CDX index holds no
+    Statewide2022-*.zip at all, and the refusal has to say which check was run
+    so nobody re-runs it."""
+    with pytest.raises(NotYetPublished, match=r"no `Statewide2022-\*\.zip`"):
+        wa.WAScraper().fetch_history(2022)
+
+
+def test_history_reads_the_pinned_capture_under_the_live_cache_name(monkeypatch):
+    """`id_` for the SoS's original bytes, and the cache filename is the LIVE
+    one so a snapshot taken during the season is reused instead of the Archive."""
+    seen = {}
+
+    def fake_get(url, **kwargs):
+        seen.update(url=url, **kwargs)
+        return FULL
+
+    monkeypatch.setattr(wa, "get", fake_get)
+    result = wa.WAScraper().fetch_history(2024)
+    assert seen["url"] == (
+        "https://web.archive.org/web/20241120010214id_/"
+        "https://www.sos.wa.gov/sites/default/files/current_election/"
+        "Statewide2024-11-19.zip"
+    )
+    assert seen["filename"] == "Statewide2024-11-19.zip"
+    assert seen["use_cache"] is True
+    assert result.state_rows and result.county_rows
+
+
+def test_history_stops_at_election_day_while_fetch_stops_at_the_run_date(monkeypatch):
+    """Guard parity, on the axis that bit az.py and nc.py: neither path may
+    publish a ballot dated after the day it was asked for."""
+    monkeypatch.setattr(wa, "get", lambda url, **kw: FULL)
+    history = wa.WAScraper().fetch_history(2024)
+    assert max(r.day for r in history.state_rows) <= date(2024, 11, 5)
+
+    monkeypatch.setattr(wa.WAScraper, "_snapshot",
+                        lambda self, day, *, use_cache: FULL)
+    live = wa.WAScraper().fetch(2024, date(2024, 10, 22))
+    assert max(r.day for r in live.state_rows) <= date(2024, 10, 22)
+
+
+def test_a_vanished_capture_is_absence_not_a_fallthrough(monkeypatch):
+    def gone(url, **kwargs):
+        raise Missing(f"WA: {url} returned 404")
+
+    monkeypatch.setattr(wa, "get", gone)
+    with pytest.raises(NotYetPublished, match="archived 2024-11-19 snapshot is gone"):
+        wa.WAScraper().fetch_history(2024)

@@ -52,6 +52,41 @@ Judgement calls, all locked by tests:
   and is empty on all 515,318 rows of the 2024 file and all 342,572 of the 2025
   one -- Washington has no party enrolment. All four party fields are None,
   never 0. See THE BLANK RULE in schema.py.
+
+## The past cycles: 2024 yes, 2022 no
+
+`current_election/` is purged when the next election opens, so the live host
+serves nothing for either cycle -- every date 404s, honestly. What survives is in
+the Wayback Machine, and the two cycles get opposite answers there.
+
+**2024 exists.** VERIFIED 2026-09-08 via the CDX API: `Statewide2024-10-20.zip`
+through `Statewide2024-11-19.zip` are archived, one per day, the `www` host
+answering 200 `application/zip` (the bare host is the 301 in front of it).
+`ARCHIVED` below pins the last of them, 138,719,074 bytes, because **one file is
+the whole cycle**: every ballot in it carries its own `Received Date`, so a single
+snapshot rebuilds the entire daily curve and a later snapshot is a superset of an
+earlier one. It is also the snapshot most likely to carry all 39 counties, which
+is what the statewide coverage gate needs.
+
+An earlier version of this module read those captures and refused them anyway, on
+the ground that web.archive.org "is a third-party host and not what a tier-1 state
+scraper should be reading". That was a policy this repo does not actually hold:
+`fl.py` rebuilds Florida's 2022 and 2024 county curves out of the CDX index,
+`de.py` walks it for Delaware, and `or.py` pins Wayback timestamps by hand exactly
+as `ARCHIVED` does here. `hi.py` and `ks.py` go further and cite a NEGATIVE CDX
+result as sufficient proof that a state has no archive -- so the Archive was
+already being trusted when it said "no" and refused when it said "yes". The
+`id_` suffix returns the SoS's ORIGINAL bytes, unrewritten, and every row of them
+is still checked against this cycle's Election Day before anything is published.
+
+**2022 does not exist, anywhere.** VERIFIED 2026-09-08, three ways: the CDX index
+holds no `Statewide2022-*.zip` (the dated scheme's first capture of any kind is
+`Statewide2024-07-31.zip`); an exact-URL query for `Statewide2022-11-08.zip`
+returns nothing; and a domain-wide sweep for `.*[Bb]allot.?[Ss]tatus.*` finds
+Washington's older one-off report zips for 2019-2022 specials
+(`BallotStatusReport_20220218`, `_20220506`) but nothing at all for the November
+2022 general. The per-ballot daily report simply post-dates that cycle. So there
+is no WA 2022 backfill to be had, and `fetch_history` says so by name.
 """
 
 from __future__ import annotations
@@ -85,6 +120,24 @@ ZIP_URL = BASE + "/Statewide{day}.zip"
 #: How many days back to look for a posted file. Washington posts daily during
 #: the return period, but a skipped day must not read as "nothing returned yet".
 LOOKBACK_DAYS = 7
+
+#: `id_` asks the Wayback Machine for the SoS's ORIGINAL bytes rather than a
+#: rewritten response. These are zips, so a rewrite would corrupt them outright.
+WAYBACK_SNAPSHOT = "https://web.archive.org/web/{stamp}id_/" + ZIP_URL
+
+#: web.archive.org is slower and less tolerant than a state host, and this is a
+#: 132MB file. Same reasoning as fl.py's ARCHIVE_MIN_INTERVAL.
+ARCHIVE_MIN_INTERVAL = 1.0
+
+#: The one archived snapshot that rebuilds a past cycle, as (day, Wayback stamp).
+#: ONE entry per cycle on purpose: every ballot in the file carries its own
+#: Received Date, so the last snapshot of a cycle contains every earlier day of
+#: it. VERIFIED 2026-09-08 -- 2024-11-19 is 138,719,074 bytes of
+#: `application/zip` and holds `Ballot Status Report 2024-11-19.csv`.
+#: There is deliberately no 2022 entry; see the module docstring.
+ARCHIVED: dict[int, tuple[date, str]] = {
+    2024: (date(2024, 11, 19), "20241120010214"),
+}
 
 REQUIRED = (
     "County", "Gender", "Election", "Ballot Status", "Received Date",
@@ -429,19 +482,51 @@ class WAScraper(Adapter):
         _day, body = self._latest(as_of, use_cache=False)
         return parse(body, cycle, as_of)
 
+    def _archived(self, day: date, stamp: str) -> bytes:
+        """One pinned Wayback capture -- or the cached copy, if we have one.
+
+        `use_cache=True` is correct here and nowhere else in this module: a fixed
+        Wayback stamp of a file the SoS has already purged cannot change. The
+        cache filename is the LIVE one, so a snapshot downloaded while the cycle
+        was running is reused and the Archive is never asked.
+        """
+        stamped = day.isoformat()
+        try:
+            return get(WAYBACK_SNAPSHOT.format(stamp=stamp, day=stamped),
+                       state="WA", filename=f"Statewide{stamped}.zip",
+                       use_cache=True, min_bytes=4096, timeout=900,
+                       min_interval=ARCHIVE_MIN_INTERVAL)
+        except Missing as exc:
+            raise NotYetPublished(
+                f"WA: the archived {stamped} snapshot is gone ({exc})") from exc
+
     def fetch_history(self, cycle: int) -> FetchResult:
         """One archived snapshot rebuilds a past cycle's entire curve.
 
+        Every ballot in the file is dated, so the LAST snapshot of a cycle
+        contains every earlier day of it and there is nothing to walk: this is
+        one download, not an archive sweep. `parse` then trims the series at
+        Election Day, exactly as `fetch` trims it at the run date -- both paths
+        go through the same election-identity and coverage guards, and neither
+        can publish a ballot dated after the day it was asked for.
+
         `current_election/` is purged when the next election opens, so the live
-        host serves nothing for 2022 or 2024 -- verified, every date 404s. The
-        cached copies under `cache/wa/` are used when they exist; otherwise this
-        correctly reports that there is nothing to backfill from. (The 2024
-        files do survive in the Wayback Machine, verified 200 for every day from
-        2024-10-22 to 2024-11-19, but that is a third-party host and not what a
-        tier-1 state scraper should be reading.)
+        host serves nothing for either past cycle. 2024 survives in the Wayback
+        Machine and is pinned in `ARCHIVED`; 2022 does not exist there or
+        anywhere else, and the refusal below says so by name rather than
+        inheriting a generic shrug. See the module docstring for both sweeps.
         """
         if cycle >= date.today().year:
             raise NotYetPublished(f"WA: {cycle} is not an archived cycle")
-        voting = election_date(cycle)
-        _day, body = self._latest(voting, use_cache=True)
-        return parse(body, cycle, voting)
+        pin = ARCHIVED.get(int(cycle))
+        if pin is None:
+            raise NotYetPublished(
+                f"WA: there is no {cycle} ballot status report to backfill from "
+                f"-- the SoS purges `current_election/` between cycles, and the "
+                f"Wayback CDX index holds no `Statewide{cycle}-*.zip` at all "
+                f"(the dated daily scheme begins with Statewide2024-07-31.zip). "
+                f"Washington's older ballot-status zips are one-off post-election "
+                f"reports for specials, not a daily general-election series."
+            )
+        day, stamp = pin
+        return parse(self._archived(day, stamp), cycle, election_date(cycle))

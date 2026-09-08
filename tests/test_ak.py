@@ -125,6 +125,35 @@ def test_a_2022_style_block_with_only_an_edit_stamp_is_not_published():
         ak.parse(GEN22, 2022, date(2022, 11, 20))
 
 
+def test_the_2022_block_is_the_11_30_certified_final_not_an_election_day_snapshot():
+    """The refusal above is about SEMANTICS, not a missing date -- and the block
+    itself proves it. Its Download Report link names
+    `Combined Ballot Count Report_11.30.2022.pdf`, so these are the numbers as
+    they stood twenty-two days AFTER the election, once every late absentee had
+    arrived. 2024's block, by contrast, states `Early Vote through 11/5/2024`.
+    Publishing the two side by side on a days-to-election axis would compare a
+    post-count final against an Election-Day snapshot."""
+    assert b"Combined%20Ballot%20Count%20Report_11.30.2022.pdf" in GEN22
+    assert b"Statistics include" not in GEN22
+    assert b"Statistics include Early Vote through 11/5/2024" in GEN24
+
+
+def test_the_two_cycles_report_the_same_measurement(monkeypatch):
+    """The 2022 PDF series and this HTML block are one thing: the block's own
+    totals are the PDF's TOTALS row. That is what makes the archived
+    `Combined Ballot Count Report_M.D.2022.pdf` files a recoverable 2022 daily
+    curve -- see the module docstring for why they are not read yet."""
+    monkeypatch.setattr(ak, "report_day", lambda block, cycle: date(2022, 11, 30))
+    (row,) = ak.parse(GEN22, 2022, date(2022, 12, 1)).state_rows
+    assert row.day == date(2022, 11, 30)
+    assert row.ballots_total == 100_877      # Alaska's own Total Ballots Received
+    assert row.mail_requested == 49_002 + 5_948 + 49 + 815 + 24
+    assert row.mail_returned == 41_348 + 3_948 + 37 + 815 + 18
+    assert row.inperson == 37_559 + 9_143    # early vote + in-person absentee
+    # Questioned ballots are counted and are in neither method bucket.
+    assert row.ballots_total - row.mail_returned - row.inperson == 8_009
+
+
 def test_a_block_with_no_date_at_all_is_drift():
     page = GEN24.decode()
     page = page.replace("Statistics include Early Vote through 11/5/2024.", "")
