@@ -12,7 +12,7 @@ FL,Florida,2026-11-03,,,true,county|party|method,,8289955,,,,
 GA,Georgia,2026-11-03,,,false,county|method|age|race|sex,,4031303,,,,
 HI,Hawaii,2026-11-03,,,false,county|method,,,,,,"tracked; no party registration in Hawaii, so the split is modelled"
 IA,Iowa,2026-11-03,,,true,county|party|method,370546,675464,,,,
-ID,Idaho,2026-11-03,,,true,,,,,,,not tracked in 2026
+ID,Idaho,2026-11-03,,,true,county|method,,,,,,"registers by party, but the tracker publishes only a primary ballot-choice column, so no split is published"
 IL,Illinois,2026-11-03,,,false,county|method,,,,,,
 IN,Indiana,2026-11-03,,,false,,,,,,,not tracked in 2026
 KS,Kansas,2026-11-03,,,true,method,,,,,,"tracked, but statewide only -- no county breakdown, so no estimate is possible"
