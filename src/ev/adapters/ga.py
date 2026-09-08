@@ -693,3 +693,484 @@ class GAScraper(Adapter):
         number = self.election_number(cycle)
         body = self._download(cycle, number, allow_cache=True)
         return parse(body, cycle, election_date(cycle))
+
+
+# ==========================================================================
+# THE ELECTION DATA HUB -- the route that actually runs unattended
+# ==========================================================================
+#
+# Everything above is the mvp.sos.ga.gov absentee file: richer per ballot, fully
+# parsed, fully tested, and reachable only with a hand-minted reCAPTCHA token.
+# It is kept, and `GAScraper` still works the moment `$GA_SOS_RECAPTCHA_TOKEN`
+# is set.
+#
+# What follows is a SECOND source for the same state, found 2026-09-08 and
+# written up as docs/georgia-source.md §7. The survey recorded `sos.ga.gov` CMS
+# pages as "403 -- Cloudflare challenge on every path"; they are not, and the
+# page it wrote off indexes an Election Data Hub whose numbers come out of a
+# Qlik Cloud Government tenant over an entirely anonymous chain. No captcha
+# anywhere on it, so this is the class the registry points at.
+#
+# ⚠️ IT IS THINNER THAN THE FILE ABOVE, ON PURPOSE. County and method only: the
+# hub carries `Age Group`, `RACE_DESC` and `Gender_Clean`, and the age bands
+# OVERLAP (`35-40` and `40-45` share a year), so an age crosstab built from them
+# double-counts a cohort in silence. Until that boundary is settled with the
+# Elections Division none of the three is published, and states.csv is corrected
+# to `county|method` to match -- a dims list promising rows nothing produces is
+# its own kind of wrong.
+
+#: The Qlik Cloud Government tenant, from `DH.ELECTION2024/js/vars.js`.
+HUB_TENANT = "sos-ga-gov.us.qlikcloudgov.com"
+
+#: The public Lambda the mashup calls for an anonymous OAuth2 token. It takes no
+#: parameters and no credentials; it answers 201 with `{access_token, client_id}`.
+HUB_TOKEN_URL = "https://fn4akbihvavvcmki6ih67rmuky0ezils.lambda-url.us-east-1.on.aws/"
+
+#: The Data Hub page the mashup is embedded on. Sent as `Referer` on the token
+#: request for the same reason a browser would: this is where the call comes from.
+HUB_REFERER = "https://sos.ga.gov/"
+
+#: "GA SOS Voting - All elections", internal name `[DH.ELECTION]`.
+HUB_APP_ID = "7d780725-d407-4db8-b287-005bb85eda87"
+
+#: The two county tables, by object id. Their MEASURES are read at run time; only
+#: their identity is pinned here, and both are asserted to still carry a `County`
+#: dimension before anything is read off them.
+HUB_ABSENTEE_TABLE = "CTgPMg"                                    # by-county absentee
+HUB_EARLY_TABLE = "7cc869cd-2124-43be-82f4-1c8d394dc6d8"         # by-county in-person
+
+#: The measures this module needs, by the label the app gives them. A label that
+#: stops appearing is SchemaDrift -- never a silently dropped column.
+HUB_ACCEPTED = "Ballots Accepted"
+HUB_REQUESTED = "Ballots Requested"
+#: ⚠️ AND THE EARLY-VOTING TABLE SPELLS IT DIFFERENTLY. Its measure is labelled
+#: `Ballots Accepted (EV)` in the app's properties even though the rendered
+#: column header reads "Ballots Accepted" -- `qFallbackTitle` and `qLabel` are
+#: not the same string here. Reading the label is what this module does, so the
+#: label is what gets pinned, and the two tables need two constants.
+HUB_ACCEPTED_EV = "Ballots Accepted (EV)"
+
+#: The field the saved selection sits on, and the one we take control of.
+HUB_ELECTION_FIELD = "Election Date"
+HUB_ELECTION_NAME = "Election Name"
+
+#: Georgia has 159 counties. A statewide row is published only at full coverage.
+GA_COUNTIES = 159
+
+#: How long any single engine call may take.
+HUB_TIMEOUT = 60
+
+
+def hub_token() -> str:
+    """An anonymous access token from the mashup's own endpoint.
+
+    `_net.get` gives this the repo's throttle and its cache mirror for free. It
+    is deliberately NOT served from cache -- a token has a lifetime and a stale
+    one produces a 401 three calls later, which is a much worse error than a
+    fresh request.
+    """
+    try:
+        raw = _net.get(HUB_TOKEN_URL, state="GA", filename="token.json",
+                  headers={"Origin": HUB_REFERER.rstrip("/"), "Referer": HUB_REFERER},
+                  min_bytes=64)
+    except _net.Missing as exc:
+        # The mashup's own code shows a "receiving unusually high traffic"
+        # dialog on 429. If we ever see it, backing off is the answer, not a
+        # retry loop against a state election service.
+        raise SourceError(f"GA: the Data Hub token endpoint refused: {exc}") from exc
+    try:
+        payload = json.loads(raw)
+    except ValueError as exc:
+        raise SchemaDrift("GA: the token endpoint did not return JSON") from exc
+    access = payload.get("access_token")
+    if not access:
+        raise SchemaDrift(f"GA: the token endpoint returned {sorted(payload)}, "
+                          "with no access_token")
+    return access
+
+
+class Engine:
+    """The thinnest Qlik Engine JSON-RPC client this adapter can be built on.
+
+    Not a general Qlik library and not trying to be. It speaks the six calls
+    this module makes and treats everything else as an error.
+    """
+
+    def __init__(self, ws: Any) -> None:
+        self._ws = ws
+        self._id = 0
+
+    def call(self, handle: int, method: str, params: Any) -> dict:
+        self._id += 1
+        self._ws.send(json.dumps({
+            "jsonrpc": "2.0", "id": self._id,
+            "handle": handle, "method": method, "params": params,
+        }))
+        while True:
+            try:
+                message = json.loads(self._ws.recv(timeout=HUB_TIMEOUT))
+            except Exception as exc:  # transport, timeout, or malformed frame
+                raise SourceError(f"GA: engine {method} failed: {exc}") from exc
+            # The engine interleaves notifications (OnConnected, change
+            # events) with responses. Anything without our id is not ours.
+            if message.get("id") != self._id:
+                continue
+            if "error" in message:
+                raise SourceError(f"GA: engine {method}: {message['error']}")
+            return message.get("result", {})
+
+
+def _handle(result: dict, what: str) -> int:
+    handle = (result.get("qReturn") or {}).get("qHandle")
+    if handle is None:
+        raise SchemaDrift(f"GA: {what} returned no handle")
+    return int(handle)
+
+
+def selected_elections(engine: Engine, doc: int) -> dict[str, list[str]]:
+    """What the app currently has selected, field by field."""
+    sel = _handle(engine.call(doc, "CreateSessionObject", {"qProp": {
+        "qInfo": {"qType": "ev-selection"},
+        "qSelectionObjectDef": {},
+    }}), "CreateSessionObject(selection)")
+    layout = engine.call(sel, "GetLayout", {}).get("qLayout", {})
+    out: dict[str, list[str]] = {}
+    for entry in layout.get("qSelectionObject", {}).get("qSelections", []):
+        out[entry.get("qField", "")] = [
+            v.get("qName", "") for v in entry.get("qSelectedFieldSelectionInfo", [])
+        ] or ([entry.get("qSelected")] if entry.get("qSelected") else [])
+    return out
+
+
+def field_values(engine: Engine, doc: int,
+                 field: str) -> tuple[int, list[dict]]:
+    """A list object over one field, and every value in it.
+
+    Returns `(handle, values)` because the handle is not incidental: selecting
+    is done THROUGH it.
+
+    ⚠️ `Field.SelectValues` IS THE WRONG CALL, and it fails in the worst
+    possible way. A FieldValue is `{qText, qIsNumeric, qNumber}` -- there is no
+    element number in it -- so passing one is accepted and selects nothing, and
+    the method simply returns false. For a date the field demonstrably contains
+    that is indistinguishable from "this election does not exist yet", which
+    would have left Georgia permanently and silently not-yet-published.
+    `ListObject.SelectListObjectValues` is the call that takes element numbers,
+    and element numbers are what actually identify a value.
+    """
+    handle = _handle(engine.call(doc, "CreateSessionObject", {"qProp": {
+        "qInfo": {"qType": "ev-values"},
+        "qListObjectDef": {
+            "qDef": {"qFieldDefs": [field]},
+            "qInitialDataFetch": [{"qTop": 0, "qLeft": 0, "qHeight": 500, "qWidth": 1}],
+        },
+    }}), f"CreateSessionObject({field})")
+    layout = engine.call(handle, "GetLayout", {}).get("qLayout", {})
+    out: list[dict] = []
+    for page in layout.get("qListObject", {}).get("qDataPages", []):
+        for row in page.get("qMatrix", []):
+            cell = row[0]
+            out.append({
+                "text": (cell.get("qText") or "").strip(),
+                "elem": cell.get("qElemNumber"),
+                "state": cell.get("qState"),
+            })
+    return handle, out
+
+
+def choose_election(engine: Engine, doc: int, day: date) -> list[str]:
+    """Clear everything, select `day`, and prove that is what got selected.
+
+    Returns the election NAMES now in scope. Raises `NotYetPublished` when the
+    app has no election on that date -- the normal answer until Georgia's window
+    opens, because the general does not enter the model until it does.
+    """
+    # ⚠️ ClearAll DOES NOT CLEAR THE SAVED SELECTION HERE. Measured: after
+    # `ClearAll(qLockedAlso=True)` the app still reports 03/12/2024 as selected.
+    # It is called anyway -- it does drop anything else -- but it is not the
+    # guard. The explicit select below and the read-back after it are.
+    engine.call(doc, "ClearAll", {"qLockedAlso": True})
+
+    wanted = f"{day.month:02d}/{day.day:02d}/{day.year}"
+    handle, values = field_values(engine, doc, HUB_ELECTION_FIELD)
+    if not values:
+        raise SchemaDrift(f"GA: the app has no {HUB_ELECTION_FIELD} field values")
+    match = next((v for v in values if v["text"] == wanted), None)
+    if match is None:
+        latest = max((v["text"] for v in values), key=_as_sortable, default="none")
+        raise NotYetPublished(
+            f"GA: the Data Hub holds no election dated {wanted}; its newest is "
+            f"{latest}"
+        )
+
+    # ⚠️ `qSuccess`, NOT `qReturn`. Most engine calls answer under `qReturn`;
+    # this one does not, and reading the wrong key gives a falsy value on a
+    # selection that actually worked -- which is a refusal invented by the
+    # client, on live data, with no error anywhere to notice it by.
+    took = engine.call(handle, "SelectListObjectValues", {
+        "qPath": "/qListObjectDef",
+        "qValues": [match["elem"]],
+        "qToggleMode": False,
+        "qSoftLock": False,
+    }).get("qSuccess")
+    if not took:
+        raise SourceError(
+            f"GA: the engine refused to select {HUB_ELECTION_FIELD} {wanted} "
+            f"(element {match['elem']})"
+        )
+
+    # ⚠️ READ IT BACK. A successful select means the call was accepted, not that
+    # the intended value is what ended up selected -- and this app ships with a
+    # saved selection on this very field.
+    got = [v["text"] for v in field_values(engine, doc, HUB_ELECTION_FIELD)[1]
+           if v["state"] == "S"]
+    if got != [wanted]:
+        raise SchemaDrift(
+            f"GA: asked for {HUB_ELECTION_FIELD} {wanted} and the app reports "
+            f"{got!r} selected"
+        )
+
+    names = _names_in_scope(engine, doc)
+    log.info("GA: selected %s -> %s", wanted, names)
+    if names and not any("GENERAL" in n.upper() for n in names):
+        raise SchemaDrift(
+            f"GA: {wanted} is in the model but names no general election: {names!r}"
+        )
+    return names
+
+
+def _as_sortable(text: str) -> tuple[int, int, int]:
+    """MM/DD/YYYY -> a sortable key, so "its newest is" says something true."""
+    try:
+        month, day, year = (int(p) for p in text.split("/"))
+        return (year, month, day)
+    except (ValueError, TypeError):
+        return (0, 0, 0)
+
+
+def _names_in_scope(engine: Engine, doc: int) -> list[str]:
+    lb = _handle(engine.call(doc, "CreateSessionObject", {"qProp": {
+        "qInfo": {"qType": "ev-names"},
+        "qListObjectDef": {
+            "qDef": {"qFieldDefs": [HUB_ELECTION_NAME]},
+            "qInitialDataFetch": [{"qTop": 0, "qLeft": 0, "qHeight": 50, "qWidth": 1}],
+        },
+    }}), "CreateSessionObject(names)")
+    layout = engine.call(lb, "GetLayout", {}).get("qLayout", {})
+    out = []
+    for page in layout.get("qListObject", {}).get("qDataPages", []):
+        for row in page.get("qMatrix", []):
+            cell = row[0]
+            # 'S' selected, 'O' optional (in scope). 'X' is excluded by the
+            # date we just chose and is exactly what we do not want.
+            if cell.get("qState") in ("S", "O"):
+                out.append(cell.get("qText", ""))
+    return out
+
+
+def county_measures(engine: Engine, doc: int, object_id: str,
+                    wanted: tuple[str, ...]) -> dict[str, dict[str, int]]:
+    """`{COUNTY: {label: value}}` for one published table, WITHOUT suppression.
+
+    The table's own hypercube definition is fetched and reused, so the state's
+    set-analysis is never transcribed into this repo; only the two suppression
+    flags are overridden. See the module docstring.
+    """
+    handle = _handle(engine.call(doc, "GetObject", {"qId": object_id}),
+                     f"GetObject({object_id})")
+    props = engine.call(handle, "GetProperties", {}).get("qProp", {})
+    cube = props.get("qHyperCubeDef")
+    if not cube:
+        raise SchemaDrift(f"GA: object {object_id} carries no hypercube")
+
+    dims = cube.get("qDimensions", [])
+    fields = [f for d in dims for f in d.get("qDef", {}).get("qFieldDefs", [])]
+    if fields != ["County"]:
+        raise SchemaDrift(
+            f"GA: object {object_id} is dimensioned by {fields!r}, not ['County']"
+        )
+
+    labels = [m.get("qDef", {}).get("qLabel") or "" for m in cube.get("qMeasures", [])]
+    missing = [w for w in wanted if w not in labels]
+    if missing:
+        raise SchemaDrift(f"GA: object {object_id} no longer publishes {missing}; "
+                          f"it has {labels!r}")
+
+    cube = dict(cube)
+    cube["qSuppressZero"] = False
+    cube["qSuppressMissing"] = False
+    cube["qInitialDataFetch"] = []
+    session = _handle(engine.call(doc, "CreateSessionObject", {"qProp": {
+        "qInfo": {"qType": "ev-table"}, "qHyperCubeDef": cube,
+    }}), "CreateSessionObject(table)")
+
+    layout = engine.call(session, "GetLayout", {}).get("qLayout", {}).get("qHyperCube", {})
+    height = int(layout.get("qSize", {}).get("qcy", 0))
+    width = 1 + len(labels)
+    if height <= 0:
+        raise SchemaDrift(f"GA: object {object_id} produced no rows for this election")
+
+    want_at = {label: 1 + i for i, label in enumerate(labels) if label in wanted}
+    out: dict[str, dict[str, int]] = {}
+    top = 0
+    while top < height:
+        pages = engine.call(session, "GetHyperCubeData", {
+            "qPath": "/qHyperCubeDef",
+            "qPages": [{"qTop": top, "qLeft": 0,
+                        "qHeight": min(500, height - top), "qWidth": width}],
+        }).get("qDataPages", [])
+        if not pages or not pages[0].get("qMatrix"):
+            break
+        for row in pages[0]["qMatrix"]:
+            name = (row[0].get("qText") or "").strip()
+            if not name:
+                continue
+            values: dict[str, int] = {}
+            for label, index in want_at.items():
+                cell = row[index]
+                number = cell.get("qNum")
+                if number is None or cell.get("qIsNull"):
+                    raise SchemaDrift(
+                        f"GA: {name} has no numeric {label!r} in {object_id}"
+                    )
+                values[label] = int(round(float(number)))
+            out[name] = values
+        top += len(pages[0]["qMatrix"])
+    return out
+
+
+def hub_build(absentee: dict[str, dict[str, int]], early: dict[str, dict[str, int]],
+          day: date, cycle: int) -> FetchResult:
+    """Canonical rows from the two county tables.
+
+    ⚠️ THE UNION, not either table alone. With suppression off both should carry
+    all 159 counties, and a county in one and not the other is drift worth
+    raising rather than a row to quietly complete with a zero -- the whole point
+    of turning suppression off was to stop guessing what an absence meant.
+    """
+    only_absentee = sorted(set(absentee) - set(early))
+    only_early = sorted(set(early) - set(absentee))
+    if only_absentee or only_early:
+        raise SchemaDrift(
+            f"GA: the two county tables disagree on which counties exist "
+            f"(absentee only: {only_absentee[:5]}, early only: {only_early[:5]})"
+        )
+
+    result = FetchResult()
+    totals = {"mail": 0, "inperson": 0, "requested": 0}
+    for name in sorted(absentee):
+        hit = _fips.lookup("GA", name.title())
+        if hit is None:
+            raise SchemaDrift(f"GA: unrecognised county name {name!r}")
+        fips, canonical = hit
+        mail = absentee[name][HUB_ACCEPTED]
+        requested = absentee[name][HUB_REQUESTED]
+        inperson = early[name][HUB_ACCEPTED_EV]
+        totals["mail"] += mail
+        totals["inperson"] += inperson
+        totals["requested"] += requested
+        result.county_rows.append(CountyDay(
+            cycle=cycle, state="GA", county_fips=fips, day=day,
+            county_name=canonical,
+            ballots_total=mail + inperson,
+            ballots_new=None,
+            mail_returned=mail,
+            inperson=inperson,
+            # Georgia registers no voters by party. Never 0. The app's `Party`
+            # field is a primary ballot choice, which is a different thing.
+            party_dem=None, party_rep=None, party_oth=None, party_npa=None,
+        ))
+
+    covered = len({r.county_fips for r in result.county_rows})
+    if covered != GA_COUNTIES:
+        # A statewide total over a subset of counties looks exactly like a
+        # Georgia turnout figure and is not one. Same rule as mt.py and id.py.
+        log.warning("GA: %d of %d counties reported; publishing counties only",
+                    covered, GA_COUNTIES)
+        return result
+
+    result.state_rows.append(StateDay(
+        cycle=cycle, state="GA", day=day,
+        ballots_total=totals["mail"] + totals["inperson"],
+        ballots_new=None,
+        mail_requested=totals["requested"],
+        mail_returned=totals["mail"],
+        inperson=totals["inperson"],
+        party_dem=None, party_rep=None, party_oth=None, party_npa=None,
+    ))
+    return result
+
+
+class GADataHubScraper(Adapter):
+    """Tier 1 for Georgia: the SoS Election Data Hub's Qlik app.
+
+    ⚠️ THE APP OPENS ON A SAVED SELECTION, AND IT IS THE 2024 PRIMARY.
+
+    This is the trap, and it is completely invisible. Connect, open the app,
+    read the county tables, and you get 159 correctly-named Georgia counties
+    with entirely plausible ballot counts -- from **MARCH 12, 2024 -
+    PRESIDENTIAL PREFERENCE PRIMARY**, because that is the selection saved into
+    the published app:
+
+        GetCurrentSelections -> Election Date: 1 of 24 -> '03/12/2024'
+
+    Same family as Montana's dashboard holding the June primary and Idaho's
+    tracker holding the May one, but worse: those two at least SAY on the page
+    which election they are showing. Here the election is a selection inside a
+    data model and the only way to know is to ask.
+
+    So this never trusts the state it is handed. It clears every selection,
+    selects the target election by date itself, READS THE SELECTION BACK, and
+    refuses unless exactly the intended election is selected. A run that cannot
+    prove what it selected does not publish.
+
+    `NotYetPublished` until the general enters the model, which is the honest
+    answer: on 2026-09-08 the app's newest election was AUGUST 25, 2026, and
+    November 3 was simply not there yet.
+    """
+
+    state = "GA"
+    name = "ga-datahub"
+    tier = TIER_SCRAPER
+
+    def fetch(self, cycle: int, as_of: date) -> FetchResult:
+        try:
+            from websockets.sync.client import connect
+        except ImportError as exc:  # pragma: no cover - a packaging failure
+            raise SourceError(f"GA: websockets is not installed: {exc}") from exc
+
+        access = hub_token()
+        target = election_date(cycle)
+        try:
+            session = connect(
+                f"wss://{HUB_TENANT}/app/{HUB_APP_ID}",
+                additional_headers={"Authorization": f"Bearer {access}"},
+                max_size=64 * 1024 * 1024,
+                open_timeout=HUB_TIMEOUT,
+            )
+        except Exception as exc:
+            raise SourceError(f"GA: could not open the engine socket: {exc}") from exc
+
+        with session as ws:
+            engine = Engine(ws)
+            doc = _handle(engine.call(-1, "OpenDoc", {"qDocName": HUB_APP_ID}),
+                          "OpenDoc")
+            choose_election(engine, doc, target)
+            absentee = county_measures(engine, doc, HUB_ABSENTEE_TABLE,
+                                       (HUB_ACCEPTED, HUB_REQUESTED))
+            early = county_measures(engine, doc, HUB_EARLY_TABLE, (HUB_ACCEPTED_EV,))
+
+        return hub_build(absentee, early, as_of, cycle)
+
+    def fetch_history(self, cycle: int) -> FetchResult:
+        # ⚠️ GUARD PARITY, and a refusal rather than a walk. Every past election
+        # IS in this app -- `Election Date` lists 24 of them -- so a backfill
+        # looks one selection away. It is not: the app holds each election's
+        # CURRENT position only, with no daily history, so every past cycle
+        # would come back as a single Election-Day figure stamped across the
+        # window. `backfill` would then date it at the election date, which is
+        # the fabricated-final-row bug `nd.py` was fixed for.
+        raise NotYetPublished(
+            f"GA: the Data Hub holds no daily history for {cycle}, only each "
+            "election's final position"
+        )

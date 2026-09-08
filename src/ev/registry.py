@@ -32,7 +32,13 @@ log = logging.getLogger(__name__)
 TIER1: dict[str, str] = {
     # Voter-level daily files: county + party + method + demographics.
     "NC": "nc:NCScraper",
-    "GA": "ga:GAScraper",
+    # ⚠️ THE DATA HUB, NOT THE ABSENTEE FILE. `ga:GAScraper` parses the richer
+    # mvp.sos.ga.gov download and still works with a hand-minted reCAPTCHA
+    # token in $GA_SOS_RECAPTCHA_TOKEN -- it just cannot run unattended, which
+    # is the whole finding in docs/georgia-source.md §1. The Data Hub reaches
+    # the same state through an anonymous Qlik tenant (§7), so it is the one
+    # the daily job can actually use. County + method only; see ga.py.
+    "GA": "ga:GADataHubScraper",
     "FL": "fl:FLScraper",
     "NV": "nv:NVScraper",
     "AZ": "az:AZScraper",

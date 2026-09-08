@@ -5,6 +5,12 @@ description = "ElectIndex 2026 early vote tracker — ingest pipeline and publis
 requires-python = ">=3.11"
 dependencies = [
     "requests>=2.32",
+    # Georgia's Election Data Hub is a Qlik Cloud tenant, and the Qlik Engine
+    # API is JSON-RPC over a WebSocket -- there is no REST route to the data.
+    # `ga.py` imports this lazily inside fetch() so an environment without it
+    # degrades to a SourceError on one state rather than an ImportError that
+    # takes the whole run down. See docs/georgia-source.md §7.
+    "websockets>=13,<16",
     "openpyxl>=3.1",
     # Iowa publishes its absentee request/return report only as a PDF -- there is
     # no CSV or XLSX of it anywhere on sos.iowa.gov. Text-layer extraction only.
