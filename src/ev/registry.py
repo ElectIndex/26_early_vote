@@ -68,6 +68,10 @@ TIER1: dict[str, str] = {
     "WI": "wi:WIScraper",
     "TX": "tx:TXScraper",
     "TN": "tn:TNScraper",
+    # County + method, from a stable .gov index page over cycle-specific
+    # Datawrapper charts. Registers by party; the only party column the source
+    # publishes is a PRIMARY BALLOT CHOICE, so none is published. See id.py.
+    "ID": "id:IDScraper",
     "MN": "mn:MNScraper",
     "CA": "ca:CAScraper",
     # Voter-level daily file: county + method + sex, no party registration.
