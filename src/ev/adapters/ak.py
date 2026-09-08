@@ -44,6 +44,53 @@ Four things drive the code.
   four party fields are therefore None -- "not reported", not zero. See THE
   BLANK RULE in schema.py.
 
+## The 2022 general: why this module still publishes nothing for it
+
+`?id=22genr` serves a complete, well-formed Election Statistics block today --
+110,549 issued / 100,877 received, eight ballot types that add up to both. What
+it does NOT carry is any statement of what period those numbers cover, and the
+difference between the two cycles is not cosmetic:
+
+* 2024's block says `Statistics include Early Vote through 11/5/2024`. That is
+  Alaska stating an as-of, and it is Election Day, so the row lands at
+  days_to_election 0 beside every other state's Election-Day figure.
+* 2022's block says no such thing. Its only date is `Table last updated
+  September 13, 2024`, an edit stamp from twenty-two months later, which
+  `report_day` reads and the window check in `parse` then rejects -- correctly.
+
+VERIFIED 2026-09-08: the 2022 block DOES name a date, just not its own. Its
+`Download Report` link is
+`/doc/info/Combined%20Ballot%20Count%20Report_11.30.2022.pdf`, so the table is
+the **11/30/2022 combined report** -- the certified final, taken twenty-two days
+AFTER the election, after every late absentee had arrived. Dating it 2022-11-30
+would be honest about the file and useless about the curve: it would put a
+post-count final at days_to_election -22 on an axis whose whole purpose is
+comparing cycles at the same distance from Election Day, next to a 2024 row that
+is a genuine Election-Day snapshot. So the refusal STANDS, and the reason is the
+semantics rather than a missing date.
+
+**What is actually there for 2022, measured rather than assumed** (CDX,
+2026-09-08). Alaska posted this report near-daily in 2022 and the Archive kept
+about twenty of them under `/doc/info/Combined Ballot Count Report_M.D.2022.pdf`
+-- 10.26, 10.27, 10.28, 10.31, 11.1 through 11.7, 11.9 through 11.12, 11.14,
+11.16, 11.20, 11.22 and 11.30, all HTTP 200 `application/pdf`. The 11.30 one was
+downloaded and read: its TOTALS block reproduces the 22GENR Election Statistics
+table EXACTLY (mail 49,002 sent / 41,348 received, early 37,559, in-person
+absentee 9,143, online 5,948/3,948, fax 49/37, special needs 815, FWAB 24/18,
+questioned 8,009), which proves the PDF series and this HTML block are the same
+measurement. **A real 2022 daily curve is therefore recoverable**, and it is the
+only route to one.
+
+It is not built here, and that is a deliberate call rather than an oversight.
+The during-season files (52KB, PDF-1.6) and the post-election ones (76KB,
+PDF-1.7) are two DIFFERENT layouts with different column sets, and pypdf's text
+extraction of the during-season layout runs the columns together -- `48020` and
+`49807` come back as the single token `4802049807`. Splitting that needs a
+coordinate-based parse of a layout that changes mid-series, which is precisely
+the situation rule 3 exists for: a mis-split column here would publish a
+confident wrong Alaska curve. It wants measuring first, the way pa.py's
+vocabulary was measured before a line of it was written.
+
 **Unverified, and flagged here rather than assumed:** whether the Division
 refreshes this block DAILY during the early-vote window. Every capture we can
 see is post-election -- 24GENR's table says "Table last updated January 29,
@@ -366,8 +413,16 @@ class AKScraper(Adapter):
         2024 general, 2024-09-13 for the 2022 one), not the day the numbers
         describe. Only when Alaska states the as-of itself, as 2024's "Statistics
         include Early Vote through 11/5/2024" does, is there an honest date to
-        stamp; 2022's block says no such thing, so 2022 is reported as having no
-        backfill rather than being dated by guesswork.
+        stamp.
+
+        2022 is not published, and the window check in `parse` is what stops it:
+        that block's numbers are the 11/30/2022 certified final, which would sit
+        at days_to_election -22 against a 2024 row taken on Election Day. Note
+        that the SAME guard runs on both paths -- `fetch` and `fetch_history`
+        differ only in the as-of they hand `parse`, never in what `parse` will
+        accept. The recoverable 2022 daily series is the archived PDF one, and
+        the module docstring records exactly what it is and why it is not read
+        yet.
         """
         if cycle >= date.today().year:
             raise NotYetPublished(f"AK: {cycle} is not an archived cycle")

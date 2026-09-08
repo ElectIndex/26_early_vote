@@ -1,7 +1,6 @@
 """Louisiana: the SoS's daily early-voter rosters and its post-election report.
 
-Four real fixtures, all saved from `electionstatistics.sos.la.gov` on
-2026-09-06:
+Six real fixtures, all saved from `electionstatistics.sos.la.gov`:
 
 * `20241105_EBTR_Daily_1018.pdf` -- East Baton Rouge's roster for 2024-10-18,
   cut to its real first and last pages (the header and the `Total Voters: 8047`
@@ -11,8 +10,15 @@ Four real fixtures, all saved from `electionstatistics.sos.la.gov` on
   the fixture that keeps "zero voters" from being read as schema drift.
 * `2024_1105_ParishStats.pdf` -- the first nine pages of the post-election Early
   Voting Statistical Report, which is four complete parish blocks.
+* `2022_1108_ParishStats.pdf` -- the same first nine pages of the 2022 report,
+  cut the same way, so BOTH cycles' real PDF text layers are under test.
 * `EarlyVoterList_EBTR_2024.html` -- the real ASP.NET listing postback,
   viewstate and all.
+* `parish_stats_sums.csv` -- all 128 parish SUM rows, read out of the two FULL
+  reports (2,039,710 and 2,036,173 bytes; verified 200 on 2026-09-08 with
+  Last-Modified 2022-11-16 and 2024-11-12). The reports are 2 MB and 198 pages
+  each and cannot live in the tree, but they are what the site actually
+  publishes, so their numbers are pinned here instead.
 """
 
 from __future__ import annotations
@@ -350,3 +356,313 @@ def test_a_persistent_403_names_the_rate_ban(monkeypatch):
     with pytest.raises(SourceError) as caught:
         la._retrying(blocked)
     assert "refusing this IP" in str(caught.value)
+
+
+# --------------------------------------------------------------------------
+# THE RETRIEVAL PATH: the report is one request, the rosters are 1,026
+# --------------------------------------------------------------------------
+# `fetch_history` used to walk the daily rosters first and unconditionally, so
+# `python -m ev backfill --cycle 2022` on a cold cache spent 1,026 requests on
+# the weaker half before it ever asked for the stronger one -- against a host
+# that has already answered 403 to this project's whole IP once. These tests
+# pin the order and the switch. See ROSTER_HISTORY_ENV in la.py.
+
+PARISH_STATS_2022 = FIXTURES / "2022_1108_ParishStats.pdf"
+ELECTION_2022 = date(2022, 11, 8)
+
+
+def _report_only(monkeypatch, body, *, blocks=4):
+    """Serve the ParishStats PDF from a fixture; make any OTHER fetch explode.
+
+    The tripwire is the assertion: `_listings` and `_pdf` both go through
+    `la._get`, so a roster walk cannot happen quietly under any of these tests.
+    """
+    fetched = []
+
+    def fake_get(url, *, filename, **kw):
+        fetched.append(filename)
+        if filename.endswith("ParishStats.pdf"):
+            return body
+        raise AssertionError(f"LA fetched a roster URL it should not have: {url}")
+
+    monkeypatch.setattr(la, "_get", fake_get)
+    # The fixture is the report's first four parish blocks, so the real
+    # coverage guard is kept and only the number it checks against is moved.
+    monkeypatch.setattr(la, "EXPECTED_PARISHES", blocks)
+    return fetched
+
+
+def test_fetch_history_defaults_to_the_report_alone(monkeypatch):
+    """One request, and it is the RICH half: parish x party x method plus race
+    and sex. The 1,026-file roster walk adds only a bare cumulative count per
+    parish per day, and is what drew the host-wide ban."""
+    monkeypatch.delenv(la.ROSTER_HISTORY_ENV, raising=False)
+    fetched = _report_only(monkeypatch, PARISH_STATS_2022.read_bytes())
+
+    result = la.LAScraper().fetch_history(2022)
+
+    assert fetched == ["2022_1108_ParishStats.pdf"]
+    assert [r.day for r in result.state_rows] == [ELECTION_2022]
+    assert len(result.county_rows) == 4
+
+
+def test_the_roster_walk_is_opt_in_and_named(monkeypatch):
+    """It is still reachable -- the daily curve is real data the report cannot
+    give -- but only deliberately."""
+    monkeypatch.delenv(la.ROSTER_HISTORY_ENV, raising=False)
+    assert la.roster_history_enabled() is False
+    monkeypatch.setenv(la.ROSTER_HISTORY_ENV, "1")
+    assert la.roster_history_enabled() is True
+
+    _report_only(monkeypatch, PARISH_STATS_2022.read_bytes())
+    scraper = la.LAScraper()
+    walked = []
+    monkeypatch.setattr(scraper, "_listings",
+                        lambda election: walked.append(election) or {})
+    scraper.fetch_history(2022)
+    assert walked == [ELECTION_2022]
+
+
+def test_a_roster_fault_still_publishes_the_report(monkeypatch):
+    """The invariant is "never publish a running sum with a hole in it", not
+    "publish nothing". `fetch` has to raise because the sum is all it has; here
+    the report is an independently complete Election Day row, so the CURVE is
+    dropped and the report survives."""
+    from ev.adapters.base import SourceError
+
+    monkeypatch.setenv(la.ROSTER_HISTORY_ENV, "1")
+    _report_only(monkeypatch, PARISH_STATS_2022.read_bytes())
+    scraper = la.LAScraper()
+
+    def blocked(election):
+        raise SourceError("LA: returned HTTP 403")
+
+    monkeypatch.setattr(scraper, "_listings", blocked)
+    result = scraper.fetch_history(2022)
+    assert [r.day for r in result.state_rows] == [ELECTION_2022]
+    assert result.state_rows[0].restated == 1
+
+
+def test_no_report_and_no_roster_walk_says_how_to_get_the_curve(monkeypatch):
+    monkeypatch.delenv(la.ROSTER_HISTORY_ENV, raising=False)
+    scraper = la.LAScraper()
+    monkeypatch.setattr(la, "_get", lambda *a, **k: (_ for _ in ()).throw(
+        la._net.Missing("LA: 404")))
+    with pytest.raises(NotYetPublished) as caught:
+        scraper.fetch_history(2022)
+    assert la.ROSTER_HISTORY_ENV in str(caught.value)
+
+
+# --------------------------------------------------------------------------
+# A listed roster that will not download is a FAULT, not a quiet zero
+# --------------------------------------------------------------------------
+def test_a_dropped_roster_day_would_silently_shorten_the_running_sum():
+    """The arithmetic that makes the guard below necessary.
+
+    Louisiana publishes INCREMENTS. East Baton Rouge's real 2024 files are
+    `PreEV` = 7,165 (everything received before early voting opened) and
+    `Daily_1018` = 8,047. Lose the PreEV and 10/18 does not publish as "slightly
+    low" -- it publishes as 8,047 against a true 15,212, and every later day in
+    that parish stays short by the same 7,165 forever."""
+    whole = la.build_series({"EAST BATON ROUGE": {date(2024, 10, 17): 7165,
+                                                  date(2024, 10, 18): 8047}},
+                            2024, date(2024, 10, 18))
+    holed = la.build_series({"EAST BATON ROUGE": {date(2024, 10, 18): 8047}},
+                            2024, date(2024, 10, 18))
+    assert whole.county_rows[-1].ballots_total == 15212
+    assert holed.county_rows[-1].ballots_total == 8047
+
+
+def test_a_listed_roster_that_404s_raises_instead_of_skipping(monkeypatch):
+    """It used to log a warning and return None, and the caller skipped the day.
+
+    A skipped Sunday has no listing ROW at all, so a 404 on a file the SoS's own
+    table just named is "we could not look" -- SourceError, fall through to a
+    tier that can answer -- and never a zero folded into a running sum."""
+    from ev.adapters.base import SourceError
+
+    def gone(url, *, filename, **kw):
+        raise la._net.Missing(f"LA: {url} returned 404")
+
+    monkeypatch.setattr(la, "_get", gone)
+    with pytest.raises(SourceError) as caught:
+        la.LAScraper()._pdf("20241105_EBTR_PreEV.pdf", use_cache=False)
+    assert not isinstance(caught.value, NotYetPublished)
+    assert "20241105_EBTR_PreEV.pdf" in str(caught.value)
+
+
+def test_a_404_roster_takes_the_whole_run_down_not_one_day(monkeypatch):
+    """End to end through `_read_rosters`, which is shared by `fetch` and by the
+    opt-in half of `fetch_history` -- so the guard cannot exist on one path and
+    not its sibling."""
+    from ev.adapters.base import SourceError
+
+    def gone(url, *, filename, **kw):
+        raise la._net.Missing(f"LA: {url} returned 404")
+
+    monkeypatch.setattr(la, "_get", gone)
+    listings = {"EAST BATON ROUGE": [("20241105_EBTR_Daily_1018.pdf",
+                                      date(2024, 10, 19))]}
+    with pytest.raises(SourceError):
+        la.LAScraper()._read_rosters(listings, ELECTION_2024,
+                                     date(2024, 10, 18), archived=True)
+
+
+# --------------------------------------------------------------------------
+# `fetch` and `fetch_history` bound the series the same way
+# --------------------------------------------------------------------------
+def test_fetch_never_runs_the_series_past_election_day(monkeypatch):
+    """`ingest --cycle 2024` on any later day used to build a span from the first
+    roster to TODAY -- hundreds of flat-total rows at days_to_election < 0, which
+    every reader in the repo refuses and which publish.py's `_finals` had to grow
+    a guard against after it inflated five state-cycles."""
+    scraper = la.LAScraper()
+    monkeypatch.setattr(scraper, "_listings", lambda election: {"x": []})
+    monkeypatch.setattr(
+        scraper, "_read_rosters",
+        lambda listings, election, as_of, *, archived: _all_parishes(
+            {date(2024, 10, 17): 100}),
+    )
+    result = scraper.fetch(2024, date(2026, 9, 8))
+    assert max(r.day for r in result.county_rows) == ELECTION_2024
+    assert max(r.day for r in result.state_rows) == ELECTION_2024
+
+
+# --------------------------------------------------------------------------
+# CANONICAL VALUES from both real reports
+# --------------------------------------------------------------------------
+#: Every parish SUM row from BOTH full reports -- 128 blocks, read out of
+#: `2022_1108_ParishStats.pdf` (2,039,710 bytes) and `2024_1105_ParishStats.pdf`
+#: (2,036,173 bytes). The two truncated PDFs beside it prove the PDF text layer
+#: still parses; this proves the numbers the site actually publishes.
+SUMS_CSV = FIXTURES / "parish_stats_sums.csv"
+
+
+def _golden(cycle: int) -> dict[str, dict[str, int]]:
+    import csv
+
+    with SUMS_CSV.open() as fh:
+        return {row["parish"]: {c: int(row[c]) for c in la.SUM_COLUMNS}
+                for row in csv.DictReader(fh) if int(row["cycle"]) == cycle}
+
+
+@pytest.fixture(scope="module")
+def stats_2022():
+    return la.parse_parish_stats(PARISH_STATS_2022.read_bytes(), 2022)
+
+
+def test_the_2022_report_parses_with_its_real_numbers(stats_2022):
+    assert list(stats_2022) == ["ACADIA", "ALLEN", "ASCENSION", "ASSUMPTION"]
+    assert stats_2022["ACADIA"] == {
+        "TOTVTE": 4686, "WHITE": 3967, "BLACK": 665, "RACE_OTH": 54,
+        "MALE": 2207, "FEMALE": 2479, "DEM": 1662, "REP": 2386,
+        "PARTY_OTH": 638, "UOCAVA_IN": 2, "UOCAVA_OUT": 2,
+        "INPER": 3677, "ABS": 1009, "ASST_D": 81, "ASST_I": 20,
+    }
+
+
+def test_all_128_parish_blocks_balance_four_ways():
+    """Race, party and method each close to the ballot and sex never overruns --
+    in every block of both reports. This is what makes reading a fixed column
+    order out of a PDF text layer safe enough to publish."""
+    checked = 0
+    for cycle in (2022, 2024):
+        golden = _golden(cycle)
+        assert len(golden) == la.EXPECTED_PARISHES == 64
+        for parish, row in golden.items():
+            la._check_sum_row(parish, row, cycle)     # must not raise
+            checked += 1
+    assert checked == 128
+
+
+def test_both_cycles_build_their_canonical_statewide_row():
+    """Corroborated outside this file: 975,019 is the 2024 figure la.py's own
+    module docstring cites against the roster sum, and East Baton Rouge's 94,908
+    is the number it names beside it."""
+    expected = {
+        2022: dict(day=ELECTION_2022, total=377_428, inperson=272_265,
+                   mail=105_163, dem=159_386, rep=161_817),
+        2024: dict(day=ELECTION_2024, total=975_019, inperson=849_796,
+                   mail=125_223, dem=351_863, rep=434_871),
+    }
+    for cycle, want in expected.items():
+        result = la.build_final(_golden(cycle), cycle, want["day"])
+        row = result.state_rows[0]
+        assert row.day == want["day"]
+        assert row.ballots_total == want["total"]
+        assert row.inperson == want["inperson"]
+        assert row.mail_returned == want["mail"]
+        assert row.inperson + row.mail_returned == row.ballots_total
+        assert row.party_dem == want["dem"]
+        assert row.party_rep == want["rep"]
+        assert row.restated == 1
+        assert len(result.county_rows) == 64
+
+
+def test_both_cycles_build_their_canonical_demographics():
+    """43,775 is the 2024 race-other figure recorded in docs/coverage-research.md
+    before any of this ran."""
+    expected = {
+        2022: {("race", "white"): 267_776, ("race", "black"): 98_008,
+               ("race", "other"): 11_644, ("sex", "male"): 166_289,
+               ("sex", "female"): 211_044, ("sex", "unknown"): 95},
+        2024: {("race", "white"): 682_487, ("race", "black"): 248_757,
+               ("race", "other"): 43_775, ("sex", "male"): 414_980,
+               ("sex", "female"): 559_470, ("sex", "unknown"): 569},
+    }
+    for cycle, day in ((2022, ELECTION_2022), (2024, ELECTION_2024)):
+        result = la.build_final(_golden(cycle), cycle, day)
+        got = {(d.dimension, d.bucket): d.ballots_total for d in result.demo_rows}
+        assert got == expected[cycle]
+        total = result.state_rows[0].ballots_total
+        assert sum(v for (dim, _), v in got.items() if dim == "race") == total
+        assert sum(v for (dim, _), v in got.items() if dim == "sex") == total
+
+
+def test_both_cycles_carry_canonical_parish_rows():
+    expected = {
+        (2022, "22071"): ("Orleans Parish", 28_835, 22_291, 2_750, 20_992, 7_843),
+        (2022, "22033"): ("East Baton Rouge Parish", 39_057, 18_127, 14_873, 27_368, 11_689),
+        (2024, "22071"): ("Orleans Parish", 80_095, 57_369, 7_680, 70_099, 9_996),
+        (2024, "22033"): ("East Baton Rouge Parish", 94_908, 42_518, 34_081, 81_212, 13_696),
+    }
+    for cycle, day in ((2022, ELECTION_2022), (2024, ELECTION_2024)):
+        rows = {r.county_fips: r
+                for r in la.build_final(_golden(cycle), cycle, day).county_rows}
+        for (want_cycle, fips), want in expected.items():
+            if want_cycle != cycle:
+                continue
+            row = rows[fips]
+            assert (row.county_name, row.ballots_total, row.party_dem,
+                    row.party_rep, row.inperson, row.mail_returned) == want
+
+
+def test_the_report_lands_ON_election_day_not_after_it():
+    """⚠️ THE WHOLE BACKFILL TURNS ON THIS. The PDF is CREATED a week late --
+    2022-11-16 and 2024-11-12 by their own Last-Modified headers -- but it
+    describes ballots cast by Election Day and is dated to Election Day, so it
+    lands at days_to_election == 0. Every reader in this repo refuses
+    days_to_election < 0; a row stamped with the PDF's creation date would
+    publish nothing usable, and publish.py's completeness gate specifically
+    needs a NON-BLANK day-0 row before it will call a cycle's total final."""
+    from ev.calendar import days_to_election
+
+    for cycle, day in ((2022, ELECTION_2022), (2024, ELECTION_2024)):
+        result = la.build_final(_golden(cycle), cycle, day)
+        for row in result.state_rows + result.county_rows + result.demo_rows:
+            assert days_to_election(cycle, row.day) == 0
+        assert result.state_rows[0].ballots_total          # non-blank
+
+
+def test_the_blank_rule_holds_across_both_full_reports():
+    """Louisiana collapses every non-major party into one OTH column, so the
+    residual is published as NEITHER `party_oth` nor `party_npa` -- and blank,
+    never 0, because "not reported" is not "no such voters"."""
+    for cycle, day in ((2022, ELECTION_2022), (2024, ELECTION_2024)):
+        result = la.build_final(_golden(cycle), cycle, day)
+        for row in result.state_rows + result.county_rows:
+            assert row.party_oth is None
+            assert row.party_npa is None
+        assert result.state_rows[0].mail_requested is None
+        for row in result.county_rows:
+            assert row.ballots_new is None

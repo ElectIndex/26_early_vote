@@ -96,14 +96,58 @@ JUDGEMENT CALLS
 * **Party totals are cross-checked against the summary.** Every county's party
   columns must sum to the total the summary page gives for that county, or the
   file raises SchemaDrift rather than publishing a party split we mis-assigned.
+
+--------------------------------------------------------------------------
+THE ARCHIVE SWEEP, AND WHY ONE CAPTURE IS NOT ENOUGH
+--------------------------------------------------------------------------
+
+One report rebuilds the whole daily curve, but it attaches its PARTY split to
+one day only -- its own as-of day. Reading a single archived capture per cycle,
+which is what this adapter used to do, therefore published a fourteen-day county
+curve whose only party row sat at `days_to_election = -1`, and both
+`estimate.read_state_daily` and `counterfactual.read_series` discard `dte < 0`.
+Oregon -- county returns WITH a party split, the richest shape any state
+publishes -- yielded zero folds for either model.
+
+So `fetch_history` sweeps EVERY archived capture (`fl.py` and `de.py` do the
+same) and merges them. The merge rule is one line and it is not the same one:
+
+    each day is published as the EARLIEST report that covers it read that day.
+
+That is the reading a daily ingest running that October would have written, and
+it is the only rule that keeps the series monotone. The alternatives both fail
+on real numbers:
+
+* *Latest capture wins* (fl.py's rule, right for a source where one capture is
+  one day) throws the party split away, because only a report's own as-of day
+  has one.
+* *The day's own capture wins, other days from the latest* mixes two readings of
+  the same day and the curve goes BACKWARDS: the 2022-10-25 report's summary
+  says 65,944 ballots statewide, while the 2022-11-04 report's day matrix says
+  128,787 had arrived by 10-25 and 79,739 by 10-24. Publishing 79,739 on 10-24
+  and 65,944 on 10-25 is a cumulative total that falls.
+
+Taking each capture's whole prefix keeps every row internally consistent -- the
+county distribution, the statewide total and the party split on a given day all
+come from ONE file, which is what the party model needs, since it reads the
+geography from the county rows and the truth from the party columns and would
+otherwise be told about two different moments. VERIFIED on the merged output:
+zero decreasing steps, statewide or in any of the 36 counties, in either cycle.
+
+Cost of the rule: a report generated the morning after the day it is stamped
+(2022-11-04 carries columns only through 11-03) files its summary under the
+stamp, so 11-03 and 11-04 both read 869,375. That is what Oregon published on
+the morning of 11-04, and the party split that comes with it is the split of
+exactly those 869,375 ballots.
 """
 
 from __future__ import annotations
 
 import io
+import json
 import logging
 import re
-from datetime import date
+from datetime import date, timedelta
 
 import pypdf
 
@@ -111,7 +155,7 @@ from ..calendar import election_date
 from ..normalize import PARTY_DEM, PARTY_NPA, PARTY_OTH, PARTY_REP
 from ..schema import TIER_SCRAPER, CountyDay, StateDay
 from . import _fips
-from ._net import Missing, get, looks_like_html
+from ._net import DEFAULT_MIN_INTERVAL, Missing, get, looks_like_html
 from .base import Adapter, FetchResult, NotYetPublished, SchemaDrift, SourceError
 
 log = logging.getLogger(__name__)
@@ -124,30 +168,96 @@ CURRENT_ELECTION_URL = "https://sos.oregon.gov/voting/Pages/current-election.asp
 
 SOS = "https://sos.oregon.gov"
 
-#: Archived general-election reports: (live URL, Wayback capture stamps, newest
-#: usable first). Both URLs are 404 on sos.oregon.gov today -- Oregon deletes the
-#: report after each election -- so the archive is the only copy, and every stamp
-#: below was VERIFIED 200 and parsed end to end.
+#: Archived general-election reports: (live URL, capture stamps known to parse).
+#: Both URLs are 404 on sos.oregon.gov today -- Oregon deletes the report after
+#: each election -- so the archive is the only copy.
 #:
-#: The stamps are NOT simply the newest capture. Oregon replaces the report with
-#: a post-canvass FINAL version weeks later, and the 2024 final is a seven-page
+#: These stamps are a FLOOR, not the sweep. `fetch_history` asks the Wayback CDX
+#: index for every other capture of the same URL and merges them all, because a
+#: report's party split reaches one day only and one capture is therefore one
+#: party day. The list below is what was VERIFIED 200 and parsed end to end from
+#: this network on 2026-09-08, kept so a backfill still works when the CDX index
+#: is unreachable, and each stamp names its report's own as-of day:
+#:
+#:   2022  20221025193050 -> 10-25   20221104231413 -> 11-04 (columns end 11-03)
+#:         20221108071723 -> 11-07   20221108183430 -> 11-08
+#:         20221110100105 -> 11-09 (columns end 11-08)
+#:   2024  20241106082418 -> 11-05   20241111105708 -> 11-06 (columns end 11-06)
+#:
+#: The post-canvass FINAL versions are no longer excluded by hand, because they
+#: do not need to be. Oregon replaces the report weeks later with a seven-page
 #: file whose party table gains a second, supplemental section: its own page-2
 #: party columns come to 2,304,398 against a printed total of 2,307,070, and
 #: adding the supplement overshoots to 2,317,716. Neither reading reconciles, so
-#: `parse` refuses all five 2024 captures from 2024-11-23 onward -- correctly --
-#: and the stamps here are the last captures of the ORIGINAL during-season
-#: report. They still carry the whole curve:
-#:
-#:   2022  14 days, 2022-10-21 .. 2022-11-09, 1,813,994 ballots returned
-#:   2024  14 days, 2024-10-18 .. 2024-11-06, 2,137,613 ballots returned
+#: `_check_party` refuses it -- VERIFIED, the 2024-11-23 capture raises
+#: SchemaDrift on Baker County (9,928 against a reported 9,938) -- and the sweep
+#: skips it and keeps the during-season captures, which is exactly what the
+#: hand-curated list used to arrange.
 ARCHIVED: dict[int, tuple[str, tuple[str, ...]]] = {
     2022: (f"{SOS}/elections/Documents/statistics/G22-Daily-Ballot-Returns.pdf",
-           ("20221110100105", "20221113180131", "20221108183430", "20221025193050")),
+           ("20221025193050", "20221104231413", "20221108071723",
+            "20221108183430", "20221110100105")),
     2024: (f"{SOS}/voting/Documents/G24-Daily-Ballot-Returns.pdf",
-           ("20241113125733", "20241111105708", "20241106082418")),
+           ("20241106082418", "20241111105708")),
 }
 
 WAYBACK = "https://web.archive.org/web/{stamp}id_/{url}"
+
+CDX_URL = "http://web.archive.org/cdx/search/cdx"
+
+#: web.archive.org is slower and less tolerant than a state host. See
+#: DEFAULT_MIN_INTERVAL in _net for what a real ban cost us.
+ARCHIVE_MIN_INTERVAL = 1.0
+
+#: VERIFIED 2026-09-08: the CDX index lists 14 captures of the 2022 report and 10
+#: of the 2024 one; `collapse=digest` reduces them to 5 and 3, because the
+#: crawler visits far more often than Oregon regenerates the file. 60 leaves room
+#: for a cycle the Archive crawled harder without ever running away.
+MAX_ARCHIVE_PROBES = 60
+
+#: How far either side of Election Day to look. The report only exists during the
+#: return period, so this is a politeness budget rather than a filter: the file
+#: itself names its election and `parse` refuses anything else. Wide enough after
+#: the election to still reach the post-canvass final, which is then refused on
+#: its own arithmetic rather than by being hidden from the sweep.
+ARCHIVE_WINDOW_BEFORE = timedelta(days=120)
+ARCHIVE_WINDOW_AFTER = timedelta(days=45)
+
+
+def _archive_stamps(url: str, cycle: int) -> list[str]:
+    """Wayback timestamps of every distinct version of `url` in `cycle`'s window.
+
+    `collapse=digest` is what turns a crawler's repeat visits into the handful of
+    genuinely distinct reports: the 2022 URL is captured fourteen times and
+    Oregon regenerated the file five times, and an unchanged file is not another
+    day of the curve.
+    """
+    anchor = election_date(cycle)
+    query = {
+        "url": url, "output": "json", "fl": "timestamp,statuscode,digest",
+        "filter": "statuscode:200", "collapse": "digest",
+        "from": (anchor - ARCHIVE_WINDOW_BEFORE).strftime("%Y%m%d"),
+        "to": (anchor + ARCHIVE_WINDOW_AFTER).strftime("%Y%m%d"),
+        "limit": str(MAX_ARCHIVE_PROBES),
+    }
+    try:
+        body = get(CDX_URL, state="OR", filename=f"cdx-{cycle}.json", params=query,
+                   min_bytes=2, min_interval=ARCHIVE_MIN_INTERVAL)
+    except Missing:
+        # The CDX API answers "nothing archived" with an empty body, which
+        # _net.get reports as Missing. That is absence, not a fault.
+        return []
+    except SourceError as exc:
+        # The index being down must not cost us the cycle: ARCHIVED's own stamps
+        # are still there and every one of them is known to parse.
+        log.warning("OR: the Wayback CDX index is unreachable (%s)", exc)
+        return []
+    try:
+        rows = json.loads(body.decode("utf-8", errors="replace"))
+    except ValueError as exc:
+        raise SourceError(f"OR: the Wayback CDX index was not JSON: {exc}") from exc
+    return [row[0] for row in rows[1:] if row and str(row[0]).isdigit()]
+
 
 #: Filenames Oregon has actually used, newest first. UNVERIFIED for the 2026
 #: general -- no such file exists yet -- and only tried after the SoS page has
@@ -787,10 +897,19 @@ def _rows(
         ))
     stated = totals.get("statewide")
     statewide_total = stated[1] if isinstance(stated, tuple) else stated
+    # ballots_new ONLY when the last day column is the stamp's own day, exactly
+    # as the county rows above already do it. A report generated the morning
+    # after the day it covers (2022-11-04 carries columns through 11-03 only)
+    # says nothing about how many ballots arrived on the stamp's day, and
+    # reusing the last column there filed 11-03's 94,895 under 11-04 as well --
+    # the same number published twice, once under a day it did not describe.
+    last_state_new = (
+        state_new[-1] if state_new and dates and dates[-1] == as_of else None
+    )
     result.state_rows.append(StateDay(
         cycle=cycle, state="OR", day=as_of,
         ballots_total=statewide_total,
-        ballots_new=state_new[-1] if state_new else None,
+        ballots_new=last_state_new,
         mail_requested=None, mail_returned=statewide_total, inperson=None,
         **bucket("statewide"),
     ))
@@ -867,6 +986,68 @@ def _check_party(party: dict[str, dict[str, int]],
             )
 
 
+def _as_of_of(one: FetchResult) -> date | None:
+    """The day a parsed report is stamped: the last day it publishes."""
+    days = [row.day for row in one.state_rows] + [row.day for row in one.county_rows]
+    return max(days) if days else None
+
+
+def _merge(captures: list[tuple[date, str, FetchResult]]) -> FetchResult:
+    """Merge archived captures into one series, EARLIEST report per day wins.
+
+    Every capture carries the whole curve up to its own as-of day, so the same
+    day is described by every later capture too. The first report to cover a day
+    is the one published, which means:
+
+    * the day a report is STAMPED gets that report's summary and its party
+      split -- the only place a party split exists at all;
+    * the days before it get that same report's day matrix, so a day's county
+      distribution, statewide total and party columns are all one file's
+      reading of one moment;
+    * a later capture never restates an earlier day, which is what keeps the
+      cumulative curve monotone. Oregon's own numbers for a past day drift
+      UPWARD from report to report as counties backfill late ballots, and a
+      summary day sandwiched between two restated matrix days reads as a drop.
+
+    THE BLANK RULE holds by construction: a day is one capture's rows or another
+    capture's rows, never a splice, so a day with no report of its own keeps
+    `party_* = None` rather than inheriting the neighbouring day's split.
+
+    Two captures of the SAME as-of day -- Oregon regenerates the file during
+    Election Day -- resolve to the LATER stamp, which is fl.py's and de.py's
+    rule and for the same reason: it is the fresher reading of that day.
+    """
+    ordered = sorted(captures, key=lambda cap: (cap[0], -int(cap[1])))
+    state: dict[date, StateDay] = {}
+    county: dict[tuple[date, str], CountyDay] = {}
+    for _as_of, _stamp, one in ordered:
+        for row in one.state_rows:
+            state.setdefault(row.day, row)
+        for row in one.county_rows:
+            county.setdefault((row.day, row.county_fips), row)
+    result = FetchResult()
+    result.state_rows = [state[day] for day in sorted(state)]
+    result.county_rows = [county[key] for key in sorted(county)]
+    return result
+
+
+def _not_after(one: FetchResult, as_of: date) -> FetchResult:
+    """Drop rows dated after `as_of`.
+
+    ONE download gives Oregon every day of the season at once, so a run asked
+    for an earlier day would otherwise publish days that had not happened when
+    it was asked about -- the same guard nc.py applies to its own
+    whole-curve-in-one-file source (`if day > as_of: continue`). Nothing is
+    invented either way; this only stops a `--as-of` rerun from answering a
+    question it was not asked.
+    """
+    kept = FetchResult()
+    kept.state_rows = [row for row in one.state_rows if row.day <= as_of]
+    kept.county_rows = [row for row in one.county_rows if row.day <= as_of]
+    kept.demo_rows = [row for row in one.demo_rows if row.day <= as_of]
+    return kept
+
+
 class ORScraper(Adapter):
     """Tier 1 for Oregon: the SoS Daily Ballot Returns PDF."""
 
@@ -874,9 +1055,10 @@ class ORScraper(Adapter):
     name = "or-sos"
     tier = TIER_SCRAPER
 
-    def _download(self, url: str, *, filename: str, use_cache: bool = False) -> bytes:
+    def _download(self, url: str, *, filename: str, use_cache: bool = False,
+                  min_interval: float = DEFAULT_MIN_INTERVAL) -> bytes:
         body = get(url, state="OR", filename=filename, use_cache=use_cache,
-                   min_bytes=4096)
+                   min_bytes=4096, min_interval=min_interval)
         if looks_like_html(body) or not body.startswith(b"%PDF"):
             raise Missing(f"OR: {url} did not return a PDF")
         return body
@@ -908,7 +1090,7 @@ class ORScraper(Adapter):
             except Missing:
                 continue
             try:
-                return parse(body, cycle)
+                report = parse(body, cycle)
             except NotYetPublished as exc:
                 # A live report for the PRIMARY parses fine and is refused by its
                 # own election date. Another candidate URL may still be the
@@ -917,6 +1099,14 @@ class ORScraper(Adapter):
                 # fall through a tier, not be reported as "no data yet".
                 wrong_election.append(str(exc))
                 log.info("OR: %s is not this cycle's general (%s)", url, exc)
+                continue
+            report = _not_after(report, as_of)
+            if not report:
+                raise NotYetPublished(
+                    f"OR: the posted report covers nothing on or before "
+                    f"{as_of.isoformat()}"
+                )
+            return report
         if wrong_election:
             raise NotYetPublished(
                 f"OR: no {cycle} general Daily Ballot Returns report yet "
@@ -927,34 +1117,67 @@ class ORScraper(Adapter):
         )
 
     def fetch_history(self, cycle: int) -> FetchResult:
-        """The archived report for a past cycle, via the Wayback Machine.
+        """The whole archived daily curve for a past cycle, from the Wayback Machine.
 
         Oregon deletes the report after each election -- both 2022 and 2024 URLs
         are 404 on sos.oregon.gov today -- so the archive is the only copy. One
-        download still rebuilds the whole curve, because the county-by-day page
-        carries every day of the season.
+        download rebuilds the whole curve, but it carries a PARTY split for its
+        own as-of day alone, so EVERY capture is swept and the answers are
+        merged by the day each report is stamped. See `_merge` for the rule and
+        the module docstring for why it is not fl.py's.
+
+        A capture that will not parse is skipped, never guessed at, and the two
+        ways that happens are deliberately both caught:
+
+          NotYetPublished  the file is a different election's report. In `fetch`
+                           this means "try the next candidate URL"; here it means
+                           "try the next capture". Not catching it aborted the
+                           whole sweep on the first stale crawl.
+          SchemaDrift      the post-canvass FINAL, whose party table does not
+                           reconcile against its own totals. Losing that capture
+                           must not cost the cycle its other thirteen days.
         """
         entry = ARCHIVED.get(int(cycle))
         if entry is None:
             raise NotYetPublished(f"OR: no archived report recorded for {cycle}")
-        url, stamps = entry
+        url, known = entry
+        stamps = sorted(dict.fromkeys(tuple(known) + tuple(_archive_stamps(url, cycle))))
+        captures: list[tuple[date, str, FetchResult]] = []
         problems: list[str] = []
-        for index, stamp in enumerate(stamps):
+        for stamp in stamps:
             try:
                 body = self._download(
                     WAYBACK.format(stamp=stamp, url=url),
                     filename=f"{cycle}_archive_{stamp}.pdf", use_cache=True,
+                    min_interval=ARCHIVE_MIN_INTERVAL,
                 )
-            except Missing as exc:
-                problems.append(str(exc))
+            except SourceError as exc:
+                # Missing included: one capture the Archive cannot serve is not
+                # a reason to stop asking for the others.
+                problems.append(f"{stamp}: {exc}")
+                log.debug("OR: archived capture %s could not be fetched (%s)", stamp, exc)
                 continue
             try:
-                return parse(body, cycle)
+                one = parse(body, cycle)
+            except NotYetPublished as exc:
+                problems.append(f"{stamp}: {exc}")
+                log.info("OR: archived capture %s is not this cycle's general (%s)",
+                         stamp, exc)
+                continue
             except SourceError as exc:
-                # A post-canvass FINAL version that does not reconcile. Try the
-                # next-oldest capture rather than losing the cycle entirely.
                 problems.append(f"{stamp}: {exc}")
                 log.warning("OR: archived capture %s is unusable (%s)", stamp, exc)
-        raise NotYetPublished(
-            f"OR: no usable archived {cycle} report ({problems[0] if problems else ''})"
-        )
+                continue
+            as_of = _as_of_of(one)
+            if as_of is None:
+                continue
+            captures.append((as_of, stamp, one))
+        if not captures:
+            raise NotYetPublished(
+                f"OR: no usable archived {cycle} report ({problems[0] if problems else ''})"
+            )
+        result = _merge(captures)
+        log.info("OR: %s archived days from %s of %s captures (party on %s)",
+                 len(result.state_rows), len(captures), len(stamps),
+                 ", ".join(cap[0].isoformat() for cap in sorted(captures)))
+        return result

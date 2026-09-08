@@ -12,7 +12,11 @@ the window:
     2022_1108_ParishStats.pdf   election 11/08/2022   created 11/16/2022
 
 So it cannot drive a tracker. It is used here for `fetch_history` only, where
-being late costs nothing and the breakdown is worth having.
+being late costs nothing and the breakdown is worth having. It is also, on its
+own, **the single richest early-vote row this repo publishes for any state**:
+parish x (party, method, race, sex) in both completed cycles, out of ONE file
+per cycle. `fetch_history` therefore fetches it FIRST and on its own, and the
+roster walk beneath it is opt-in -- see ROSTER_HISTORY_ENV.
 
 The during-season source is a different, humbler file: the **Absentee by Mail
 and Early Voters** roster, published per parish per day at
@@ -71,6 +75,7 @@ from __future__ import annotations
 import html
 import io
 import logging
+import os
 import re
 import time
 from collections import defaultdict
@@ -114,6 +119,40 @@ _RETRIES = 3
 _BACKOFF = 4.0
 
 _last_request = 0.0
+
+#: **`fetch_history`'s roster walk is OFF unless this is set.**
+#:
+#: The two halves of Louisiana's history cost three orders of magnitude apart:
+#:
+#:   the post-election report   1 request,  2.0 MB   -- parish x party x method
+#:                                                      x race x sex, dated to
+#:                                                      Election Day itself
+#:   the daily rosters      1,026 requests, 168 MB   -- a bare cumulative count
+#:                                                      per parish per day
+#:
+#: and the expensive one is the one that drew the host-wide 403 documented above.
+#: `fetch_history` used to walk the rosters first and unconditionally, so a plain
+#: `python -m ev backfill --cycle 2022` on a cold cache spent 1,026 requests on
+#: the WEAKER half before it ever asked for the stronger one -- and `_MIN_INTERVAL`,
+#: the only thing standing between that and a second ban, is flagged UNVERIFIED
+#: three paragraphs up. Nobody should be able to trip that by accident.
+#:
+#: So the default is the report alone, and the curve is an explicit opt-in:
+#:
+#:     EV_LA_ROSTER_HISTORY=1 python -m ev backfill --cycle 2024 --state LA
+#:
+#: This governs `fetch_history` ONLY. `fetch` -- the live daily tracker -- still
+#: reads the rosters, because during the season they are the only thing that
+#: exists; its cost is bounded by `cache/`, since every day before today is
+#: already on disk and a dated roster never changes.
+ROSTER_HISTORY_ENV = "EV_LA_ROSTER_HISTORY"
+
+_TRUTHY = frozenset({"1", "true", "yes", "on"})
+
+
+def roster_history_enabled() -> bool:
+    """Whether `fetch_history` may walk the ~1,026-file daily roster archive."""
+    return os.environ.get(ROSTER_HISTORY_ENV, "").strip().lower() in _TRUTHY
 
 
 def _throttle() -> None:
@@ -676,39 +715,80 @@ class LAScraper(Adapter):
 
     # ------------------------------------------------------------------
     def fetch(self, cycle: int, as_of: date) -> FetchResult:
+        # ⚠️ CLAMPED, for parity with `fetch_history`, which passes `election`
+        # for both bounds. A roster can never post-date its own election --
+        # `roster_day` raises SchemaDrift on one that does -- so an `as_of` past
+        # Election Day adds no data; it only stretches `build_series`'s span into
+        # a tail of flat-total rows at days_to_election < 0. Every reader in this
+        # repo refuses those, and publish.py's `_finals` had to grow a guard
+        # against exactly that tail after it inflated five state-cycles (Colorado
+        # 2024 by 89%). `ingest --cycle 2024` on any day after 2024-11-05 is all
+        # it takes, so the horizon is capped here rather than trusted upstream.
         election = election_date(cycle)
+        horizon = min(as_of, election)
         listings = self._listings(election)
-        daily = self._read_rosters(listings, election, as_of, archived=False)
+        daily = self._read_rosters(listings, election, horizon, archived=False)
         if not daily:
             raise NotYetPublished(
                 f"LA: no absentee/early voter roster posted for the {cycle} "
                 f"general as of {as_of.isoformat()}"
             )
-        return build_series(daily, cycle, as_of)
+        return build_series(daily, cycle, horizon)
 
     # ------------------------------------------------------------------
     def fetch_history(self, cycle: int) -> FetchResult:
-        """The archived daily curve, restated on Election Day by the SoS report.
+        """The post-election report, plus -- only on request -- the daily curve.
 
-        Both halves are real and they disagree by ~0.02%; the report is the
-        reconciliation, so it replaces Election Day rather than adding to it.
+        **The report alone is the default, and it is one request.** It carries
+        parish x party x method plus statewide race and sex, dated to Election
+        Day, which is strictly more than the rosters can say on any day. The
+        roster walk that reconstructs the *curve* leading up to it is 1,026
+        requests against a host that has already banned this project's IP once,
+        so it is opt-in: see ROSTER_HISTORY_ENV.
+
+        Where both halves are present they overlap on exactly one day and
+        disagree by ~0.02%; the report is the reconciliation, so it REPLACES
+        Election Day rather than adding to it.
         """
         election = election_date(cycle)
-        listings = self._listings(election)
-        daily = self._read_rosters(listings, election, election, archived=True)
         result = FetchResult()
-        if daily:
-            series = build_series(daily, cycle, election)
-            # Election Day belongs to the report below, where it exists.
-            result.state_rows = [r for r in series.state_rows if r.day != election]
-            result.county_rows = [r for r in series.county_rows if r.day != election]
+
+        if roster_history_enabled():
+            try:
+                daily = self._read_rosters(
+                    self._listings(election), election, election, archived=True,
+                )
+            except SourceError as exc:
+                # ⚠️ NEVER PUBLISH A RUNNING SUM WITH A HOLE IN IT. That is the
+                # same invariant `_pdf` raises for, and it costs different things
+                # on the two paths: `fetch` has nothing else to offer and must
+                # let the ladder fall through, while here the report below is an
+                # independently complete, four-ways-cross-checked Election Day
+                # row. So the CURVE is discarded and the report is kept -- a
+                # short curve is never one of the outcomes.
+                log.warning(
+                    "LA: %s roster history is unusable, publishing the "
+                    "post-election report alone: %s", cycle, exc,
+                )
+                daily = {}
+            if daily:
+                series = build_series(daily, cycle, election)
+                # Election Day belongs to the report below, where it exists.
+                result.state_rows = [
+                    r for r in series.state_rows if r.day != election]
+                result.county_rows = [
+                    r for r in series.county_rows if r.day != election]
 
         try:
             final = self._parish_stats(cycle, election)
         except (_net.Missing, NotYetPublished):
             if not result:
+                extra = "" if roster_history_enabled() else (
+                    f" (the daily roster walk is off; set {ROSTER_HISTORY_ENV}=1 "
+                    f"to rebuild the curve from ~1,026 PDFs)"
+                )
                 raise NotYetPublished(
-                    f"LA: no archived early-vote data for {cycle}"
+                    f"LA: no archived early-vote data for {cycle}{extra}"
                 ) from None
             log.warning("LA: no post-election parish statistics for %s", cycle)
             return result
@@ -778,22 +858,42 @@ class LAScraper(Adapter):
                 # strictly before today can be served from cache/ -- which is
                 # what makes a ~1,000-file window rebuild affordable to re-run.
                 body = self._pdf(filename, use_cache=archived or day < as_of)
-                if body is None:
-                    continue
                 series[day] = total_voters(body, filename)
             if series:
                 daily[parish] = series
         return daily
 
-    def _pdf(self, filename: str, *, use_cache: bool) -> bytes | None:
+    def _pdf(self, filename: str, *, use_cache: bool) -> bytes:
+        """One roster PDF. A listed file that will not download is a FAULT.
+
+        ⚠️ This used to log a warning and return None, and the caller skipped the
+        day. That is safe in a table of independent daily figures and is NOT safe
+        here, because Louisiana publishes INCREMENTS and this adapter turns them
+        into a running sum: a day that never lands is never added, and every
+        later day in that parish is short by it, permanently, with the run's
+        status still `ok`. Measured on the real files -- drop East Baton Rouge's
+        `PreEV` (7,165 ballots received before early voting opened) and its
+        2024-10-18 cumulative publishes as 8,047 instead of 15,212, a 47% miss
+        with nothing anywhere saying so.
+
+        A 404 on a file the SoS's own listing just named is not the ordinary
+        "Louisiana skips Sundays" case either -- a skipped day has no listing row
+        at all (verified: `20241105_EBTR_Daily_1020.pdf` is absent from the
+        table, not present-and-missing). It is "we could not look", which in this
+        repo's vocabulary is SourceError: the ladder falls through to a source
+        that can answer, and no short number is published. See CLAUDE.md rule 3 --
+        a gap beats confident wrong numbers.
+        """
         url = f"{VOTER_LIST_DIR}/{filename}"
         try:
             body = _get(url, filename=filename, use_cache=use_cache, min_bytes=1024)
-        except _net.Missing:
-            # The listing said it was there and it is not. Treat it as absent
-            # rather than as a fault: the next run re-reads the whole window.
-            log.warning("LA: %s is listed but returned 404", filename)
-            return None
+        except _net.Missing as exc:
+            raise SourceError(
+                f"LA: {filename} is in the SoS's own file listing but will not "
+                f"download ({exc}). The rosters are daily INCREMENTS, so a "
+                f"missing one silently shortens every later day's running total "
+                f"for that parish -- refusing the run instead."
+            ) from exc
         if _net.looks_like_html(body):
             raise SourceError(f"LA: {url} returned a page, not a PDF")
         return body

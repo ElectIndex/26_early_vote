@@ -329,3 +329,185 @@ def test_fetch_history_with_nothing_archived_is_not_yet_published(monkeypatch):
     monkeypatch.setattr(de, "get", _Fetcher({"cdx/search": b"[]"}))
     with pytest.raises(NotYetPublished):
         de.DEScraper().fetch_history(2024)
+
+
+# --------------------------------------------------------------------------
+# THE BLANK RULE on the one number this module computes itself
+# --------------------------------------------------------------------------
+def _report(rows: dict) -> de.Report:
+    return de.Report(
+        date(2024, 10, 28),
+        [(NEW_CASTLE, "New Castle County"), (KENT, "Kent County"),
+         (SUSSEX, "Sussex County")],
+        rows,
+    )
+
+
+def test_a_missing_method_row_leaves_the_total_blank_not_short():
+    """`ballots_total` is absentee + early voting, computed here rather than
+    read off the report, so an absent component makes it UNKNOWN. Adding what
+    is there and calling it the total would under-report by a whole method."""
+    result = de.to_result(_report({"mail_returned": [1, 2, 3]}), 2024)
+    row = result.state_rows[0]
+    assert row.mail_returned == 6
+    assert row.inperson is None
+    assert row.ballots_total is None
+    assert [c.ballots_total for c in result.county_rows] == [None, None, None]
+
+
+def test_a_report_with_neither_method_row_publishes_no_zero():
+    """⚠️ THE WORST SHAPE, and the one `(mail or 0) + (inperson or 0)` produced:
+    a `ballots_total` of 0 sitting beside two blank method fields. Blank says
+    "Delaware did not report this"; 0 says "nobody voted early", which of a
+    state that cast 247,172 early ballots in 2024 is a confident lie."""
+    result = de.to_result(_report({}), 2024)
+    row = result.state_rows[0]
+    assert (row.mail_returned, row.inperson) == (None, None)
+    assert row.ballots_total is None
+    assert all(c.ballots_total is None for c in result.county_rows)
+
+
+def test_the_real_reports_are_unaffected(during, final):
+    """The guard above changes nothing about a report Delaware actually served:
+    `_table` refuses one that is missing either row, so both are always there."""
+    assert de.to_result(during, 2024).state_rows[0].ballots_total == 86_907
+    assert de.to_result(final, 2024).state_rows[0].ballots_total == 247_172
+
+
+# --------------------------------------------------------------------------
+# GUARD PARITY: the report's date must belong to the election it names
+# --------------------------------------------------------------------------
+def test_every_archived_2024_report_date_is_inside_the_window(during, final):
+    for report in (during, final):
+        de._check_window(report.as_of, 2024)          # does not raise
+
+
+@pytest.mark.parametrize("day", [
+    date(2023, 11, 30),      # before the cycle's window opens
+    date(2025, 3, 1),        # a REPRINT, months later -- the real failure mode
+    date(2026, 11, 3),       # next cycle's Election Day
+])
+def test_a_report_date_outside_the_cycle_is_drift(day):
+    with pytest.raises(SchemaDrift) as caught:
+        de._check_window(day, 2024)
+    assert day.isoformat() in str(caught.value)
+
+
+def _text(date_line: str, election: str = "2024 General Election") -> str:
+    return "\n".join([
+        f"                                        {date_line}",
+        "                                        8:54:15 AM",
+        "     Department of ElectionsState of Delaware",
+        "     General Election Voter Counts by Voting Method",
+        f"                {election}",
+        "     New Castle              Kent            Sussex",
+        "Voting Method     County               County           County      Total",
+        "Absentee          14,999                4,394           10,533      29,926",
+        "Early Voting      16,957                9,700           30,324      56,981",
+        "        Total     31,956               14,094           40,857      86,907",
+    ])
+
+
+def test_parse_itself_refuses_an_out_of_cycle_report_date(monkeypatch):
+    """The check lives in `parse`, so `fetch` and `fetch_history` cannot come
+    apart on it -- which is what happened: `fetch` refuses a report dated after
+    the day it was asked for, and `fetch_history` bounded the date not at all.
+    """
+    monkeypatch.setattr(de, "_read_text",
+                        lambda body: _text("Saturday, March 1, 2025"))
+    with pytest.raises(SchemaDrift) as caught:
+        de.parse(b"%PDF-1.4 pretend", 2024)
+    assert "2025-03-01" in str(caught.value)
+    # ...and the same bytes with a real report date parse fine.
+    monkeypatch.setattr(de, "_read_text",
+                        lambda body: _text("Monday, October 28, 2024"))
+    assert de.parse(b"%PDF-1.4 pretend", 2024).as_of == date(2024, 10, 28)
+
+
+def test_an_out_of_cycle_capture_stops_the_backfill_rather_than_dating_a_row(
+    monkeypatch,
+):
+    """End to end on the archive path. Before the guard this published a full
+    2024 early electorate at days_to_election -116, which then became that
+    cycle's final for everything that compares against it."""
+    cdx = (b'[["timestamp","statuscode","digest"],'
+           b'["20241028211523","200","A"],["20250301150318","200","B"]]')
+    monkeypatch.setattr(de, "get", _Fetcher({
+        "cdx/search": cdx,
+        "20241028211523": DURING.read_bytes(),
+        "20250301150318": b"%PDF-1.4 pretend a reprint",
+    }))
+    monkeypatch.setattr(de, "_read_text", lambda body: _text(
+        "Monday, October 28, 2024" if b"reprint" not in body
+        else "Saturday, March 1, 2025"))
+    with pytest.raises(SchemaDrift):
+        de.DEScraper().fetch_history(2024)
+
+
+def test_the_archive_is_walked_oldest_first_whatever_order_cdx_answers_in(
+    monkeypatch,
+):
+    """"The last capture of a report date wins" is only true if the captures
+    arrive in order, and nothing was making them."""
+    cdx = (b'[["timestamp","statuscode","digest"],'
+           b'["20241130150318","200","B"],["20241028211523","200","A"]]')
+    monkeypatch.setattr(de, "get", _Fetcher({
+        "cdx/search": cdx,
+        "20241028211523": DURING.read_bytes(),
+        "20241130150318": FINAL.read_bytes(),
+    }))
+    result = de.DEScraper().fetch_history(2024)
+    assert [row.day for row in result.state_rows] == [
+        date(2024, 10, 28), date(2024, 11, 5)]
+    assert [row.ballots_total for row in result.state_rows] == [86_907, 247_172]
+
+
+def test_the_cdx_cache_filename_names_the_cycle(monkeypatch):
+    """One filename for every cycle made 2024's index and 2026's the same file
+    on disk."""
+    asked: list[str] = []
+
+    def fake(url, *, state, filename, **kwargs):
+        asked.append(filename)
+        return b"[]"
+
+    monkeypatch.setattr(de, "get", fake)
+    de._archive_stamps(de.REPORT_URL.format(cycle=2024), 2024)
+    de._archive_stamps(de.REPORT_URL.format(cycle=2026), 2026)
+    assert asked == ["cdx-GE2024-report.json", "cdx-GE2026-report.json"]
+
+
+def test_one_unreadable_capture_does_not_cost_the_rest_of_the_curve(monkeypatch):
+    """The Wayback Machine sometimes answers a capture with an error page under
+    HTTP 200. That is the same "this capture is unusable" as a download failure,
+    which was already skipped one line earlier -- but it arrived as a
+    SourceError out of `parse` and took the whole archive with it."""
+    cdx = (b'[["timestamp","statuscode","digest"],'
+           b'["20241028211523","200","A"],["20241101000000","200","B"],'
+           b'["20241130150318","200","C"]]')
+    monkeypatch.setattr(de, "get", _Fetcher({
+        "cdx/search": cdx,
+        "20241028211523": DURING.read_bytes(),
+        "20241101000000": b"<!doctype html><html><head>oops</head>" + b"x" * 2000,
+        "20241130150318": FINAL.read_bytes(),
+    }))
+    result = de.DEScraper().fetch_history(2024)
+    assert [row.day for row in result.state_rows] == [
+        date(2024, 10, 28), date(2024, 11, 5)]
+
+
+def test_drift_in_one_capture_still_stops_everything(monkeypatch):
+    """The other half of the same change: SchemaDrift is a SourceError, so the
+    skip above must not be able to swallow it."""
+    cdx = (b'[["timestamp","statuscode","digest"],'
+           b'["20241028211523","200","A"],["20241130150318","200","B"]]')
+    monkeypatch.setattr(de, "get", _Fetcher({
+        "cdx/search": cdx,
+        "20241028211523": DURING.read_bytes(),
+        "20241130150318": b"%PDF-1.4 pretend a reprint",
+    }))
+    monkeypatch.setattr(de, "_read_text", lambda body: _text(
+        "Monday, October 28, 2024" if b"reprint" not in body
+        else "Saturday, March 1, 2025"))
+    with pytest.raises(SchemaDrift):
+        de.DEScraper().fetch_history(2024)

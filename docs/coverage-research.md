@@ -1910,14 +1910,52 @@ document.
 2024  2024-10-18 .. 2024-11-06   2,137,613 returned   DEM 823,326
 ```
 
-The archive stamps in `or.ARCHIVED` are deliberately **not** the newest captures.
-Oregon replaces the report with a post-canvass FINAL version weeks later, and the
-2024 final is a seven-page file whose party table gains a second, supplemental
-section: its page-2 party columns sum to 2,304,398 against a printed total of
-2,307,070, and adding the supplement overshoots to 2,317,716. Neither reading
-reconciles, so `parse` refuses all five 2024 captures from `20241123001836`
-onward — which is the right answer, and is why the stamps recorded here are the
-last captures of the *original* during-season report.
+**One capture is not enough, and reading one cost Oregon both models.** A report
+carries the whole daily curve but attaches its PARTY split to its own as-of day
+alone, so a backfill that returned on the first usable capture published a
+fourteen-day county curve whose only party row sat at `days_to_election = -1` —
+and `estimate.read_state_daily` and `counterfactual.read_series` both discard
+`dte < 0`. The richest county × party source in the country yielded zero folds.
+
+So every archived capture is swept (Wayback CDX, `collapse=digest`, as `fl.py`
+and `de.py` do) and merged by the day each report is stamped. VERIFIED
+2026-09-08 — the CDX index lists 14 captures of the 2022 report and 10 of the
+2024 one, which collapse to five and three distinct files:
+
+```
+2022  20221025193050  as-of 10-25  dte 14      2024  20241106082418  as-of 11-05  dte  0
+      20221104231413  as-of 11-04  dte  4            20241111105708  as-of 11-06  dte -1
+      20221108071723  as-of 11-07  dte  1            20241123001836  post-canvass FINAL, refused
+      20221108183430  as-of 11-08  dte  0
+      20221110100105  as-of 11-09  dte -1
+```
+
+Two of the 2022 stamps (`20221104231413`, `20221108071723`) were never in the
+old hand-curated list at all. Oregon now carries a reported party split on FOUR
+model-usable days in 2022 (dte 14, 4, 1, 0) and one in 2024 (dte 0), which is a
+scored party-estimate fold (2022 OR, 4 days, MAE 0.6 pp) and eight counterfactual
+rows for 2024-vs-2022 whose `d-0` row carries a real `party_margin_shift_pp`.
+
+The merge rule is **the earliest report that covers a day**, not fl.py's "latest
+capture wins", and the difference is not stylistic. Oregon restates a past day
+*upward* in every later report as counties backfill late ballots, so mixing a
+day's own summary with a later report's matrix makes the cumulative curve fall:
+the 10-25 report's summary says 65,944 statewide while the 11-04 report says
+79,739 had arrived by 10-24. Taking each report's whole prefix keeps a day's
+county distribution, statewide total and party columns as one file's reading of
+one moment — which is what the party model needs, since it takes the geography
+from the county rows and the truth from the party columns.
+
+The post-canvass FINAL versions no longer need excluding by hand. Oregon replaces
+the report weeks later with a seven-page file whose party table gains a second,
+supplemental section: its page-2 party columns sum to 2,304,398 against a printed
+total of 2,307,070, and adding the supplement overshoots to 2,317,716. Neither
+reading reconciles, so `_check_party` refuses it — VERIFIED, the `20241123001836`
+capture raises `SchemaDrift` on Baker County (9,928 against a reported 9,938) —
+and the sweep skips it and keeps the during-season captures. `or.ARCHIVED`'s
+stamps survive as the verified floor the sweep starts from, so a backfill still
+works when the CDX index is unreachable; it timed out once during this pass and
+the cycle came back complete anyway.
 
 ### `normalize.py` gaps, reported not fixed (per the ownership rules)
 

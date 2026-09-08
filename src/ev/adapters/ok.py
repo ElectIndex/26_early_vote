@@ -35,7 +35,22 @@ Two dashboards matter, and they measure different things:
   `Election Day` and `Protected`. This is voter-history CREDIT, i.e. ballots
   actually counted, and it is the only place the early in-person number exists.
   Verified totals: 2024 general 107,549 absentee + 293,918 early; 2022 general
-  71,680 + 132,402.
+  71,680 + 132,402; 2020 general 287,010 + 167,132.
+
+  Its `PrecinctCode` dimension is declared in the pivot's row hierarchy and its
+  EncodeMap comes back EMPTY, so COUNTY is the finest unit this source can
+  actually return. There are no Oklahoma precinct rows to chase.
+
+THE ARCHIVE ROUTE
+-----------------
+`VHCountsByCounty` is a permanent voter-history table, not a live feed: it
+carries every election back to 2017, the 2020, 2022 and 2024 generals included
+(verified live 2026-09-08). `fetch_history` reads it for a past cycle and gets
+the certified early-vote position -- county, party, mail vs in-person -- for all
+77 counties. What it does NOT get is a daily curve: neither dashboard has a
+within-election date dimension, so ONE row per county per cycle, dated Election
+Day, is the whole archive. `AbsStatsByCounty` reaches back only to 2022 and is
+not used for history at all.
 
 `VotingMethod` has no 2026-general rows yet (its newest election is the
 2026-08-25 runoff), so which of the two answers on a given day decides what this
@@ -275,6 +290,22 @@ def _county_fips(name: str) -> tuple[str, str]:
     return hit
 
 
+def total_ballots(counties: dict[str, dict]) -> int | None:
+    """Every early ballot in a county map, or None if not one is reported.
+
+    ⚠️ THE ONE ZERO GUARD, AND IT HAS TO BE SHARED. Both dashboards list an
+    election in their date combos before they have anything to say about it --
+    `AbsStatsByCounty` carried the 2026 general months before a ballot came back
+    -- so "the election is on the dashboard" is not the same fact as "there is
+    an early vote to report". `fetch` has always refused an empty absentee
+    table; `fetch_history` read the SAME kind of emptiness off the voter-history
+    table and would have published 77 counties of zeroes dated Election Day,
+    which is a confident zero and unfixable by any later tier. See THE BLANK
+    RULE in schema.py.
+    """
+    return _add(*[row.get("ballots_total") for row in counties.values()])
+
+
 def check_methods(labels: list[str]) -> None:
     """Refuse a voting-method vocabulary this module has not been taught.
 
@@ -363,12 +394,8 @@ class OKScraper(Adapter):
             # went OUT; that lives in the absentee table. Its party breakdown is
             # not wanted here -- voter history already has a better one -- so the
             # four per-party queries are skipped.
-            absentee = self._absentee(election, with_party=False)
-            extra = None
-            if absentee is not None:
-                requested = _add(*[c.get("mail_requested") for c in absentee[0].values()])
-                extra = {"mail_requested": requested}
-            return _emit(counties, names, cycle, as_of, statewide_extra=extra)
+            return _emit(counties, names, cycle, as_of,
+                         statewide_extra=self._requested(election))
 
         absentee = self._absentee(election)
         if absentee is None:
@@ -377,8 +404,7 @@ class OKScraper(Adapter):
                 f"carries the {cycle} general ({election.isoformat()}) yet"
             )
         counties, names = absentee
-        returned = _add(*[c.get("mail_returned") for c in counties.values()]) or 0
-        if returned <= 0:
+        if not total_ballots(counties):
             raise NotYetPublished(
                 f"OK: the {cycle} general is on the absentee dashboard but no "
                 f"ballot has been returned yet"
@@ -393,16 +419,49 @@ class OKScraper(Adapter):
         within-election date dimension -- there is no `Received Date` anywhere in
         either table -- so an archived DAILY curve simply does not exist for
         Oklahoma, and inventing one from a snapshot would be a fabrication.
+
+        Deliberately voter-history ONLY, where `fetch` also reaches into the
+        absentee table for `mail_requested`: `AbsStatsByCounty` starts at 2022,
+        so folding it in here would give the 2022 and 2024 rows a column the
+        2020 row could never have and make the three cycles unlike each other
+        for no gain -- nothing downstream reads `mail_requested`.
         """
         election = election_date(cycle)
         history = self._history(election)
         if history is None:
             raise NotYetPublished(
-                f"OK: the voter-history dashboard has no {cycle} general "
-                f"({election.isoformat()})"
+                f"OK: the voter-history dashboard carries no early-vote credit "
+                f"for the {cycle} general ({election.isoformat()})"
             )
         counties, names = history
         return _emit(counties, names, cycle, election)
+
+    # ------------------------------------------------------------------
+    def _requested(self, election: date) -> dict | None:
+        """Statewide mail ballots SENT, for a day whose counts came from history.
+
+        ⚠️ GATED ON FULL COVERAGE, exactly as `_emit` gates the statewide row it
+        rides on. The two dashboards are populated independently -- on
+        2026-09-06 the absentee table held six counties -- so summing whatever
+        it happens to return and hanging that on a 77-county statewide row would
+        publish a six-county figure as an Oklahoma total. That is the one thing
+        EXPECTED_COUNTIES exists to stop, and this field was walking straight
+        past it.
+        """
+        absentee = self._absentee(election, with_party=False)
+        if absentee is None:
+            return None
+        counties = absentee[0]
+        if len(counties) != EXPECTED_COUNTIES:
+            log.warning(
+                "OK: the absentee dashboard returned %d of %d counties; leaving "
+                "mail_requested blank rather than publishing a partial sum as a "
+                "statewide total",
+                len(counties), EXPECTED_COUNTIES,
+            )
+            return None
+        return {"mail_requested":
+                _add(*[c.get("mail_requested") for c in counties.values()])}
 
     # ------------------------------------------------------------------
     def _item(self, dashboard: str, item: str, filters=()) -> dict:
@@ -480,7 +539,17 @@ class OKScraper(Adapter):
 
     # ------------------------------------------------------------------
     def _history(self, election: date) -> tuple[dict[str, dict], dict[str, str]] | None:
-        """County early ballots CAST, split mail vs in-person, by party."""
+        """County early ballots CAST, split mail vs in-person, by party.
+
+        None means "no early-vote credit to read", which covers BOTH an election
+        the dashboard does not carry and one it carries with nothing credited to
+        it yet. Answering None for the second case is what gives `fetch` and
+        `fetch_history` the same zero guard without either of them writing it:
+        `fetch` falls through to the absentee table, which is exactly what
+        should happen the week after an election, and `fetch_history` reports
+        the cycle as unavailable instead of publishing 77 zeroes. See
+        `total_ballots`.
+        """
         if not self._has(HISTORY_DASHBOARD, HISTORY_DATE_COMBO, election):
             return None
         stamp = election.strftime(_FILTER_STAMP)
@@ -521,6 +590,13 @@ class OKScraper(Adapter):
                 party[party_bucket] = _add(
                     party.get(party_bucket), _int(cells[MEASURE_HISTORY])
                 )
+
+        if not total_ballots(counties):
+            log.info(
+                "OK: the voter-history dashboard lists %s but has credited no "
+                "early ballot to it", election.isoformat(),
+            )
+            return None
 
         # Every registration Oklahoma recognises appears in the dashboard's own
         # Affiliation list, so a party with no early ballots in a county is a
