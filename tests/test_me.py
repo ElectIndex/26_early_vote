@@ -19,7 +19,7 @@ from pathlib import Path
 
 import pytest
 
-from ev.adapters import _towns, me
+from ev.adapters import _methods, _towns, me
 from ev.adapters._net import Missing
 from ev.adapters.base import NotYetPublished, SchemaDrift, SourceError
 
@@ -438,3 +438,37 @@ def test_fetch_walks_index_then_file(monkeypatch):
 def test_adapter_identity():
     scraper = me.MEScraper()
     assert (scraper.state, scraper.name, scraper.tier) == ("ME", "me-sos", 1)
+
+
+# --------------------------------------------------------------------------
+# The party-by-method crosstab
+# --------------------------------------------------------------------------
+def test_party_and_return_channel_sit_on_the_same_ballot_row(gen2024):
+    """`P` and `RECTYPE` are columns of the same record, so Maine's file IS a
+    party-by-method crosstab. The bands roll up to the county the same exact way
+    the county rows do -- through the GEOID -- so they must reproduce them."""
+    cells = _methods.rows_of(gen2024)
+    assert cells and {r.method for r in cells} <= {"mail", "inperson"}
+    by_key = {}
+    for row in cells:
+        entry = by_key.setdefault((row.county_fips, row.day), [0, 0, 0])
+        entry[0] += row.ballots_total
+        entry[1] += row.party_dem
+        entry[2] += row.party_rep
+    for county in gen2024.county_rows:
+        assert by_key[(county.county_fips, county.day)] == [
+            county.ballots_total, county.party_dem, county.party_rep]
+
+
+def test_the_in_person_band_is_the_one_return_method_that_means_in_person(gen2024):
+    """VP is absentee voting at the clerk's counter. Every other return method --
+    mailed, dropbox, delivered, electronic -- is a mail ballot coming back,
+    whoever carried it, and the band split uses the same rule the `inperson`
+    column already does."""
+    final_day = gen2024.county_rows[-1].day
+    cells = [r for r in _methods.rows_of(gen2024) if r.day == final_day]
+    counties = {r.county_fips: r for r in gen2024.county_rows if r.day == final_day}
+    for row in cells:
+        county = counties[row.county_fips]
+        expected = county.inperson if row.method == "inperson" else county.mail_returned
+        assert row.ballots_total == expected

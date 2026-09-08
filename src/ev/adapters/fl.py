@@ -47,6 +47,15 @@ Four things this parser refuses to do quietly:
   Primary. Indexing `tables[0..3]` reads the wrong election on exactly the days
   when two elections overlap.
 
+**The two voted tables are a PARTY-BY-METHOD CROSSTAB, and it is published as
+one.** "Voted Vote-by-Mail" and "Voted Early" are separate per-county tables,
+each split Republican / Democrat / Other / NPA, so Florida states the cells and
+not merely the two margins. `CountyDay` has nowhere to put that -- its
+`party_*` fields are the row totals -- so this adapter used to add the two
+tables together and drop the split at the last step. It now also emits
+`schema.MethodDay` rows, one per county per channel, and the county row is
+unchanged: it is still the sum, which is what the site reads.
+
 **The as-of date is the page's own `Compiled` stamp, never the run date.** Rows
 compile at different times — on 2024-11-04 counties carried both 8:12AM and
 11:04AM — and the freshest stamp on the target election's rows is what the page
@@ -64,9 +73,11 @@ import re
 from datetime import date, datetime, timedelta
 
 from ..calendar import election_date
-from ..normalize import PARTY_DEM, PARTY_NPA, PARTY_OTH, PARTY_REP
-from ..schema import TIER_SCRAPER, CountyDay, StateDay
-from . import _fips, _net
+from ..normalize import (
+    METHOD_INPERSON, METHOD_MAIL, PARTY_DEM, PARTY_NPA, PARTY_OTH, PARTY_REP,
+)
+from ..schema import TIER_SCRAPER, CountyDay, MethodDay, StateDay
+from . import _fips, _methods, _net
 from .base import Adapter, FetchResult, NotYetPublished, SchemaDrift, SourceError
 
 log = logging.getLogger(__name__)
@@ -385,6 +396,8 @@ def to_result(snapshot: Snapshot, cycle: int, day: date) -> FetchResult:
     totals = {key: None for key in ("outstanding", "mail", "early")}
     party_totals = {key: None for key in _PARTY_FIELD}
 
+    method_rows: list[MethodDay] = []
+
     for row in snapshot.counties:
         mail_returned = _bucket(row["mail"], "total")
         inperson = _bucket(row["early"], "total")
@@ -394,6 +407,21 @@ def to_result(snapshot: Snapshot, cycle: int, day: date) -> FetchResult:
             # Nothing provided and nothing cast: Florida is printing the county
             # because it prints all 67, not because anything has happened.
             continue
+        # The crosstab, before the two channels are added together below. A
+        # channel Florida prints no county row for is ABSENT here, never a row of
+        # zeros -- it prints no "Voted Early" rows at all until early voting
+        # opens. A channel it prints as 0 is a reported zero and is kept. The
+        # skip above applies to both tables, so a county-day is either in both or
+        # in neither.
+        for entry, band in ((row["mail"], METHOD_MAIL), (row["early"], METHOD_INPERSON)):
+            if entry is None:
+                continue
+            method_rows.append(MethodDay(
+                cycle=cycle, state="FL", county_fips=row["fips"], day=day,
+                method=band, county_name=row["name"],
+                ballots_total=entry["total"],
+                **{field: entry[key] for key, field in _PARTY_FIELD.items()},
+            ))
         county_rows.append(CountyDay(
             cycle=cycle, state="FL", county_fips=row["fips"], day=day,
             county_name=row["name"],
@@ -450,6 +478,7 @@ def to_result(snapshot: Snapshot, cycle: int, day: date) -> FetchResult:
         **party,
     )])
     result.county_rows = county_rows
+    _methods.attach(result, method_rows)
     return result
 
 
@@ -596,11 +625,17 @@ class FLScraper(Adapter):
                 f"FL: nothing archived for the {cycle} general ({seen} captures read)"
             )
         result = FetchResult()
+        _methods.attach(result, [])
         for day in sorted(by_day):
             try:
-                result.extend(to_result(by_day[day], cycle, day))
+                one = to_result(by_day[day], cycle, day)
             except NotYetPublished:
                 # A dated reading with nothing in it yet. Not a row.
                 continue
+            result.extend(one)
+            # `FetchResult.extend` merges its three FIELDS and cannot see an
+            # attribute, so the method rows have to be carried across by hand or
+            # every archived day but the last would be dropped. See _methods.py.
+            _methods.extend(result, _methods.rows_of(one))
         log.info("FL: %s archived days from %s captures", len(result.state_rows), seen)
         return result

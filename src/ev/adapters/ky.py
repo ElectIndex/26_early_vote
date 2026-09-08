@@ -36,6 +36,21 @@ unaffiliated voters with Libertarians, Greens and the rest, and `normalize.py`
 is explicit that collapsing those two together loses the single most-watched
 number in an early-vote story. So we publish neither. See THE BLANK RULE.
 
+**And the party split is BY METHOD, which is the crosstab `CountyDay` cannot
+hold.** The DEM/REP columns are repeated for each of the three domestic blocks --
+mail returned, excused in-person, no-excuse in-person -- so Kentucky states the
+cells rather than only the two margins. `schema.MethodDay` is where they go, with
+the two in-person blocks summed into one `inperson` band because
+`normalize.method()` maps both there and the site knows two channels.
+
+⚠️ **The FPCA block has no party columns**, and it is inside `mail_returned`.
+Kentucky publishes `FPCA RETURNED` and no DEM/REP for it, so the mail band's
+`ballots_total` includes military and overseas ballots that its `party_dem` and
+`party_rep` do not. That is not a defect to paper over: the same gap is already
+in the county row, where `party_dem + party_rep` has never summed to
+`ballots_total` because NPA and OTH are unreported. `party_coverage` is the
+column that says so.
+
 **Only the general election.** Kentucky posts the same filename pattern for its
 May primary -- `Absentee_Public_051826.xlsx` is the 2026 primary, and it is
 still on the server. A run must never mistake it for the general, so we only
@@ -51,8 +66,9 @@ from datetime import date, datetime, timedelta
 import openpyxl
 
 from ..calendar import election_date
-from ..schema import TIER_SCRAPER, CountyDay, StateDay
-from . import _fips
+from ..normalize import METHOD_INPERSON, METHOD_MAIL
+from ..schema import TIER_SCRAPER, CountyDay, MethodDay, StateDay
+from . import _fips, _methods
 from ._net import Missing, get, looks_like_xlsx
 from .base import Adapter, FetchResult, NotYetPublished, SchemaDrift, SourceError
 
@@ -191,6 +207,7 @@ def parse(body: bytes, cycle: int, day: date) -> FetchResult:
 
     state_rows: list[StateDay] = []
     county_rows: list[CountyDay] = []
+    method_rows: list[MethodDay] = []
     unknown: list[str] = []
 
     for row in rows[header_at + 1:]:
@@ -210,10 +227,11 @@ def parse(body: bytes, cycle: int, day: date) -> FetchResult:
         if total is None:
             total = _add(mail_back, in_person)
 
-        party_dem = _add(cell(row, MAIL_DEM), cell(row, EXCUSED_DEM),
-                         cell(row, NOEXCUSE_DEM))
-        party_rep = _add(cell(row, MAIL_REP), cell(row, EXCUSED_REP),
-                         cell(row, NOEXCUSE_REP))
+        mail_dem, mail_rep = cell(row, MAIL_DEM), cell(row, MAIL_REP)
+        in_person_dem = _add(cell(row, EXCUSED_DEM), cell(row, NOEXCUSE_DEM))
+        in_person_rep = _add(cell(row, EXCUSED_REP), cell(row, NOEXCUSE_REP))
+        party_dem = _add(mail_dem, in_person_dem)
+        party_rep = _add(mail_rep, in_person_rep)
         # Kentucky splits out only Democrats and Republicans. The residual mixes
         # unaffiliated voters with third parties, which are different things, so
         # neither bucket is derivable. Blank, never 0 -- see THE BLANK RULE.
@@ -244,6 +262,23 @@ def parse(body: bytes, cycle: int, day: date) -> FetchResult:
             inperson=in_person,
             **party,
         ))
+        # The crosstab. A band whose ballot count Kentucky did not report at all
+        # is an absent row, never a zero one -- THE BLANK RULE.
+        for band, count, dem, rep in (
+            (METHOD_MAIL, mail_back, mail_dem, mail_rep),
+            (METHOD_INPERSON, in_person, in_person_dem, in_person_rep),
+        ):
+            if count is None:
+                continue
+            method_rows.append(MethodDay(
+                cycle=cycle, state="KY", county_fips=fips, day=day,
+                method=band, county_name=canonical,
+                ballots_total=count,
+                party_dem=dem, party_rep=rep,
+                # Kentucky splits out DEM and REP and nothing else; the residual
+                # mixes unaffiliated with third parties and is not derivable.
+                party_npa=None, party_oth=None,
+            ))
 
     if unknown:
         # Kentucky has exactly 120 counties and they do not change.
@@ -251,7 +286,8 @@ def parse(body: bytes, cycle: int, day: date) -> FetchResult:
     if not county_rows:
         raise SchemaDrift("KY: absentee report produced no county rows")
 
-    return FetchResult(state_rows=state_rows, county_rows=county_rows)
+    return _methods.attach(
+        FetchResult(state_rows=state_rows, county_rows=county_rows), method_rows)
 
 
 class KYScraper(Adapter):
@@ -314,12 +350,16 @@ class KYScraper(Adapter):
 
         end = election_date(cycle)
         combined = FetchResult()
+        _methods.attach(combined, [])
         for offset in range(HISTORY_DAYS + 1):
             day = end - timedelta(days=HISTORY_DAYS - offset)
             body = self._load(day, use_cache=True)
             if body is None:
                 continue
-            combined.extend(parse(body, cycle, day))
+            one = parse(body, cycle, day)
+            combined.extend(one)
+            # An attribute is invisible to `FetchResult.extend`; see _methods.py.
+            _methods.extend(combined, _methods.rows_of(one))
         if not combined:
             raise NotYetPublished(f"KY: no archived absentee workbooks for {cycle}")
         return combined

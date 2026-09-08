@@ -22,6 +22,22 @@ Two judgement calls worth naming:
   separate columns, so a Hispanic voter also has a race. Early-vote coverage
   universally reports one combined bucket, so ethnicity wins -- otherwise
   Hispanic voters would be double-counted across two dimensions.
+
+⚠️ **`ballot_req_type` IS SPELLED DIFFERENTLY IN EVERY CYCLE, AND MATCHING IT
+AGAINST LITERALS SILENTLY LOST 90% OF NORTH CAROLINA.** The 2022 file says
+`ONE-STOP`; the 2024 file says `EARLY VOTING`. This adapter compared the raw
+cell against a hand-written tuple of spellings that knew only the 2022 one, so
+every one of 2024's **4,231,692** in-person ballots fell through both branches
+and `inperson` published as a flat **0** on all 47 days of the cycle -- against
+`mail_returned` of 297,034 and a headline of 4,520,768. It was 0 rather than
+blank, so it read as "North Carolina reported that nobody voted early in
+person", which is THE BLANK RULE inverted and is the worst of the two errors.
+
+The rule that prevents the next spelling from doing it again is CLAUDE.md's
+rule 4, and it was simply not being followed here: the label goes through
+`normalize.method()`, which already knew both spellings, and a label it does not
+know raises `SchemaDrift` rather than vanishing into neither bucket. There is no
+list of spellings in this file any more.
 """
 
 from __future__ import annotations
@@ -35,10 +51,11 @@ from datetime import date, datetime
 
 from ..calendar import election_date
 from ..normalize import (
-    PARTY_DEM, PARTY_NPA, PARTY_OTH, PARTY_REP, age_band, county_fips, race, sex,
+    METHOD_INPERSON, METHOD_MAIL, PARTY_DEM, PARTY_NPA, PARTY_OTH, PARTY_REP,
+    age_band, county_fips, method as normalize_method, race, sex,
 )
-from ..schema import TIER_SCRAPER, CountyDay, DemoDay, StateDay
-from . import _fips, _net
+from ..schema import TIER_SCRAPER, CountyDay, DemoDay, MethodDay, StateDay
+from . import _fips, _methods, _net
 from .base import Adapter, FetchResult, NotYetPublished, SchemaDrift
 
 log = logging.getLogger(__name__)
@@ -77,6 +94,21 @@ KNOWN_NOT_CAST = frozenset({
     "PENDING", "SPOILED", "CANCELLED", "CANCELED", "VOID", "DUPLICATE",
     "RETURNED UNDELIVERABLE", "NOT VOTED", "WRONG VOTER", "WITNESS INFO INCOMPLETE",
     "ASSISTANT INFO INCOMPLETE", "SIGNATURE DIFFERENT", "NOT PROPERLY NOTARIZED",
+    # ⚠️ THE SECOND HALF OF THIS SET IS THE 2024 FILE'S OWN VOCABULARY, and
+    # without it the 2024 backfill could not be re-run at all. Every one of these
+    # was ALREADY excluded from the count -- the branch above keeps only
+    # ACCEPTED* -- so listing them changes not one published number. What it
+    # changes is whether they read as DRIFT: 1.64% of the 4,700,602 rows in
+    # `absentee_20241105.zip` carry one, over MAX_UNKNOWN_STATUS_SHARE, so the
+    # whole cycle refused. `SPOILED-EV` alone is 70,907 of them, and it is
+    # `SPOILED` with the channel appended.
+    #
+    # They are listed as literals rather than matched by prefix for the reason
+    # the set exists: a status this adapter has never seen must stay drift.
+    "SPOILED-EV", "SPOILED-MAIL", "RETURNED AFTER DEADLINE",
+    "SDR-FAILED VERIFICATION", "PENDING CURE", "NO TIME FOR CURE - CONTACTED",
+    "PHOTO ID CURABLE", "PHOTO ID NONCOMPLIANT", "ID NOT PROVIDED", "CONFLICT",
+    "AFFIDAVIT INCOMPLETE", "AFFIDAVIT REVIEW PENDING", "AFFIDAVIT DECLINED",
 })
 
 #: How much of a file may carry a status this adapter cannot classify before the
@@ -122,6 +154,22 @@ class _Bucket:
         self.total = 0
         self.mail = 0
         self.inperson = 0
+        self.party: dict[str, int] = defaultdict(int)
+
+
+class _Cell:
+    """Per-day tallies for one geography AND one return method.
+
+    The crosstab `CountyDay` has no room for: NC's file carries the voter's
+    party and the return channel on the same row, so the two margins this
+    adapter already published were an aggregation of a table it had in hand.
+    See `schema.MethodDay`.
+    """
+
+    __slots__ = ("total", "party")
+
+    def __init__(self) -> None:
+        self.total = 0
         self.party: dict[str, int] = defaultdict(int)
 
 
@@ -187,6 +235,8 @@ class NCScraper(Adapter):
     def _aggregate(self, rows, cycle: int, as_of: date) -> FetchResult:
         by_state: dict[date, _Bucket] = defaultdict(_Bucket)
         by_county: dict[tuple[str, date], _Bucket] = defaultdict(_Bucket)
+        #: (fips, method, day) -> the crosstab cell. See schema.MethodDay.
+        by_cell: dict[tuple[str, str, date], _Cell] = defaultdict(_Cell)
         by_demo: dict[tuple[date, str, str], int] = defaultdict(int)
         county_names: dict[str, str] = {}
         unknown_counties: set[str] = set()
@@ -216,17 +266,31 @@ class NCScraper(Adapter):
             fips, canonical = hit
             county_names[fips] = canonical
 
-            method = (row.get("ballot_req_type") or "").strip().upper()
+            # ⚠️ THROUGH normalize, NEVER against a literal. NC spelled this
+            # ONE-STOP in 2022 and EARLY VOTING in 2024; a tuple of spellings
+            # published `inperson = 0` for 4.2 million ballots. See the module
+            # docstring.
+            method = normalize_method(row.get("ballot_req_type"))
+            if method is None:
+                raise SchemaDrift(
+                    f"NC: unrecognised ballot_req_type "
+                    f"{(row.get('ballot_req_type') or '').strip()!r}"
+                )
             party = self._party(row.get("voter_party_code"))
 
             for bucket in (by_state[day], by_county[(fips, day)]):
                 bucket.total += 1
-                if method == "MAIL":
+                if method == METHOD_MAIL:
                     bucket.mail += 1
-                elif method in ("ONE-STOP", "ONE STOP"):
+                elif method == METHOD_INPERSON:
                     bucket.inperson += 1
                 if party:
                     bucket.party[party] += 1
+
+            cell = by_cell[(fips, method, day)]
+            cell.total += 1
+            if party:
+                cell.party[party] += 1
 
             for dimension, value in self._demographics(row):
                 by_demo[(day, dimension, value)] += 1
@@ -256,7 +320,8 @@ class NCScraper(Adapter):
             # exactly 100 counties and they do not change.
             raise SchemaDrift(f"NC: unrecognised county names {sorted(unknown_counties)[:5]}")
 
-        return self._emit(by_state, by_county, by_demo, county_names, cycle, as_of)
+        return self._emit(by_state, by_county, by_cell, by_demo, county_names,
+                          cycle, as_of)
 
     def _party(self, raw: str | None) -> str | None:
         from ..normalize import party as _party
@@ -287,8 +352,10 @@ class NCScraper(Adapter):
             yield "sex", gender
 
     # ------------------------------------------------------------------
-    def _emit(self, by_state, by_county, by_demo, county_names, cycle, as_of) -> FetchResult:
+    def _emit(self, by_state, by_county, by_cell, by_demo, county_names,
+              cycle, as_of) -> FetchResult:
         result = FetchResult()
+        _methods.attach(result, [])
         if not by_state:
             return result
 
@@ -346,6 +413,31 @@ class NCScraper(Adapter):
                     inperson=running.inperson,
                     **{field: running.party.get(key, 0) for key, field in _PARTY_FIELD.items()},
                 ))
+
+        # The crosstab, cumulative per county per band. A band a county has not
+        # used yet is simply ABSENT until its first ballot -- never a zero row,
+        # which would claim the state reported no mail there. THE BLANK RULE.
+        method_rows: list[MethodDay] = []
+        for fips, method in sorted({(f, m) for f, m, _ in by_cell}):
+            running = _Cell()
+            for day in span:
+                today = by_cell.get((fips, method, day))
+                if today:
+                    running.total += today.total
+                    for key, count in today.party.items():
+                        running.party[key] += count
+                if running.total == 0:
+                    continue
+                method_rows.append(MethodDay(
+                    cycle=cycle, state="NC", county_fips=fips, day=day,
+                    method=method, county_name=county_names.get(fips, ""),
+                    ballots_total=running.total,
+                    ballots_new=today.total if today else 0,
+                    # NC reports every party bucket, so an empty one is a real 0.
+                    **{field: running.party.get(key, 0)
+                       for key, field in _PARTY_FIELD.items()},
+                ))
+        _methods.attach(result, method_rows)
 
         cumulative: dict[tuple[str, str], int] = defaultdict(int)
         for day in span:

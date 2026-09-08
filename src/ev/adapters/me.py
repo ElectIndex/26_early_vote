@@ -72,7 +72,11 @@ Three more things shape the parser:
   cleanly: 99.7% of the 2024 general file's request dates land in its window, and
   0% of the June 2026 primary file's land in the November 2026 general's.
 
-Maine registers voters by party, so every party_* field is a real count.
+Maine registers voters by party, so every party_* field is a real count -- and
+because `P` and `RECTYPE` sit on the same row, the file is a party-by-method
+crosstab as well. `schema.MethodDay` carries it, per county per channel, on the
+same VP/not-VP rule the `inperson` and `mail_returned` columns already use. The
+county rows are unchanged.
 """
 
 from __future__ import annotations
@@ -84,10 +88,11 @@ from datetime import date, datetime, timedelta
 from html import unescape
 
 from ..calendar import election_date
+from ..normalize import METHOD_INPERSON, METHOD_MAIL
 from ..normalize import PARTY_DEM, PARTY_NPA, PARTY_OTH, PARTY_REP
 from ..normalize import party as normalize_party
-from ..schema import TIER_SCRAPER, CountyDay, StateDay, TownDay
-from . import _towns
+from ..schema import TIER_SCRAPER, CountyDay, MethodDay, StateDay, TownDay
+from . import _methods, _towns
 from ._net import Missing, get, looks_like_html
 from .base import Adapter, FetchResult, NotYetPublished, SchemaDrift, SourceError
 
@@ -301,6 +306,9 @@ def parse(body: bytes, cycle: int, as_of: date) -> FetchResult:
     by_day: dict[date, _Bucket] = defaultdict(_Bucket)
     #: (10-digit cousub GEOID, return day) -> tallies.
     by_town: dict[tuple[str, date], _Bucket] = defaultdict(_Bucket)
+    #: (10-digit cousub GEOID, method, return day) -> tallies. Rolled up to the
+    #: county the same exact way the county rows are: the GEOID carries it.
+    by_town_method: dict[tuple[str, str, date], _Bucket] = defaultdict(_Bucket)
     town_names: dict[str, str] = {}
     #: municipality name -> accepted ballots we could not place. Counted, never
     #: silently dropped; reported below and in the log.
@@ -344,6 +352,7 @@ def parse(body: bytes, cycle: int, as_of: date) -> FetchResult:
 
         accepted_total += 1
         in_person = cells[index["return_method"]].strip().upper() == IN_PERSON_RETURN
+        band = METHOD_INPERSON if in_person else METHOD_MAIL
 
         def tally(bucket: _Bucket) -> None:
             bucket.total += 1
@@ -369,6 +378,7 @@ def parse(body: bytes, cycle: int, as_of: date) -> FetchResult:
                 geoid, canonical = hit
                 town_names[geoid] = canonical
                 tally(by_town[(geoid, returned)])
+                tally(by_town_method[(geoid, band, returned)])
 
     if not records:
         raise SchemaDrift("ME: absentee file has a header but no records")
@@ -392,7 +402,7 @@ def parse(body: bytes, cycle: int, as_of: date) -> FetchResult:
     else:
         log.info("ME: this file has no municipality column; statewide rows only")
 
-    return _emit(by_day, by_town, town_names, cycle, as_of, day_zero)
+    return _emit(by_day, by_town, by_town_method, town_names, cycle, as_of, day_zero)
 
 
 def _report_coverage(unmapped: dict[str, int], accepted: int, towns: int) -> None:
@@ -465,12 +475,14 @@ def _walk(series: dict[date, _Bucket], span: list[date], start: date):
 
 
 def _emit(by_day: dict[date, _Bucket], by_town: dict[tuple[str, date], _Bucket],
+          by_town_method: dict[tuple[str, str, date], _Bucket],
           town_names: dict[str, str], cycle: int, as_of: date,
           day_zero: date) -> FetchResult:
     result = FetchResult()
     # Present even when empty, so a caller can always ask a Maine result for its
     # town rows without a getattr dance.
     _towns.attach(result, [])
+    _methods.attach(result, [])
     days = [d for d in by_day if d <= as_of]
     if not days:
         return result
@@ -532,6 +544,28 @@ def _emit(by_day: dict[date, _Bucket], by_town: dict[tuple[str, date], _Bucket],
                 **{field: running.party.get(key, 0) for key, field in _PARTY_FIELD.items()},
             ))
     _towns.attach(result, town_rows)
+
+    # The party-by-method crosstab, rolled up from towns to counties by the same
+    # arithmetic on the GEOID that the county rows use. A band a county has not
+    # used yet is simply absent until its first ballot.
+    by_county_method: dict[tuple[str, str, date], _Bucket] = defaultdict(_Bucket)
+    for (geoid, band, day), bucket in by_town_method.items():
+        by_county_method[(_towns.county_of(geoid), band, day)].add(bucket)
+
+    method_rows: list[MethodDay] = []
+    for fips, band in sorted({(f, b) for f, b, _ in by_county_method}):
+        series = {d: v for (f, b, d), v in by_county_method.items()
+                  if f == fips and b == band}
+        for day, today, running in _walk(series, span, start):
+            method_rows.append(MethodDay(
+                cycle=cycle, state="ME", county_fips=fips, day=day,
+                method=band, county_name=_towns.county_name_of("ME", fips),
+                ballots_total=running.total,
+                ballots_new=today.total if today else 0,
+                **{field: running.party.get(key, 0)
+                   for key, field in _PARTY_FIELD.items()},
+            ))
+    _methods.attach(result, method_rows)
 
     for fips, series in sorted(_regroup(by_county).items()):
         for day, today, running in _walk(series, span, start):

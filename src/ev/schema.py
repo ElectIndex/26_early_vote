@@ -1,6 +1,6 @@
 """Canonical record shapes and the CSV column contract.
 
-Four long-format tables, all keyed by `cycle` so 2022/2024/2026 live in the same
+Five long-format tables, all keyed by `cycle` so 2022/2024/2026 live in the same
 shape and the frontend pivots instead of joining.
 
 THE BLANK RULE: a count of `None` writes an empty cell and means "the state did
@@ -20,6 +20,7 @@ from pathlib import Path
 from typing import Iterable, Iterator, Sequence
 
 from .calendar import days_to_election
+from .normalize import METHOD_INPERSON, METHOD_MAIL
 
 # --------------------------------------------------------------------------
 # Provenance tiers. Lower is better; publish.py keeps the lowest per key.
@@ -156,6 +157,84 @@ class TownDay:
         return (int(self.cycle), self.state.upper(), self.town_geoid, self.day.isoformat())
 
 
+#: The two channels an early ballot can arrive through. Imported from
+#: `normalize` rather than respelled here, because CLAUDE.md rule 4 is that the
+#: project holds ONE method vocabulary; a second copy would drift.
+METHODS = (METHOD_MAIL, METHOD_INPERSON)
+
+
+@dataclass
+class MethodDay:
+    """One county's ballots returned through ONE METHOD on one day, by party.
+
+    THE CROSSTAB `CountyDay` CANNOT HOLD, and it is a real one. `CountyDay` has
+    `mail_returned`, `inperson` and `party_dem/rep/oth/npa` -- the two margins of
+    a two-by-four table -- and no cell of the table itself. Several states
+    publish the cells and every adapter that reads them adds the two channels
+    together before writing a `CountyDay`, so the crosstab was downloaded on
+    every run and thrown away at the last step:
+
+      * **FL** renders "Voted Vote-by-Mail" and "Voted Early" as two separate
+        per-county tables, each split Republican / Democrat / Other / NPA.
+      * **KY**'s workbook carries DEM and REP columns for mail returned, for
+        excused in-person and for no-excuse in-person.
+      * **NC** and **ME** publish one row per ballot with the voter's party and
+        the return channel on the same row.
+      * **CO**'s workbook is a county x party matrix repeated per channel.
+
+    Its own table rather than eight more columns on `CountyDay`, for the reason
+    `DemoDay` is its own table: the number of bands is the source's business, not
+    the schema's. Kentucky reports three in-person-ish channels and Florida two;
+    collapsing them to a fixed pair of column prefixes would bake today's
+    vocabulary into the column names.
+
+    THE BLANK RULE applies twice over and both halves matter:
+
+      * a band the state does not report is an ABSENT ROW, never a row of zeros.
+        Florida prints no "Voted Early" county rows at all until early voting
+        opens, and Colorado published no per-county mail matrix in 2022; both are
+        "not reported", and a zero row there would claim nobody voted that way.
+      * within a row, an unreported party bucket is `None`. Kentucky splits out
+        only Democrats and Republicans, so its `party_npa` and `party_oth` are
+        blank and its party buckets deliberately do not sum to `ballots_total`.
+
+    `ballots_total` is this band's own count and the bands are a partition of the
+    county's day, so they sum to `CountyDay.ballots_total` wherever every band is
+    reported -- but nothing enforces that here, because a state that reports one
+    band and not the other is a state with one row, not a broken one.
+    """
+
+    cycle: int
+    state: str
+    county_fips: str
+    day: date
+    method: str
+    county_name: str = ""
+    ballots_total: int | None = None
+    ballots_new: int | None = None
+    party_dem: int | None = None
+    party_rep: int | None = None
+    party_oth: int | None = None
+    party_npa: int | None = None
+    provenance: Provenance | None = None
+
+    def __post_init__(self) -> None:
+        # ⚠️ CHECKED AT CONSTRUCTION, for exactly the reason DemoDay's dimension
+        # is: raised here it happens inside `adapter.fetch`, which the ladder
+        # wraps, so the attempt is recorded and every other state still
+        # publishes. Raised at write time it aborts the run for all of them,
+        # after the state table has been written and before the status file is.
+        if self.method not in METHODS:
+            raise ValueError(
+                f"unknown method {self.method!r}; expected one of {METHODS} "
+                f"-- route the source's own label through normalize.method()"
+            )
+
+    def key(self) -> tuple:
+        return (int(self.cycle), self.state.upper(), self.county_fips,
+                self.method, self.day.isoformat())
+
+
 DEMO_DIMENSIONS = ("age", "race", "sex")
 
 
@@ -227,6 +306,13 @@ TOWN_DAILY_COLUMNS = [
     "source_tier", "source_name", "retrieved_at",
 ]
 
+METHOD_DAILY_COLUMNS = [
+    "cycle", "state", "county_fips", "county_name", "date", "days_to_election",
+    "method", "ballots_total", "ballots_new",
+    "party_dem", "party_rep", "party_oth", "party_npa",
+    "source_tier", "source_name", "retrieved_at",
+]
+
 DEMO_DAILY_COLUMNS = [
     "cycle", "state", "date", "days_to_election",
     "dimension", "bucket", "ballots_total",
@@ -237,6 +323,7 @@ DEMO_DAILY_COLUMNS = [
 STATE_KEY = ("cycle", "state", "date")
 COUNTY_KEY = ("cycle", "state", "county_fips", "date")
 TOWN_KEY = ("cycle", "state", "town_geoid", "date")
+METHOD_KEY = ("cycle", "state", "county_fips", "method", "date")
 DEMO_KEY = ("cycle", "state", "date", "dimension", "bucket")
 
 
@@ -312,6 +399,30 @@ def town_row_to_dict(row: TownDay) -> dict[str, str]:
         "ballots_new": _cell(row.ballots_new),
         "mail_returned": _cell(row.mail_returned),
         "inperson": _cell(row.inperson),
+        "party_dem": _cell(row.party_dem),
+        "party_rep": _cell(row.party_rep),
+        "party_oth": _cell(row.party_oth),
+        "party_npa": _cell(row.party_npa),
+        "source_tier": str(p.tier),
+        "source_name": p.name,
+        "retrieved_at": p.retrieved_at,
+    }
+
+
+def method_row_to_dict(row: MethodDay) -> dict[str, str]:
+    p = _prov(row)
+    if row.method not in METHODS:
+        raise ValueError(f"unknown method {row.method!r}")
+    return {
+        "cycle": str(int(row.cycle)),
+        "state": row.state.upper(),
+        "county_fips": row.county_fips,
+        "county_name": row.county_name,
+        "date": row.day.isoformat(),
+        "days_to_election": str(days_to_election(row.cycle, row.day)),
+        "method": row.method,
+        "ballots_total": _cell(row.ballots_total),
+        "ballots_new": _cell(row.ballots_new),
         "party_dem": _cell(row.party_dem),
         "party_rep": _cell(row.party_rep),
         "party_oth": _cell(row.party_oth),

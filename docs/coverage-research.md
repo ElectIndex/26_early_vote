@@ -29,7 +29,7 @@ reason recorded below.
 | **KY** | **yes** — SBE `Absentee_Public_MMDDYY.xlsx`, dated daily | XLSX | county (120) | county, party (DEM/REP only), method | high | **BUILT** `ky-sbe` |
 | **TN** | **yes** — SoS `…EarlyAbsentee….xlsx`, long format | XLSX | county (95) | county, method | high | **BUILT** `tn-sos` |
 | WA | yes — voter-level daily ZIP/CSV | CSV in ZIP | county (39) | county, method, sex, ballot status | high | rejected: effort vs 2026 stakes |
-| OK | yes — undocumented dashboard JSON API | JSON | county (77) + precinct | county, party, method | medium | rejected: fragility |
+| OK | yes — undocumented dashboard JSON API | JSON | county (77) — **not precinct**, see below | county, party, method | medium | rejected: fragility |
 | SC | yes — absentee + EV workbooks | XLSX/CSV | county (46) | county, method, **race** | medium-high | rejected: filename drift |
 | IL | yes — pre-election counts CSV/XLSX | CSV/XLSX | 108 election authorities | authority, method | medium-high | rejected: needs 108→102 crosswalk |
 | MT | yes — Tableau CSV export | CSV | county (56) | county, method | medium | rejected: no election provenance |
@@ -1667,7 +1667,7 @@ Two dashboards, measuring different things:
 
 | | `AbsStatsByCounty` (`StatAbsentee`) | `VHCountsByCounty` (`StatVoterHistory`) |
 |---|---|---|
-| unit | county × party × ballot type × source × delivery | county × precinct × party × **VotingMethod** |
+| unit | county × party × ballot type × source × delivery | county × party × **VotingMethod** — `PrecinctCode` is declared and does not answer, see below |
 | measures | Sent / Received / Rejected | HistoryCount |
 | 2024 general | 130,640 sent, 107,874 received | 107,549 absentee + 293,918 early in-person |
 | 2022 general | — | 71,680 absentee + 132,402 early in-person |
@@ -1693,6 +1693,28 @@ Neither dashboard has a within-election date dimension — there is no received
 date anywhere in either table — so rows are stamped with the run's `as_of`, and
 `fetch_history` returns one dated row per county on Election Day rather than
 inventing an archived daily curve.
+
+⚠️ **CORRECTED 2026-09-08: there is no retrievable precinct dimension, and this
+file said twice that there was.** `VHCountsByCounty` declares `PrecinctCode` as
+level 1 of the pivot's row hierarchy and lists it in `DataSourceColumns`, which
+is where the claim came from. It is a declaration and not data. Across every
+captured response the dimension's `EncodeMaps` entry is an **empty array** and
+every slice keyed on it is empty:
+
+```
+EncodeMaps      DataItem0 (CountyDesc) 77   DataItem4 (PartyDesc) 4
+                DataItem1 (PrecinctCode) 0
+Slices          [DataItem0]                          77 rows
+                [DataItem0, DataItem4]              304 rows
+                [DataItem0, DataItem1]                0 rows
+                [DataItem0, DataItem1, DataItem4]     0 rows
+                [DataItem0, DataItem1, DataItem4, DataItem2]  0 rows
+```
+
+So a precinct code cannot be decoded even where a slice keyed on it exists, and
+none does. The retrievable unit is the **county**, and Oklahoma's row above says
+so. (This does not change the rejection, which was always about fragility, and
+it does not change `ok.py`, which never read a precinct.)
 
 ## Nothing machine-readable during the season
 

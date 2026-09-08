@@ -36,11 +36,12 @@ from pathlib import Path
 import pytest
 
 from ev import cli
-from ev.adapters import _towns
+from ev.adapters import _methods, _towns
 from ev.adapters.base import Adapter, FetchResult, NotYetPublished, SourceError
 from ev.adapters.manual import ManualAdapter
 from ev.schema import (
-    CountyDay, DemoDay, Provenance, StateDay, TownDay, TIER_CIVIC, TIER_SCRAPER,
+    CountyDay, DemoDay, MethodDay, Provenance, StateDay, TownDay, TIER_CIVIC,
+    TIER_SCRAPER,
 )
 
 AS_OF = date(2026, 10, 20)
@@ -90,6 +91,15 @@ class StubScraper(Adapter):
             town_geoid=PORTLAND_ME, town_name="Portland",
             ballots_total=1_200,
         )])
+        # ...and the fifth table, which rides the same seam for the same reason.
+        _methods.attach(result, [
+            MethodDay(cycle=cycle, state=state, county_fips="37119", day=as_of,
+                      method="mail", ballots_total=200, party_dem=120,
+                      party_rep=80),
+            MethodDay(cycle=cycle, state=state, county_fips="37119", day=as_of,
+                      method="inperson", ballots_total=200, party_dem=90,
+                      party_rep=110),
+        ])
         return result
 
 
@@ -580,6 +590,10 @@ class HistoryScraper(Adapter):
             cycle=cycle, state=self.state, day=day,
             town_geoid=PORTLAND_ME, town_name="Portland", ballots_total=900,
         )])
+        _methods.attach(result, [MethodDay(
+            cycle=cycle, state=self.state, county_fips="37119", day=day,
+            method="mail", ballots_total=900,
+        )])
         return result
 
 
@@ -601,3 +615,33 @@ def test_backfill_stamps_town_rows_it_did_not_fetch_itself(tmp_path, monkeypatch
         (tmp_path / "output" / "towns" / "nc.csv").open()))
     assert [r["town_geoid"] for r in towns] == [PORTLAND_ME]
     assert towns[0]["source_name"] == "stub-history"
+
+
+def test_ingest_publishes_the_party_by_method_crosstab(tmp_path, monkeypatch):
+    """The fifth table reaches disk, stamped, through the same seam the town
+    rows use -- an ATTRIBUTE on the FetchResult, which `FetchResult.stamp` cannot
+    reach, so `ladder.run_state` stamps it and `cmd_ingest` publishes it."""
+    monkeypatch.setattr(cli, "ladder", lambda state: [StubScraper(state=state)])
+    assert cli.cmd_ingest(args(tmp_path)) == 0
+    rows = list(csv.DictReader(
+        (tmp_path / "output" / "methods" / "nc.csv").open()))
+    assert [(r["method"], r["ballots_total"]) for r in rows] == [
+        ("inperson", "200"), ("mail", "200")]
+    assert all(r["source_name"] == "stub" for r in rows)
+    assert all(r["source_tier"] == "1" for r in rows)
+
+
+def test_backfill_stamps_method_rows_it_did_not_fetch_itself(tmp_path, monkeypatch):
+    """`ev backfill` does not walk the ladder, so it does its own stamping.
+    Without it this dies at WRITE time on `MethodDay written without
+    provenance`, after the archive has been fetched."""
+    monkeypatch.setattr(cli, "ladder", lambda state: [HistoryScraper(state=state)])
+    parsed = cli.build_parser().parse_args(
+        ["--output", str(tmp_path / "output"),
+         "backfill", "--cycle", "2024", "--state", "NC"]
+    )
+    assert cli.cmd_backfill(parsed) == 0
+    rows = list(csv.DictReader(
+        (tmp_path / "output" / "methods" / "nc.csv").open()))
+    assert [r["method"] for r in rows] == ["mail"]
+    assert rows[0]["source_name"] == "stub-history"

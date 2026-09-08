@@ -89,6 +89,10 @@ output/         published; the website reads these
   ev_state_daily.csv        all cycles, all states
   counties/<st>.csv         per state, lazily fetched by the page
   demo/<st>.csv             per state
+  towns/<st>.csv            per state; ME and CT report by municipality
+  methods/<st>.csv          per state; party CROSSED with mail/in-person, where
+                            a state publishes the crosstab rather than the
+                            margins separately
   ev_state_meta.csv         EV windows, party-reg flag, 2022/24 finals
   ev_status.json            per-state freshness; drives the page's stale badge
 ```
