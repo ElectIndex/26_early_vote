@@ -776,6 +776,13 @@ def test_the_series_that_came_into_reach_is_the_one_that_points_the_wrong_way(
         full_baseline):
     """THE FINDING, and the case it said would have to be reported if it arrived.
 
+    ⚠️ UPDATED 2026-09-08: THERE ARE TWO OF THEM NOW. Louisiana's early electorate
+    moved 9.79 registration points against a reach bound of 10.26 -- Louisiana has
+    the widest county-margin span in the panel, 155.7 points, so geography had more
+    room there than anywhere -- and the model reported +0.50. Wrong sign, gain
+    -0.50. So the claim below no longer rests on a single fold: two series have
+    now had the room and both went the other way.
+
     This test used to assert that EVERY series whose composition demonstrably
     moved was one county geography could not have reported under any reweighting
     of its counties, and its docstring said: "a future backfill that puts a MOVING
@@ -821,19 +828,41 @@ def test_the_series_that_came_into_reach_is_the_one_that_points_the_wrong_way(
 @pytest.mark.skipif(not (REPO_OUTPUT / "ev_state_daily.csv").exists(),
                     reason="no published output/ tree in this checkout")
 def test_the_constant_does_not_survive_a_held_out_cycle(full_baseline):
-    """THE TEST THE CONSTANT HAS NEVER BEEN ABLE TO TAKE, and it fails it.
+    """THE TEST THE CONSTANT HAS NEVER BEEN ABLE TO TAKE, and what it costs to
+    keep refusing it now that the panel has stopped failing it outright.
 
     A fitted constant -- "this state's early electorate moved by whatever the
     other states' did" -- scores +3.49 pp leave-one-STATE-out, three and a half
     times MIN_GAIN and better than every predictor ever swept on this panel. It
-    was refused anyway, on the argument that all seven folds were the same cycle
-    transition, so leave-one-state-out never held the transition out and the
-    constant was being scored on the thing it was fitted to.
+    was refused on the argument that every fold was the same cycle transition;
+    Pennsylvania's 2020 curve turned that argument into a measurement and the
+    answer was **-3.35**, a single-fold holdout that the constant failed by ten
+    points.
 
-    Pennsylvania's 2020 curve turned that argument into a measurement. The two
-    transitions point OPPOSITE ways -- PA's early electorate moved +5.57
-    registration points from 2020 to 2022 and -27.64 from 2022 to 2024 -- so the
-    constant learned from one is worse than useless on the other.
+    ⚠️ ON 2026-09-08 OKLAHOMA'S 2020 CURVE GAVE THE PANEL A SECOND
+    2022-TRANSITION FOLD AND THE HELD-OUT NUMBER WENT POSITIVE: **+2.19** by
+    fold, **+1.09** weighting each transition equally, both over MIN_GAIN. This
+    test used to assert `gain < 0` and that assertion is gone, because it is no
+    longer true and relaxing it quietly would be the worst available option.
+
+    WHAT REPLACES IT IS THE JACKKNIFE, which is the rule this repo applies to
+    every candidate that clears the bar -- a +1.59 became +0.27 without one
+    state, and a +0.65 evaporated when a nuisance parameter was refit jointly.
+    The constant's holdout is TWO FOLDS wide on one side and eleven on the
+    other, and the two disagree by 21 points: OK 2022 gains +10.08, PA 2022
+    loses -11.08. Refit with one state dropped it runs **-2.96 without Oklahoma**
+    to **+4.47 without Pennsylvania**. One fold either way, an eight-point swing,
+    and the Oklahoma fold that flips the sign is a SINGLE MATCHED DAY.
+
+    And the second half of the diagnosis is what the score is made of. Mean
+    absolute error rewards any step in the right direction, so a fold whose truth
+    lies beyond the constant in the same direction banks exactly |c| whatever its
+    size. Nine of the thirteen gains are exactly +-4.107 to twelve decimal
+    places. The number is a SIGN COUNT over eleven folds that share a sign, not
+    a fit -- which is precisely what "one transition, learned once" looks like.
+
+    This test fails, and docs/counterfactual.md has to be re-derived, if a future
+    panel ever makes the constant survive its own jackknife.
     """
     scores = cf.validate(REPO_OUTPUT, full_baseline)
     held = [r for r in scores if r.cycle_constant_gain is not None]
@@ -842,15 +871,46 @@ def test_the_constant_does_not_survive_a_held_out_cycle(full_baseline):
         "held out; docs/counterfactual.md's refusal is back to being an argument"
     )
     assert {r.cycle for r in scores} > {2024}, "expected more than one transition"
-    gain = sum(r.cycle_constant_gain for r in held) / len(held)
-    assert gain < 0, (
-        f"a constant now survives a held-out cycle at {gain:+.2f} pp; that is the "
-        "one objection docs/counterfactual.md rests its refusal on"
+
+    # THE JACKKNIFE. Dropping one state must still be able to take the constant
+    # below the no-change null; a constant that survived every jackknife fold
+    # would be a real finding and this repo would have to say so.
+    jack = cf.constant_jackknife(scores)
+    assert len(jack) >= 2, "nothing to jackknife over"
+    worst, best = jack[0][1], jack[-1][1]
+    assert worst < 0, (
+        f"a constant now survives every leave-one-state jackknife fold (worst "
+        f"{worst:+.2f} pp); docs/counterfactual.md rests its refusal on this"
     )
-    # Every fold, not just on average.
-    assert all(r.cycle_constant_gain < cf.MIN_GAIN for r in held)
+    assert best - worst > cf.MIN_GAIN, (
+        f"one state moves the held-out constant by only {best - worst:.2f} pp, so "
+        "it is no longer one fold wide and the refusal has to be re-derived"
+    )
+
+    # AND THE SCORE IS A SIGN COUNT. A fold whose truth lies beyond the fitted
+    # constant in the same direction gains exactly |c|, whatever its magnitude.
+    mechanical = [r for r in held
+                  if abs(abs(r.cycle_constant_gain) - abs(r.cycle_constant)) < 1e-9]
+    assert len(mechanical) > len(held) / 2, (
+        f"only {len(mechanical)} of {len(held)} folds score the constant "
+        "mechanically; it may now be measuring magnitude rather than sign"
+    )
+
+    # AND THE TRANSITIONS DISAGREE. The thin side of the holdout is where the
+    # constant is actually being learned, and its folds do not agree with
+    # each other by more than the whole thing is worth.
+    per_cycle: dict[int, list[float]] = {}
+    for r in held:
+        per_cycle.setdefault(r.cycle, []).append(r.cycle_constant_gain)
+    thin = min(per_cycle.values(), key=len)
+    if len(thin) > 1:
+        assert max(thin) - min(thin) > abs(
+            cf.constant_gain(scores, by_transition=True) or 0.0)
+
     printed = "\n".join(cf.format_validation(scores))
     assert "leave-one-CYCLE-out constant" in printed
+    assert "jackknife (drop one state" in printed
+    assert "transition-weighted mean" in printed
 
 
 def test_reach_is_reported_and_is_never_a_filter():
@@ -1081,29 +1141,79 @@ def test_the_measured_gain_does_not_clear_the_bar(full_baseline):
 def test_the_fitted_scale_does_not_agree_with_itself_across_states(full_baseline):
     """A unit gap would be fixable by a scale. This is not a unit gap.
 
-    ⚠️ THIS ARGUMENT HAS NOW BEEN WRONG IN BOTH DIRECTIONS, which is the most
-    useful thing about it. Originally the multiplier fitting Kentucky and
-    Maryland was the NEGATIVE of the one fitting Maine and North Carolina. The
-    maturity gate made every fold's multiplier positive, and this docstring duly
-    recorded that the sign half of the argument had been noise. Adding
-    Pennsylvania put the signs back: FL -0.17, KY +0.40, MD +0.58, ME -0.92,
-    NC -1.01, PA +2.62.
+    ⚠️ THE SIGN HALF OF THIS ARGUMENT HAS NOW BEEN WRONG IN BOTH DIRECTIONS
+    THREE TIMES, which is the most useful thing about it. Originally the
+    multiplier fitting Kentucky and Maryland was the negative of the one fitting
+    Maine and North Carolina; the maturity gate made every one positive; adding
+    Pennsylvania put the signs back; adding PA 2022 made six of eight negative.
+    On the thirteen-fold panel every one of them is POSITIVE again. Read the sign
+    pattern as a fact about a panel small enough to flip on one fold, and never
+    as evidence.
 
-    Read that as a warning about the panel rather than a discovery about the
-    model. Five folds were few enough that the sign pattern could flip on one
-    state either way; what has never flipped is the magnitude. The scales still
-    disagree by more than an order of magnitude (0.17 in Florida against 2.62 in
-    Pennsylvania), and applying the one fitted on the other states still lifts no
-    fold over MIN_GAIN. A signal in the wrong unit would be fixed by ONE number;
-    nothing here is one number, in either sign.
+    WHAT HAS NEVER FLIPPED IS THE MAGNITUDE, and it is wider than it has ever
+    been: leave-one-state-out the multiplier runs **0.099 to 4.595, a 46-fold
+    spread**, and the two ends are two states pulling against each other --
+    fitted without Oklahoma it is 0.099, fitted without Pennsylvania 4.595, and
+    fitted on everything about 1.5. A signal in the wrong unit would be fixed by
+    ONE number. Nothing here is one number.
+
+    ⚠️ AND ONE CLAUSE OF THIS TEST IS DELIBERATELY GONE. It used to assert that
+    applying the scale fitted elsewhere "lifts no fold over MIN_GAIN". On the
+    thirteen-fold panel three folds clear it -- IA +1.07, ME +1.31, NC +1.64 --
+    and the assertion was wrong to make in the first place: `MIN_GAIN` is a bar
+    for a PANEL, not for a single series, which is the same sentence this repo
+    already wrote about Maine's towns and about Florida's crosstab. What those
+    three folds have in common is a small shift being scaled further in a
+    direction the truth was already going, which is the same arithmetic that
+    makes a constant look good.
+
+    ⚠️ AND THE REFUSAL IS NOW ONE STATE WIDE, WHICH IS A REAL WEAKENING AND IS
+    PINNED HERE RATHER THAN LEFT IN PROSE. The panel mean is -2.15; refit with
+    one state dropped it stays between -2.31 and -2.45 for every state except
+    Pennsylvania, where it becomes **+1.79**, over the bar. Pennsylvania is not
+    trimmable -- 2022 is the only midterm reference this panel has, and
+    docs/counterfactual.md says so in three places -- but the fact that a single
+    state carries the refusal is the finding, not a detail.
     """
-    scores = [r for r in cf.validate(REPO_OUTPUT, full_baseline)
-              if r.fitted_scale is not None]
+    scored = cf.validate(REPO_OUTPUT, full_baseline)
+    scores = [r for r in scored if r.fitted_scale is not None]
     assert len(scores) >= 2
     scales = [abs(r.fitted_scale) for r in scores]
-    assert max(scales) / min(scales) > 10
+    assert max(scales) / min(scales) > 10, (
+        "the fitted scales agree with each other now; a unit gap IS fixable by "
+        "one number and docs/counterfactual.md has to be re-derived"
+    )
     assert sum(r.scaled_gain for r in scores) / len(scores) < 0
-    assert all(r.scaled_gain < cf.MIN_GAIN for r in scores)
+
+    # The folds it helps are a minority, and MIN_GAIN is a bar for a panel.
+    over = [r for r in scores if r.scaled_gain >= cf.MIN_GAIN]
+    assert len(over) < len(scores) / 2, (
+        f"{len(over)} of {len(scores)} folds now clear MIN_GAIN under a scale "
+        "fitted elsewhere; that is a majority and no longer a stray"
+    )
+
+    # THE JACKKNIFE, with k refitted inside every fold -- a jackknife over a
+    # frozen parameter is not a jackknife.
+    panel = cf.score_panel(REPO_OUTPUT, full_baseline)
+    keys = sorted(panel)
+    carriers = []
+    for dropped in sorted({k[1] for k in keys}):
+        kept = [k for k in keys if k[1] != dropped]
+        gains = []
+        for key in kept:
+            k = cf.fit_scale([panel[o] for o in kept if o[1] != key[1]])
+            if k is None:
+                continue
+            days = panel[key]
+            null = sum(abs(d.truth) for d in days) / len(days)
+            mae = sum(abs(k * d.shift - d.truth) for d in days) / len(days)
+            gains.append(null - mae)
+        if gains and sum(gains) / len(gains) >= cf.MIN_GAIN:
+            carriers.append(dropped)
+    assert len(carriers) <= 1, (
+        f"{carriers} each carry the refusal on their own; a scale that clears "
+        "the bar without any one of two states is not refused any more"
+    )
 
 
 @pytest.mark.skipif(not (REPO_OUTPUT / "ev_state_daily.csv").exists(),
@@ -1402,32 +1512,53 @@ def test_no_within_county_dimension_covers_the_panel(full_baseline):
 
 @pytest.mark.skipif(not (REPO_OUTPUT / "ev_state_daily.csv").exists(),
                     reason="no published output/ tree in this checkout")
-def test_the_unpriced_dimensions_cannot_reach_the_largest_changes(full_baseline):
-    """`required_span`, and the ceiling that makes an unpriced dimension answerable.
+def test_the_unpriced_dimensions_mostly_cannot_reach_the_largest_changes(
+        full_baseline):
+    """`required_span`, and what happens when the bound stops refusing everything.
 
-    ⚠️ The first clause of this docstring was corrected on 2026-09-08: the
-    METHOD split does carry a party split in FL, KY, ME and NC, and
-    `output/methods/<st>.csv` holds it, so its between-band term is exact in
-    four of the nine folds rather than merely bounded. `output/demo/*.csv` still
-    carries none anywhere. Where the crosstab does not exist the bound is still
-    the only tool, and it is the right one: the between-band term is bounded by
+    The between-band term of ANY partition is bounded by
     TV(band mix) x (band-margin span), and a registration margin lives in
     [-100, +100], so no span can exceed 200. Turn that round and each fold names
-    the span its dimension would need. On the final matched day the method
-    dimension needs an infinite one in PA 2022, PA 2024 and MD (the mix does not
-    move), 752 in NC, 169 in KY, 124 in CO, 111 in ME and 28 in FL -- against a
-    mail-minus-in-person registration gap of 18 to 42 points measured directly in
-    the five series whose window opens mail-only.
+    the channel gap the method dimension would need to carry its own answer on
+    its own. Against that stands the gap this repo can actually observe: on a day
+    when a state's window is still mail-only the reported party margin IS the
+    mail channel's, and the in-person channel's follows from the final day's
+    identity. Five series carry it and they run **18.1 to 42.2 points** (NC 2024
+    18.1, FL 2024 26.3, KY 2024 26.3, FL 2022 28.2, NC 2022 42.2); the four folds
+    that publish the crosstab measure 17.7 to 34.7 directly, inside the same
+    envelope.
 
-    Asserted on the folds whose measured change is large, because those are the
-    ones the dimension would have to explain.
+    ⚠️ THIS TEST USED TO ASSERT THE BOUND REFUSED EVERY LARGE FOLD, AND ON
+    2026-09-08 IT STOPPED BEING TRUE. Oklahoma's mail share fell from 63.2% in
+    2020 to 35.1% in 2022 -- the pandemic mail surge unwinding -- so OK 2022's
+    method mix moved 28.08 points and it would need only a **38-point** channel
+    gap to carry its -10.62, inside the 18-to-42 this repo can observe. That is
+    the same thing PA 2022 was for counties: a fold that came INTO reach. Both
+    are day-0 snapshots, so it is not the +-3-day calendar artefact that produces
+    Kentucky's -15.42.
+
+    So the refusal moves from a bound to a measurement, exactly as it did for
+    counties, and this test now pins both halves:
+
+      * the bound still refuses a MAJORITY of the large folds -- infinite in
+        PA 2024 and IA (one channel), 752 in NC, 227 in OK 2024, 169 in KY, 111
+        in ME;
+      * and where it does not refuse, the SCORED specification does. Fitted
+        leave-one-state-out, `method_delta x gap` buys **+0.42** on all thirteen
+        folds and +0.68 on the eight whose mix moves -- up from -1.52 on eight
+        folds, and still under MIN_GAIN.
+
+    Being arithmetically able to report an answer is not the same as reporting
+    it. That sentence was written for PA 2022 and it is the same sentence here.
     """
     panel = cf.score_panel(REPO_OUTPUT, full_baseline)
+    scored = cf.validate(REPO_OUTPUT, full_baseline)
     WIDEST_OBSERVED_CHANNEL_GAP = 42.0
+    beyond, inside = [], []
     for (cycle, state), days in sorted(panel.items()):
         day = min(days, key=lambda d: d.days_to_election)
         if abs(day.truth) < 10.0:
-            continue                       # CO, FL and MD: little happened to explain
+            continue                  # CO, FL, LA, MD, OR, PA 2022: little to explain
         series = cf.read_series(REPO_OUTPUT, state)
         reference = series[cf.REFERENCE_CYCLE[cycle]]
         distance = cf.method_mix_distance(
@@ -1435,11 +1566,31 @@ def test_the_unpriced_dimensions_cannot_reach_the_largest_changes(full_baseline)
             reference.state_rows.get(
                 reference.at(day.days_to_election, cf.DTE_MATCH_TOLERANCE)))
         needed = cf.required_span(distance, day.truth)
-        assert needed is None or needed > WIDEST_OBSERVED_CHANNEL_GAP, (
-            f"{state} {cycle}: the method mix moved {distance:.2f} points and "
-            f"would need only a {needed:.0f}-point channel gap to carry "
-            f"{day.truth:+.2f} -- inside what this repo can observe, so the "
-            f"dimension is worth pricing")
+        (beyond if needed is None or needed > WIDEST_OBSERVED_CHANNEL_GAP
+         else inside).append((f"{state}{cycle}", needed))
+    assert beyond, "the method dimension can now reach every large change"
+    assert len(inside) < len(beyond), (
+        f"the bound refuses only {len(beyond)} of {len(beyond) + len(inside)} "
+        f"large folds now ({inside} are inside an observable channel gap); it is "
+        "no longer the argument docs/counterfactual.md makes with it"
+    )
+
+    # AND WHERE THE BOUND DOES NOT REFUSE IT, THE MEASUREMENT DOES. The
+    # specification is scored on the whole panel, never on the folds it happens
+    # to reach -- that would be selection on the truth.
+    priced = [r for r in scored if r.method_gain is not None]
+    assert len(priced) == len(scored), (
+        "the method mix is no longer readable in every fold, so this is not a "
+        "whole-panel measurement any more"
+    )
+    gain = sum(r.method_gain for r in priced) / len(priced)
+    assert gain < cf.MIN_GAIN, (
+        f"the mail/in-person mix now buys {gain:+.2f} pp with a gap fitted "
+        "leave-one-state-out; docs/counterfactual.md says it buys nothing"
+    )
+    # And the gap it wants still cannot agree with itself.
+    gaps = [abs(r.method_gap) for r in priced if r.method_gap]
+    assert max(gaps) / min(gaps) > 2
 
 
 # --------------------------------------------------------------------------

@@ -340,13 +340,35 @@ MIN_REFERENCE_BALLOTS = THIN_BALLOTS
 #:         the error grew by a point and a half. Neither number is evidence about
 #:         the other, and neither is evidence that anything improved.
 #:
+#:  11.0   10.62  FOUR BACKFILLS AT ONCE -- Louisiana, Oklahoma, Oregon,
+#:         Delaware and Wisconsin -- took the panel from nine folds to THIRTEEN,
+#:         and the first rule binds again: 10.62 rounds up to 11.0, and the
+#:         second rule's floor is unchanged at Pennsylvania's +10.48, which 11.0
+#:         still covers. So the band NARROWS by half a point.
+#:
+#:         ⚠️ AND THIS IS DILUTION IN ITS PUREST FORM SO FAR, BECAUSE ALL FOUR OF
+#:         THE NEW FOLDS ARE A SINGLE MATCHED DAY. Oklahoma publishes one county
+#:         snapshot per cycle (day 0), so do Louisiana and -- for its party split
+#:         -- Oregon: OK 2022, OK 2024, LA 2024 and OR 2024 are each ONE
+#:         day-0 comparison, against Maine's 21 and Pennsylvania's 23. Their
+#:         gains are +0.98, +4.23, -0.50 and -0.14, a mean of +1.14 against the
+#:         nine-fold panel's -0.55, and that alone moves the headline
+#:         -0.55 -> -0.03 and the mean error 11.39 -> 10.62. Nothing about the
+#:         method changed and no existing fold moved. See `score_panel` for why
+#:         a minimum day count was measured and NOT adopted.
+#:
+#:         Wisconsin and Delaware add published rows and no folds at all:
+#:         Wisconsin does not register voters by party and Delaware's adapter
+#:         publishes no party split, so neither has a truth column to be scored
+#:         against.
+#:
 #: The verdict does not move toward shipping at any point: the gain over the
-#: no-change null is -0.15 pp on six folds, -0.15 pp on seven, -0.73 pp on eight
-#: and -0.55 pp on nine, and the bar is +1.00.
+#: no-change null is -0.15 pp on six folds, -0.15 pp on seven, -0.73 pp on eight,
+#: -0.55 pp on nine and -0.03 pp on thirteen, and the bar is +1.00.
 #:
 #: `test_model_error_matches_the_measured_validation` refits it from output/ and
 #: fails if the data moves away from it.
-MODEL_ERROR_PP = 11.5
+MODEL_ERROR_PP = 11.0
 
 #: With complete coverage on both sides the band's half-width is exactly
 #: MODEL_ERROR_PP, so the confidence threshold has to sit strictly above it or it
@@ -713,22 +735,29 @@ def method_mix_distance(
     the absolute change in mail's share, which is what makes it directly
     comparable with them.
 
-    ⚠️ AND ON THE FINAL MATCHED DAY OF THE EIGHT SCOREABLE FOLDS IT IS ZERO IN
-    THREE OF THEM, INCLUDING BOTH PENNSYLVANIAS. PA 2022 0.00, PA 2024 0.00, MD
-    0.00, NC 1.52, CO 1.60, KY 7.83, ME 12.61, FL 17.44 -- against county-mix
-    distances of 2.41 to 8.34. Pennsylvania has no early in-person voting, so its
-    observed early electorate is 100% mail in every cycle; Maryland publishes only
-    its in-person centres, so its mail side is unreported rather than absent and a
-    working mail file would give it a mix. The dimension the Pennsylvania finding
-    names is the one dimension Pennsylvania does not have.
+    ⚠️ AND ON THE FINAL MATCHED DAY OF THE THIRTEEN SCOREABLE FOLDS IT IS ZERO IN
+    FIVE OF THEM, INCLUDING BOTH PENNSYLVANIAS. PA 2022 0.00, PA 2024 0.00, IA
+    0.00, MD 0.00, OR 0.00, NC 1.52, CO 1.60, KY 7.83, OK 2024 8.33, ME 12.61,
+    LA 15.02, FL 17.44, OK 2022 28.08 -- against county-mix distances of 2.41 to
+    9.48. Pennsylvania has no early in-person voting, so its observed early
+    electorate is 100% mail in every cycle; Iowa and Oregon report one
+    undifferentiated mail figure; Maryland publishes only its in-person centres,
+    so its mail side is unreported rather than absent and a working mail file
+    would give it a mix. The dimension the Pennsylvania finding names is the one
+    dimension Pennsylvania does not have.
 
-    ⚠️ AND WHERE IT DOES MOVE, MOST OF THE MOVEMENT IS PHASE. Kentucky's mix
-    "moves" 58 points at seven days out, because its 2022 reference series is a
-    single day near the close while 2024 is still mail-only at that point. That
-    is a calendar fact about when in-person voting opens, not a compositional
-    one, and it is why the fitted specification scores -15.91 on Kentucky. The
-    maturity gate exists for the same reason and does not catch this, because
-    both days are mature.
+    ⚠️ AND WHERE IT DOES MOVE, MOST OF THE MOVEMENT IS PHASE -- BUT NOT ALL OF IT,
+    AND THE EXCEPTION IS WHY `fit_method_gap` EXISTS. Kentucky's mix "moves" 58
+    points at seven days out, because its 2022 reference series is a single day
+    near the close while 2024 is still mail-only at that point. That is a calendar
+    fact about when in-person voting opens, not a compositional one, and it is why
+    the fitted specification scores -15.42 on Kentucky. The maturity gate exists
+    for the same reason and does not catch this, because both days are mature.
+    Oklahoma's 28.08 is NOT that: both of its days are day-0 snapshots at 100%
+    completeness, and its mail share really did fall from 63.2% in 2020 to 35.1%
+    in 2022 as the pandemic surge unwound. That one fold takes the method
+    dimension from "refused by `required_span` everywhere but Florida" to
+    "reachable in two of thirteen", which is why the refusal is now a measurement.
     """
     here, there = method_mix(now), method_mix(reference)
     if here is None or there is None:
@@ -754,15 +783,24 @@ def required_span(distance: float | None, change: float) -> float | None:
     That is the whole answer for the dimensions this repo cannot price. On the
     final matched day of each fold:
 
-        method   PA 2022 inf, PA 2024 inf, MD inf (the mix did not move at all),
-                 NC 752, KY 169, CO 124, ME 111, FL 28
+        method   PA 2022 inf, PA 2024 inf, IA inf, OR inf, MD inf (the mix did
+                 not move at all), NC 752, OK 2024 227, KY 169, CO 124, ME 111,
+                 LA 65, OK 2022 38, FL 28
         age      NC 91          race  NC 271        sex  NC 468, MD 872
 
-    Four of the eight folds put the method dimension past the 200-point ceiling.
-    Three more need 111 to 169, against a channel gap of 18 to 42 points measured
-    directly in the five series whose window opens mail-only -- on a pure-mail day
-    the reported margin IS the mail channel's, and the in-person channel's follows
-    from the final day's identity. Only Florida's 28 is inside anything observed.
+    Seven of the thirteen folds put the method dimension past the 200-point
+    ceiling or out of existence. Four more need 65 to 169, against a channel gap
+    of 18 to 42 points measured directly in the five series whose window opens
+    mail-only -- on a pure-mail day the reported margin IS the mail channel's, and
+    the in-person channel's follows from the final day's identity -- and confirmed
+    at 16 to 35 by the four folds that publish the crosstab outright.
+
+    ⚠️ AND TWO ARE NOW INSIDE THAT ENVELOPE, WHERE ONE USED TO BE. Florida's 28 is
+    the one this argument always reported. OK 2022's 38 arrived on 2026-09-08 and
+    Oklahoma publishes no crosstab, so it cannot be checked directly. Eleven of
+    thirteen is still a majority and it is not the clean sweep the eight-fold panel
+    had, so the refusal moves from this bound to `fit_method_gap`'s measurement --
+    exactly as it did for counties when PA 2022 came into reach.
 
     Returns None when the mix did not move, which is the "arithmetically
     impossible" case and is reported as such rather than as a large number.
@@ -1676,6 +1714,15 @@ class ScoredDay:
     cell_county: float | None = None
     cell_method: float | None = None
     cell_inside: float | None = None
+    #: The SIGNED change in mail's share of the returned ballots, in points --
+    #: `method_mix_distance` before the absolute value. It is the regressor of
+    #: the one within-county specification that survives everywhere the crosstab
+    #: does not: `prediction = method_delta x g`, with the mail-minus-in-person
+    #: registration gap `g` fitted leave-one-state-out. See `fit_method_gap`.
+    #: 0.0 -- not None -- where the state has one channel, because "the mix did
+    #: not move" is a measurement and the specification collapses to the null
+    #: there. None only when the split cannot be read at all.
+    method_delta: float | None = None
 
 
 @dataclass
@@ -1725,6 +1772,23 @@ class Validation:
     #: argued. See `fit_constant`.
     cycle_constant: float | None = None
     cycle_constant_mean_abs_error: float | None = None
+    #: Every scored day's MEASURED change, in order. Carried so the leave-one-
+    #: cycle-out constant can be REFITTED with a state dropped -- a jackknife over
+    #: a frozen parameter is not a jackknife, and the constant's +2.19 is one fold
+    #: wide. See `constant_gain` and `constant_jackknife`.
+    truths: tuple[float, ...] = ()
+    #: THE MAIL/IN-PERSON MIX, scored as a specification rather than bounded:
+    #: `prediction = method_delta x g`, with the channel gap `g` fitted on every
+    #: OTHER state. The only within-county dimension defined in all thirteen
+    #: folds. REPORTED, NEVER A FILTER: it does not enter `gain`.
+    method_gap: float | None = None
+    method_mean_abs_error: float | None = None
+    #: The no-change null OVER THE DAYS THE MIX CAN BE READ ON, for the same
+    #: reason `cell_null_mean_abs_error` exists: a dimension must be scored
+    #: against the null on its own support or the number prices the day
+    #: selection. Today the two sets coincide in every fold.
+    method_null_mean_abs_error: float | None = None
+    method_days: int = 0
     #: THE COUNTY x METHOD CELL MIX, scored the same way `mix_only` is: as a
     #: predictor of the measured registration change, in the truth's own unit,
     #: with nothing fitted. `cell_county_mean_abs_error` is the LIKE-FOR-LIKE
@@ -1810,6 +1874,14 @@ class Validation:
         return self.null_mean_abs_error - self.cycle_constant_mean_abs_error
 
     @property
+    def method_gain(self) -> float | None:
+        """What the mail/in-person mix buys, given a gap fitted elsewhere."""
+        if (self.method_mean_abs_error is None
+                or self.method_null_mean_abs_error is None):
+            return None
+        return self.method_null_mean_abs_error - self.method_mean_abs_error
+
+    @property
     def scaled_gain(self) -> float | None:
         if self.scaled_mean_abs_error is None:
             return None
@@ -1849,6 +1921,34 @@ def score_panel(
     days and Kentucky 3, and pooling them by day would score Maine and call it a
     method. `estimate.fit_mail_selection` makes the same choice for the same
     reason.
+
+    ⚠️ AND THERE IS NO MINIMUM DAY COUNT, WHICH WAS MEASURED RATHER THAN ASSUMED.
+    Four of the thirteen folds rest on a SINGLE matched day -- OK 2022, OK 2024,
+    LA 2024 and OR 2024 -- against Maine's 21 and Pennsylvania's 23, and each of
+    them counts once in every mean `format_validation` prints. A floor was swept
+    and it is not adopted, for three reasons and one measurement:
+
+      1. THERE IS NO DEFECT IN THE DAY. The maturity gate refuses a day that is a
+         sliver of an electorate. All four single-day folds are day-0 pairs --
+         a finished early electorate against a finished early electorate, 100% of
+         the reference curve on both sides -- so they are the MOST mature days in
+         the panel, not the least. A day count is a fact about how much archive a
+         state happens to publish, not about the day being compared.
+      2. IT IS NOT THE SAME KIND OF RULE AS THE MATURITY GATE. `is_comparable` is
+         a predicate on the two days in front of it and is computable live, so
+         `build` and `score_panel` can apply the identical test. A day count is a
+         predicate on how many OTHER days exist, so on a running cycle a row
+         would be refused today and admitted next week -- a retroactive
+         publication rule, which is worse than either answer it can give.
+      3. IT DECIDES NOTHING. Swept at floors of 1 to 11 days the headline gain is
+         -0.03, -0.55, -0.55, -0.55, -0.60, -0.60, -0.45 and -0.59: the county
+         term never gets within four tenths of MIN_GAIN at any floor.
+
+    The one number a floor DOES move is the leave-one-cycle-out constant, from
+    +2.19 to -3.43, because OK 2022 is one of the panel's only two
+    2022-transition folds -- and that is precisely the reason not to adopt it. A
+    rule worth adopting only for the answer it produces is not a rule, and the
+    constant is refused on its own jackknife instead; see `fit_constant`.
     """
     out_dir = Path(out_dir)
     wanted = {s.upper() for s in states} if states else None
@@ -1899,6 +1999,8 @@ def score_panel(
                     None if now_cells is None or ref_cells is None
                     else nested_split(now_cells, ref_cells, county_of_cell)
                 )
+                mail_now = method_mix(now.state_rows.get(dte))
+                mail_ref = method_mix(reference.state_rows.get(ref_dte))
                 panel[(cycle, state)].append(ScoredDay(
                     cycle=cycle, state=state, days_to_election=dte,
                     shift=here[0] - there[0],
@@ -1912,6 +2014,10 @@ def score_panel(
                     cell_county=None if cells is None else cells[0],
                     cell_method=None if cells is None else cells[1],
                     cell_inside=None if cells is None else cells[2],
+                    method_delta=(
+                        None if mail_now is None or mail_ref is None
+                        else (mail_now - mail_ref) * 100.0
+                    ),
                 ))
     for series_days in panel.values():
         series_days.sort(key=lambda d: -d.days_to_election)
@@ -1929,20 +2035,24 @@ def within_reach(days: Sequence[ScoredDay]) -> bool:
     it is `reach_bound`, which is not a choice but the dimension's own arithmetic
     limit given the county mix change that actually happened.
 
-    ⚠️ AND THE ANSWER, ON THE PUBLISHED TREE, IS "NO" ON SIX OF THE EIGHT. FL 4.94
-    against a bound of 3.76, KY 13.22 against 8.57, MD 6.28 against 6.17, ME 13.99
-    against 1.68, NC 11.42 against 5.48, PA 2024 27.64 against 4.57. That is the
-    finding in a stronger form than the MAE ever managed: PA 2024 is not an
-    outlier this method happened to miss, it is the extreme of a limit that binds
-    wherever there was much to see.
+    ⚠️ AND THE ANSWER, ON THE PUBLISHED TREE, IS "NO" ON NINE OF THE THIRTEEN.
+    OK 2022 10.62 against a bound of 5.02, FL 4.94 against 3.76, IA 23.12 against
+    4.15, KY 13.22 against 8.57, MD 6.28 against 6.17, ME 13.99 against 1.68,
+    NC 11.42 against 5.48, OK 2024 18.89 against 7.97, PA 2024 27.64 against 4.57.
+    That is the finding in a stronger form than the MAE ever managed: PA 2024 is
+    not an outlier this method happened to miss, it is the extreme of a limit that
+    binds wherever there was much to see.
 
     ⚠️ AND WHERE IT DOES NOT BIND, THE MODEL STILL FAILS -- WHICH IS WHY THIS
-    PREDICATE IS NOT A COMPETENCE TEST. Colorado is inside its bound because its
-    registration moved 1.98 points; nothing happened there. PA 2022 is inside its
-    bound with 5.57 points against 6.28, so the county mix had room to report it,
-    and the model reported -3.11: wrong by 8.68, pointing the opposite way, sign
-    agreement 7%, gain -4.73, the worst fold in the panel. A dimension being ABLE
-    to say something is not the same as it saying it.
+    PREDICATE IS NOT A COMPETENCE TEST. Colorado and Oregon are inside their bounds
+    because their registration moved 1.98 and 0.82 points; nothing happened there.
+    PA 2022 is inside its bound with 5.57 points against 6.28, so the county mix
+    had room to report it, and the model reported -3.11: wrong by 8.68, pointing
+    the opposite way, sign agreement 7%, gain -4.73, the worst fold in the panel.
+    LA 2024 is the second such case, added 2026-09-08: 9.79 points against a bound
+    of 10.26, on the widest county-margin span in the panel, and the model reported
+    +0.50 -- the wrong sign again. A dimension being ABLE to say something is not
+    the same as it saying it, and there are two demonstrations of that now.
 
     ⚠️ SO THIS PREDICATE IS REPORTED AND IS NEVER A FILTER, WHICH IS WHERE IT
     PARTS COMPANY WITH `estimate.within_reach`. There, an out-of-reach series is
@@ -1977,8 +2087,8 @@ def fit_scale(series: Iterable[Sequence[ScoredDay]]) -> float | None:
     small: fitted leave-one-state-out on the seven-fold panel, an intercept ALONE
     -- "every state's early electorate moved by whatever the other states'
     registration moved" -- scores 6.75 against the null's 10.24, a gain of
-    +3.49 pp, three and a half times the bar this feature is held to. Adding
-    `shift` on top of it buys a further +0.29.
+    +3.49 pp, three and a half times the bar this feature is held to (+3.42 on
+    the thirteen-fold panel). Adding `shift` on top of it buys a further +0.29.
 
     The honest reason to refuse the intercept was a different and better one: the
     panel contained exactly ONE cycle transition. All seven folds were
@@ -1991,14 +2101,30 @@ def fit_scale(series: Iterable[Sequence[ScoredDay]]) -> float | None:
 
     ⚠️ THAT WAS AN ARGUMENT UNTIL 2026-09-07 AND IT IS NOW A MEASUREMENT, BECAUSE
     PENNSYLVANIA'S 2020 CURVE GAVE THE PANEL A SECOND TRANSITION. Held out on a
-    cycle rather than a state, the +3.49 becomes -3.35, and -10.14 on the fold the
-    constant was not fitted on. The two transitions point opposite ways. See
-    `fit_constant`, which exists to keep that measurement in the code.
+    cycle rather than a state, the +3.49 became -3.35 on the eight-fold panel --
+    and +2.19 on the thirteen-fold one, once Oklahoma's 2020 snapshot made the
+    2022 transition two folds wide and flipped the fitted constant's sign. The
+    refusal now rests on `constant_jackknife` (-2.96 without Oklahoma, +4.47
+    without Pennsylvania) rather than on the holdout itself. See `fit_constant`,
+    which exists to keep that measurement in the code.
 
     Colorado made the fragility visible before that, the moment it arrived: the
     constant scored +5.31 on the six folds that preceded it and costs -7.28 points
     on Colorado alone, because Colorado is a state whose composition did not move
-    and the constant insists that it did.
+    and the constant insists that it did. Oregon is the same case on the
+    thirteen-fold panel and costs -10.98.
+
+    ⚠️ AND ON THE THIRTEEN-FOLD PANEL THIS FUNCTION'S OWN NUMBER MOVED, IN A WAY
+    WORTH RECORDING RATHER THAN BURYING. Every leave-one-state-out multiplier is
+    POSITIVE for the first time since the maturity gate -- the sign half of the
+    argument has now been wrong in both directions three times and is not evidence
+    -- and THREE folds (IA +1.07, ME +1.31, NC +1.64) clear MIN_GAIN individually
+    under a scale fitted elsewhere, where none did before. MIN_GAIN is a bar for a
+    PANEL, so that is not a rescue, and the panel mean is -2.15. But it is -2.15
+    only with Pennsylvania in: refit with one state dropped it stays between -2.31
+    and -2.45 everywhere else and becomes +1.79 without PA. What has never flipped
+    is the magnitude: 0.099 without Oklahoma against 4.595 without Pennsylvania, a
+    forty-sixfold spread whose two ends are two states pulling opposite ways.
 
     Record it, do not ship it, and do not let it be mistaken for the county term
     working. Every predictor swept on this panel that beats the no-change null
@@ -2038,6 +2164,55 @@ def fit_cell_scale(series: Iterable[Sequence[ScoredDay]]) -> float | None:
     return numerator / denominator if denominator > 0 else None
 
 
+def fit_method_gap(series: Iterable[Sequence[ScoredDay]]) -> float | None:
+    """The channel gap `g` minimising Σ (truth - g·method_delta)², series-weighted.
+
+    `fit_scale` for the mail/in-person dimension. The predictor is the signed
+    change in mail's share and the fitted parameter is the mail-minus-in-person
+    REGISTRATION margin gap the change would have to be worth -- so unlike
+    `fit_scale` there is no unit to fix here, and unlike `fit_cell_scale` there
+    is no crosstab needed: `method_delta` is defined on every fold in the panel.
+    It is the only within-county specification with that property, which is why
+    it is scored rather than merely bounded.
+
+    ⚠️ AND ITS NUMBER MOVED ON 2026-09-08, WHICH IS WHY IT IS IN THE CODE NOW
+    RATHER THAN IN A SWEEP IN THE DOCUMENT. On the eight-fold panel this scored
+    -1.52 and `required_span` refused it before any arithmetic: only Florida's
+    28-point requirement was inside the 18-to-42-point channel gap this repo can
+    observe. Oklahoma's 2020 curve made OK 2022 a fold whose mail share fell from
+    63.2% to 35.1% -- the pandemic mail surge unwinding, on two day-0 snapshots,
+    so it is NOT the ±3-day calendar artefact that produces Kentucky's -15.42 --
+    and its required span is 38, inside the observable range. Two of thirteen
+    folds are now reachable by this dimension where one of nine was.
+
+    Scored leave-one-state-out on the thirteen-fold panel it buys +0.42, up from
+    -1.52 and still under MIN_GAIN; pinned at an exogenous 28-point gap -- the
+    midpoint of what the crosstab actually measures -- it buys +1.29, which drops
+    to +0.60 the moment Oklahoma is dropped. Five folds contribute exactly 0.00
+    because their mail share is frozen (PA has no in-person channel, IA and OR
+    report one mail figure, MD's mail file is a corrupt zip), and the fitted gap
+    still cannot agree with itself: leave-one-state-out it runs 20.2 to 56.6, and
+    each fold's own best gap runs 0.1 (KY) to 572.0 (NC).
+
+    Record it, do not ship it. See docs/counterfactual.md.
+
+    The number it returns is a SPAN IN REGISTRATION POINTS -- the same unit
+    `required_span` names and the same unit the 18-to-42-point channel gaps this
+    repo can observe are in -- so `prediction = g * method_delta / 100`.
+    """
+    numerator = denominator = 0.0
+    for one in series:
+        days = [d for d in one if d.method_delta is not None]
+        if not days:
+            continue
+        weight = 1.0 / len(days)
+        for day in days:
+            share = day.method_delta / 100.0
+            numerator += weight * share * day.truth
+            denominator += weight * share * share
+    return numerator / denominator if denominator > 0 else None
+
+
 def fit_constant(series: Iterable[Sequence[ScoredDay]]) -> float | None:
     """The intercept `fit_scale` refuses: the series-weighted mean measured change.
 
@@ -2051,22 +2226,45 @@ def fit_constant(series: Iterable[Sequence[ScoredDay]]) -> float | None:
     panel -- and the objection recorded against it was that the panel held exactly
     one cycle transition, so leave-one-state-out never held the transition out and
     the constant was fitted on the very thing it would be tested on. That was an
-    argument. Pennsylvania's 2020 backfill turned it into a test:
+    argument. Pennsylvania's 2020 backfill turned it into a test, and on the
+    eight-fold panel the answer was -3.35: the two transitions pointed opposite
+    ways, so a constant learned from one was worse than useless on the other.
 
-        constant fitted on the 2024-vs-2022 transition (7 states)   -10.22 pp
-        constant fitted on the 2022-vs-2020 transition (PA)          +2.40 pp
-        the first, held out on the second   MAE 12.62 vs null 2.48   -10.14 pp
-        the second, held out on the first   MAE 12.62 vs null 10.24   -2.38 pp
+    ⚠️ ON 2026-09-08 OKLAHOMA'S 2020 CURVE GAVE THE PANEL A SECOND
+    2022-TRANSITION FOLD AND THE HELD-OUT NUMBER TURNED POSITIVE: -3.35 becomes
+    **+2.19**, over MIN_GAIN. IT DOES NOT SURVIVE, AND `constant_jackknife` IS
+    WHERE THAT IS MEASURED RATHER THAN ARGUED.
 
-    THE TWO TRANSITIONS POINT OPPOSITE WAYS. What the constant learns from
-    2022 -> 2024 is that Republicans came back to a mail channel they had
-    boycotted; what 2020 -> 2022 says is that they left it. A constant is a claim
-    that the same move happens every cycle, and the first time this panel was able
-    to check that claim it was wrong by ten points against a null of two and a
-    half. Leave-one-state-out was flattering it, exactly as suspected.
+    Two facts decide it, and the second is the one that settles it.
+
+    1. THE CONSTANT THE ELEVEN 2024 FOLDS ARE SCORED WITH IS THE MEAN OF TWO
+       NUMBERS, AND ONE OF THEM IS A SINGLE MATCHED DAY. The panel holds eleven
+       2024-vs-2022 folds and TWO 2022-vs-2020 ones, so "leave one cycle out"
+       means predicting eleven folds from two and two from eleven. The two
+       disagree violently -- OK 2022 gains +10.08 and PA 2022 loses -11.08, 21
+       points apart -- and their mean, -4.11, is what every 2024 fold is scored
+       against. Without Oklahoma that constant is PA 2022's +2.40 alone, it has
+       the wrong sign for ten of the eleven, and the panel returns to -2.96.
+       Drop Pennsylvania instead and it goes to +4.47. One fold either way, an
+       eight-point swing: `constant_jackknife` reports both.
+
+    2. NINE OF THE THIRTEEN GAINS ARE EXACTLY ±|c|, WHICH MEANS THE SCORE IS A
+       SIGN COUNT AND NOT A FIT. Mean absolute error rewards ANY step taken in
+       the right direction, so a fold whose truth lies beyond the constant in the
+       same direction banks exactly |c| whatever its size -- FL, IA, LA, MD, ME,
+       NC, OK 2024 and PA 2024 all score precisely +4.107, and OR, whose
+       registration moved the other way, precisely -4.107. Only CO (+0.18) and KY
+       (+0.51) straddle the constant and therefore say anything about its
+       magnitude. "Both transitions happened to average negative" is one
+       observation with n = 2 transitions, not evidence that a constant works.
+
+    What the constant learns from 2022 -> 2024 is that Republicans came back to a
+    mail channel they had boycotted; what 2020 -> 2022 says is that they left it.
+    A constant is a claim that the same move happens every cycle. This panel can
+    now check that claim twice, and the two checks are 21 points apart.
 
     Record it, do not ship it, and do not let it be mistaken for the county term
-    working. See `fit_scale` and docs/counterfactual.md.
+    working. See `fit_scale`, `constant_jackknife` and docs/counterfactual.md.
     """
     numerator = denominator = 0.0
     for one in series:
@@ -2077,6 +2275,75 @@ def fit_constant(series: Iterable[Sequence[ScoredDay]]) -> float | None:
             numerator += weight * day.truth
             denominator += weight
     return numerator / denominator if denominator > 0 else None
+
+
+def constant_gain(
+    results: Sequence[Validation],
+    *,
+    drop_state: str | None = None,
+    by_transition: bool = False,
+) -> float | None:
+    """Refit the leave-one-CYCLE-out constant over a panel and score it.
+
+    `validate` already reports this per fold; this recomputes it from scratch so
+    the panel can be JACKKNIFED, which is what `MIN_GAIN` being cleared obliges.
+    Everything it needs is `Validation.truths`, so it works on a hand-built panel
+    as well as on the published tree.
+
+    `by_transition=True` weights each cycle transition equally instead of each
+    fold. On the thirteen-fold panel eleven folds are the 2024 transition and two
+    are the 2022 one, so a mean over folds is eleven parts one transition to two
+    parts the other; the transition-weighted number is the one that asks "does a
+    constant carry ACROSS transitions", which is the question. It is +2.19 by
+    fold and +1.09 by transition, and both collapse under `constant_jackknife`.
+    """
+    kept = [r for r in results
+            if r.truths and (drop_state is None or r.state != drop_state)]
+    means = {(r.cycle, r.state): sum(r.truths) / len(r.truths) for r in kept}
+    scored: list[tuple[int, float]] = []
+    for r in kept:
+        others = [m for key, m in means.items() if key[0] != r.cycle]
+        if not others:
+            continue
+        constant = sum(others) / len(others)
+        n = len(r.truths)
+        null = sum(abs(t) for t in r.truths) / n
+        mae = sum(abs(constant - t) for t in r.truths) / n
+        scored.append((r.cycle, null - mae))
+    if not scored:
+        return None
+    if not by_transition:
+        return sum(g for _, g in scored) / len(scored)
+    per: dict[int, list[float]] = defaultdict(list)
+    for cycle, gain in scored:
+        per[cycle].append(gain)
+    return sum(sum(v) / len(v) for v in per.values()) / len(per)
+
+
+def constant_jackknife(
+    results: Sequence[Validation], *, by_transition: bool = False
+) -> list[tuple[str, float]]:
+    """`constant_gain` with one STATE dropped, for every state in the panel.
+
+    ⚠️ THE MEASUREMENT THAT REFUSES THE CONSTANT ON THE THIRTEEN-FOLD PANEL, and
+    the reason `fit_constant`'s docstring is as long as it is. Held out on a
+    cycle the constant scores +2.19, over MIN_GAIN and the strongest thing this
+    panel has ever produced. Jackknifed it runs from -2.96 without Oklahoma to
+    +4.47 without Pennsylvania -- an eight-point range on a panel whose whole
+    second transition is two folds, one of which is a single matched day.
+
+    A state whose removal leaves one cycle transition is reported as "not
+    computable" by omission: `constant_gain` returns None there, because the
+    holdout no longer exists. That is not a missing number, it is the original
+    objection reappearing.
+    """
+    states = sorted({r.state for r in results if r.truths})
+    out: list[tuple[str, float]] = []
+    for state in states:
+        gain = constant_gain(results, drop_state=state, by_transition=by_transition)
+        if gain is not None:
+            out.append((state, gain))
+    return sorted(out, key=lambda pair: pair[1])
 
 
 def _correlation(xs: Sequence[float], ys: Sequence[float]) -> float | None:
@@ -2127,6 +2394,11 @@ def validate(
         # The county x METHOD panel, and the scale fitted WITHOUT this state.
         cells = [d for d in days if d.cell_only is not None]
         cell_scale = fit_cell_scale(others) if others and cells else None
+        # The mail/in-person mix, with its channel gap fitted WITHOUT this state.
+        # Unlike the crosstab this is defined in every fold, so it is the one
+        # within-county dimension that can be scored over the whole panel.
+        mixes = [d for d in days if d.method_delta is not None]
+        method_gap = fit_method_gap(others) if others and mixes else None
         results.append(Validation(
             cycle=cycle, state=state, days=n,
             final_shift=last.shift, final_truth=last.truth,
@@ -2161,6 +2433,18 @@ def validate(
             cycle_constant_mean_abs_error=(
                 None if constant is None
                 else sum(abs(constant - d.truth) for d in days) / n
+            ),
+            truths=tuple(truths),
+            method_gap=method_gap,
+            method_days=len(mixes),
+            method_null_mean_abs_error=(
+                None if not mixes
+                else sum(abs(d.truth) for d in mixes) / len(mixes)
+            ),
+            method_mean_abs_error=(
+                None if method_gap is None or not mixes
+                else sum(abs(method_gap * d.method_delta / 100.0 - d.truth)
+                         for d in mixes) / len(mixes)
             ),
             final_cell_only=last.cell_only,
             final_cell_county=last.cell_county,
@@ -2271,6 +2555,22 @@ def format_validation(results: Sequence[Validation]) -> Iterator[str]:
     yield (f"county geography moves {sum(r.mean_abs_shift for r in results) / n:.2f} pp "
            f"while the composition it stands in for moves "
            f"{sum(r.mean_abs_truth for r in results) / n:.2f} pp")
+    # ⚠️ THE SERIES IS THE UNIT AND SOME SERIES ARE ONE DAY LONG. Reported so a
+    # reader can see it, and NOT a filter: see `score_panel` for the sweep that
+    # says a minimum day count changes no verdict here and would change one
+    # number, which is the reason not to have one.
+    thin = [r for r in results if r.days == 1]
+    if thin:
+        pooled = sum(r.mean_abs_error * r.days for r in results) / sum(
+            r.days for r in results)
+        pooled_null = sum(r.null_mean_abs_error * r.days for r in results) / sum(
+            r.days for r in results)
+        yield (f"{len(thin)} of {len(results)} folds rest on a SINGLE matched day "
+               + "(" + ", ".join(_fold(r) for r in thin) + ") against a longest of "
+               + f"{max(r.days for r in results)}; every mean above weights them "
+               + f"equally. Pooled by DAY instead: gain "
+               + f"{pooled_null - pooled:+.2f} pp over "
+               + f"{sum(r.days for r in results)} days")
 
     # ⚠️ INSIDE COUNTIES. `mix_split` splits the MEASURED change into the part the
     # county mix moved and the part that happened between voters of the same
@@ -2361,12 +2661,50 @@ def format_validation(results: Sequence[Validation]) -> Iterator[str]:
                + ", ".join(f"{_fold(r)} c={r.cycle_constant:+.2f} "
                            f"gain {r.cycle_constant_gain:+.2f}" for r in held)
                + f"   mean gain {sum(r.cycle_constant_gain for r in held) / len(held):+.2f}"
-                 " pp -- a constant fitted leave-one-STATE-out scores +3.49, and"
-                 " this is what it is worth once a TRANSITION is held out")
+                 " pp -- a constant fitted leave-one-STATE-out scores +3.42 on this"
+                 " panel, and this is what it is worth once a TRANSITION is held"
+                 " out. OVER MIN_GAIN SINCE 2026-09-08, SO READ THE JACKKNIFE")
+        # ⚠️ AND WHEN THAT NUMBER CLEARS MIN_GAIN IT GETS JACKKNIFED, which is the
+        # rule this repo applies to every candidate: a +1.59 became +0.27 without
+        # one state. The constant's holdout is two folds wide on one side and
+        # eleven on the other, so the per-transition mean and the drop-one-state
+        # refit are both printed rather than left to the reader.
+        per_cycle: dict[int, list[float]] = defaultdict(list)
+        for r in held:
+            per_cycle[r.cycle].append(r.cycle_constant_gain)
+        yield ("   by transition: "
+               + ", ".join(
+                   f"{cycle} n={len(v)} mean {sum(v) / len(v):+.2f}"
+                   + (f" spread {max(v) - min(v):.2f}" if len(v) > 1 else "")
+                   for cycle, v in sorted(per_cycle.items()))
+               + (f"   transition-weighted mean "
+                  f"{constant_gain(results, by_transition=True):+.2f} pp"
+                  if constant_gain(results, by_transition=True) is not None else ""))
+        jack = constant_jackknife(results)
+        if jack:
+            yield ("   jackknife (drop one state, constant refitted): "
+                   + ", ".join(f"without {s} {g:+.2f}" for s, g in jack))
     else:
         yield ("leave-one-CYCLE-out constant: not computable -- every fold in this "
                "panel is the same cycle transition, so a fitted constant would be "
                "scored on the transition it was learned from")
+
+    # ⚠️ THE MAIL/IN-PERSON MIX, scored rather than bounded. `required_span` used
+    # to refuse this dimension outright -- only Florida's requirement was inside
+    # a channel gap this repo has ever observed -- and OK 2022 is inside it too,
+    # so the refusal has to be a measurement now. REPORTED, NEVER A FILTER.
+    methoded = [r for r in results if r.method_gain is not None]
+    if methoded:
+        moving = [r for r in methoded if abs(r.method_gain) > 1e-9]
+        yield ("method mix x a channel gap fitted leave-one-state-out "
+               f"({len(methoded)} of {len(results)} folds, {len(moving)} whose mix "
+               "moves at all): "
+               + ", ".join(f"{_fold(r)} gap={r.method_gap:+.1f}pp "
+                           f"{r.method_gain:+.2f}" for r in methoded)
+               + f"   mean gain "
+               + f"{sum(r.method_gain for r in methoded) / len(methoded):+.2f} pp"
+               + (f", {sum(r.method_gain for r in moving) / len(moving):+.2f} pp "
+                  "over the folds whose mix moves" if moving else ""))
     yield ""
     yield (f"VERDICT: {'SHIPS' if gain >= MIN_GAIN else 'NOTHING SHIPS'} "
            f"(bar is {MIN_GAIN:+.2f} pp of gain over the no-change null; "
