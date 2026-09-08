@@ -53,6 +53,7 @@ Four things drive the code below.
 
 from __future__ import annotations
 
+import json
 import logging
 import re
 from datetime import date, datetime
@@ -65,12 +66,25 @@ from .base import Adapter, FetchResult, NotYetPublished, SchemaDrift, SourceErro
 log = logging.getLogger(__name__)
 
 #: VERIFIED on this network 2026-09-06: this URL returns the live 2026 page,
-#: 117,370 bytes, carrying the June primary's and the July run-off's tables. The
-#: same path for 2022 and 2024 redirects to sdsos.gov/404.aspx (with HTTP 200),
-#: so there is no archive to backfill and `fetch_history` correctly finds none.
+#: 117,370 bytes, carrying the June primary's and the July run-off's tables.
 BASE = "https://sdsos.gov"
 PAGE = (BASE + "/elections-voting/upcoming-elections/general-information/"
         "{cycle}%20Election%20Information/{cycle}-Election-Absentee-Data.aspx")
+
+#: ⚠️ CORRECTION, MEASURED 2026-09-08. This module used to record that "the same
+#: path for 2022 and 2024 redirects to sdsos.gov/404.aspx (with HTTP 200), so
+#: there is no archive to backfill and `fetch_history` correctly finds none."
+#: The first half is true and the conclusion does not follow: PAST cycles were
+#: never published at the 2026 path. They lived at a DIFFERENT one --
+#: `.../general-information/{cycle}/{cycle}-General-Election-Absentee-Numbers.aspx`
+#: -- which the Wayback Machine holds, and which `parse` reads unchanged.
+#:
+#: The live host really does serve nothing: both cycles' URLs answer 200 with
+#: the same 67,597-byte soft-404 page (verified 2026-09-08, plain `requests`,
+#: no tables on it), which is why the archive is the only route. Reading it
+#: there is the same route `fl.py`, `de.py`, `or.py` and `wa.py` take.
+ARCHIVED_PAGE = (BASE + "/elections-voting/upcoming-elections/general-information/"
+                 "{cycle}/{cycle}-General-Election-Absentee-Numbers.aspx")
 
 #: The bold heading above a section's date table. UNVERIFIED for the general:
 #: the two sections on the page today read "South Dakota 2026 Primary Election
@@ -153,6 +167,22 @@ def _stamp(raw: str) -> date:
         except ValueError:
             continue
     raise SchemaDrift(f"SD: {raw!r} is not a report date")
+
+
+#: The Wayback timestamp, `YYYYMMDDhhmmss`.
+_WAYBACK_STAMP = re.compile(r"^(\d{4})(\d{2})(\d{2})\d{6}$")
+
+
+def _stamp_day(stamp: str) -> date:
+    """The date a capture was TAKEN, which is that capture's own as-of."""
+    m = _WAYBACK_STAMP.match(str(stamp).strip())
+    if m is None:
+        raise SourceError(f"SD: {stamp!r} is not a Wayback timestamp")
+    year, month, day = (int(g) for g in m.groups())
+    try:
+        return date(year, month, day)
+    except ValueError as exc:
+        raise SourceError(f"SD: {stamp!r} is not a Wayback timestamp") from exc
 
 
 def _rows(table: str) -> list[list[str]]:
@@ -294,6 +324,73 @@ def parse(body: bytes, cycle: int, as_of: date) -> FetchResult:
     return result
 
 
+# --------------------------------------------------------------------------
+# The archived series. See the note on ARCHIVED_PAGE.
+# --------------------------------------------------------------------------
+CDX_URL = "http://web.archive.org/cdx/search/cdx"
+
+WAYBACK_SNAPSHOT = "https://web.archive.org/web/{stamp}id_/{url}"
+
+#: web.archive.org is slower and less tolerant than a state host.
+ARCHIVE_MIN_INTERVAL = 1.0
+
+MAX_ARCHIVE_PROBES = 60
+
+#: Cycles whose archived page this module will read, and it is deliberately NOT
+#: "every cycle the Archive holds".
+#:
+#: **2024 is in, and it is clean.** Six distinct captures (measured 2026-09-08),
+#: of which `20241106004829` -- taken the day after the election -- carries the
+#: complete weekly series, 2024-09-20 through 2024-11-01, in EXACTLY the
+#: vocabulary this parser already knows: `Date | Ballots Sent | Ballots Received
+#: | Walk-in Voters | UOCAVA`, with a `Party Breakout ... as of 11/1/2024`.
+#:
+#: **2022 is OUT, and the reason is rule 3 rather than reachability.** Its page
+#: is archived and fetches fine, and it is a DIFFERENT report in two ways that
+#: this parser would have to be taught rather than allowed to guess at:
+#:
+#:   * its date table's fifth column is headed `Military`, not `UOCAVA`, and its
+#:     party table is headed `Party | Ballots Mailed | Mail Ballots Received |
+#:     In-Person Voting | UOCAVA` rather than the four labels above. Those party
+#:     columns DO reconcile to the date table exactly (25,373+11,189+229+4,455+
+#:     115+45,706 = 87,067 sent; the received column sums to 81,142 and the
+#:     in-person one to 62,105, all three matching the 11/4/22 row), so the
+#:     mapping is knowable -- it is simply not yet written or fixture-tested.
+#:   * the page carries a row South Dakota itself disowns: a bare line reading
+#:     "Incorrect numbers reported for 10/7/2022" sits between the 10/7 row
+#:     (36,448 sent / 35,241 received) and a 10/12 row that is LOWER on every
+#:     measure (28,883 / 18,615). Publishing the 10/7 row would put a spike in a
+#:     cumulative series that the source has explicitly retracted, and nothing
+#:     in this parser currently reads that note.
+#:
+#: So 2022 wants measuring and fixture-testing the way this cycle's vocabulary
+#: was, not a mapping invented under time pressure. Recorded here rather than
+#: silently omitted.
+ARCHIVED_CYCLES = (2024,)
+
+
+def archive_stamps(cycle: int) -> list[str]:
+    """Wayback timestamps of every distinct version of a past cycle's page."""
+    url = ARCHIVED_PAGE.format(cycle=cycle)
+    query = {
+        "url": url, "output": "json", "fl": "timestamp,statuscode,digest",
+        "filter": "statuscode:200", "collapse": "digest",
+        "limit": str(MAX_ARCHIVE_PROBES),
+    }
+    try:
+        body = get(CDX_URL, state="SD", filename=f"cdx-absentee-{cycle}.json",
+                   params=query, min_bytes=2, min_interval=ARCHIVE_MIN_INTERVAL)
+    except Missing:
+        # The CDX API answers "nothing archived" with an EMPTY body, which
+        # _net.get reports as Missing. That is absence, not a fault.
+        return []
+    try:
+        rows = json.loads(body.decode("utf-8", errors="replace"))
+    except ValueError as exc:
+        raise SourceError(f"SD: the Wayback CDX index was not JSON: {exc}") from exc
+    return sorted(str(row[0]) for row in rows[1:])
+
+
 class SDScraper(Adapter):
     """Tier 1 for South Dakota: the SoS's absentee statistics page (statewide)."""
 
@@ -313,3 +410,66 @@ class SDScraper(Adapter):
         # which is exactly what NotYetPublished means here. `parse` rejects a
         # body with no <table> in it, which is the check that matters.
         return parse(body, cycle, as_of)
+
+    def fetch_history(self, cycle: int) -> FetchResult:
+        """A past cycle's weekly series, from the Internet Archive.
+
+        STATEWIDE ONLY, exactly as the live path is -- South Dakota publishes no
+        county breakdown of absentee voting in any cycle, so `county_rows` is
+        empty here too. See the module docstring.
+
+        ⚠️ GUARD PARITY WITH `fetch`. Every capture goes through the SAME
+        `parse`, so the heading gate that refuses a primary or a run-off, the
+        two header checks and the party-label check all run here as they do
+        live. The only difference is the `as_of`, and it is the CAPTURE'S OWN
+        DATE, so the "not after the run date" filter keeps doing real work.
+
+        Which cycles are eligible is a deliberate list, not "whatever is
+        archived" -- see ARCHIVED_CYCLES for why 2022's page is left alone.
+        """
+        if int(cycle) not in ARCHIVED_CYCLES:
+            raise NotYetPublished(
+                f"SD: {cycle} is not one of the archived cycles this module "
+                f"reads ({', '.join(str(c) for c in ARCHIVED_CYCLES)})"
+            )
+        url = ARCHIVED_PAGE.format(cycle=cycle)
+        by_day: dict[date, StateDay] = {}
+        drift: SchemaDrift | None = None
+        seen = 0
+        for stamp in archive_stamps(cycle):
+            try:
+                body = get(WAYBACK_SNAPSHOT.format(stamp=stamp, url=url),
+                           state="SD", filename=f"absentee-{cycle}-{stamp}.html",
+                           use_cache=True, min_bytes=2048,
+                           min_interval=ARCHIVE_MIN_INTERVAL)
+            except SourceError as exc:
+                log.debug("SD: archived capture %s unusable (%s)", stamp, exc)
+                continue
+            seen += 1
+            try:
+                captured = parse(body, cycle, _stamp_day(stamp))
+            except NotYetPublished as exc:
+                log.debug("SD: capture %s skipped (%s)", stamp, exc)
+                continue
+            except SchemaDrift as exc:
+                log.warning("SD: capture %s did not parse (%s)", stamp, exc)
+                drift = exc
+                continue
+            except SourceError as exc:
+                log.debug("SD: capture %s unreadable (%s)", stamp, exc)
+                continue
+            for row in captured.state_rows:
+                # A later capture of the same weekly date is the truer reading,
+                # and it is also the one that carries the party breakout.
+                existing = by_day.get(row.day)
+                if existing is None or row.party_rep is not None:
+                    by_day[row.day] = row
+
+        if not by_day:
+            if drift is not None:
+                raise drift
+            raise NotYetPublished(
+                f"SD: nothing archived for the {cycle} general ({seen} captures read)"
+            )
+        log.info("SD: %d archived weekly rows from %d captures", len(by_day), seen)
+        return FetchResult(state_rows=[by_day[d] for d in sorted(by_day)])

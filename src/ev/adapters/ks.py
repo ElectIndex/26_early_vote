@@ -26,9 +26,25 @@ the final day's `RETURNED + IN PERSON` (202,231 = 40,446 + 161,785 for the Augus
 -- it returns the same 202,231 against every date -- so it is NOT read per row;
 it was used once, live, to prove the arithmetic and is recorded here instead.
 
-**Statewide only.** There is no county, precinct or district column anywhere in
-the model, so `county_rows` is always empty -- which `base.py` is explicit is not
-an error, and which South Dakota and Alaska already do.
+**Statewide only, and that is the SOURCE's limit rather than this module's.**
+Re-verified live 2026-09-08 against the dataset itself, not just the visuals:
+
+    POST <cluster>/public/reports/conceptualschema
+         {"modelIds": [2023851], "userPreferredLocale": "en-US"}
+         X-PowerBI-ResourceKey: <key>            -> 200, 7,256 bytes
+
+returns the WHOLE model: one user table, `ADVANCE VOTE COUNTS 2026`, carrying
+DATE / SENT / RETURNED / IN PERSON ADVANCE and two measures, plus two date
+tables Power BI generates for itself. No county, precinct, district, city,
+party, age or race column exists anywhere in it, so `county_rows` is always
+empty -- which `base.py` is explicit is not an error, and which South Dakota and
+Alaska already do. That response is saved as
+`tests/fixtures/ks/powerbi_conceptualschema.json` and asserted there, so a
+county column appearing in Kansas's model would be noticed.
+
+(Correction to `docs/coverage-research.md`, which records this endpoint under
+`/public/reports/<key>/conceptualschema`: that keyed path answers **405** today.
+The key travels in the header; the path carries no key.)
 
 **No party breakdown.** Kansas DOES register voters by party (its own monthly
 `*-Voter-Registration-Numbers-by-County.xlsx` files split D/R/L/U by county), but

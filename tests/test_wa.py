@@ -14,6 +14,13 @@ to survive: a blank `Received Date`, a blank `Return Method`, `In Person`,
 `Email`, `Non-Standard Mail`, `Rejected`, a gender of `O`, and two rows with one
 more field than the header.
 
+Four more from the 2022 general, `BallotStatus2022-11-09_*.zip`, which is that
+cycle's whole report: Washington split it by county that year, so King is its
+own file, Snohomish sits with Spokane, Clark with Pierce, and the other 34
+counties share one. They are sampled the same way and carry the real 21-column
+2022 header -- one column WIDER than 2024's, which gained a `Sent Date` the
+parser does not read and must not care about.
+
 The columns the parser never reads and that name an individual voter -- Ballot
 ID, Voter ID, First/Last Name, Address, City, Zip, Precinct, Split and Return
 Location -- are replaced with a placeholder. Every column the parser DOES read
@@ -37,6 +44,12 @@ from ev.adapters.base import NotYetPublished, SchemaDrift, SourceError
 FIX = Path(__file__).parent / "fixtures" / "wa"
 FULL = (FIX / "Statewide2024-10-23.zip").read_bytes()      # 39 of 39 counties
 SHORT = (FIX / "Statewide2024-10-22.zip").read_bytes()     # 38 of 39 counties
+
+#: The 2022 general's report, in the four pieces Washington published it in.
+PARTS_2022 = [
+    (FIX / f"BallotStatus2022-11-09_{slug}.zip").read_bytes()
+    for slug in ("all_other_counties", "cr_pi", "ki", "sn_sp")
+]
 
 
 def rezip(source: bytes, transform) -> bytes:
@@ -312,21 +325,47 @@ def test_history_refuses_the_current_cycle():
 # --------------------------------------------------------------------------
 # The archived cycles
 # --------------------------------------------------------------------------
-def test_the_archive_pins_2024_and_deliberately_not_2022():
-    """One entry per cycle, because every ballot is dated and the last snapshot
-    of a cycle therefore contains every earlier day of it."""
-    assert set(wa.ARCHIVED) == {2024}
-    day, stamp = wa.ARCHIVED[2024]
+def test_the_archive_pins_one_day_per_cycle():
+    """One DAY per cycle, because every ballot is dated and the last usable
+    snapshot of a cycle therefore contains every earlier day of it. What varies
+    is how many FILES that day is."""
+    assert set(wa.ARCHIVED) == {2022, 2024}
+    day, parts = wa.ARCHIVED[2024]
     assert day == date(2024, 11, 19)
-    assert stamp.startswith("202411") and stamp.isdigit()
+    assert len(parts) == 1
+    url, filename = parts[0]
+    # `id_` for the SoS's ORIGINAL bytes -- these are zips, and a rewrite would
+    # corrupt one outright -- under the LIVE cache name.
+    assert "web.archive.org/web/20241120010214id_/" in url
+    assert filename == "Statewide2024-11-19.zip"
 
 
-def test_2022_is_refused_by_name_because_the_file_never_existed():
-    """Not a generic 'no archive' shrug: the CDX index holds no
-    Statewide2022-*.zip at all, and the refusal has to say which check was run
-    so nobody re-runs it."""
-    with pytest.raises(NotYetPublished, match=r"no `Statewide2022-\*\.zip`"):
-        wa.WAScraper().fetch_history(2022)
+def test_2022_is_four_live_files_on_the_unchallenged_host():
+    """⚠️ This cycle was written off as "does not exist, anywhere". It does: the
+    2024 URL scheme is not the 2022 one, and the three checks that produced that
+    verdict were all about the 2024 scheme. See the module docstring."""
+    day, parts = wa.ARCHIVED[2022]
+    assert day == date(2022, 11, 9)
+    assert len(parts) == 4
+    urls = [u for u, _ in parts]
+    # Live on `www2`, under `_assets/` -- NOT `current_election/`, which is what
+    # was swept, and NOT behind the Cloudflare wall on the landing page.
+    assert all(u.startswith("https://www2.sos.wa.gov/_assets/elections/research/")
+               for u in urls)
+    assert all("web.archive.org" not in u for u in urls)
+    assert [u.rsplit("%20", 1)[-1] for u in urls] == [
+        "counties.zip", "pi.zip", "ki.zip", "sp.zip"]
+    assert [f for _, f in parts] == [
+        "BallotStatus2022-11-09_all_other_counties.zip",
+        "BallotStatus2022-11-09_cr_pi.zip",
+        "BallotStatus2022-11-09_ki.zip",
+        "BallotStatus2022-11-09_sn_sp.zip",
+    ]
+
+
+def test_a_cycle_with_no_pinned_report_is_refused_by_name():
+    with pytest.raises(NotYetPublished, match="no pinned 2020 ballot status"):
+        wa.WAScraper().fetch_history(2020)
 
 
 def test_history_reads_the_pinned_capture_under_the_live_cache_name(monkeypatch):
@@ -368,5 +407,106 @@ def test_a_vanished_capture_is_absence_not_a_fallthrough(monkeypatch):
         raise Missing(f"WA: {url} returned 404")
 
     monkeypatch.setattr(wa, "get", gone)
-    with pytest.raises(NotYetPublished, match="archived 2024-11-19 snapshot is gone"):
+    with pytest.raises(NotYetPublished, match="Statewide2024-11-19.zip is gone"):
         wa.WAScraper().fetch_history(2024)
+
+
+# --------------------------------------------------------------------------
+# 2022: one report, four files
+# --------------------------------------------------------------------------
+def test_the_four_parts_are_read_as_one_report():
+    """Parsed separately they would be four partial statewide curves, each of
+    which looks exactly like a Washington total and is not one."""
+    result = wa.parse_parts(PARTS_2022, 2022, date(2022, 11, 8))
+    assert len({row.county_fips for row in result.county_rows}) == 39
+    assert len(result.county_rows) == 509
+    # A statewide row per day only because all 39 counties are present.
+    assert len(result.state_rows) == 19
+    assert result.state_rows[0].day == date(2022, 10, 3)
+    assert result.state_rows[-1].day == date(2022, 11, 8)
+
+
+def test_one_part_alone_publishes_counties_and_no_statewide_row():
+    """The coverage gate, on the shape that makes it matter most: King County
+    alone is a fifth of Washington and would look like a plausible total."""
+    result = wa.parse_parts([PARTS_2022[2]], 2022, date(2022, 11, 8))
+    assert {row.county_fips for row in result.county_rows} == {"53033"}
+    assert result.state_rows == []
+
+
+def test_the_2022_curve_is_cumulative_and_ends_on_election_day():
+    result = wa.parse_parts(PARTS_2022, 2022, date(2022, 11, 8))
+    totals = [row.ballots_total for row in result.state_rows]
+    assert totals == sorted(totals)
+    assert totals[-1] == 505
+    assert sum(row.ballots_new for row in result.state_rows) == 505
+    # `parse` trims at Election Day even though the file was pulled on the 9th:
+    # Washington counts ballots postmarked by Election Day for days afterwards.
+    assert max(row.day for row in result.county_rows) == date(2022, 11, 8)
+
+
+def test_the_2022_file_is_one_column_wider_and_that_is_fine():
+    """2022 carries a `Sent Date` the parser does not read. An EXTRA column is
+    not drift; a missing REQUIRED one is."""
+    import csv as _csv
+    archive = zipfile.ZipFile(io.BytesIO(PARTS_2022[1]))
+    header = next(_csv.reader(io.StringIO(
+        archive.read(archive.namelist()[0]).decode("utf-8-sig"))))
+    assert "Sent Date" in header
+    assert set(wa.REQUIRED) <= set(header)
+
+
+def test_the_2022_election_label_is_matched_the_same_way():
+    """Washington's double space, in a different year."""
+    assert wa.parse_election("General Nov  8 2022") == ("general", date(2022, 11, 8))
+    # ...and a 2022 file is not a 2024 one.
+    with pytest.raises(NotYetPublished, match="holds no ballots for the 2024 general"):
+        wa.parse_parts(PARTS_2022, 2024, date(2024, 11, 5))
+
+
+def test_washington_still_registers_nobody_by_party_in_2022():
+    result = wa.parse_parts(PARTS_2022, 2022, date(2022, 11, 8))
+    for row in result.state_rows + result.county_rows:
+        assert (row.party_dem, row.party_rep, row.party_oth, row.party_npa) == (
+            None,) * 4
+
+
+def test_a_part_read_twice_is_drift_not_a_doubled_county():
+    """⚠️ These tallies ADD. A part listed twice in `ARCHIVED` would silently
+    double a county's turnout, which is the one failure a split report can have
+    that a single file cannot."""
+    with pytest.raises(SchemaDrift, match="repeats counties already read"):
+        wa.parse_parts(PARTS_2022 + [PARTS_2022[2]], 2022, date(2022, 11, 8))
+
+
+def test_parts_from_different_days_are_drift():
+    """A mixed set is not one day's position."""
+    archive = zipfile.ZipFile(io.BytesIO(PARTS_2022[2]))
+    text = archive.read(archive.namelist()[0]).decode("utf-8")
+    out = io.BytesIO()
+    with zipfile.ZipFile(out, "w", zipfile.ZIP_DEFLATED) as z:
+        z.writestr("Ballot Status Report 2022-11-10 KI.csv", text)
+    with pytest.raises(SchemaDrift, match="parts of this report are dated"):
+        wa.parse_parts([PARTS_2022[0], out.getvalue()], 2022, date(2022, 11, 8))
+
+
+def test_fetch_history_2022_reads_every_part_and_asks_the_live_host(monkeypatch):
+    """⚠️ GUARD PARITY on the fetch side: both cycles go through the SAME
+    `parse_parts`, so a 2022 backfill cannot skip a check the daily job makes."""
+    asked: list[tuple[str, str]] = []
+    bodies = dict(zip(
+        ("all_other_counties", "cr_pi", "ki", "sn_sp"), PARTS_2022))
+
+    def fake_get(url, *, state, filename, **kwargs):
+        asked.append((url, filename))
+        assert kwargs["use_cache"] is True
+        return bodies[filename.removeprefix("BallotStatus2022-11-09_")
+                      .removesuffix(".zip")]
+
+    monkeypatch.setattr(wa, "get", fake_get)
+    result = wa.WAScraper().fetch_history(2022)
+    assert len(asked) == 4
+    assert all("www2.sos.wa.gov" in url for url, _ in asked)
+    assert len({row.county_fips for row in result.county_rows}) == 39
+    assert result.state_rows[-1].day == date(2022, 11, 8)
+    assert result.state_rows[-1].ballots_total == 505

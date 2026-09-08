@@ -1,0 +1,138 @@
+onnectlabs.com',
+
+  icon: 'https://app.communityconnectlabs.com/storage/orgs/123/media/4d4a/4d4af52a-fbc4-4300-ac6b-6ebee85bd64a.png',
+
+  welcomeMessage: 'Welcome to The Nevada Secretary of State chatbot, your trusted source for election information.\r\n\r\nPlease select a topic:',
+
+  welcomeMessageI18n: {
+    en: 'Welcome to The Nevada Secretary of State chatbot. Your trusted source for election information.\r\n\r\nPlease select a topic:',
+    es: 'Bienvenido al chatbot de la Secretaría de Estado de Nevada, su fuente confiable de información sobre las elecciones.\r\n\r\nSeleccione un tema.'
+  },
+
+  welcomeMessageQuickReplies: [
+    'Voting In Person',
+    'Mail Ballots',
+    'Voter Registration',
+    'Digital Voting Options (NVEASE)',
+    'Closed Primary',
+    'Something Else'
+  ],
+
+  welcomeMessageQuickRepliesI18n: {
+    en: [
+      'Voting In Person',
+      'Mail Ballots',
+      'Voter Registration',
+      'Digital Voting Options (NVEASE)',
+      'Closed Primary',
+      'Something Else'
+    ],
+    es: [
+      'Votación en Persona',
+      'Boletas por Correo',
+      'Registro de Votantes',
+      'Opciones de Votación Digital (NVEASE)',
+      'Elección Primaria Cerrada',
+      'Algo más'
+    ]
+  },
+
+  inputTextPlaceholder: 'Type your question',
+
+  inputTextPlaceholderI18n: {
+    en: 'Type your question',
+    es: 'Escriba su pregunta'
+  },
+
+  fabText: 'Elections Help',
+
+  botBubbleLabel: 'Assistant',
+  contactBubbleLabel: 'You',
+
+  theme: {
+    fabTextColor: '#FFFFFF',
+    fabBackgroundColor: '#003366',
+
+    widgetBackgroundColor: '#F5F5F5',
+
+    chatHeaderBackgroundColor: '#FFFFFF',
+    chatHeaderTextColor: '#003366',
+
+    footerButtonTextColor: '#003366',
+
+    automatedChatBackgroundColor: '#FFFFFF',
+    automatedChatTextColor: '#1a4d80',
+
+    userChatBackgroundColor: '#E0E0E0',
+    userChatTextColor: '#000000',
+
+    logoStyle: 'circle',
+
+    chatButtonHeight: 200,
+
+    sidePadding: 20,
+    bottomPadding: 20,
+    sideOfScreen: 'right',
+
+    googleFont: 'Open Sans',
+
+    width: '375px',
+    height: '500px'
+  },
+
+  meta: {
+    icon: {
+      width: 64,
+      height: 64
+    }
+  },
+
+  triggerKeyword: 'startover',
+
+  triggerKeywordI18n: {
+    en: 'ask',
+    es: 'pregunta'
+  },
+  showInputText: false
+}, 'ccl-web-surveyor');
+</script>
+    
+    <script>
+        try { manualRenderMobile(); } catch (err) {}
+    </script>
+    
+    
+    <script src="/Scripts/Components/ScriptsFEBundle.jsbnd?v=vZfHQ5HSoBnGokoGLwEHZr8m7-5LTf02MIOwPV-coiw1"></script>
+
+
+    <script>
+        $(function() {
+            var sitewrapper = $(".sitewrapper");
+            if (sitewrapper.length && !sitewrapper.hasClass("")) {
+                sitewrapper.addClass("");
+            }     
+            //VISPP-4466 - we get the cookie value and set the correct stylesheet path for pages without the Page Title widget.
+            var useDesignThemFontSizeCss = window.visionOptions.useDesignThemFontSizeCss;
+            var folderPath = useDesignThemFontSizeCss == true ? window.visionOptions.currentDesignFolderPath : window.visionOptions.mainFolderPath;
+            if (!folderPath)
+                folderPath = window.visionOptions.mainFolderPath;
+
+            var getFontSizeUrl = window.location.origin + window.visionOptions.virtualApplicationPath + "Shared/GetFontSizeCookie";
+            var fontSize = "x-small.css";
+            $.frontendAjax({
+                url: getFontSizeUrl,
+                type: 'GET',
+                success: function (data) {
+                    if (data && data.fontSizeCookie && data.fontSizeCookie != "") {
+                        fontSize = data.fontSizeCookie;
+                    }
+                    $("#active_font").attr("href", folderPath + fontSize).attr("data-css", fontSize);
+                }
+            });
+        });
+    </script>   
+
+
+    
+<script type="text/javascript" src="/_Incapsula_Resource?SWJIYLWA=719d34d31c8e3a6e6fffd425f7e032f3&ns=2&cb=1865394225" async></script></body>
+</html>

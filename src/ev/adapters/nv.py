@@ -18,9 +18,10 @@ and each report on it is an OPAQUE document id — `/sos/home/showpublisheddocum
 15581/638672847178800000` — that changes every time the file is replaced. Nothing
 about tomorrow's URL is derivable from today's, so the index page is scraped for
 the link rather than a filename being composed. The page keeps one row per report
-and repoints it at the newest document id, which is why `fetch_history` is not
-implemented: Nevada overwrites the cumulative report in place and the superseded
-document ids are simply dropped from the page.
+and repoints it at the newest document id, which is why `fetch_history` yields
+ONE day rather than a curve: Nevada overwrites the cumulative report in place and
+the superseded document ids are simply dropped from the page. That one day is the
+cycle's final position, and it is worth having — see `fetch_history` below.
 
 Of the six reports posted daily, one carries everything this project publishes:
 
@@ -65,13 +66,30 @@ Four things drive the parser's shape:
   the presidential-preference primary and the June primary as it does for the
   November general.
 
-* **nvsos.gov sits behind an Imperva/Incapsula bot wall.** From automation it
-  answers every URL — index pages and document ids alike — with a ~1 KB
-  Incapsula interstitial carrying HTTP 200, and it did so to the Internet
-  Archive's crawler on every snapshot that crawler took during the 2024
-  early-vote window. A block is NOT absence: it raises SourceError so the ladder
-  falls through to the aggregator, because falling silent would leave Nevada
-  blank for six weeks with nothing in the log to say why.
+* **nvsos.gov sits behind an Imperva/Incapsula bot wall — and it is passable.**
+  To a plain `requests` GET it answers every URL — index pages and document ids
+  alike — with HTTP 200 and a 212-byte Incapsula stub (a ~1 KB interstitial to a
+  client sending browser headers without a browser's TLS), and it did the same to
+  the Internet Archive's crawler on every snapshot that crawler took during the
+  2024 early-vote window. That block is NOT absence: it raises SourceError so the
+  ladder falls through to the aggregator, because falling silent would leave
+  Nevada blank for six weeks with nothing in the log to say why.
+
+  ⚠️ BUT NEVADA IS NO LONGER BEHIND IT. Verified 2026-09-08: under
+  `curl_cffi`'s Chrome impersonation, and **only with our own User-Agent left
+  off**, the same URLs answer 200 with the real page — 135,760 bytes for the
+  evergreen turnout page, 180,771 for the 2024 index. Sending
+  `DEFAULT_HEADERS["User-Agent"]` alongside a Chrome TLS fingerprint is what
+  earned the wall: Akamai Bot Manager sits in front of Imperva here and 403s a
+  request whose handshake and header name different browsers. See
+  `_net.impersonated_headers`, which now drops that one header, and
+  `_net.looks_like_wall`, which is what lets `_net.get` notice a block wearing
+  HTTP 200 and retry it instead of handing the stub back as a page.
+
+  The `_blocked` checks below stay, belt-and-braces: they cost nothing, they
+  still fire if the wall comes back in a shape the transport does not know, and
+  they are what keeps a block from ever being read as a state that published
+  nothing.
 """
 
 from __future__ import annotations
@@ -578,9 +596,40 @@ class NVScraper(Adapter):
             )
         return result
 
-    # fetch_history is deliberately the base default. Nevada replaces the
-    # cumulative report in place -- the index page keeps ONE row for it and
-    # repoints that row at the newest document id -- so a past cycle's page
-    # yields exactly one day, its last, and there is no archived daily series to
-    # walk. (The per-day "Early Voting Turnout Report N" files that page does keep
-    # are per-WEEK sheets of in-person votes only, not a cumulative curve.)
+    def fetch_history(self, cycle: int) -> FetchResult:
+        """A past cycle's report -- ONE final snapshot, not a daily series.
+
+        Nevada replaces the cumulative report in place: the index page keeps one
+        row for it and repoints that row at the newest document id, and the
+        superseded ids are dropped. So a past cycle's page yields exactly one
+        day, its last. That is still the cycle's final early-vote position, with
+        every county, both methods and the party split -- which is what the
+        comparison lines anchor on -- so publishing it beats publishing nothing.
+        This is the same bargain az.py's `fetch_history` strikes, for the same
+        reason. (The per-day "Early Voting Turnout Report N" files the page also
+        keeps are per-WEEK sheets of in-person votes only, not a cumulative
+        curve, and reading one would understate the state from week 2 onward.)
+
+        ⚠️ GUARD PARITY WITH `fetch`. Every check the live path makes, this path
+        makes, because they run the same two helpers: `_report` walks the index
+        pages and raises SourceError on the Imperva wall rather than reading it
+        as an empty page, and `_load` refuses a walled or HTML-bodied download.
+        `parse` then refuses a report whose own header names another year or a
+        primary. The one check that cannot carry over is `published > as_of`,
+        because history has no as-of day; the current-cycle guard below stands in
+        its place, and is the stronger of the two -- an in-progress cycle's
+        "final" is not final, and `fetch` is the path that should be reading it.
+
+        VERIFIED 2026-09-08 (one request each, ten seconds apart):
+          .../2024-election-information/2024-turnout-reporting -> 200, 180,771 b,
+              linking the 11/15/2024 cumulative report at document id 15581
+          .../2022-election-information/2022-turnout-reporting -> 404 (the page
+              was retired), so 2022 correctly yields NotYetPublished rather than
+              a number.
+        """
+        if cycle >= date.today().year:
+            raise NotYetPublished(
+                f"NV: {cycle} is not an archived cycle -- fetch() reads the live "
+                f"report while it is still being replaced"
+            )
+        return parse(self._load(self._report(cycle), cycle), cycle)

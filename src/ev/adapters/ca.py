@@ -61,6 +61,23 @@ Judgement calls:
   from the BODY rather than the status, so a real WAF block still reads as
   SourceError. Tennessee's bucket behaves the same way; see `tn.py`.
 
+* **NOTHING IS BLOCKING CALIFORNIA.** Worth stating outright, because "CA has no
+  county data in any cycle" reads like a bot wall and is not one. Re-measured
+  2026-09-08 with plain `requests` and no impersonation at all, four requests
+  three seconds apart:
+
+      2026-general/vbm-statistics.xlsx -> 403, 111 b, `<Code>AccessDenied</Code>`
+      2026-general/vbm-statistics.xlsm -> 403, 111 b, the same
+      2026-general/vbm-statistics.xls  -> 403, 111 b, the same
+      2022-general/vbm-statistics.xlsm -> 200, 77,507 b, a real workbook
+                                          (Last-Modified: Mon, 16 Jun 2025)
+
+  No WAF, no challenge, no fingerprint rule -- `Server: AmazonS3` answers us
+  plainly. California is empty because the 2026 file is NOT POSTED YET (early
+  voting opens 2026-10-05) and because the only live 2022 object is a June 2025
+  re-upload that `fetch` and `fetch_history` both refuse as a leftover. That is
+  the whole story, and it is why this module has no impersonation path.
+
 **The format churns, and that is this adapter's live risk.** 2022 published
 `.xlsm` and `.pdf`, 2024 published `.xls` and `.pdf`. `.xls` is legacy OLE2
 (verified: the archived 2024 general file begins `d0 cf 11 e0`), which `openpyxl`
@@ -413,6 +430,27 @@ class CAScraper(Adapter):
         it carries no honest during-season date; the during-season copies exist
         only in the Wayback Machine. `fetch` refuses a stale stamp for exactly
         this reason, and so does this.
+
+        THE ARCHIVE ROUTE IS REAL AND UNBUILT, and the next person to look should
+        start here rather than re-surveying. Internet Archive CDX, checked
+        2026-09-08, distinct captures of this exact key:
+
+            2022-general/vbm-statistics.xlsm  2022-10-27  422,692 b
+                                              2022-11-05  428,506 b
+                                              2022-11-08  428,950 b
+                                              2022-11-11 onwards  ~74 KB, and
+                                                  every later capture shares one
+                                                  digest -- the final restatement
+            2024-general/vbm-statistics.xls   2024-11-01   29,762 b (legacy OLE2)
+
+        Three during-season California days plus one, each 58 counties, dated by
+        the capture timestamp rather than by a Last-Modified that the archive does
+        not preserve. That is a different TRANSPORT, not a different parser --
+        `parse()` above reads all of it unchanged -- and it is deliberately not
+        wired up here, because a Wayback fetcher needs its own dating rule (the
+        capture is when we SAW the file, which is on or after when California
+        wrote it) and that decision belongs in a change that is about the archive,
+        not in one about bot walls.
         """
         raise NotYetPublished(
             f"CA: the SoS overwrites one vbm-statistics URL per election, so "

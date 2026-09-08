@@ -186,3 +186,92 @@ def test_an_all_row_that_disagrees_with_its_counties_raises_drift():
 def test_the_adapter_declares_itself_correctly():
     scraper = mt.MTScraper()
     assert (scraper.state, scraper.name, scraper.tier) == ("MT", "mt-sos", TIER_SCRAPER)
+
+
+# --------------------------------------------------------------------------
+# ⚠️ THE SPACING REGRESSION THAT BROKE MONTANA IN PRODUCTION
+#
+# Tableau positions this PDF one glyph at a time, so the spaces in the extracted
+# text belong to pypdf's heuristic, not to the file. pyproject pins only
+# `pypdf>=5.0`; the three strings below are the FIRST LINE of this very fixture
+# as three real pypdf versions extracted it on 2026-09-08. The `\s+` patterns
+# this module shipped with matched the first and neither of the others, and
+# GitHub Actions had resolved 6.18.0 -- so `mt-sos` raised SchemaDrift on every
+# published run from 2026-09-06 and fell through to the aggregator.
+# --------------------------------------------------------------------------
+EXTRACTIONS = {
+    "6.16.1": (
+        "2026 Montana Primary Election Absentee Ballot Counts",
+        "Compiled On 6/15/2026 6:55:19 AM",
+    ),
+    "6.18.0": (
+        "2026 M o n tan a P rim ary E lectio n  A b sen tee B allo t C o u n ts",
+        "C om piled O n 6/15/2026 6:55:19 A M",
+    ),
+    "5.1.0": (
+        "2 0 2 6  M o n ta n a  P rim a ry  E le c tio n  A b s e n te e  "
+        "B a llo t C o u n ts",
+        "C om piled O n 6/15/2026 6:55:19 A M",
+    ),
+}
+
+
+@pytest.mark.parametrize("version", sorted(EXTRACTIONS))
+def test_the_title_reads_the_same_however_pypdf_spaces_it(version):
+    title, _stamp = EXTRACTIONS[version]
+    match = mt.TITLE.search(mt._compact(title))
+    assert match is not None, (version, title)
+    assert (match.group(1), match.group(2).lower()) == ("2026", "primary")
+
+
+@pytest.mark.parametrize("version", sorted(EXTRACTIONS))
+def test_the_compiled_on_stamp_reads_the_same_however_pypdf_spaces_it(version):
+    _title, stamp = EXTRACTIONS[version]
+    match = mt.COMPILED.search(mt._compact(stamp))
+    assert match is not None, (version, stamp)
+    assert tuple(int(g) for g in match.groups()) == (6, 15, 2026)
+
+
+def test_provenance_survives_a_glyph_spaced_extract(monkeypatch):
+    """The whole of `provenance` against 6.18.0's text, not just the regex.
+
+    Reproduces the production failure end to end: before the fix this raised
+    SchemaDrift, which falls through to a weaker tier instead of stopping the
+    ladder on a dashboard that is plainly showing the primary.
+    """
+    title, stamp = EXTRACTIONS["6.18.0"]
+    monkeypatch.setattr(
+        mt.pypdf, "PdfReader",
+        lambda *_a, **_k: type("R", (), {"pages": [
+            type("P", (), {"extract_text": lambda self: f"{title}\nsosmt.gov\n{stamp}"})()
+        ]})(),
+    )
+    with pytest.raises(NotYetPublished) as caught:
+        mt.provenance(b"%PDF-1.4 anything", 2026)
+    assert "primary" in str(caught.value)
+
+
+def test_a_general_dashboard_would_be_accepted_however_it_is_spaced():
+    """The general's own wording is unverified -- no general dashboard has ever
+    been published -- so the one thing that can be locked is that the SAME
+    spacing damage does not stop `General` from being recognised."""
+    spaced = "2 0 2 6  M o n ta n a  G e n e ra l  E le c tio n  A b s e n te e"
+    match = mt.TITLE.search(mt._compact(spaced))
+    assert match is not None
+    assert match.group(2).lower() == "general"
+
+
+def test_an_unreadable_title_still_says_what_the_page_did_say():
+    """A drift message that only says "no title" cannot be triaged from a cron
+    log. It now quotes the extract."""
+    import io
+
+    import pypdf
+
+    writer = pypdf.PdfWriter()
+    writer.add_blank_page(width=612, height=792)
+    blank = io.BytesIO()
+    writer.write(blank)
+    with pytest.raises(SchemaDrift) as caught:
+        mt.provenance(blank.getvalue(), 2026)
+    assert "the extract begins" in str(caught.value)

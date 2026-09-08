@@ -608,6 +608,15 @@ Decisions worth carrying:
   `mail_requested` is meaningless here and stays None.
 * Data rows carry **21 fields against a 20-column header** — a real trailing
   empty field, harmless to `DictReader`, and preserved in the fixtures.
+* ⚠️ **2022 was recorded as "does not exist, anywhere". It does, and it is LIVE.**
+  All three checks behind that verdict were about the 2024 URL scheme
+  (`current_election/Statewide<date>.zip`), and the domain sweep that was meant
+  to catch a rename filtered on `.*[Bb]allot.?[Ss]tatus.*` — which cannot match,
+  because **CDX filters run against the urlkey, where a space is `%20`**. The
+  2022 general is four county-split zips still served by
+  `www2.sos.wa.gov/_assets/elections/research/ballot%20status%20report%202022-11-09%20{all%20other%20counties,cr%20pi,ki,sn%20sp}.zip`
+  — 2,711,613 rows, all 39 counties, same 21-column shape, and **not behind the
+  Cloudflare wall** that guards the landing page. See `wa.py`'s module docstring.
 
 ### California — `ca.py`. **The verdict above is wrong.**
 
@@ -1320,7 +1329,16 @@ Judgement calls:
   split it, so every `party_*` field is blank rather than zero.
 - **`fetch_history` reads the Internet Archive**, because Delaware keeps no
   dated copies of its own and there is nothing else to read. It runs only in
-  `backfill`. 2022 is refused outright: no report exists under any name.
+  `backfill`.
+- ⚠️ **2022 was twice recorded here as "no report exists under any name". It
+  does.** Both sweeps that produced that verdict were scoped to the 2024 file's
+  own directory (`voter/registrationtotals/reports/pdfs/`); the 2022 report is
+  at `elections.delaware.gov/reports/pdfs/GE2022_Report_VoterCountsByVotingMethod.pdf`
+  — different tree, different filename — and a DOMAIN-wide CDX sweep finds it
+  immediately. It is also RICHER than 2024's: it carries a `Political Party`
+  column, so 2022 publishes real party numbers and the party-by-method crosstab.
+  Three report dates (2022-11-04, 11-07, 11-08). See `de.py`'s module docstring.
+  **A prefix sweep can only prove something about the prefix.**
 
 ---
 

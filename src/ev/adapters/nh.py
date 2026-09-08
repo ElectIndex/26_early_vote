@@ -44,13 +44,41 @@ the hand-entered manual tier -- and manual.py exists for exactly this state, "a
 state that publishes only a PDF, or a press release, or nothing machine-readable
 at all". A permanently-absent tier 1 is not the same condition as "today's file
 is not posted yet": raising SourceError here instead is the one-word change that
-would let tiers 2 and 3 answer, at the cost of a daily warning in the log for a
-source that is never coming. That is a ladder-policy call rather than an adapter
-one, so it is flagged here and left as NotYetPublished.
+would let tiers 2 and 3 answer.
 
-One operational note for whoever writes that `fetch`: sos.nh.gov answers
-automated requests with HTTP 403 regardless of User-Agent, so a future adapter
-will need to confirm access before it can be relied on daily.
+**That call was re-examined on 2026-09-08 and deliberately left alone**, now with
+a harder number attached to it than "a daily warning in the log". Follow
+ladder.py's last-rung refinement through: SourceError here falls to civicAPI, to
+the aggregator (which carries no NH series), and finally to ManualAdapter, whose
+NotYetPublished FROM THE FLOOR is recorded as STATUS_FAILED rather than
+STATUS_PENDING. `data/manual/2026_statewide.csv` is a header and no rows, so New
+Hampshire would badge `failed` on every run for ever, `ev_status.json`'s failed
+count would never be zero again, ingest.yml would print "Every tier failed for:
+NH" twice an hour and `ingest --strict` would exit 1 daily -- for a state that
+has not failed at anything. The stale badge on the site would say the same. That
+is a worse lie than `pending`, and it would drown the signal STATUS_FAILED
+exists to carry. If a human ever types an NH number into data/manual/, revisit
+this; while that file is empty, `pending` is the true word.
+
+⚠️ **THE OLD OPERATIONAL NOTE HERE WAS WRONG, AND IT WAS THE KIND OF WRONG THAT
+STOPS PEOPLE LOOKING.** It read "sos.nh.gov answers automated requests with HTTP
+403 regardless of User-Agent". The User-Agent was never the variable. Measured
+2026-09-08, two requests four seconds apart:
+
+    requests + DEFAULT_HEADERS  -> 403, 413 b, Akamai "Access Denied"
+                                   (errors&#46;edgesuite&#46;net -- entity-encoded,
+                                   which is why _net.WALL_MARKERS lists both forms)
+    curl_cffi impersonate=chrome -> 200, 2,960,857 b, the real page, after a
+                                   redirect to /elections/absentee-ballots
+
+sos.nh.gov is behind Akamai and Akamai is scoring the TLS fingerprint, so
+`_net.get`'s existing 403 -> impersonate retry already walks straight through it.
+**New Hampshire is reachable.** The absentee page was re-read from behind the
+wall on 2026-09-08 and carries exactly three PDFs -- two blank applications and
+the marking-and-mailing instructions -- and no counts, so every finding above is
+now confirmed against the live page rather than inferred through a 403. The
+emptiness of this adapter is a fact about what New Hampshire publishes, not an
+artefact of what we could reach.
 """
 
 from __future__ import annotations
@@ -64,6 +92,12 @@ from .base import Adapter, FetchResult, NotYetPublished
 #: for a machine-readable absentee feed, all VERIFIED to exist and VERIFIED not
 #: to carry one. The last entry is the discontinued 2020 notice, preserved via
 #: the Internet Archive because the live URL is gone.
+#:
+#: RE-READ 2026-09-08 through the impersonated fingerprint (see the docstring):
+#: the first now redirects to /elections/absentee-ballots and serves 2,960,857
+#: bytes carrying three PDFs -- absentee-ballot-application-local-election,
+#: absentee-ballot-application-state-election and
+#: absentee-ballot-marking-and-mailing-instructions -- and no counts of anything.
 SOURCES = (
     "https://www.sos.nh.gov/elections/voters/absentee-ballots",
     "https://www.sos.nh.gov/elections/elections/election-results",

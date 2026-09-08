@@ -273,8 +273,68 @@ def test_the_happy_path_publishes_the_report(monkeypatch):
     assert len(result.county_rows) == 17
 
 
-def test_nevada_has_no_archived_daily_series(monkeypatch):
+# --------------------------------------------------------------------------
+# The history path -- one final snapshot, and the SAME guards as the live one
+# --------------------------------------------------------------------------
+def test_history_publishes_the_cycles_final_report(monkeypatch):
     """Nevada replaces the cumulative report in place and drops the superseded
-    document id, so a past cycle's page yields one day, not a curve."""
+    document id, so a past cycle's page yields ONE day, not a curve. That day is
+    the cycle's final position -- every county, both methods, the party split --
+    and it is what the comparison lines anchor on."""
+    _serve(monkeypatch, lambda url: INDEX if url.endswith("reporting") else REPORT)
+    result = nv.NVScraper().fetch_history(2024)
+    assert result.state_rows[0].day == date(2024, 11, 15)
+    assert result.state_rows[0].ballots_total == NV_TOTAL
+    assert result.state_rows[0].mail_returned == NV_MAIL
+    assert result.state_rows[0].inperson == NV_INPERSON
+    assert len(result.county_rows) == 17
+    # One snapshot, so one day across every row -- never a series.
+    assert {row.day for row in result.county_rows} == {date(2024, 11, 15)}
+
+
+def test_history_refuses_the_current_cycle(monkeypatch):
+    """An in-progress cycle's "final" is not final. `fetch` is the path that
+    should be reading the report while Nevada is still replacing it."""
+    def explode(url, **kw):  # pragma: no cover - must never run
+        raise AssertionError("history must not fetch the running cycle")
+
+    monkeypatch.setattr(nv, "get", explode)
+    with pytest.raises(NotYetPublished, match="not an archived cycle"):
+        nv.NVScraper().fetch_history(date.today().year)
+
+
+def test_history_with_no_page_for_that_cycle_is_not_yet_published(monkeypatch):
+    """VERIFIED 2026-09-08: the 2022 turnout-reporting page was retired and now
+    404s, so 2022 must yield nothing rather than reaching for another cycle's
+    numbers."""
+    def handler(url):
+        raise Missing(f"NV: {url} returned 404")
+
+    _serve(monkeypatch, handler)
     with pytest.raises(NotYetPublished):
         nv.NVScraper().fetch_history(2022)
+
+
+def test_history_refuses_a_report_from_another_election(monkeypatch):
+    """The 2024 report carries "2024 General Election" in its own page header.
+    Asked for 2022, the parser must refuse it rather than relabel it."""
+    _serve(monkeypatch, lambda url: INDEX if url.endswith("reporting") else REPORT)
+    with pytest.raises(NotYetPublished):
+        # pick_link finds no 2022-dated row on the 2024 page.
+        nv.NVScraper().fetch_history(2022)
+
+
+@pytest.mark.parametrize("walled", ["index", "report"])
+def test_history_reads_the_wall_as_a_source_error_exactly_like_fetch(monkeypatch, walled):
+    """⚠️ GUARD PARITY. The live path has always refused the Imperva wall; a
+    history path that read a 212-byte block page as "Nevada published nothing"
+    would stop the backfill on a report that is sitting right there."""
+    def handler(url):
+        if url.endswith("reporting"):
+            return WALL if walled == "index" else INDEX
+        return WALL
+
+    _serve(monkeypatch, handler)
+    with pytest.raises(SourceError) as caught:
+        nv.NVScraper().fetch_history(2024)
+    assert not isinstance(caught.value, NotYetPublished)

@@ -10,6 +10,12 @@ Five fixtures, captured live 2026-09-06:
 * `abev_2024_general_adams.html` -- the county panel for Adams, a county that
   does NOT. Its early-vote block is absent from the markup entirely rather than
   printed as zero, which is the single most consequential quirk in this source.
+* `2024_panels/<value>.html` -- ALL FIFTY-THREE county panels for the 2024
+  general, each TRUNCATED to the verbatim `progressDiv` block that carries the
+  four spans the parser reads. Every one was checked to parse identically to the
+  29 KB page it came out of. They are here so the whole harvest -- and its one
+  real judgement, what an absent early-vote block means -- can be tested end to
+  end against North Dakota's own published totals without 53 live postbacks.
 * `candidatelist_2026_general.html` / `candidatelist_2026_primary.html` -- the
   election-name headers for `eid=348` and `eid=346`, TRUNCATED (the live pages
   are 115 KB and 312 KB of candidate table) to the real `<head>` plus the
@@ -277,3 +283,140 @@ def test_the_page_carries_no_as_of_date(statewide):
     reading it instead of stamping its own.
     """
     assert not re.search(r"as of|last updat|refreshed", statewide, re.I)
+
+
+# --------------------------------------------------------------------------
+# The whole 2024 harvest, end to end, against North Dakota's own totals
+# --------------------------------------------------------------------------
+PANELS = FIXTURES / "2024_panels"
+
+#: The seven counties that ran early voting in the 2024 general, and what each
+#: of them reported. The other 46 printed no early-vote block at all. Read off
+#: the panels; they sum to the state's own 99,007 exactly, which is the proof
+#: `_settle_early` re-runs on every fetch before it publishes a real 0.
+EARLY_2024 = {
+    "38015": 19_066,   # Burleigh
+    "38017": 38_990,   # Cass
+    "38035": 12_416,   # Grand Forks
+    "38059": 6_490,    # Morton
+    "38089": 6_420,    # Stark
+    "38093": 3_478,    # Stutsman
+    "38101": 12_147,   # Ward
+}
+
+
+@pytest.fixture
+def harvested(monkeypatch):
+    """`fetch_history(2024)` driven entirely by the saved panels."""
+    def header(self, eid, *, use_cache):
+        return "2024 General Election Contest/Candidate List"
+
+    def page(self, eid, *, use_cache):
+        assert eid == 333
+        return _text("abev_2024_general.html")
+
+    def county(self, eid, markup, value, *, use_cache=False):
+        return (PANELS / f"{value}.html").read_text()
+
+    monkeypatch.setattr(nd.NDScraper, "_header", header)
+    monkeypatch.setattr(nd.NDScraper, "_page", page)
+    monkeypatch.setattr(nd.NDScraper, "_county", county)
+    return nd.NDScraper().fetch_history(2024)
+
+
+def test_the_harvest_reproduces_north_dakotas_own_totals(harvested):
+    """⚠️ CANONICAL VALUES, not invariants. The county rows are not an
+    approximation of the state row; they ARE the state row, to the ballot."""
+    assert len(harvested.state_rows) == 1
+    assert len(harvested.county_rows) == nd.EXPECTED_COUNTIES == 53
+    state = harvested.state_rows[0]
+    assert (state.mail_requested, state.mail_returned, state.inperson,
+            state.ballots_total) == (95_908, 91_556, 99_007, 190_563)
+    assert sum(r.mail_returned for r in harvested.county_rows) == 91_556
+    assert sum(r.inperson for r in harvested.county_rows) == 99_007
+    assert sum(r.ballots_total for r in harvested.county_rows) == 190_563
+
+
+def test_every_row_is_dated_election_day_not_the_run(harvested):
+    """This path serves a settled election, so the rows carry its own date."""
+    assert harvested.state_rows[0].day == date(2024, 11, 5)
+    assert {row.day for row in harvested.county_rows} == {date(2024, 11, 5)}
+
+
+def test_exactly_seven_counties_ran_early_voting_and_the_rest_are_real_zeros(
+    harvested,
+):
+    """The whole point of `_settle_early`. Forty-six counties printed no block;
+    the seven that did add up to the state's own figure, so the silence is
+    proven to be zero and is published as one rather than as a blank."""
+    early = {r.county_fips: r.inperson for r in harvested.county_rows}
+    assert sum(1 for v in early.values() if v) == 7
+    assert sum(1 for v in early.values() if v == 0) == 46
+    assert None not in early.values()
+    assert {f: v for f, v in early.items() if v} == EARLY_2024
+    assert sum(EARLY_2024.values()) == 99_007 == harvested.state_rows[0].inperson
+
+
+def test_named_counties_carry_their_own_numbers(harvested):
+    rows = {r.county_fips: r for r in harvested.county_rows}
+    cass = rows["38017"]
+    assert (cass.county_name, cass.mail_returned, cass.inperson) == (
+        "Cass County", 11_705, 38_990)
+    assert cass.ballots_total == 50_695
+    adams = rows["38001"]
+    assert (adams.county_name, adams.mail_returned, adams.inperson) == (
+        "Adams County", 583, 0)
+    assert adams.ballots_total == 583
+
+
+def test_the_harvest_registers_nobody_by_party(harvested):
+    for row in harvested.state_rows + harvested.county_rows:
+        assert (row.party_dem, row.party_rep, row.party_oth, row.party_npa) == (
+            None,) * 4
+
+
+def test_a_single_missing_postback_aborts_the_whole_harvest(monkeypatch):
+    """Deliberate, and it must stay that way: 52 of 53 counties published as if
+    complete is a statewide picture with a county silently missing from it."""
+    def header(self, eid, *, use_cache):
+        return "2024 General Election Contest/Candidate List"
+
+    def page(self, eid, *, use_cache):
+        return _text("abev_2024_general.html")
+
+    def county(self, eid, markup, value, *, use_cache=False):
+        if value == "09":
+            raise SourceError("ND: county postback returned HTTP 500")
+        return (PANELS / f"{value}.html").read_text()
+
+    monkeypatch.setattr(nd.NDScraper, "_header", header)
+    monkeypatch.setattr(nd.NDScraper, "_page", page)
+    monkeypatch.setattr(nd.NDScraper, "_county", county)
+    with pytest.raises(SourceError):
+        nd.NDScraper().fetch_history(2024)
+
+
+# --------------------------------------------------------------------------
+# GUARD PARITY: this path dates every row Election Day, so the election must
+# already have happened
+# --------------------------------------------------------------------------
+def test_history_refuses_a_cycle_that_has_not_happened_yet():
+    """⚠️ `fetch` stamps the RUN's date, which cannot be in the future; this
+    path stamps Election Day, which for the running cycle can be. `ELECTION_IDS`
+    carries 2026 and the portal answers for it, so `backfill --cycle 2026` used
+    to harvest today's position -- a state row of 0 ballots -- and date it
+    2026-11-03, landing a fabricated number at days_to_election 0 where every
+    comparison reads it as that cycle's final."""
+    with pytest.raises(NotYetPublished) as excinfo:
+        nd.NDScraper().fetch_history(2026)
+    assert "2026-11-03" in str(excinfo.value)
+
+
+def test_the_guard_is_about_the_election_date_not_the_id(monkeypatch):
+    """A cycle whose Election Day HAS passed still backfills -- the guard must
+    not become "refuse anything recent"."""
+    seen: list[int] = []
+    monkeypatch.setattr(nd.NDScraper, "_harvest",
+                        lambda self, cycle, day, *, use_cache: seen.append((cycle, day)))
+    nd.NDScraper().fetch_history(2022)
+    assert seen == [(2022, date(2022, 11, 8))]

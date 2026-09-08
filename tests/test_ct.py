@@ -253,12 +253,45 @@ def test_a_file_with_only_absentee_leaves_inperson_blank(shifted):
     assert _towns.rows_of(result)[-1].inperson is None
 
 
-def test_a_file_with_only_early_voting_leaves_mail_blank(shifted):
+# --------------------------------------------------------------------------
+# ⚠️ A CUMULATIVE SERIES MAY NEVER FALL
+#
+# `_Bucket.total` is `returned + inperson`, and an UNREAD method contributes 0
+# rather than nothing. On these fixtures both files give 58, the absentee file
+# alone gives 30 and the early-voting file alone gives 28 -- so a run that lost
+# one workbook published a cumulative total below yesterday's. These tests are
+# that failure, in both directions, and the two guards that close it.
+# --------------------------------------------------------------------------
+def test_early_voting_alone_is_refused_rather_than_published_as_a_total(shifted):
+    """58 -> 28 was the measured fall. Connecticut issues absentee ballots two
+    weeks before early voting opens, so an early-voting file with no absentee
+    partner is a failed fetch and must fall through, not publish."""
     early_only = [entry for entry in shifted if entry[0] == "inperson"]
-    result = ct.build(early_only, 2026, date(2026, 9, 3) + timedelta(days=SHIFT))
-    last = result.state_rows[-1]
-    assert (last.mail_requested, last.mail_returned) == (None, None)
-    assert last.inperson == 28
+    with pytest.raises(SourceError) as caught:
+        ct.build(early_only, 2026, date(2026, 9, 3) + timedelta(days=SHIFT))
+    assert "absentee file was not" in str(caught.value)
+
+
+def test_require_both_is_a_pure_check_on_which_files_were_read():
+    ct.require_both({"mail"})                 # the opening fortnight: legitimate
+    ct.require_both({"mail", "inperson"})     # the normal case
+    ct.require_both(set())                    # nothing read; the caller's problem
+    with pytest.raises(SourceError):
+        ct.require_both({"inperson"})
+
+
+def test_the_published_total_is_monotone_across_the_two_phases(shifted):
+    """Absentee-only, then both: the only two shapes that can now be published,
+    and the second can never be smaller than the first."""
+    through = date(2026, 9, 3) + timedelta(days=SHIFT)
+    mail_only = ct.build([e for e in shifted if e[0] == "mail"], 2026, through)
+    both = ct.build(list(shifted), 2026, through)
+    assert mail_only.state_rows[-1].ballots_total == 30
+    assert both.state_rows[-1].ballots_total == 58
+    assert both.state_rows[-1].ballots_total >= mail_only.state_rows[-1].ballots_total
+    for result in (mail_only, both):
+        totals = [row.ballots_total for row in result.state_rows]
+        assert totals == sorted(totals)
 
 
 # --------------------------------------------------------------------------
@@ -430,3 +463,71 @@ def test_there_is_no_archive_to_backfill():
     with pytest.raises(NotYetPublished) as caught:
         ct.CTScraper().fetch_history(2024)
     assert "no 2024 archive" in str(caught.value)
+
+
+def _page(*names: str) -> bytes:
+    """A Voter Data page linking exactly these filenames."""
+    return b"".join(
+        b'<a href="/-/media/sots/electionservices/2026_absentee_ballot_data/'
+        + name.encode() + b'">x</a>'
+        for name in names
+    )
+
+
+def test_a_listed_file_that_will_not_download_is_a_failure_not_an_absence(monkeypatch, shifted):
+    """The mirror of `require_both`: Connecticut's own page says an
+    early-voting file exists for this election, and we could not get it. Reading
+    that as "no early voting today" would publish an absentee-only total -- 58
+    back down to 30 -- so it falls through instead."""
+    page = _page("absentee_ballot_10202026.xlsx", "early_voting_10202026.xlsx")
+
+    def fake_get(url, *, state, filename, **kwargs):
+        if "voter-data" in url:
+            return page
+        if "absentee_ballot_10202026" in url:
+            return dict(shifted)["mail"]
+        raise Missing(f"{state}: {url} returned 404")
+
+    monkeypatch.setattr(ct, "get", fake_get)
+    with pytest.raises(SourceError) as caught:
+        ct.CTScraper().fetch(2026, date(2026, 10, 20))
+    assert "inperson" in str(caught.value)
+
+
+def test_a_kind_the_page_does_not_list_at_all_is_the_legitimate_opening_phase(monkeypatch, shifted):
+    """Before early voting opens there is no early-voting file and the page
+    lists none, so the absentee-only total is complete and is published."""
+    page = _page("absentee_ballot_10202026.xlsx")
+
+    def fake_get(url, *, state, filename, **kwargs):
+        if "voter-data" in url:
+            return page
+        if "absentee_ballot_10202026" in url:
+            return dict(shifted)["mail"]
+        raise Missing(f"{state}: {url} returned 404")
+
+    monkeypatch.setattr(ct, "get", fake_get)
+    result = ct.CTScraper().fetch(2026, date(2026, 10, 20))
+    last = result.state_rows[-1]
+    assert last.ballots_total == 30
+    assert last.mail_returned == 30
+    # Never 0: Connecticut has not published an early-voting file at all.
+    assert last.inperson is None
+
+
+def test_a_listed_file_outside_the_generals_window_is_not_expected(monkeypatch, shifted):
+    """The September special primary's files sit in the same folder. They are
+    listed, they are not this election's, and they must not make a run that
+    ignores them look like a failed fetch."""
+    page = _page("absentee_ballot_10202026.xlsx", "early_voting_09032026.xlsx")
+
+    def fake_get(url, *, state, filename, **kwargs):
+        if "voter-data" in url:
+            return page
+        if "absentee_ballot_10202026" in url:
+            return dict(shifted)["mail"]
+        raise Missing(f"{state}: {url} returned 404")
+
+    monkeypatch.setattr(ct, "get", fake_get)
+    result = ct.CTScraper().fetch(2026, date(2026, 10, 20))
+    assert result.state_rows[-1].ballots_total == 30

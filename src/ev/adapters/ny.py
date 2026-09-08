@@ -44,11 +44,38 @@ Four things drive the code.
   the counties and are not on this page at all. New York DOES enrol voters by
   party, and this page does not break it out, so all four party fields are None
   -- "not reported", not zero. See THE BLANK RULE in schema.py.
+
+## The past cycles: the WHOLE curve, one capture per cycle
+
+The Board overwrites this one URL each election, so the live host serves only
+whatever is up today and a past cycle exists only in the Wayback Machine.
+`fetch_history` reads it there, which is the same route `fl.py`, `de.py`,
+`or.py` and `wa.py` already take -- see `wa.py`'s docstring for why the "third
+party host" objection this method used to raise is a policy this repo does not
+hold.
+
+What makes New York cheap is the cumulative series: **one capture taken after
+the last early-voting day carries every day of the period**, so the archive's
+sparseness costs nothing at all here. VERIFIED 2026-09-08 via the CDX API
+(exact-URL query, `collapse=digest`, `filter=statuscode:200`):
+
+* **2024 -- six distinct captures in the window,** of which `20241104114451`
+  (taken the day after early voting closed) carries all NINE days, Day 1's
+  140,145 through Day 9's 1,089,328.
+* **2022 -- ten distinct captures,** of which `20221108194750` carries all nine,
+  ending at 432,634.
+
+Every capture is read anyway rather than just the last, and a later capture of
+the same day wins: the Board edits days after posting them, and a capture that
+predates the section is skipped by `find_general` rather than guessed at. The
+five-of-sixty-two rule is unchanged on this path -- an archived read emits
+county rows and **still never a `StateDay`**.
 """
 
 from __future__ import annotations
 
 import html
+import json
 import logging
 import re
 from datetime import date, datetime, timedelta
@@ -70,6 +97,15 @@ PAGE = "https://www.vote.nyc/page/early-voting-check-ins"
 #: it never hard-codes a code. All five are verified to resolve.
 BOROUGH_COUNTIES = {
     "manhattan": "New York County",
+    # VERIFIED, not assumed. The Board wrote "New York" rather than "Manhattan"
+    # on the 2022-10-31 capture (`web.archive.org/web/20221031142410id_/`), and
+    # the identification is proved by VALUE rather than by the name looking
+    # right: that capture's "New York - 16,314" on 2022-10-29 is exactly the
+    # 16,314 the 2022-11-08 capture files under New York County, with the other
+    # four boroughs identical on the same day. Without this the whole capture
+    # raised "unrecognised borough" -- correctly, under rule 3, which is what
+    # sent it to be measured instead of guessed at.
+    "new york": "New York County",
     "bronx": "Bronx County",
     "the bronx": "Bronx County",
     "brooklyn": "Kings County",
@@ -79,7 +115,13 @@ BOROUGH_COUNTIES = {
 
 #: New York City is five of New York State's sixty-two counties. Both numbers
 #: are here because the gap is the whole reason no StateDay is emitted.
-CITY_COUNTIES = len(BOROUGH_COUNTIES) - 1  # "the bronx" is an alias
+#:
+#: Counted over the DISTINCT counties rather than the keys, because the table
+#: holds aliases -- "the bronx" for Bronx, "new york" for Manhattan -- and a
+#: subtraction would have to be re-tuned every time one is added. Getting this
+#: number wrong breaks the five-borough completeness check, which is the guard
+#: that makes a truncated capture impossible to publish.
+CITY_COUNTIES = len(set(BOROUGH_COUNTIES.values()))
 STATE_COUNTIES = len(_fips.CENSUS_COUNTIES["NY"])
 
 #: Words a heading must and must not carry to be this cycle's general.
@@ -103,6 +145,77 @@ _DAY_HEADING = re.compile(
 )
 #: "Manhattan - 38,237"
 _BOROUGH = re.compile(r"^(?P<name>[A-Za-z .']+?)\s*[-–]\s*(?P<count>[\d,]+)$")
+
+# --------------------------------------------------------------------------
+# The archived series. See "The past cycles" in the module docstring.
+# --------------------------------------------------------------------------
+CDX_URL = "http://web.archive.org/cdx/search/cdx"
+
+#: `id_` asks the Wayback Machine for the Board's ORIGINAL bytes rather than a
+#: rewritten page.
+WAYBACK_SNAPSHOT = "https://web.archive.org/web/{stamp}id_/" + PAGE
+
+#: web.archive.org is slower and less tolerant than a state host. Same reasoning
+#: as fl.py's ARCHIVE_MIN_INTERVAL and DEFAULT_MIN_INTERVAL in _net.
+ARCHIVE_MIN_INTERVAL = 1.0
+
+#: Ten distinct 2022 captures is the densest cycle the Archive holds for this
+#: URL; 60 leaves headroom without ever running away.
+MAX_ARCHIVE_PROBES = 60
+
+#: The first cycle this repo publishes.
+FIRST_CYCLE = 2022
+
+#: The Wayback timestamp, `YYYYMMDDhhmmss`.
+_STAMP = re.compile(r"^(\d{4})(\d{2})(\d{2})\d{6}$")
+
+
+def stamp_day(stamp: str) -> date:
+    """The date a capture was TAKEN, which is that capture's own as-of.
+
+    A capture cannot carry a day later than the day it was made, so this is the
+    honest `as_of` for an archived read -- exactly what the run date is for a
+    live one. Deriving it from the CDX index rather than passing Election Day
+    keeps `parse`'s day filter doing real work on BOTH paths.
+    """
+    m = _STAMP.match(str(stamp).strip())
+    if m is None:
+        raise SourceError(f"NY: {stamp!r} is not a Wayback timestamp")
+    year, month, day = (int(g) for g in m.groups())
+    try:
+        return date(year, month, day)
+    except ValueError as exc:
+        raise SourceError(f"NY: {stamp!r} is not a Wayback timestamp") from exc
+
+
+def archive_stamps(cycle: int) -> list[str]:
+    """Wayback timestamps of every distinct version of the page in the window.
+
+    `collapse=digest` turns the crawler's visits into the handful of genuinely
+    distinct readings. Sorted here rather than trusted from the API, because
+    `fetch_history` resolves two captures of one day by letting the later one
+    win, and that is only true in order.
+    """
+    anchor = election_date(cycle)
+    query = {
+        "url": PAGE, "output": "json", "fl": "timestamp,statuscode,digest",
+        "filter": "statuscode:200", "collapse": "digest",
+        "from": (anchor - timedelta(days=WINDOW_BEFORE)).strftime("%Y%m%d"),
+        "to": (anchor + timedelta(days=WINDOW_AFTER)).strftime("%Y%m%d"),
+        "limit": str(MAX_ARCHIVE_PROBES),
+    }
+    try:
+        body = get(CDX_URL, state="NY", filename=f"cdx-check-ins-{cycle}.json",
+                   params=query, min_bytes=2, min_interval=ARCHIVE_MIN_INTERVAL)
+    except Missing:
+        # The CDX API answers "nothing archived" with an EMPTY body, which
+        # _net.get reports as Missing. That is absence, not a fault.
+        return []
+    try:
+        rows = json.loads(body.decode("utf-8", errors="replace"))
+    except ValueError as exc:
+        raise SourceError(f"NY: the Wayback CDX index was not JSON: {exc}") from exc
+    return sorted(str(row[0]) for row in rows[1:])
 
 
 def _text(fragment: str) -> str:
@@ -280,16 +393,79 @@ class NYScraper(Adapter):
         return parse(self._load(use_cache=False), cycle, as_of)
 
     def fetch_history(self, cycle: int) -> FetchResult:
-        """The Board overwrites this page each election, so there is no archive.
+        """A past cycle's borough curve, rebuilt from the Internet Archive.
 
-        The 2022 and 2024 generals survive only in the Wayback Machine
-        (verified 200: `web.archive.org/web/20241102072441id_/...` and
-        `...20221103025647id_/...`), which is a third-party host and not what a
-        tier-1 scraper should read. Both captures are in tests/fixtures/ny, so
-        the parser is exercised against both cycles even though the adapter
-        cannot fetch them live.
+        The Board overwrites this page each election, so nothing on the live
+        host answers for a past cycle. An earlier version of this method
+        refused the archive on the ground that web.archive.org is "a
+        third-party host and not what a tier-1 scraper should read"; that is a
+        policy this repo does not actually hold (see `wa.py`'s docstring, and
+        `fl.py`, `de.py`, `or.py`), and it was costing New York every county row
+        it has.
+
+        ⚠️ GUARD PARITY WITH `fetch`. Every capture goes through the SAME
+        `parse`, so the year-in-the-heading gate, the five-borough count, the
+        per-day reconciliation against the Board's own cumulative figure and the
+        date window all run here exactly as they do live. The only difference is
+        the `as_of`, and it is the CAPTURE'S OWN DATE, so the day filter keeps
+        doing real work instead of being handed Election Day.
+
+        And the five-of-sixty-two rule is unchanged: `parse` appends to
+        `county_rows` and never to `state_rows`, on this path as on the other.
+
+        A capture that predates the general's section raises NotYetPublished out
+        of `find_general`, which HERE means "this capture is not the election we
+        asked for" and is skipped. Drift is not swallowed: if every capture
+        drifted, the drift is what is raised, so a changed layout can never be
+        reported as "nothing archived".
         """
-        raise NotYetPublished(
-            f"NY: the NYC Board overwrites its check-in page each election, so "
-            f"there is no {cycle} archive to backfill from"
-        )
+        if cycle < FIRST_CYCLE:
+            raise NotYetPublished(f"NY: {cycle} is before the first tracked cycle")
+        if cycle >= date.today().year:
+            raise NotYetPublished(f"NY: {cycle} is not an archived cycle")
+
+        rows: dict[tuple[date, str], CountyDay] = {}
+        drift: SchemaDrift | None = None
+        seen = 0
+        for stamp in archive_stamps(cycle):
+            snapshot = WAYBACK_SNAPSHOT.format(stamp=stamp)
+            try:
+                # The stamp has to be in the cache filename: every capture is the
+                # SAME URL, so a bare basename would make them one file.
+                body = get(snapshot, state="NY",
+                           filename=f"check-ins-{stamp}.html",
+                           use_cache=True, min_bytes=4096,
+                           min_interval=ARCHIVE_MIN_INTERVAL)
+            except SourceError as exc:
+                log.debug("NY: archived capture %s unusable (%s)", stamp, exc)
+                continue
+            seen += 1
+            try:
+                captured = parse(body, cycle, stamp_day(stamp))
+            except NotYetPublished as exc:
+                log.debug("NY: capture %s skipped (%s)", stamp, exc)
+                continue
+            except SchemaDrift as exc:
+                # ONE bad capture is a bad capture, not a changed source. Held
+                # so "every capture drifted" is still reported as drift.
+                log.warning("NY: capture %s did not parse (%s)", stamp, exc)
+                drift = exc
+                continue
+            except SourceError as exc:
+                log.debug("NY: capture %s unreadable (%s)", stamp, exc)
+                continue
+            for row in captured.county_rows:
+                # A later capture of the same day is the truer reading.
+                rows[(row.day, row.county_fips)] = row
+
+        if not rows:
+            if drift is not None:
+                raise drift
+            raise NotYetPublished(
+                f"NY: nothing archived for the {cycle} general "
+                f"({seen} captures read)"
+            )
+
+        log.info("NY: %d archived county rows over %d days from %d captures",
+                 len(rows), len({d for d, _f in rows}), seen)
+        return FetchResult(county_rows=[rows[key] for key in sorted(rows)])

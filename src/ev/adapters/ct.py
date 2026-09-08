@@ -22,7 +22,7 @@ state(2) + county(3) + cousub(5), so Enfield's `0900325990` already says
 "Hartford County" in digits 3-5. See `adapters/_towns.py`, and `me.py` for the
 same shape in Maine.
 
-Six things drive the parser.
+Seven things drive the parser.
 
 * **The filename convention is not stable and must be scraped, not built.**
   Inside the 2026 cycle alone Connecticut has used two: the Wayback capture of
@@ -56,6 +56,18 @@ Six things drive the parser.
   blank for a ballot not yet back) never has to be interpreted, and an unfamiliar
   value is not drift -- nothing is bucketed by it. A voided ballot is dropped
   from every count, issued and returned alike.
+
+* **Both files, or the absentee file alone -- never the early-voting file
+  alone.** `_Bucket.total` is `returned + inperson`, so a method whose file was
+  not read contributes 0 rather than nothing: on the September 2026 fixtures
+  both files give 58, absentee alone gives 30 and early voting alone gives 28.
+  A run that loses one workbook would therefore publish a cumulative total
+  BELOW yesterday's, which is the one thing a cumulative series may never do.
+  Absentee-only is legitimate (ballots go out a fortnight before early voting
+  opens, so `inperson` is genuinely None then); early-voting-only never is, and
+  `require_both` refuses it. `CTScraper.fetch` closes the other direction: a
+  kind the index page LISTS for this election but that will not download is a
+  failed fetch, not an absence.
 
 * **Party is a real registration** -- Connecticut enrols by party -- but it is
   spelled out in full (`Democratic`), and Connecticut recognises minor parties
@@ -643,6 +655,51 @@ def emit(tally: Tally, cycle: int, through: date, *, with_party: bool) -> FetchR
     return result
 
 
+def require_both(kinds: set[str]) -> None:
+    """⚠️ AN EARLY-VOTING FILE WITHOUT ITS ABSENTEE PARTNER IS A FAILED FETCH,
+    NOT A CONNECTICUT WITH NO MAIL BALLOTS -- AND A CUMULATIVE SERIES MAY NEVER
+    FALL.
+
+    `_Bucket.total` is `returned + inperson`, and a method whose file was not
+    read contributes 0 to it rather than nothing. Read only the absentee file
+    and the total is 30; read only the early-voting file and it is 28; read both
+    and it is 58. So a run that loses one workbook publishes a cumulative total
+    BELOW the one it published yesterday -- measured on the September 2026
+    fixtures, 58 -> 28 -- which no consumer of a cumulative curve can read as
+    anything but ballots being taken back.
+
+    One of the two directions is legitimate and the other never is:
+
+    * **Absentee alone is real.** Connecticut issues absentee ballots from 31
+      days out and opens early voting 14 days before Election Day (the window
+      behind FILE_WINDOW_DAYS above), so for the first fortnight of the season
+      there IS no early-voting file. `inperson` is then None -- not 0 -- and the
+      total is complete, because no in-person early vote can have been cast.
+
+    * **Early voting alone is not.** The absentee file necessarily exists by the
+      time the early-voting one does, so its absence means we could not fetch
+      it. That is `SourceError` -- fall through to a weaker tier, which will at
+      least publish a statewide number that is not missing a method -- and never
+      a tier-1 row asserting a Connecticut early-vote total with every mail
+      ballot silently dropped out of it. Same call as `tx.py` and `mt.py` make
+      about a total over a subset of counties: it looks exactly like the real
+      figure and is not one.
+
+    Published in order, the total therefore goes absentee-only -> both, which is
+    monotone. `CTScraper.fetch` closes the other half of the hole: a kind the
+    index page LISTS but that would not download is a failure too, so the
+    both -> absentee-only direction cannot happen either.
+    """
+    if "inperson" in kinds and "mail" not in kinds:
+        raise SourceError(
+            "CT: the early-voting file was read but the absentee file was not. "
+            "Connecticut issues absentee ballots two weeks before early voting "
+            "opens, so this is a failed fetch, not a day with no mail ballots; "
+            "publishing it would drop every returned absentee ballot out of a "
+            "cumulative total"
+        )
+
+
 def build(files: list[tuple[str, bytes]], cycle: int, through: date) -> FetchResult:
     """Parse one day's pair of Connecticut files into canonical rows."""
     tally = Tally()
@@ -656,6 +713,7 @@ def build(files: list[tuple[str, bytes]], cycle: int, through: date) -> FetchRes
             f"(ballot dates run {min(tally.ballot_days).isoformat()}.."
             f"{max(tally.ballot_days).isoformat()}, not the {cycle} general)"
         )
+    require_both(tally.kinds)
     with_party = _report_coverage(tally)
     return emit(tally, cycle, through, with_party=with_party)
 
@@ -734,6 +792,36 @@ class CTScraper(Adapter):
             day, body = hit
             found.append((kind, body))
             dates.append(day)
+
+        # ⚠️ GUARD PARITY WITH `require_both`, FROM THE OTHER SIDE.
+        #
+        # `require_both` refuses an early-voting file with no absentee partner.
+        # This refuses the mirror image: a kind the index page POSITIVELY LISTS
+        # for this general, that we could not download. Without it, a day on
+        # which the early-voting workbook 404s while the absentee one serves
+        # would publish an absentee-only total -- 58 back down to 30 on the
+        # September 2026 fixtures -- and a cumulative curve may never fall.
+        #
+        # "Listed" is the whole test and it is deliberately wider than
+        # `_pick`'s lookback: if Connecticut's own page says a file exists for
+        # this election and we have not got it, we could not LOOK, and "we could
+        # not look" is a fall-through, never an absence. A kind the page does
+        # not list at all is the legitimate case -- early voting has not opened
+        # yet -- and is left to `require_both`.
+        listed = {
+            kind for kind in ("mail", "inperson")
+            if any(day <= as_of and in_file_window(day, cycle)
+                   for day, _ in index.get(kind, ()))
+        }
+        missed = sorted(listed - {kind for kind, _ in found})
+        if missed:
+            raise SourceError(
+                f"CT: the {cycle} voter-data page lists a {' and a '.join(missed)} "
+                f"file for this election and none of them could be downloaded; "
+                f"publishing the other method alone would drop a whole method "
+                f"out of a cumulative total"
+            )
+
         if not found:
             raise NotYetPublished(
                 f"CT: no {cycle} general ballot file posted on or before "

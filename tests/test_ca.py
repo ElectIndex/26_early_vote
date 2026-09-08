@@ -265,3 +265,44 @@ def test_a_workbook_stamped_after_the_run_falls_through(monkeypatch):
 def test_there_is_no_dated_archive_to_backfill_from():
     with pytest.raises(NotYetPublished, match="overwrites one vbm-statistics URL"):
         ca.CAScraper().fetch_history(2022)
+
+
+# --------------------------------------------------------------------------
+# Nothing is blocking California, and that has to stay written down
+# --------------------------------------------------------------------------
+def test_california_is_empty_because_of_the_calendar_not_a_bot_wall():
+    """⚠️ "CA has no county data in any cycle" reads like a block and is not one.
+
+    Re-measured 2026-09-08 with plain `requests` and NO impersonation: every
+    2026 path answers 403 with a 111-byte `<Code>AccessDenied</Code>` body from
+    `Server: AmazonS3` -- S3's answer for a key that does not exist, because
+    listing is denied -- and the 2022 workbook answers 200 with 77,507 real
+    bytes. There is no WAF, no challenge and no fingerprint rule on this CDN,
+    which is why this module has no impersonation path and should not grow one.
+    """
+    doc = ca.__doc__
+    assert "NOTHING IS BLOCKING CALIFORNIA" in doc
+    assert "AmazonS3" in doc
+    # ...and the S3 absence body is still read as absence, not as a refusal.
+    assert ca.looks_absent(b'<?xml version="1.0" encoding="UTF-8"?>'
+                           b'<Error><Code>AccessDenied</Code>'
+                           b'<Message>Access Denied</Message></Error>') is True
+
+
+def test_a_403_that_is_not_s3_absence_is_a_refusal_not_absence():
+    """The distinction the whole adapter turns on: S3 saying "no such key" STOPS
+    the ladder, a WAF saying no falls THROUGH. A block page must never be read as
+    California not having published."""
+    from ev.adapters._net import WALL_MARKERS
+
+    for marker in WALL_MARKERS:
+        assert ca.looks_absent(marker + b" " * 400) is False
+
+
+def test_the_archive_route_is_documented_with_the_captures_it_would_read():
+    """It is unbuilt on purpose, but the survey behind it must not have to be
+    redone: three during-season 2022 captures and one 2024, all of this exact
+    key, all readable by `parse()` unchanged."""
+    doc = ca.CAScraper.fetch_history.__doc__
+    for stamp in ("2022-10-27", "2022-11-05", "2022-11-08", "2024-11-01"):
+        assert stamp in doc

@@ -545,3 +545,56 @@ def test_blend_end_to_end_from_a_real_coverage_figure(parsed):
         az.MODEL_ERROR * found.modelled_fraction
     )
     assert blended.band_half_width < az.MODEL_ERROR
+
+
+# --------------------------------------------------------------------------
+# The wall, and what is actually behind it
+# --------------------------------------------------------------------------
+#: The REAL 5,845-byte Cloudflare challenge azsos.gov answered a plain `requests`
+#: GET with. Shared with test_net.py -- it is the generic Cloudflare shape too.
+CHALLENGE = (Path(__file__).parent / "fixtures" / "net"
+             / "cloudflare_challenge.html").read_bytes()
+
+
+def test_the_real_cloudflare_challenge_is_caught_by_both_layers():
+    """⚠️ TWO LAYERS ON PURPOSE, and they do different jobs.
+
+    `_net.looks_like_wall` is what makes the TRANSPORT retry the request with a
+    browser fingerprint instead of handing the challenge to a parser;
+    `az.looks_like_challenge` is what stops this module parsing one if it ever
+    arrives in a shape the transport does not know. Verified 2026-09-08: plain
+    `requests` -> 403 + 5,867 b of this page, curl_cffi `impersonate="chrome"` ->
+    200 + 284,999 b of the real page.
+    """
+    from ev.adapters import _net
+
+    assert len(CHALLENGE) == 5845
+    assert b"Just a moment" in CHALLENGE
+    assert _net.looks_like_wall(CHALLENGE) is True
+    assert az.looks_like_challenge(CHALLENGE) is True
+
+
+def test_arizonas_blank_is_a_calendar_not_a_wall():
+    """The 2026 page is REACHABLE and simply has no Sent/Accepted table on it
+    yet: A.R.S. 16-542 opens early voting on 2026-10-07 for the November 3
+    general, and the page's own election table says so. This has to stay written
+    down, or the next reader sees "AZ: no county data in any cycle" and goes
+    looking for a block that is not there."""
+    doc = az.__doc__
+    assert "2026-09-08" in doc
+    assert "284,999" in doc          # the size of the real page that was read
+    assert "October 7, 2026" in doc  # the date the table can first exist
+    with pytest.raises(NotYetPublished, match="no Sent/Accepted table"):
+        az.parse(PAGE_EMPTY, 2026)
+
+
+def test_2024_has_no_general_election_table_to_recover():
+    """Checked against the Internet Archive on 2026-09-08: every capture of the
+    2024 page in the early-vote window is a Cloudflare 403, and both post-election
+    200s (2024-11-11, 2024-11-29) still print the JULY PRIMARY's table. There is
+    nothing to backfill, and relaxing the window would publish July as November."""
+    assert "2024-11-29" in az.AZScraper.fetch_history.__doc__
+    parsed = az.parse(PAGE_2024, 2024)
+    assert parsed.state_rows[0].day == date(2024, 7, 29)
+    with pytest.raises(NotYetPublished):
+        az._refuse_a_stale_table(parsed, 2024)

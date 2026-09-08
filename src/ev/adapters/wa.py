@@ -79,14 +79,47 @@ already being trusted when it said "no" and refused when it said "yes". The
 `id_` suffix returns the SoS's ORIGINAL bytes, unrewritten, and every row of them
 is still checked against this cycle's Election Day before anything is published.
 
-**2022 does not exist, anywhere.** VERIFIED 2026-09-08, three ways: the CDX index
-holds no `Statewide2022-*.zip` (the dated scheme's first capture of any kind is
-`Statewide2024-07-31.zip`); an exact-URL query for `Statewide2022-11-08.zip`
-returns nothing; and a domain-wide sweep for `.*[Bb]allot.?[Ss]tatus.*` finds
-Washington's older one-off report zips for 2019-2022 specials
-(`BallotStatusReport_20220218`, `_20220506`) but nothing at all for the November
-2022 general. The per-ballot daily report simply post-dates that cycle. So there
-is no WA 2022 backfill to be had, and `fetch_history` says so by name.
+**2022 exists too, and it is LIVE.** ⚠️ It was written off once, and the way it
+was written off is worth keeping because the same shape of mistake is easy to
+repeat. Three checks were run and all three were about the 2024 URL scheme: no
+`Statewide2022-*.zip` in the CDX index (true -- the dated `current_election/`
+scheme begins with `Statewide2024-07-31.zip`), no exact-URL match for
+`Statewide2022-11-08.zip` (true), and a domain sweep filtered on
+`.*[Bb]allot.?[Ss]tatus.*` which returned only one-off specials (true, and
+misleading: **CDX filters run against the urlkey, where a space is `%20`**, so
+`.?` -- one optional character -- cannot bridge `ballot%20status` and the whole
+2022 general was invisible to that pattern).
+
+Sweeping the domain and grepping the urlkeys OFFLINE instead finds it at once,
+in 10,247 distinct urlkeys captured between September 2022 and March 2023:
+
+```
+www2.sos.wa.gov/_assets/elections/research/ballot status report 2022-11-09 all other counties.zip
+www2.sos.wa.gov/_assets/elections/research/ballot status report 2022-11-09 cr pi.zip
+www2.sos.wa.gov/_assets/elections/research/ballot status report 2022-11-09 ki.zip
+www2.sos.wa.gov/_assets/elections/research/ballot status report 2022-11-09 sn sp.zip
+```
+
+Three things about that scheme, all verified live 2026-09-08:
+
+* **It is four files, not one**, split by county because the per-ballot file for
+  King alone is 29 MB. `parse_parts` accumulates them into one set of tallies;
+  see it for the two guards that only a split report needs.
+* **It is on `www2.sos.wa.gov/_assets/`, which is NOT challenged.** All four
+  answer 200 `application/x-zip-compressed` to plain `requests` today. The
+  Cloudflare wall in front of the `ballot-status-reports` landing page is real
+  and is still never touched; it simply was never what stood between us and this
+  cycle. (`www.sos.wa.gov` 301s to `www2` for these, which is why the CDX rows
+  for the `www` host are all `text/html` redirects and read as absence.)
+* **The file is identical in shape to 2024** -- same 21 columns, same
+  `General Nov  8 2022` double space, same empty `Party`, same per-ballot
+  `Received Date`, 2,711,613 rows across the four parts covering all 39
+  counties, disjoint. So one day rebuilds the whole 2022 curve exactly as one
+  day rebuilds 2024's.
+
+2022-11-09 is the pinned date rather than 11-10: the 11-10 set's "all other
+counties A-K" part appears in the index only as a 301 and is not served, so that
+date is twenty-odd counties short.
 """
 
 from __future__ import annotations
@@ -129,14 +162,42 @@ WAYBACK_SNAPSHOT = "https://web.archive.org/web/{stamp}id_/" + ZIP_URL
 #: 132MB file. Same reasoning as fl.py's ARCHIVE_MIN_INTERVAL.
 ARCHIVE_MIN_INTERVAL = 1.0
 
-#: The one archived snapshot that rebuilds a past cycle, as (day, Wayback stamp).
-#: ONE entry per cycle on purpose: every ballot in the file carries its own
-#: Received Date, so the last snapshot of a cycle contains every earlier day of
-#: it. VERIFIED 2026-09-08 -- 2024-11-19 is 138,719,074 bytes of
-#: `application/zip` and holds `Ballot Status Report 2024-11-19.csv`.
-#: There is deliberately no 2022 entry; see the module docstring.
-ARCHIVED: dict[int, tuple[date, str]] = {
-    2024: (date(2024, 11, 19), "20241120010214"),
+#: Where the 2022 general's report still lives, on the SoS's own `www2` host.
+#: One `{part}` per zip; see `ARCHIVED` and the module docstring.
+PARTED_2022 = (
+    "https://www2.sos.wa.gov/_assets/elections/research/"
+    "ballot%20status%20report%202022-11-09%20{part}.zip"
+)
+
+#: The snapshot(s) that rebuild a past cycle, as (day, ((url, cache name), ...)).
+#:
+#: ONE DAY per cycle on purpose: every ballot in the file carries its own
+#: Received Date, so the last usable snapshot of a cycle contains every earlier
+#: day of it and `parse` trims the series at Election Day. What varies is how
+#: many FILES that day is, which is a property of the cycle's publishing scheme
+#: and not of this adapter.
+#:
+#: 2024 -- one statewide zip, from the Wayback Machine because `current_election/`
+#: is purged between cycles. VERIFIED 2026-09-08: 2024-11-19 is 138,719,074 bytes
+#: of `application/zip` holding `Ballot Status Report 2024-11-19.csv`.
+#:
+#: 2022 -- FOUR zips, LIVE on `www2.sos.wa.gov`, no archive needed. VERIFIED
+#: 2026-09-08: all four answer 200 `application/x-zip-compressed`, they hold
+#: 2,711,613 rows between them, their county sets are disjoint and together are
+#: all 39. 2022-11-09 is the pin rather than 11-08 or 11-10 because it is the
+#: LAST date whose parts are all available -- 11-10's "all other counties A-K"
+#: exists only as a 301 in the index and 404s live, so that date is 20-odd
+#: counties short and its statewide row would be suppressed anyway.
+ARCHIVED: dict[int, tuple[date, tuple[tuple[str, str], ...]]] = {
+    2022: (date(2022, 11, 9), tuple(
+        (PARTED_2022.format(part=part.replace(" ", "%20")),
+         f"BallotStatus2022-11-09_{part.replace(' ', '_')}.zip")
+        for part in ("all other counties", "cr pi", "ki", "sn sp")
+    )),
+    2024: (date(2024, 11, 19), (
+        (WAYBACK_SNAPSHOT.format(stamp="20241120010214", day="2024-11-19"),
+         "Statewide2024-11-19.zip"),
+    )),
 }
 
 REQUIRED = (
@@ -300,61 +361,108 @@ def open_report(body: bytes) -> tuple[str, io.TextIOWrapper, zipfile.ZipFile]:
 
 def parse(body: bytes, cycle: int, as_of: date) -> FetchResult:
     """Parse one daily Ballot Status Report into the whole curve to date."""
-    name, stream, archive = open_report(body)
-    with archive:
-        snapshot = snapshot_day(name)
-        voting = election_date(cycle)
+    return parse_parts([body], cycle, as_of)
 
-        reader = csv.DictReader(stream)
-        missing = [c for c in REQUIRED if c not in (reader.fieldnames or [])]
-        if missing:
-            raise SchemaDrift(f"WA: ballot status report is missing columns {missing}")
 
-        by_state: dict[date, _Tally] = defaultdict(_Tally)
-        by_county: dict[tuple[str, date], _Tally] = defaultdict(_Tally)
-        by_sex: dict[tuple[date, str], int] = defaultdict(int)
-        names: dict[str, str] = {}
-        unknown_counties: set[str] = set()
-        elections: set[str] = set()
-        rows = matched = undated = 0
-        party_seen: set[str] = set()
+def parse_parts(bodies, cycle: int, as_of: date) -> FetchResult:
+    """The same, over one day's report split across several zips.
 
-        for row in reader:
-            rows += 1
-            label = _clean(row.get("Election"))
-            elections.add(label)
-            parsed = parse_election(label)
-            if parsed is None or parsed[0] != "general" or parsed[1] != voting:
-                continue
-            matched += 1
+    ONE report, several files. The daily 2024 scheme is a single statewide zip,
+    but the 2022 general was published as four -- King on its own, Snohomish
+    with Spokane, Clark with Pierce, and "all other counties" -- because the
+    per-ballot file for the big counties is tens of megabytes each. They are one
+    snapshot of one election in every way that matters here, so they accumulate
+    into ONE set of tallies and are emitted once; parsing them separately and
+    concatenating would produce four partial statewide curves, each of which
+    looks exactly like a Washington total and is not one.
 
-            county = _clean(row.get("County"))
-            hit = _fips.lookup("WA", county)
-            if hit is None:
-                unknown_counties.add(county)
-                continue
-            fips, canonical = hit
-            # Coverage is a property of the FILE, not of the truncated span: a
-            # county that is in the snapshot has all of its returns in it, dated,
-            # so an early day with none of its ballots yet is a real zero rather
-            # than a gap. Recording the county here -- before `as_of` trims the
-            # series -- is what keeps the statewide gate from suppressing the
-            # first week of every cycle.
-            names[fips] = canonical
+    Two things are checked BECAUSE they are split, and neither can go wrong in
+    the single-file case:
 
-            day = received_day(row.get("Received Date"))
-            if day is None or day > snapshot:
-                undated += 1
-                continue
-            if day > as_of:
-                continue
+    * every part must carry the same snapshot date, because a mixed set is not
+      one day's position; and
+    * no county may appear in two parts, because these tallies ADD and a part
+      listed twice would silently double a county's turnout rather than fail.
+    """
+    voting = election_date(cycle)
+    by_state: dict[date, _Tally] = defaultdict(_Tally)
+    by_county: dict[tuple[str, date], _Tally] = defaultdict(_Tally)
+    by_sex: dict[tuple[date, str], int] = defaultdict(int)
+    names: dict[str, str] = {}
+    unknown_counties: set[str] = set()
+    elections: set[str] = set()
+    rows = matched = undated = 0
+    party_seen: set[str] = set()
+    snapshots: set[date] = set()
+    claimed: dict[str, str] = {}
 
-            where = method_bucket(row.get("Return Method"))
-            by_state[day].count(where)
-            by_county[(fips, day)].count(where)
-            by_sex[(day, sex_bucket(row.get("Gender")))] += 1
-            if _clean(row.get("Party")):
-                party_seen.add(_clean(row.get("Party")))
+    for body in bodies:
+        name, stream, archive = open_report(body)
+        with archive:
+            snapshot = snapshot_day(name)
+            snapshots.add(snapshot)
+            mine: set[str] = set()
+
+            reader = csv.DictReader(stream)
+            missing = [c for c in REQUIRED if c not in (reader.fieldnames or [])]
+            if missing:
+                raise SchemaDrift(
+                    f"WA: ballot status report is missing columns {missing}")
+
+            for row in reader:
+                rows += 1
+                label = _clean(row.get("Election"))
+                elections.add(label)
+                parsed = parse_election(label)
+                if parsed is None or parsed[0] != "general" or parsed[1] != voting:
+                    continue
+                matched += 1
+
+                county = _clean(row.get("County"))
+                hit = _fips.lookup("WA", county)
+                if hit is None:
+                    unknown_counties.add(county)
+                    continue
+                fips, canonical = hit
+                # Coverage is a property of the FILE, not of the truncated span: a
+                # county that is in the snapshot has all of its returns in it, dated,
+                # so an early day with none of its ballots yet is a real zero rather
+                # than a gap. Recording the county here -- before `as_of` trims the
+                # series -- is what keeps the statewide gate from suppressing the
+                # first week of every cycle.
+                names[fips] = canonical
+                mine.add(fips)
+
+                day = received_day(row.get("Received Date"))
+                if day is None or day > snapshot:
+                    undated += 1
+                    continue
+                if day > as_of:
+                    continue
+
+                where = method_bucket(row.get("Return Method"))
+                by_state[day].count(where)
+                by_county[(fips, day)].count(where)
+                by_sex[(day, sex_bucket(row.get("Gender")))] += 1
+                if _clean(row.get("Party")):
+                    party_seen.add(_clean(row.get("Party")))
+
+        overlap = sorted(mine & set(claimed))
+        if overlap:
+            raise SchemaDrift(
+                f"WA: {name!r} repeats counties already read from "
+                f"{claimed[overlap[0]]!r} ({overlap[:3]}) -- these tallies add, "
+                f"so one part read twice would double a county's turnout"
+            )
+        claimed.update({fips: name for fips in mine})
+
+    if len(snapshots) > 1:
+        raise SchemaDrift(
+            f"WA: the parts of this report are dated "
+            f"{sorted(d.isoformat() for d in snapshots)} -- a mixed set is not "
+            f"one day's position"
+        )
+    snapshot = snapshots.pop() if snapshots else as_of
 
     if unknown_counties:
         raise SchemaDrift(f"WA: unrecognised county names {sorted(unknown_counties)[:5]}")
@@ -482,23 +590,30 @@ class WAScraper(Adapter):
         _day, body = self._latest(as_of, use_cache=False)
         return parse(body, cycle, as_of)
 
-    def _archived(self, day: date, stamp: str) -> bytes:
-        """One pinned Wayback capture -- or the cached copy, if we have one.
+    def _archived(self, parts: tuple[tuple[str, str], ...]) -> list[bytes]:
+        """One past cycle's pinned snapshot, however many files it is.
 
         `use_cache=True` is correct here and nowhere else in this module: a fixed
-        Wayback stamp of a file the SoS has already purged cannot change. The
-        cache filename is the LIVE one, so a snapshot downloaded while the cycle
-        was running is reused and the Archive is never asked.
+        Wayback stamp, and a dated report of a settled election on the SoS's own
+        host, are both files that cannot change. For 2024 the cache filename is
+        the LIVE one, so a snapshot downloaded while that cycle was running is
+        reused and the Archive is never asked.
+
+        `min_interval` spaces the parts even though they are only four requests:
+        they are 18-39 MB each off a state host, and the ban this repo actually
+        took was for going fast at one.
         """
-        stamped = day.isoformat()
-        try:
-            return get(WAYBACK_SNAPSHOT.format(stamp=stamp, day=stamped),
-                       state="WA", filename=f"Statewide{stamped}.zip",
-                       use_cache=True, min_bytes=4096, timeout=900,
-                       min_interval=ARCHIVE_MIN_INTERVAL)
-        except Missing as exc:
-            raise NotYetPublished(
-                f"WA: the archived {stamped} snapshot is gone ({exc})") from exc
+        bodies: list[bytes] = []
+        for url, filename in parts:
+            try:
+                bodies.append(get(url, state="WA", filename=filename,
+                                  use_cache=True, min_bytes=4096, timeout=900,
+                                  min_interval=ARCHIVE_MIN_INTERVAL))
+            except Missing as exc:
+                raise NotYetPublished(
+                    f"WA: the pinned snapshot part {filename} is gone ({exc})"
+                ) from exc
+        return bodies
 
     def fetch_history(self, cycle: int) -> FetchResult:
         """One archived snapshot rebuilds a past cycle's entire curve.
@@ -511,22 +626,21 @@ class WAScraper(Adapter):
         can publish a ballot dated after the day it was asked for.
 
         `current_election/` is purged when the next election opens, so the live
-        host serves nothing for either past cycle. 2024 survives in the Wayback
-        Machine and is pinned in `ARCHIVED`; 2022 does not exist there or
-        anywhere else, and the refusal below says so by name rather than
-        inheriting a generic shrug. See the module docstring for both sweeps.
+        host serves nothing for either past cycle at THAT path. 2024 survives in
+        the Wayback Machine; 2022 was never there because it was never at that
+        path -- it is still live under `_assets/elections/research/`, in four
+        pieces. Both are pinned in `ARCHIVED` and both come back through the
+        same `parse_parts`, so neither cycle has a code path of its own.
         """
         if cycle >= date.today().year:
             raise NotYetPublished(f"WA: {cycle} is not an archived cycle")
         pin = ARCHIVED.get(int(cycle))
         if pin is None:
             raise NotYetPublished(
-                f"WA: there is no {cycle} ballot status report to backfill from "
-                f"-- the SoS purges `current_election/` between cycles, and the "
-                f"Wayback CDX index holds no `Statewide{cycle}-*.zip` at all "
-                f"(the dated daily scheme begins with Statewide2024-07-31.zip). "
-                f"Washington's older ballot-status zips are one-off post-election "
-                f"reports for specials, not a daily general-election series."
+                f"WA: there is no pinned {cycle} ballot status report to "
+                f"backfill from. The per-ballot report exists for 2022 and 2024; "
+                f"anything earlier is a one-off post-election zip for a special, "
+                f"not a daily general-election series."
             )
-        day, stamp = pin
-        return parse(self._archived(day, stamp), cycle, election_date(cycle))
+        _day, parts = pin
+        return parse_parts(self._archived(parts), cycle, election_date(cycle))

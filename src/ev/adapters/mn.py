@@ -50,11 +50,42 @@ The page's own shape drives everything else.
 Minnesota does NOT register voters by party -- it is an open-primary state with
 no party enrolment -- so all four party fields are None everywhere. See THE
 BLANK RULE in schema.py.
+
+## The past cycles: county rows for 2022 and 2024, out of the Internet Archive
+
+The SoS OVERWRITES this one URL every election -- there is no dated file, no
+`/2024/` path, nothing on the live host but today's election. So a past cycle's
+county table exists only in the Wayback Machine, and `fetch_history` reads it
+there. That is not a new policy: `fl.py` rebuilds Florida's county curves out of
+the CDX index, `de.py` walks it for Delaware, `or.py` and `wa.py` pin Wayback
+timestamps by hand. The `id_` suffix returns the SoS's ORIGINAL bytes, and every
+capture goes through the SAME `parse` the live path uses -- the column PROOF
+against Minnesota's own statewide bullets included -- so an archived reading is
+held to exactly the standard a live one is.
+
+**What is actually there, measured 2026-09-08 via the CDX API** (exact-URL query,
+`collapse=digest`, `filter=statuscode:200`):
+
+* **2024 -- three distinct captures, two of them usable.** `20240919132653` is
+  the August primary's page and is skipped by `find_general` (NotYetPublished,
+  which here means "this capture is not the election we asked for").
+  `20241003181752` carries `as of October 3, 2024` -- 522,784 applications and
+  107,421 accepted -- and `20241109152601` carries the ELECTION-DAY final, `as of
+  November 5, 2024`, 1,420,287 / 1,271,636. Both give all 87 counties, and the
+  November one is a genuine days_to_election 0 reading.
+* **2022 -- exactly one capture,** `20221014040640`, `as of October 13, 2022`,
+  400,975 / 99,252, all 87 counties. It is the whole 2022 archive there is; the
+  crawler never came back before Election Day.
+
+So Minnesota's archived curve is two days in 2024 and one in 2022 rather than a
+dense series. That is the Archive's density, not a parse limit, and it is the
+difference between a county series and none at all.
 """
 
 from __future__ import annotations
 
 import html
+import json
 import logging
 import re
 from datetime import date, datetime, timedelta
@@ -122,6 +153,80 @@ BULLET_FIELDS = {
 }
 
 EXPECTED_COUNTIES = len(_fips.CENSUS_COUNTIES["MN"])
+
+# --------------------------------------------------------------------------
+# The archived series. See "The past cycles" in the module docstring.
+# --------------------------------------------------------------------------
+CDX_URL = "http://web.archive.org/cdx/search/cdx"
+
+#: `id_` asks the Wayback Machine for the SoS's ORIGINAL bytes rather than a
+#: rewritten page.
+WAYBACK_SNAPSHOT = "https://web.archive.org/web/{stamp}id_/" + PAGE
+
+#: web.archive.org is slower and less tolerant than a state host. Same reasoning
+#: as fl.py's ARCHIVE_MIN_INTERVAL and DEFAULT_MIN_INTERVAL in _net.
+ARCHIVE_MIN_INTERVAL = 1.0
+
+#: Three distinct 2024 captures is the densest cycle the Archive holds for this
+#: URL; 60 leaves room for a cycle it crawled harder without ever running away.
+MAX_ARCHIVE_PROBES = 60
+
+#: The first cycle this repo publishes. Earlier captures exist but no cycle
+#: before this one is tracked.
+FIRST_CYCLE = 2022
+
+#: The Wayback timestamp, `YYYYMMDDhhmmss`.
+_STAMP = re.compile(r"^(\d{4})(\d{2})(\d{2})\d{6}$")
+
+
+def stamp_day(stamp: str) -> date:
+    """The date a capture was TAKEN, which is that capture's own as-of.
+
+    A capture cannot report a day later than the day it was made, so this is the
+    honest `as_of` for an archived read -- exactly what the run date is for a
+    live one. It is derived from the CDX index rather than invented, and it
+    keeps `parse`'s "dated after the run date" guard live on BOTH paths instead
+    of being quietly disabled for history.
+    """
+    m = _STAMP.match(str(stamp).strip())
+    if m is None:
+        raise SourceError(f"MN: {stamp!r} is not a Wayback timestamp")
+    year, month, day = (int(g) for g in m.groups())
+    try:
+        return date(year, month, day)
+    except ValueError as exc:
+        raise SourceError(f"MN: {stamp!r} is not a Wayback timestamp") from exc
+
+
+def archive_stamps(cycle: int) -> list[str]:
+    """Wayback timestamps of every distinct version of the page in the window.
+
+    `collapse=digest` is what turns the crawler's visits into the handful of
+    genuinely distinct readings: the Archive calls far more often than the SoS
+    updates, and an unchanged page is one day, not five. Sorted here rather than
+    trusted from the API, because `fetch_history` resolves two captures of one
+    report date by letting the later one win, and that is only true in order.
+    """
+    anchor = election_date(cycle)
+    query = {
+        "url": PAGE, "output": "json", "fl": "timestamp,statuscode,digest",
+        "filter": "statuscode:200", "collapse": "digest",
+        "from": (anchor - timedelta(days=WINDOW_BEFORE)).strftime("%Y%m%d"),
+        "to": (anchor + timedelta(days=WINDOW_AFTER)).strftime("%Y%m%d"),
+        "limit": str(MAX_ARCHIVE_PROBES),
+    }
+    try:
+        body = get(CDX_URL, state="MN", filename=f"cdx-absentee-{cycle}.json",
+                   params=query, min_bytes=2, min_interval=ARCHIVE_MIN_INTERVAL)
+    except Missing:
+        # The CDX API answers "nothing archived" with an EMPTY body, which
+        # _net.get reports as Missing. That is absence, not a fault.
+        return []
+    try:
+        rows = json.loads(body.decode("utf-8", errors="replace"))
+    except ValueError as exc:
+        raise SourceError(f"MN: the Wayback CDX index was not JSON: {exc}") from exc
+    return sorted(str(row[0]) for row in rows[1:])
 
 _H2 = re.compile(r"<h2[^>]*>(.*?)</h2>", re.S | re.I)
 _TABLE = re.compile(r"<table[^>]*>.*?</table>", re.S | re.I)
@@ -490,25 +595,112 @@ class MNScraper(Adapter):
     tier = TIER_SCRAPER
 
     def _load(self, *, use_cache: bool) -> bytes:
-        try:
-            return download(PAGE, filename="absentee-data.html", use_cache=use_cache)
-        except Missing as exc:
-            raise NotYetPublished(f"MN: {exc}") from exc
+        """The live page.
+
+        ⚠️ A 404 HERE IS NOT "NOT YET PUBLISHED", AND READING IT THAT WAY WOULD
+        BLANK MINNESOTA SILENTLY. This URL is a PERMANENT landing page, not a
+        dated file: it answers 200 with ~65 KB every day of the year, carrying
+        whichever election is current -- the August primary today, the November
+        general from October. There is no state of the world in which Minnesota
+        "has not posted it yet" and the page 404s.
+
+        So a `Missing` from here means the CMS moved the page, not that voting
+        has not started. The difference is the whole ladder: NotYetPublished
+        STOPS it, publishes nothing, and badges the state `pending` -- the same
+        badge a state that simply has not opened early voting gets -- so a
+        re-path in late October would look exactly like "Minnesota has not
+        started", with no fall-through to civicAPI and nothing in the failure
+        count for ingest.yml to shout about. SourceError falls through to a
+        weaker tier and shows up as a refusal, which is what "we could not look"
+        means everywhere else in this repo (see `looks_intercepted`, which makes
+        the same distinction about Radware answering 200).
+
+        `download` already raises SourceError for every other failure; this only
+        stops the 404/short-body case from being downgraded.
+        """
+        return download(PAGE, filename="absentee-data.html", use_cache=use_cache)
 
     def fetch(self, cycle: int, as_of: date) -> FetchResult:
         return parse(self._load(use_cache=False), cycle, as_of)
 
     def fetch_history(self, cycle: int) -> FetchResult:
-        """Minnesota overwrites this page every cycle, so there is no archive.
+        """A past cycle's county table, rebuilt from the Internet Archive.
 
-        The 2022 and 2024 generals are only in the Wayback Machine (verified:
-        `web.archive.org/web/20241003181752id_/...` and `...20221014040640id_/...`
-        both 200), which is a third-party host and not what this tier is for.
-        The fixtures in tests/fixtures/mn are taken from those two captures, so
-        the parser is exercised against both generals even though the adapter
-        cannot fetch them live.
+        Minnesota overwrites this one URL every election, so nothing on the live
+        host answers for a past cycle -- the archive is the only route, and the
+        module docstring records exactly which captures exist and what each one
+        says. An earlier version of this method refused them on the ground that
+        web.archive.org "is a third-party host and not what this tier is for";
+        that is a policy this repo does not actually hold (see `wa.py`, whose
+        docstring makes the same correction, and `fl.py`, `de.py`, `or.py`).
+
+        ⚠️ GUARD PARITY WITH `fetch`. Every capture goes through the SAME
+        `parse`, so the header check, the column PROOF against Minnesota's own
+        statewide bullets, the 87-county count, the caption/bullet date
+        agreement and the cycle window all run here exactly as they do live. The
+        only difference is the `as_of`, and it is the CAPTURE'S OWN DATE -- so
+        the "dated after the run date" guard stays live on this path too rather
+        than being disabled by passing Election Day.
+
+        A capture showing a different election raises NotYetPublished out of
+        `find_general`, which HERE means "this capture is not the election we
+        asked for" and is skipped -- never "stop the ladder". Drift is not
+        swallowed: if every capture drifted, the drift is what is raised, so a
+        real vocabulary change can never be reported as "nothing archived".
         """
-        raise NotYetPublished(
-            f"MN: the SoS overwrites its absentee data page every cycle, so "
-            f"there is no {cycle} file to backfill from"
-        )
+        if cycle < FIRST_CYCLE:
+            raise NotYetPublished(f"MN: {cycle} is before the first tracked cycle")
+        if cycle >= date.today().year:
+            raise NotYetPublished(f"MN: {cycle} is not an archived cycle")
+
+        by_day: dict[date, tuple[StateDay, list[CountyDay]]] = {}
+        drift: SchemaDrift | None = None
+        seen = 0
+        for stamp in archive_stamps(cycle):
+            snapshot = WAYBACK_SNAPSHOT.format(stamp=stamp)
+            try:
+                # The stamp has to be in the cache filename: every capture is the
+                # SAME URL, so a bare basename would make them one file.
+                body = get(snapshot, state="MN",
+                           filename=f"absentee-data-{stamp}.html",
+                           use_cache=True, min_bytes=4096,
+                           min_interval=ARCHIVE_MIN_INTERVAL)
+            except SourceError as exc:
+                log.debug("MN: archived capture %s unusable (%s)", stamp, exc)
+                continue
+            seen += 1
+            try:
+                captured = parse(body, cycle, stamp_day(stamp))
+            except NotYetPublished as exc:
+                log.debug("MN: capture %s skipped (%s)", stamp, exc)
+                continue
+            except SchemaDrift as exc:
+                # ONE bad capture is a bad capture, not a changed source. Held
+                # so that "every capture drifted" can still be reported as
+                # drift rather than as absence.
+                log.warning("MN: capture %s did not parse (%s)", stamp, exc)
+                drift = exc
+                continue
+            except SourceError as exc:
+                log.debug("MN: capture %s unreadable (%s)", stamp, exc)
+                continue
+            row = captured.state_rows[0]
+            # A later capture of the same report date is the truer reading.
+            by_day[row.day] = (row, captured.county_rows)
+
+        if not by_day:
+            if drift is not None:
+                raise drift
+            raise NotYetPublished(
+                f"MN: nothing archived for the {cycle} general "
+                f"({seen} captures read)"
+            )
+
+        result = FetchResult()
+        for day in sorted(by_day):
+            state_row, county_rows = by_day[day]
+            result.state_rows.append(state_row)
+            result.county_rows.extend(county_rows)
+        log.info("MN: %d archived days (%d county rows) from %d captures",
+                 len(result.state_rows), len(result.county_rows), seen)
+        return result

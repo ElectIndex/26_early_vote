@@ -31,11 +31,30 @@ Three things worth knowing before changing anything here:
   `RECORDERS` is empty and every `party_*` field here is still None rather than a
   guess or a zero. See docs/arizona-party.md for the survey and its statuses.
 
-* **azsos.gov answers non-browser clients with a Cloudflare interstitial.** That
-  is a 403 carrying a "Just a moment..." page, not a missing report, so it raises
-  SourceError and lets the ladder fall through to the aggregator. Only a genuine
-  404, or a real page with no Sent/Accepted table on it, is NotYetPublished --
-  which is the normal state of the world until Arizona's early voting opens.
+* **azsos.gov answers non-browser clients with a Cloudflare interstitial, and
+  `_net.get` walks through it.** To a plain `requests` GET the page is a 403
+  carrying a 5,845-byte "Just a moment..." challenge; that is not a missing
+  report, so `looks_like_challenge` raises SourceError and lets the ladder fall
+  through to the aggregator. Only a genuine 404, or a real page with no
+  Sent/Accepted table on it, is NotYetPublished.
+
+  VERIFIED 2026-09-08, two requests five seconds apart:
+
+      requests + DEFAULT_HEADERS   -> 403,   5,867 b, "Just a moment..."
+      curl_cffi impersonate=chrome -> 200, 284,999 b, the real page
+
+  so `_net.get`'s 403 -> impersonate retry already reaches Arizona, and
+  `AZScraper().fetch(2026, ...)` answers `NotYetPublished: 2026
+  election-information page carries no Sent/Accepted table yet` -- an honest
+  "not posted" rather than "we were refused". **Arizona's blank is a calendar,
+  not a wall:** that page carries the cycle's four election tables, and the
+  November 3 general's row says early voting begins and early ballots are mailed
+  on **October 7, 2026**. There is nothing to scrape until then, and there was
+  nothing to scrape today.
+
+  `looks_like_challenge` stays where it is, belt-and-braces: the transport now
+  refuses a wall centrally (`_net.looks_like_wall`), but a challenge that arrives
+  in a shape the transport does not know must still never be parsed as a page.
 
 The table is found by its HEADER NAMES, never by position: the same page carries
 a second, decoy header row ("County | Ballot by Precinct (PDF)") and the card the
@@ -402,6 +421,19 @@ class AZScraper(Adapter):
         before a general election whose ballots had not been printed. The live
         path and the history path must not disagree about what counts as this
         cycle's data.
+
+        ⚠️ AND FOR 2024 THERE IS NO SUCH TABLE ANYWHERE, so this correctly yields
+        nothing. Checked 2026-09-08 against the Internet Archive's CDX index --
+        every capture of this URL between 2024-10-01 and 2024-11-30 is either a
+        7.8 KB Cloudflare 403 (the crawler was walled through the whole early-vote
+        window) or one of two 200s, 2024-11-11 and 2024-11-29. Both were fetched
+        and BOTH still print `Jul 29, 2024 13:41 ... Total 2,262,541 / 921,671` --
+        the PRIMARY's table, sitting there three weeks after the general. Arizona
+        never replaced it. So the general's Sent/Accepted numbers were not
+        archived, are not live, and cannot be recovered from this source; the
+        stale-table refusal below is the whole answer and not a step towards one.
+        Do not "fix" this by relaxing EARLY_WINDOW_DAYS -- that publishes July's
+        primary as November's general, which is the exact bug it was added for.
         """
         if cycle >= date.today().year:
             raise NotYetPublished(f"AZ: {cycle} is not an archived cycle")
