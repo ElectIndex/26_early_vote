@@ -10,14 +10,14 @@ DC,District of Columbia,2026-11-03,,,true,,,,,,,not tracked in 2026
 DE,Delaware,2026-11-03,,,true,county|method,,,,,,"tracked; registers by party but the file publishes no split, so the estimate stands in"
 FL,Florida,2026-11-03,,,true,county|party|method,,,,,,
 GA,Georgia,2026-11-03,,,false,county|method|age|race|sex,,,,,,
-HI,Hawaii,2026-11-03,,,false,,,,,,,not tracked in 2026
+HI,Hawaii,2026-11-03,,,false,county|method,,,,,,"tracked; no party registration in Hawaii, so the split is modelled"
 IA,Iowa,2026-11-03,,,true,county|party|method,,,,,,
 ID,Idaho,2026-11-03,,,true,,,,,,,not tracked in 2026
 IL,Illinois,2026-11-03,,,false,county|method,,,,,,
 IN,Indiana,2026-11-03,,,false,,,,,,,not tracked in 2026
-KS,Kansas,2026-11-03,,,true,,,,,,,not tracked in 2026
+KS,Kansas,2026-11-03,,,true,method,,,,,,"tracked, but statewide only -- no county breakdown, so no estimate is possible"
 KY,Kentucky,2026-11-03,,,true,county|party|method,,,,,,
-LA,Louisiana,2026-11-03,,,true,,,,,,,not tracked in 2026
+LA,Louisiana,2026-11-03,,,true,county|party|method|race|sex,,,,,,"tracked; party, race and sex come from the POST-ELECTION parish statistics, not the daily roster, so the split is modelled during the season"
 MA,Massachusetts,2026-11-03,,,true,,,,,,,not tracked in 2026
 MD,Maryland,2026-11-03,,,true,county|party|sex,,,,,,
 ME,Maine,2026-11-03,,,true,town|county|party|method,,,,,,reports by municipality; counties summed from towns
@@ -25,7 +25,7 @@ MI,Michigan,2026-11-03,,,false,county|method,,,,,,
 MN,Minnesota,2026-11-03,,,false,county|method,,,,,,
 MO,Missouri,2026-11-03,,,false,,,,,,,"not tracked in 2026; the party field has been optional only since 2023 and no breakdown is published, so there is nothing to report"
 MS,Mississippi,2026-11-03,,,false,,,,,,,not tracked in 2026
-MT,Montana,2026-11-03,,,false,,,,,,,not tracked in 2026
+MT,Montana,2026-11-03,,,false,county,,,,,,"tracked; no party registration in Montana, and the dashboard reports returns without a mail/in-person split"
 NC,North Carolina,2026-11-03,,,true,county|party|method|age|race|sex,,,,,,
 ND,North Dakota,2026-11-03,,,false,county|method,,,,,,
 NE,Nebraska,2026-11-03,,,true,,,,,,,not tracked in 2026
@@ -36,7 +36,7 @@ NV,Nevada,2026-11-03,,,true,county|party|method,,,,,,
 NY,New York,2026-11-03,,,true,county|method,,,,,,New York City only (5 of 62 counties) -- never a state total
 OH,Ohio,2026-11-03,,,false,county|method,,,,,,
 OK,Oklahoma,2026-11-03,,,true,county|method,,,,,,"tracked; registers by party but the file publishes no split, so the estimate stands in. County is the finest unit retrievable -- PrecinctCode is declared in the pivot but its EncodeMap returns empty"
-OR,Oregon,2026-11-03,,,true,,,,,,,not tracked in 2026
+OR,Oregon,2026-11-03,,,true,county|party,,,,,,"tracked; all-mail, so there is no in-person early vote to report -- blank, not zero"
 PA,Pennsylvania,2026-11-03,,,true,county|party|method,,,,,,
 RI,Rhode Island,2026-11-03,,,true,,,,,,,not tracked in 2026
 SC,South Carolina,2026-11-03,,,false,county|method,,,,,,
