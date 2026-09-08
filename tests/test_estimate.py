@@ -397,6 +397,43 @@ def test_fitted_constants_still_match_the_data():
     )
 
 
+def test_the_published_like_stratum_conditions_on_an_input_not_on_the_answer():
+    """⚠️ THE DIFFERENCE BETWEEN THIS AND CHERRY-PICKING, asserted rather than
+    claimed.
+
+    `within_reach` is a function of the ANSWER, so a headline filtered on it
+    reports the folds where least happened -- that mistake was made and reverted
+    once already. Mail share is an INPUT: Ohio's is known today with no party
+    data anywhere in the state.
+
+    The proof that it is not selecting for a low error is that it does BOTH the
+    things cherry-picking would never do -- it keeps a fold worse than the
+    stratum's own mean, and it excludes one better than it.
+    """
+    root = Path(__file__).resolve().parents[1]
+    out = root / "output"
+    if not (out / "ev_state_daily.csv").exists():
+        pytest.skip("no published output/ tree in this checkout")
+    scored = [r for r in est.validate(out, est.load_baseline()) if r.scored]
+    inside = [r for r in scored if r.resembles_published]
+    outside = [r for r in scored if not r.resembles_published]
+    if not inside or not outside:
+        pytest.skip("the panel does not span both strata yet")
+
+    mean_in = sum(r.mean_abs_error for r in inside) / len(inside)
+    assert any(r.mean_abs_error > mean_in for r in inside), (
+        "the stratum drops every fold worse than its own mean, which is what "
+        "selecting on the answer would look like"
+    )
+    assert any(r.mean_abs_error < mean_in for r in outside), (
+        "everything excluded is worse than the stratum's mean, which is what "
+        "selecting on the answer would look like"
+    )
+    # And it is reported BESIDE the headline, never instead of it.
+    printed = "\n".join(est.format_validation(scored))
+    assert f"mean MAE = {sum(r.mean_abs_error for r in scored) / len(scored):.1f}" in printed
+
+
 def test_model_error_is_refitted_from_the_panel():
     """The published band is a measurement too, and it is the one that drifted.
 
