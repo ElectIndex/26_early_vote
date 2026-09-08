@@ -5,9 +5,9 @@ AR,Arkansas,2026-11-03,,,true,,,,,,,"not tracked in 2026; registers by party but
 AZ,Arizona,2026-11-03,,,true,county,,,,,,registers by party; the SoS Sent/Accepted table publishes neither the party split nor a mail/in-person split -- county totals only
 CA,California,2026-11-03,,,true,county|method,,,,,,"registers by party, but the state workbook does not break it out"
 CO,Colorado,2026-11-03,,,true,county|party|method,,,,,,
-CT,Connecticut,2026-11-03,,,true,,,,,,,not tracked in 2026
+CT,Connecticut,2026-11-03,,,true,town|county|method,,,,,,"tracked; reports by municipality, counties summed from towns. Registers by party; the file publishes no split, so the estimate stands in"
 DC,District of Columbia,2026-11-03,,,true,,,,,,,not tracked in 2026
-DE,Delaware,2026-11-03,,,true,,,,,,,not tracked in 2026
+DE,Delaware,2026-11-03,,,true,county|method,,,,,,"tracked; registers by party but the file publishes no split, so the estimate stands in"
 FL,Florida,2026-11-03,,,true,county|party|method,,,,,,
 GA,Georgia,2026-11-03,,,false,county|method|age|race|sex,,,,,,
 HI,Hawaii,2026-11-03,,,false,,,,,,,not tracked in 2026
@@ -35,7 +35,7 @@ NM,New Mexico,2026-11-03,,,true,,,,,,,not tracked in 2026
 NV,Nevada,2026-11-03,,,true,county|party|method,,,,,,
 NY,New York,2026-11-03,,,true,county|method,,,,,,New York City only (5 of 62 counties) -- never a state total
 OH,Ohio,2026-11-03,,,false,county|method,,,,,,
-OK,Oklahoma,2026-11-03,,,true,,,,,,,not tracked in 2026
+OK,Oklahoma,2026-11-03,,,true,county|method,,,,,,"tracked; registers by party but the file publishes no split, so the estimate stands in. County is the finest unit retrievable -- PrecinctCode is declared in the pivot but its EncodeMap returns empty"
 OR,Oregon,2026-11-03,,,true,,,,,,,not tracked in 2026
 PA,Pennsylvania,2026-11-03,,,true,county|party|method,,,,,,
 RI,Rhode Island,2026-11-03,,,true,,,,,,,not tracked in 2026
