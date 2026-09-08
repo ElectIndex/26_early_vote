@@ -21,7 +21,7 @@ from datetime import date, datetime, timezone
 from pathlib import Path
 
 from . import publish, results
-from .adapters import _towns
+from .adapters import _methods, _towns
 from .adapters.base import FetchResult, NotYetPublished
 from .calendar import CURRENT_CYCLE, CYCLES, days_to_election
 from .ladder import STATUS_OK, STATUS_PENDING, run_state
@@ -49,6 +49,7 @@ def cmd_ingest(args) -> int:
     combined = FetchResult()
     per_state_county: dict[str, list] = {}
     per_state_town: dict[str, list] = {}
+    per_state_method: dict[str, list] = {}
     per_state_demo: dict[str, list] = {}
 
     for state in states:
@@ -65,6 +66,12 @@ def cmd_ingest(args) -> int:
         town_rows = _towns.rows_of(result)
         if town_rows:
             per_state_town.setdefault(state, []).extend(town_rows)
+        # Party crossed with METHOD, for the states that publish the cells and
+        # not just the two margins. Rides as an attribute like the town rows do;
+        # see _methods.attach.
+        method_rows = _methods.rows_of(result)
+        if method_rows:
+            per_state_method.setdefault(state, []).extend(method_rows)
         if result.demo_rows:
             per_state_demo.setdefault(state, []).extend(result.demo_rows)
 
@@ -78,6 +85,8 @@ def cmd_ingest(args) -> int:
             print(f"  would write counties/{state.lower()}.csv  {len(rows)} rows")
         for state, rows in sorted(per_state_town.items()):
             print(f"  would write towns/{state.lower()}.csv     {len(rows)} rows")
+        for state, rows in sorted(per_state_method.items()):
+            print(f"  would write methods/{state.lower()}.csv   {len(rows)} rows")
         for state, rows in sorted(per_state_demo.items()):
             print(f"  would write demo/{state.lower()}.csv      {len(rows)} rows")
     else:
@@ -87,6 +96,8 @@ def cmd_ingest(args) -> int:
             files.append(publish.publish_county_daily(out_dir, state, rows))
         for state, rows in sorted(per_state_town.items()):
             files.append(publish.publish_town_daily(out_dir, state, rows))
+        for state, rows in sorted(per_state_method.items()):
+            files.append(publish.publish_method_daily(out_dir, state, rows))
         for state, rows in sorted(per_state_demo.items()):
             files.append(publish.publish_demo_daily(out_dir, state, rows))
 
@@ -139,7 +150,8 @@ def cmd_ingest(args) -> int:
     print(f"ok={len(ok)} pending={len(pending)} failed={len(failed)} "
           f"state_rows={len(combined.state_rows)} "
           f"county_rows={sum(len(r) for r in per_state_county.values())} "
-          f"town_rows={sum(len(r) for r in per_state_town.values())}")
+          f"town_rows={sum(len(r) for r in per_state_town.values())} "
+          f"method_rows={sum(len(r) for r in per_state_method.values())}")
     for o in failed:
         print(f"  FAILED {o.state}: {o.message}", file=sys.stderr)
 
@@ -153,6 +165,7 @@ def cmd_backfill(args) -> int:
     combined = FetchResult()
     per_state_county: dict[str, list] = {}
     per_state_town: dict[str, list] = {}
+    per_state_method: dict[str, list] = {}
     per_state_demo: dict[str, list] = {}
     found, absent = [], []
 
@@ -177,12 +190,16 @@ def cmd_backfill(args) -> int:
             # without it an adapter that does not would fetch a whole archive --
             # minutes of Wayback downloads -- and then die at WRITE time.
             _towns.stamp(result, provenance)
+            _methods.stamp(result, provenance)
             combined.state_rows.extend(result.state_rows)
             if result.county_rows:
                 per_state_county.setdefault(state, []).extend(result.county_rows)
             town_rows = _towns.rows_of(result)
             if town_rows:
                 per_state_town.setdefault(state, []).extend(town_rows)
+            method_rows = _methods.rows_of(result)
+            if method_rows:
+                per_state_method.setdefault(state, []).extend(method_rows)
             if result.demo_rows:
                 per_state_demo.setdefault(state, []).extend(result.demo_rows)
             found.append(f"{state}:{adapter.name}")
@@ -197,6 +214,8 @@ def cmd_backfill(args) -> int:
             publish.publish_county_daily(out_dir, state, rows)
         for state, rows in sorted(per_state_town.items()):
             publish.publish_town_daily(out_dir, state, rows)
+        for state, rows in sorted(per_state_method.items()):
+            publish.publish_method_daily(out_dir, state, rows)
         for state, rows in sorted(per_state_demo.items()):
             publish.publish_demo_daily(out_dir, state, rows)
 

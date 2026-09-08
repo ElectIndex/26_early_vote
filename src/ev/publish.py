@@ -24,8 +24,10 @@ from typing import Callable, Iterable, Sequence
 
 from .schema import (
     COUNTY_DAILY_COLUMNS, COUNTY_KEY, DEMO_DAILY_COLUMNS, DEMO_KEY,
+    METHOD_DAILY_COLUMNS, METHOD_KEY,
     STATE_DAILY_COLUMNS, STATE_KEY, TOWN_DAILY_COLUMNS, TOWN_KEY,
-    county_row_to_dict, demo_row_to_dict, state_row_to_dict, town_row_to_dict,
+    county_row_to_dict, demo_row_to_dict, method_row_to_dict, state_row_to_dict,
+    town_row_to_dict,
 )
 
 log = logging.getLogger(__name__)
@@ -41,6 +43,10 @@ _NON_DATA_COLUMNS = frozenset({
     # A town row's identity columns. `county_fips` is already listed and is
     # identity here too -- it is a slice of `town_geoid`, not reported data.
     "town_geoid", "town_name",
+    # A method row's band. It is part of that table's KEY, not a measurement,
+    # so it must not count toward richness -- otherwise every method row looks
+    # one field richer than it is and the guard compares two different things.
+    "method",
 })
 
 
@@ -113,6 +119,9 @@ def _sort_key(columns: Sequence[str]) -> Callable[[dict[str, str]], tuple]:
             # so the existing files' order is unchanged.
             row.get("town_geoid", ""),
             row.get("date", ""), row.get("dimension", ""), row.get("bucket", ""),
+            # Methods sort within their county-day. Constant "" on every other
+            # table, so the existing files' order is unchanged.
+            row.get("method", ""),
         )
     return key
 
@@ -334,6 +343,20 @@ def publish_town_daily(out_dir: Path, state: str, rows, **kw) -> dict:
         out_dir / "towns" / f"{state.lower()}.csv",
         TOWN_DAILY_COLUMNS, TOWN_KEY,
         [town_row_to_dict(r) for r in rows], **kw,
+    )
+
+
+def publish_method_daily(out_dir: Path, state: str, rows, **kw) -> dict:
+    """Party crossed with method, per county per day, written per state.
+
+    Beside `counties/<st>.csv` rather than inside it, and for the same reason
+    `towns/` is: this is a different partition of the same ballots, not more
+    columns on the same row. See `schema.MethodDay`.
+    """
+    return publish_table(
+        out_dir / "methods" / f"{state.lower()}.csv",
+        METHOD_DAILY_COLUMNS, METHOD_KEY,
+        [method_row_to_dict(r) for r in rows], **kw,
     )
 
 

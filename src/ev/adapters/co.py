@@ -40,6 +40,19 @@ Three things drive the parser's shape:
   being mapped straight onto buckets here, so there is still exactly one party
   vocabulary in the project.
 
+**The mail and in-person sheets ARE a party-by-method crosstab**, and each is a
+county x party matrix in its own right -- so where Colorado publishes both,
+`schema.MethodDay` gets both bands and the county row is unchanged. Where it
+publishes only one, only one band exists.
+
+⚠️ **In 2022 that means the in-person band and nothing else, and the mail band is
+NOT derived.** `all_returned - in_person` is arithmetic, the all-returned sheet's
+own title says "MAIL AND IN PERSON COMBINED", and it is still a number Colorado
+did not print -- exactly the reasoning that already leaves `mail_returned` blank
+on the county row above. A method table whose two bands come from two different
+epistemic places is worse than a method table with one band in it, because only
+the second one is honest about what is missing.
+
 The statewide row is Colorado's own `Grand Total` row, not a sum of ours, so our
 headline can never disagree with the Secretary of State's.
 """
@@ -53,9 +66,12 @@ from datetime import date, timedelta
 import openpyxl
 
 from ..calendar import election_date
-from ..normalize import PARTY_DEM, PARTY_NPA, PARTY_OTH, PARTY_REP, party as _party
-from ..schema import TIER_SCRAPER, CountyDay, StateDay
-from . import _fips
+from ..normalize import (
+    METHOD_INPERSON, METHOD_MAIL, PARTY_DEM, PARTY_NPA, PARTY_OTH, PARTY_REP,
+    party as _party,
+)
+from ..schema import TIER_SCRAPER, CountyDay, MethodDay, StateDay
+from . import _fips, _methods
 from ._net import Missing, get, looks_like_xlsx
 from .base import Adapter, FetchResult, NotYetPublished, SchemaDrift, SourceError
 
@@ -246,6 +262,7 @@ def parse(body: bytes, cycle: int, day: date) -> FetchResult:
     )
 
     county_rows: list[CountyDay] = []
+    method_rows: list[MethodDay] = []
     unknown: list[str] = []
     for label, counts in returned.counties.items():
         hit = _fips.lookup("CO", label)
@@ -253,6 +270,20 @@ def parse(body: bytes, cycle: int, day: date) -> FetchResult:
             unknown.append(label)
             continue
         fips, canonical = hit
+        for sheet, band in ((mail, METHOD_MAIL), (inperson, METHOD_INPERSON)):
+            if sheet is None or label not in sheet.counties:
+                # Colorado shipped no matrix for this channel, or shipped one
+                # that does not name this county. Absent, not zero.
+                continue
+            method_rows.append(MethodDay(
+                cycle=cycle, state="CO", county_fips=fips, day=day,
+                method=band, county_name=canonical,
+                ballots_total=sheet.totals.get(label),
+                # Colorado reports every party bucket on the sheets it ships, so
+                # an empty one is a genuine 0.
+                **{field: sheet.counties[label].get(key, 0)
+                   for key, field in _PARTY_FIELD.items()},
+            ))
         county_rows.append(CountyDay(
             cycle=cycle, state="CO", county_fips=fips, day=day,
             county_name=canonical,
@@ -266,7 +297,8 @@ def parse(body: bytes, cycle: int, day: date) -> FetchResult:
         # A name we cannot place is a county we would silently drop off the map.
         raise SchemaDrift(f"CO: unrecognised county names {sorted(set(unknown))[:5]}")
 
-    return FetchResult(state_rows=[state], county_rows=county_rows)
+    return _methods.attach(
+        FetchResult(state_rows=[state], county_rows=county_rows), method_rows)
 
 
 class COScraper(Adapter):
@@ -322,6 +354,7 @@ class COScraper(Adapter):
         """
         election = election_date(cycle)
         result = FetchResult()
+        _methods.attach(result, [])
         unreadable: list[str] = []
         for offset in range(-HISTORY_BEFORE, HISTORY_AFTER + 1):
             day = election + timedelta(days=offset)
@@ -329,7 +362,11 @@ class COScraper(Adapter):
             if body is None:
                 continue
             try:
-                result.extend(parse(body, cycle, day))
+                one = parse(body, cycle, day)
+                result.extend(one)
+                # An attribute is invisible to `FetchResult.extend`; see
+                # _methods.py.
+                _methods.extend(result, _methods.rows_of(one))
             except SchemaDrift as exc:
                 unreadable.append(f"{day.isoformat()} ({exc})")
                 continue

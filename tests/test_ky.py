@@ -20,7 +20,7 @@ from pathlib import Path
 import openpyxl
 import pytest
 
-from ev.adapters import ky
+from ev.adapters import _methods, ky
 from ev.adapters._net import Missing
 from ev.adapters.base import NotYetPublished, SchemaDrift
 
@@ -307,3 +307,44 @@ def test_history_collects_every_day_that_exists(monkeypatch):
 def test_adapter_identity():
     scraper = ky.KYScraper()
     assert (scraper.state, scraper.name, scraper.tier) == ("KY", "ky-sbe", 1)
+
+
+# --------------------------------------------------------------------------
+# The party-by-method crosstab
+# --------------------------------------------------------------------------
+def test_the_three_channel_blocks_become_two_bands_and_they_add_up(late):
+    """Kentucky's DEM/REP columns are repeated per channel, so it states the
+    cells and not merely the two margins. Excused and no-excuse in-person are
+    ONE band because `normalize.method()` maps both there and the site knows two
+    channels; the bands' party counts must reproduce the county row's."""
+    cells = _methods.rows_of(late)
+    assert {r.method for r in cells} == {"mail", "inperson"}
+    by_county = {}
+    for row in cells:
+        entry = by_county.setdefault(row.county_fips, [0, 0])
+        entry[0] += row.party_dem
+        entry[1] += row.party_rep
+    for county in late.county_rows:
+        assert by_county[county.county_fips] == [county.party_dem, county.party_rep]
+
+
+def test_the_mail_band_carries_fpca_ballots_its_party_split_does_not(late):
+    """⚠️ Kentucky publishes `FPCA RETURNED` and NO party columns for it, and
+    `mail_returned` includes it. So the mail band's total is larger than its
+    DEM+REP by the military and overseas ballots -- the same gap the county row
+    has always had, and the reason `party_coverage` is published."""
+    cells = {r.county_fips: r for r in _methods.rows_of(late) if r.method == "mail"}
+    counties = {r.county_fips: r for r in late.county_rows}
+    for fips, band in cells.items():
+        assert band.ballots_total == counties[fips].mail_returned
+        assert band.party_npa is None and band.party_oth is None
+
+
+def test_the_2022_workbook_has_the_same_crosstab():
+    """The 2022 file has the header on ROW 1 rather than row 10 and the identical
+    twenty measure columns, so a fold's reference side is not a different shape
+    from its target side."""
+    import openpyxl  # noqa: F401  -- parse() needs it; the import is the check
+    body = (FIXTURES / "Absentee_Public_110124.xlsx").read_bytes()
+    result = ky.parse(body, 2024, NOV1)
+    assert {r.method for r in _methods.rows_of(result)} == {"mail", "inperson"}

@@ -33,7 +33,7 @@ from pathlib import Path
 
 import pytest
 
-from ev.adapters import fl
+from ev.adapters import _methods, fl
 from ev.adapters.base import NotYetPublished, SchemaDrift
 
 FIXTURES = Path(__file__).parent / "fixtures" / "fl"
@@ -329,3 +329,40 @@ def test_history_sweeps_both_hosts_the_page_has_lived_at(monkeypatch):
     fl.FLScraper().fetch_history(2024)
     swept = [u for u in fetch.asked if "cdx/search" in u]
     assert len(swept) == len(fl.ARCHIVED_URLS) == 2
+
+
+# --------------------------------------------------------------------------
+# The party-by-method crosstab
+# --------------------------------------------------------------------------
+def test_the_two_voted_tables_are_published_as_a_crosstab():
+    """"Voted Vote-by-Mail" and "Voted Early" are two per-county tables, each
+    split four ways by party. The county row is still their sum -- that is what
+    the site reads -- and the bands must reproduce it exactly.
+
+    Read off a real archived capture from Election Day 2024, because the live
+    2026 sample has nothing cast yet and therefore no county rows at all."""
+    markup = (FIXTURES / "publicstats_archived_20241101005721.html").read_text()
+    parsed = fl.to_result(fl.parse(markup, 2024), 2024, date(2024, 10, 31))
+    cells = _methods.rows_of(parsed)
+    assert cells, "the archived page carries both voted tables"
+    by_county = {}
+    for row in cells:
+        entry = by_county.setdefault(row.county_fips, [0, 0, 0, 0, 0])
+        for i, value in enumerate((row.ballots_total, row.party_dem, row.party_rep,
+                                   row.party_oth, row.party_npa)):
+            entry[i] += value
+    for county in parsed.county_rows:
+        assert by_county[county.county_fips] == [
+            county.ballots_total, county.party_dem, county.party_rep,
+            county.party_oth, county.party_npa]
+
+
+def test_a_channel_florida_prints_no_county_row_for_is_absent_not_zero(monkeypatch):
+    """Florida prints no "Voted Early" county rows at all until early voting
+    opens. A zero row there would say nobody had voted in person; an absent row
+    says Florida has not reported that channel, which is the truth."""
+    markup = (FIXTURES / "publicstats_archived_20221007061011.html").read_text()
+    snapshot = fl.parse(markup, 2022)
+    assert all(row["early"] is None for row in snapshot.counties)
+    result = fl.to_result(snapshot, 2022, date(2022, 10, 7))
+    assert {r.method for r in _methods.rows_of(result)} == {"mail"}

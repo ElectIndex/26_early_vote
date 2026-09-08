@@ -27,7 +27,7 @@ import logging
 from dataclasses import dataclass, field
 from datetime import date
 
-from .adapters import _towns
+from .adapters import _methods, _towns
 from .adapters.base import Adapter, AdapterError, FetchResult, NotYetPublished, SourceError
 
 log = logging.getLogger(__name__)
@@ -166,12 +166,15 @@ def run_state(
         # Stamping here costs one line and makes forgetting impossible; the
         # adapters' own calls are now belt-and-braces rather than load-bearing.
         _towns.stamp(result, provenance)
+        # ...AND THE FIFTH, for the identical reason. See _methods.py.
+        _methods.stamp(result, provenance)
         outcome.status = STATUS_OK
         outcome.tier = adapter.tier
         outcome.source_name = label
         outcome.rows = (
             len(result.state_rows) + len(result.county_rows)
             + len(result.demo_rows) + len(_towns.rows_of(result))
+            + len(_methods.rows_of(result))
         )
         outcome.attempts.append({"tier": adapter.tier, "name": label, "result": "ok"})
         log.info("%s: %s answered with %d rows", state, label, outcome.rows)

@@ -321,13 +321,32 @@ MIN_REFERENCE_BALLOTS = THIN_BALLOTS
 #:         `test_the_published_table_never_carries_an_immature_row` is where that
 #:         floor is asserted, and it is the test that caught this.
 #:
+#:  11.5   11.39  Iowa's 2022 backfill added a NINTH fold, and it is the first
+#:         entry in this history where the band widened because a hard series
+#:         arrived rather than because the measurement got honest about an old
+#:         one. IA 2024's own MAE is 22.52 against a panel mean of 9.99 without
+#:         it: Iowa's early electorate moved 23.12 registration points, the
+#:         second largest move in the panel after Pennsylvania's, and county
+#:         geography reported -1.32 of it against a reach bound of 4.15. So the
+#:         mean rose 9.99 -> 11.39 and the first rule -- the measured mean,
+#:         rounded up to the next half point -- puts the band at 11.5. The second
+#:         rule does not bind here: the largest shift the table publishes is
+#:         still Pennsylvania's +10.48, which 11.5 covers with room.
+#:
+#:         ⚠️ AND THE GAIN IMPROVED WHILE THE BAND WIDENED, which is the mirror
+#:         image of the entry above it and is worth reading beside it. IA's own
+#:         gain is +0.86 -- county geography is less wrong there in absolute
+#:         terms than the null is -- so the headline moved -0.73 -> -0.55 while
+#:         the error grew by a point and a half. Neither number is evidence about
+#:         the other, and neither is evidence that anything improved.
+#:
 #: The verdict does not move toward shipping at any point: the gain over the
-#: no-change null is -0.15 pp on six folds, -0.15 pp on seven and -0.73 pp on
-#: eight, and the bar is +1.00.
+#: no-change null is -0.15 pp on six folds, -0.15 pp on seven, -0.73 pp on eight
+#: and -0.55 pp on nine, and the bar is +1.00.
 #:
 #: `test_model_error_matches_the_measured_validation` refits it from output/ and
 #: fails if the data moves away from it.
-MODEL_ERROR_PP = 10.5
+MODEL_ERROR_PP = 11.5
 
 #: With complete coverage on both sides the band's half-width is exactly
 #: MODEL_ERROR_PP, so the confidence threshold has to sit strictly above it or it
@@ -839,6 +858,89 @@ def nested_split(
     return between_groups, between_units, within_units
 
 
+# --------------------------------------------------------------------------
+# THE PARTITION THAT CUTS ACROSS COUNTIES: county x method
+#
+# `nested_split` put a level UNDER the county and found 6.7% of Maine. This is
+# the other direction, and it is the one docs/counterfactual.md said did not
+# exist: "no state publishes party crossed with method". That was true of
+# `schema.py` and false of the sources -- FL renders two per-county voted tables
+# each split by party, KY carries DEM/REP columns per channel, NC and ME publish
+# the channel and the party on the same ballot row, CO ships a county x party
+# matrix per channel. `schema.MethodDay` and `output/methods/<st>.csv` are where
+# the crosstab now lives, and this is the machinery that scores it.
+#
+# The predictor is `mix_split`'s between term over the FINER partition -- cells
+# are (county, method) rather than counties -- and it needs nothing fitted,
+# because it is valued in the truth's own registration unit exactly as
+# `mix_only` is. `nested_split` with `county_of_cell` as the grouper takes it
+# apart into the county term, the method-within-county term, and the residue
+# inside cells, and the first two sum to the fine between term exactly.
+#
+# ⚠️ AND ITS COVERAGE IS THE POINT. See `format_validation` and
+# docs/counterfactual.md: it is defined on the folds whose sources are richest
+# and undefined on the panel's two largest measured changes.
+# --------------------------------------------------------------------------
+CELL_SEPARATOR = "|"
+
+
+def cell_key(county_fips: str, method: str) -> str:
+    """The key of one county-x-method cell. Never parsed apart except here."""
+    return f"{county_fips}{CELL_SEPARATOR}{method}"
+
+
+def county_of_cell(key: str) -> str:
+    """The county a cell belongs to -- the grouper `nested_split` wants.
+
+    A slice of the key, exactly as `TownDay.county_fips` is a slice of its
+    GEOID, so the cell -> county rollup is arithmetic rather than a join.
+    """
+    return key.split(CELL_SEPARATOR, 1)[0]
+
+
+def reconciled_cells(
+    county_party: dict[str, tuple[int, int]],
+    method_party: dict[str, tuple[int, int]],
+) -> dict[str, tuple[int, int]] | None:
+    """The county x method cells, but ONLY where they add up to their county.
+
+    ⚠️ THE GUARD THAT STOPS A ONE-BAND CROSSTAB FROM PRETENDING TO BE A
+    PARTITION, and without it this dimension scores off the wrong electorate.
+
+    Colorado is the case. Its 2024 workbook ships a per-county matrix for mail
+    AND one for in-person, so its cells partition the county. Its 2022 workbook
+    ships only the in-person matrix -- Colorado is an all-mail state, so that is
+    **0.86%** of the ballots -- and `co.py` refuses to derive the mail band by
+    subtraction, correctly, because it is a number Colorado did not print. Fed
+    to `nested_split` unguarded, the two sides' shared support becomes Colorado's
+    in-person voters alone and the split reports -2.45 / +0.00 / -11.87 against a
+    measured change of -1.98: three terms of a decomposition of something else.
+
+    So the test is a reconciliation and not a threshold: a county's cells count
+    only if their two-party bases sum EXACTLY to the county's own, on the same
+    day, in the same table -- and if any county that reports a party split fails
+    that, the whole day has no cell term. Exact rather than approximate because
+    all five sources are exact aggregations of the same ballots; a mismatch is a
+    band we are not being shown, which is precisely what must not be averaged
+    over. It is also a standing drift tripwire.
+
+    Returns None when there is no complete crosstab for this day.
+    """
+    if not county_party or not method_party:
+        return None
+    totals: dict[str, list[int]] = {}
+    for key, (dem, rep) in method_party.items():
+        entry = totals.setdefault(county_of_cell(key), [0, 0])
+        entry[0] += dem
+        entry[1] += rep
+    for fips, (dem, rep) in county_party.items():
+        if totals.get(fips) != [dem, rep]:
+            return None
+    if set(totals) != set(county_party):
+        return None
+    return dict(method_party)
+
+
 def completeness(ballots: dict[str, int], reference_final: int) -> float | None:
     """How far along a day is, measured against a FINISHED early-vote curve.
 
@@ -953,6 +1055,11 @@ class DayIndex:
     #: truth's own dimension. Maine is the only state that has one. Never an
     #: input to `shift_pp`.
     town_party: dict[int, dict[str, tuple[int, int]]] = field(default_factory=dict)
+    #: days_to_election -> {"<fips>|<method>": (party_dem, party_rep)}. The
+    #: PARTY-BY-METHOD crosstab, from `output/methods/<st>.csv`. Read only for
+    #: `cell_key`-ed splits, which need a partition that cuts ACROSS counties
+    #: rather than under them; never an input to `shift_pp`.
+    method_party: dict[int, dict[str, tuple[int, int]]] = field(default_factory=dict)
 
     def day_of(self, dte: int) -> date:
         return election_date(self.cycle) - timedelta(days=dte)
@@ -1014,6 +1121,17 @@ def read_series(out_dir: Path, state: str) -> dict[int, DayIndex]:
         if dem is None or rep is None or dem + rep <= 0:
             continue
         slot(cycle).town_party.setdefault(dte, {})[geoid] = (dem, rep)
+
+    for row in _read_csv(out_dir / "methods" / f"{state.lower()}.csv"):
+        cycle, dte = _num(row.get("cycle")), _num(row.get("days_to_election"))
+        fips = (row.get("county_fips") or "").strip()
+        method = (row.get("method") or "").strip()
+        dem, rep = _num(row.get("party_dem")), _num(row.get("party_rep"))
+        if cycle is None or dte is None or dte < 0 or len(fips) != 5 or not method:
+            continue
+        if dem is None or rep is None or dem + rep <= 0:
+            continue
+        slot(cycle).method_party.setdefault(dte, {})[cell_key(fips, method)] = (dem, rep)
 
     for row in _read_csv(out_dir / "demo" / f"{state.lower()}.csv"):
         cycle, dte = _num(row.get("cycle")), _num(row.get("days_to_election"))
@@ -1545,6 +1663,19 @@ class ScoredDay:
     #: party on county rows.
     mix_only: float | None = None
     inside: float | None = None
+    #: The same decomposition over the COUNTY x METHOD partition, from
+    #: `output/methods/<st>.csv`. `cell_only` is the fine between term -- what
+    #: the county-and-channel mix carried, in the truth's own unit -- and
+    #: `cell_county`/`cell_method` are `nested_split`'s two halves of it, so
+    #: `cell_county + cell_method == cell_only` exactly. `cell_county` is the
+    #: like-for-like county baseline: it is `mix_only` recomputed over the cell
+    #: support, which is the only county number the fine one may be compared
+    #: with. All None where the state publishes no crosstab, which is most of
+    #: the panel.
+    cell_only: float | None = None
+    cell_county: float | None = None
+    cell_method: float | None = None
+    cell_inside: float | None = None
 
 
 @dataclass
@@ -1594,6 +1725,33 @@ class Validation:
     #: argued. See `fit_constant`.
     cycle_constant: float | None = None
     cycle_constant_mean_abs_error: float | None = None
+    #: THE COUNTY x METHOD CELL MIX, scored the same way `mix_only` is: as a
+    #: predictor of the measured registration change, in the truth's own unit,
+    #: with nothing fitted. `cell_county_mean_abs_error` is the LIKE-FOR-LIKE
+    #: county baseline -- the county term recomputed over the same cell support
+    #: -- because the fine partition drops cells that only one side reported and
+    #: comparing it with `mix_mean_abs_error`, which is over a different support,
+    #: would credit the method dimension with a change of population.
+    #: REPORTED, NEVER A FILTER: none of these enters `gain`.
+    final_cell_only: float | None = None
+    final_cell_county: float | None = None
+    final_cell_method: float | None = None
+    final_cell_inside: float | None = None
+    mean_abs_cell_only: float | None = None
+    cell_mean_abs_error: float | None = None
+    cell_county_mean_abs_error: float | None = None
+    #: The no-change null OVER THE CELL DAYS ONLY. `null_mean_abs_error` is over
+    #: every scored day, and the cell term is defined on a subset of them, so
+    #: scoring one against the other would price the day selection rather than
+    #: the dimension. Today the two sets coincide in every fold that has a
+    #: crosstab at all; this makes it impossible for a future one not to.
+    cell_null_mean_abs_error: float | None = None
+    cell_days: int = 0
+    #: The multiplier fitted on every OTHER state's cell term, and what it
+    #: scores here. Refitted in every fold -- a jackknife over a frozen
+    #: parameter is not a jackknife.
+    cell_scale: float | None = None
+    cell_scaled_mean_abs_error: float | None = None
 
     @property
     def gain(self) -> float:
@@ -1622,6 +1780,27 @@ class Validation:
         if self.mix_mean_abs_error is None:
             return None
         return self.null_mean_abs_error - self.mix_mean_abs_error
+
+    @property
+    def cell_gain(self) -> float | None:
+        """What the county x METHOD cell mix buys over the no-change null."""
+        if self.cell_mean_abs_error is None or self.cell_null_mean_abs_error is None:
+            return None
+        return self.cell_null_mean_abs_error - self.cell_mean_abs_error
+
+    @property
+    def cell_county_gain(self) -> float | None:
+        """The same for the county term ON THE SAME SUPPORT. The baseline the
+        method dimension has to beat, and the only fair one."""
+        if self.cell_county_mean_abs_error is None or self.cell_null_mean_abs_error is None:
+            return None
+        return self.cell_null_mean_abs_error - self.cell_county_mean_abs_error
+
+    @property
+    def cell_scaled_gain(self) -> float | None:
+        if self.cell_scaled_mean_abs_error is None or self.cell_null_mean_abs_error is None:
+            return None
+        return self.cell_null_mean_abs_error - self.cell_scaled_mean_abs_error
 
     @property
     def cycle_constant_gain(self) -> float | None:
@@ -1707,6 +1886,19 @@ def score_panel(
                     continue
                 split = mix_split(now.county_party.get(dte, {}),
                                   reference.county_party.get(ref_dte, {}))
+                # The county x METHOD partition, and its own county baseline on
+                # the same support. `nested_split`'s first two terms sum to the
+                # fine between term, which is what makes the comparison exact
+                # rather than two numbers over two populations.
+                now_cells = reconciled_cells(now.county_party.get(dte, {}),
+                                             now.method_party.get(dte, {}))
+                ref_cells = reconciled_cells(
+                    reference.county_party.get(ref_dte, {}),
+                    reference.method_party.get(ref_dte, {}))
+                cells = (
+                    None if now_cells is None or ref_cells is None
+                    else nested_split(now_cells, ref_cells, county_of_cell)
+                )
                 panel[(cycle, state)].append(ScoredDay(
                     cycle=cycle, state=state, days_to_election=dte,
                     shift=here[0] - there[0],
@@ -1716,6 +1908,10 @@ def score_panel(
                                       reference.counties[ref_dte], baseline),
                     mix_only=None if split is None else split[0],
                     inside=None if split is None else split[1],
+                    cell_only=None if cells is None else cells[0] + cells[1],
+                    cell_county=None if cells is None else cells[0],
+                    cell_method=None if cells is None else cells[1],
+                    cell_inside=None if cells is None else cells[2],
                 ))
     for series_days in panel.values():
         series_days.sort(key=lambda d: -d.days_to_election)
@@ -1822,6 +2018,26 @@ def fit_scale(series: Iterable[Sequence[ScoredDay]]) -> float | None:
     return numerator / denominator if denominator > 0 else None
 
 
+def fit_cell_scale(series: Iterable[Sequence[ScoredDay]]) -> float | None:
+    """`fit_scale` for the county x METHOD cell term, series-weighted, no intercept.
+
+    The cell term needs no conversion -- it is already in the truth's own
+    registration unit -- so this is not a unit fix; it is the same "give the
+    dimension its best case" move `fit_scale` makes, and it is refitted in every
+    fold because a jackknife over a frozen parameter is not a jackknife.
+    """
+    numerator = denominator = 0.0
+    for one in series:
+        days = [d for d in one if d.cell_only is not None]
+        if not days:
+            continue
+        weight = 1.0 / len(days)
+        for day in days:
+            numerator += weight * day.cell_only * day.truth
+            denominator += weight * day.cell_only * day.cell_only
+    return numerator / denominator if denominator > 0 else None
+
+
 def fit_constant(series: Iterable[Sequence[ScoredDay]]) -> float | None:
     """The intercept `fit_scale` refuses: the series-weighted mean measured change.
 
@@ -1908,6 +2124,9 @@ def validate(
         # the days that have it; a state that reports no county party split
         # leaves every one of these None rather than a zero.
         splits = [d for d in days if d.mix_only is not None]
+        # The county x METHOD panel, and the scale fitted WITHOUT this state.
+        cells = [d for d in days if d.cell_only is not None]
+        cell_scale = fit_cell_scale(others) if others and cells else None
         results.append(Validation(
             cycle=cycle, state=state, days=n,
             final_shift=last.shift, final_truth=last.truth,
@@ -1942,6 +2161,33 @@ def validate(
             cycle_constant_mean_abs_error=(
                 None if constant is None
                 else sum(abs(constant - d.truth) for d in days) / n
+            ),
+            final_cell_only=last.cell_only,
+            final_cell_county=last.cell_county,
+            final_cell_method=last.cell_method,
+            final_cell_inside=last.cell_inside,
+            cell_days=len(cells),
+            cell_null_mean_abs_error=(
+                None if not cells
+                else sum(abs(d.truth) for d in cells) / len(cells)
+            ),
+            mean_abs_cell_only=(
+                None if not cells
+                else sum(abs(d.cell_only) for d in cells) / len(cells)
+            ),
+            cell_mean_abs_error=(
+                None if not cells
+                else sum(abs(d.cell_only - d.truth) for d in cells) / len(cells)
+            ),
+            cell_county_mean_abs_error=(
+                None if not cells
+                else sum(abs(d.cell_county - d.truth) for d in cells) / len(cells)
+            ),
+            cell_scale=cell_scale,
+            cell_scaled_mean_abs_error=(
+                None if cell_scale is None or not cells
+                else sum(abs(cell_scale * d.cell_only - d.truth) for d in cells)
+                / len(cells)
             ),
         ))
     return results
@@ -2046,6 +2292,59 @@ def format_validation(results: Sequence[Validation]) -> Iterator[str]:
                    f"(no unit gap) moves "
                    f"{sum(r.mean_abs_mix_only for r in mixed) / len(mixed):.2f} pp "
                    f"and buys {mix_gain:+.2f} pp over the null")
+    # ⚠️ THE COUNTY x METHOD CROSSTAB. `mix_split` says the county dimension is
+    # empty and `nested_split` says a finer geography does not fill it. This is
+    # the partition that cuts ACROSS counties instead of under them, and it is
+    # the one docs/counterfactual.md said did not exist. It does; `MethodDay` is
+    # where it lives now. It is REPORTED AND NEVER A FILTER, exactly as
+    # `mix_gain` is -- `gain` above is still the published method's, over every
+    # scored series.
+    #
+    # The number to read is `vs county` and not `gain`: the fine partition drops
+    # cells only one side reported, so `cell_county` is the county term
+    # recomputed over that same support and is the only county figure the fine
+    # one may be set against.
+    celled = [r for r in results if r.cell_gain is not None]
+    if celled:
+        yield ""
+        yield ("county x METHOD (the party-by-method crosstab, "
+               + f"{len(celled)} of {len(results)} folds have one): "
+               + ", ".join(
+                   f"{_fold(r)} cell {r.cell_gain:+.2f} vs county "
+                   f"{r.cell_county_gain:+.2f}" for r in celled)
+               + f"   mean {sum(r.cell_gain for r in celled) / len(celled):+.2f} pp "
+               + f"against the same-support county term's "
+               + f"{sum(r.cell_county_gain for r in celled) / len(celled):+.2f} pp")
+        yield ("   final day, where the change went: "
+               + ", ".join(
+                   f"{_fold(r)} counties {r.final_cell_county:+.2f} / methods "
+                   f"{r.final_cell_method:+.2f} / inside cells "
+                   f"{r.final_cell_inside:+.2f} of {r.final_truth:+.2f}"
+                   for r in celled if r.final_cell_only is not None))
+        # JACKKNIFE. Nothing in the cell term is fitted, so this is a mean over
+        # folds with one more fold dropped -- and where something IS fitted (the
+        # scale below) it is refitted inside every fold already.
+        if len(celled) > 1:
+            yield ("   jackknife (drop one more fold): "
+                   + ", ".join(
+                       f"without {_fold(dropped)} "
+                       f"{sum(r.cell_gain for r in celled if r is not dropped) / (len(celled) - 1):+.2f}"
+                       for dropped in sorted(celled, key=lambda r: -r.cell_gain)))
+        cell_scaled = [r for r in celled if r.cell_scaled_gain is not None]
+        if cell_scaled:
+            yield ("   with a scale fitted leave-one-state-out: "
+                   + ", ".join(f"{_fold(r)} k={r.cell_scale:+.2f} "
+                               f"{r.cell_scaled_gain:+.2f}" for r in cell_scaled)
+                   + f"   mean "
+                   + f"{sum(r.cell_scaled_gain for r in cell_scaled) / len(cell_scaled):+.2f} pp")
+        missing = [r for r in results if r.cell_gain is None]
+        if missing:
+            yield ("   NO CROSSTAB, so no cell term at all: "
+                   + ", ".join(f"{_fold(r)} (|truth| {abs(r.final_truth):.2f})"
+                               for r in sorted(missing,
+                                               key=lambda r: -abs(r.final_truth)))
+                   + " -- a term is only worth what it is worth WHERE IT EXISTS")
+
     if scaled:
         k_gain = sum(r.scaled_gain for r in scaled) / len(scaled)
         yield (f"leave-one-state-out fitted scale: "

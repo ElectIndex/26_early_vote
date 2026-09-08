@@ -1363,10 +1363,11 @@ def test_no_within_county_dimension_covers_the_panel(full_baseline):
     the folds the counterfactual can actually be scored on, every within-county
     dimension is thinner than the county one, which is present in all of them:
 
-        method mix that MOVES at all   5 of 8   (frozen in PA 2022, PA 2024, MD)
-        age, race                      1 of 8   (North Carolina)
-        sex                            2 of 8   (North Carolina, Maryland)
-        sub-county geography           1 of 8   (Maine)
+        method mix that MOVES at all   5 of 9   (frozen in PA 2022, PA 2024, MD, IA)
+        party crossed with method      4 of 9   (FL, KY, ME, NC)
+        age, race                      1 of 9   (North Carolina)
+        sex                            2 of 9   (North Carolina, Maryland)
+        sub-county geography           1 of 9   (Maine)
 
     If a backfill ever makes one of them cover the panel, this fails and the
     dimension is worth building on rather than only measuring.
@@ -1404,8 +1405,12 @@ def test_no_within_county_dimension_covers_the_panel(full_baseline):
 def test_the_unpriced_dimensions_cannot_reach_the_largest_changes(full_baseline):
     """`required_span`, and the ceiling that makes an unpriced dimension answerable.
 
-    Neither the method split nor `output/demo/*.csv` carries a party split, so
-    the between-band term cannot be computed -- but it is bounded by
+    ⚠️ The first clause of this docstring was corrected on 2026-09-08: the
+    METHOD split does carry a party split in FL, KY, ME and NC, and
+    `output/methods/<st>.csv` holds it, so its between-band term is exact in
+    four of the nine folds rather than merely bounded. `output/demo/*.csv` still
+    carries none anywhere. Where the crosstab does not exist the bound is still
+    the only tool, and it is the right one: the between-band term is bounded by
     TV(band mix) x (band-margin span), and a registration margin lives in
     [-100, +100], so no span can exceed 200. Turn that round and each fold names
     the span its dimension would need. On the final matched day the method
@@ -1435,3 +1440,178 @@ def test_the_unpriced_dimensions_cannot_reach_the_largest_changes(full_baseline)
             f"would need only a {needed:.0f}-point channel gap to carry "
             f"{day.truth:+.2f} -- inside what this repo can observe, so the "
             f"dimension is worth pricing")
+
+
+# --------------------------------------------------------------------------
+# THE PARTITION THAT CUTS ACROSS COUNTIES: county x method
+#
+# docs/counterfactual.md said "no state publishes party crossed with method".
+# That was true of schema.py and false of the sources: FL, KY, NC, CO and ME all
+# publish the cells and their adapters were adding them up at the last step.
+# `schema.MethodDay` is where they live now. These pin the arithmetic, the guard
+# that stops a one-band crosstab pretending to be a partition, and the two
+# reasons the term does not ship.
+# --------------------------------------------------------------------------
+def test_the_cell_split_is_exact_and_its_two_halves_add_up():
+    """`nested_split` over (county, method) cells, with the county as the group.
+
+    The finer between term IS the sum of the two grouped ones -- that is not a
+    convention, it is algebra -- and it is what makes `cell_county` the only
+    county figure the fine one may be compared with: both are over the same
+    support.
+    """
+    # Two counties, two bands. The whole move is voters switching CHANNEL inside
+    # county 11111 -- its share of the state is unchanged at 200 of 300 and so is
+    # county 22222's, and no cell's own registration margin moves. So no
+    # county-level method can see any of it and the cell mix carries all of it.
+    ref = {cf.cell_key("11111", "mail"): (80, 20),        # base 100, margin +60
+           cf.cell_key("11111", "inperson"): (20, 80),    # base 100, margin -60
+           cf.cell_key("22222", "mail"): (50, 50)}        # base 100, margin   0
+    now = {cf.cell_key("11111", "mail"): (120, 30),       # base 150, margin +60
+           cf.cell_key("11111", "inperson"): (10, 40),    # base  50, margin -60
+           cf.cell_key("22222", "mail"): (50, 50)}
+    counties, methods, inside = cf.nested_split(now, ref, cf.county_of_cell)
+    assert counties == pytest.approx(0.0)
+    assert methods == pytest.approx(20.0)
+    assert inside == pytest.approx(0.0)
+    # And the fine between term is their sum, which is the whole measured move.
+    between, within = cf.mix_split(now, ref)
+    assert between == pytest.approx(counties + methods)
+    assert between + within == pytest.approx(20.0)
+
+    # The other direction: the county mix moves and the channel mix inside each
+    # county does not, so `cell_county` picks it all up and `cell_method` is zero.
+    now = {cf.cell_key("11111", "mail"): (160, 40),
+           cf.cell_key("11111", "inperson"): (40, 160),
+           cf.cell_key("22222", "mail"): (50, 50)}
+    counties, methods, inside = cf.nested_split(now, ref, cf.county_of_cell)
+    assert methods == pytest.approx(0.0)
+    assert inside == pytest.approx(0.0)
+    assert counties == pytest.approx(cf.mix_split(now, ref)[0])
+
+
+def test_a_one_band_crosstab_is_refused_rather_than_averaged_over():
+    """⚠️ THE GUARD, AND COLORADO IS WHY IT EXISTS.
+
+    Colorado's 2024 workbook ships a per-county matrix for mail AND one for
+    in-person. Its 2022 workbook ships only in-person, and `co.py` refuses to
+    derive the mail band by subtraction because it is a number Colorado did not
+    print. Colorado is an all-mail state, so that band is 0.86% of its ballots --
+    and fed to `nested_split` unguarded, the two sides' shared support becomes
+    Colorado's in-person voters alone and the split reports -2.45 / +0.00 /
+    -11.87 against a measured change of -1.98. Three terms of a decomposition of
+    something else, and a spurious +1.28 gain.
+
+    The test is a reconciliation rather than a threshold: the cells must sum
+    EXACTLY to their county's own party split, because all five sources are exact
+    aggregations of the same ballots.
+    """
+    county = {"11111": (100, 100), "22222": (50, 50)}
+    whole = {cf.cell_key("11111", "mail"): (90, 80),
+             cf.cell_key("11111", "inperson"): (10, 20),
+             cf.cell_key("22222", "mail"): (50, 50)}
+    assert cf.reconciled_cells(county, whole) == whole
+    # One band missing for one county: the whole day has no cell term.
+    partial = dict(whole)
+    del partial[cf.cell_key("11111", "inperson")]
+    assert cf.reconciled_cells(county, partial) is None
+    # A county the crosstab names and the county table does not: also refused,
+    # because then the two are not the same ballots either.
+    extra = dict(whole)
+    extra[cf.cell_key("33333", "mail")] = (5, 5)
+    assert cf.reconciled_cells(county, extra) is None
+    assert cf.reconciled_cells(county, {}) is None
+    assert cf.reconciled_cells({}, whole) is None
+
+
+def test_the_cell_term_is_reported_and_is_never_a_filter():
+    """The same trap `test_reach_is_reported_and_is_never_a_filter` keeps shut,
+    a third time. The crosstab exists in four of nine folds, so a headline that
+    averaged only the folds that have one would be reporting this model's
+    accuracy off the states with the richest sources."""
+    def one(state, truth, cell, **kw):
+        return cf.Validation(
+            cycle=2024, state=state, days=1, final_shift=0.0, final_truth=truth,
+            final_error=-truth, mean_abs_error=abs(truth),
+            null_mean_abs_error=abs(truth), mean_abs_shift=0.0,
+            mean_abs_truth=abs(truth), correlation=None, sign_agreement=0.0,
+            final_cell_only=cell, final_cell_county=0.0, final_cell_method=cell,
+            final_cell_inside=truth - (cell or 0.0),
+            mean_abs_cell_only=None if cell is None else abs(cell),
+            cell_mean_abs_error=None if cell is None else abs(cell - truth),
+            cell_county_mean_abs_error=None if cell is None else abs(truth),
+            cell_null_mean_abs_error=None if cell is None else abs(truth),
+            cell_days=0 if cell is None else 1, **kw)
+
+    has = one("QQ", -10.0, -6.0)
+    hasnt = one("ZZ", -30.0, None)
+    assert has.cell_gain == pytest.approx(6.0)
+    assert hasnt.cell_gain is None
+
+    printed = "\n".join(cf.format_validation([has, hasnt]))
+    # The headline is the PUBLISHED method's, over BOTH folds.
+    assert "mean MAE = 20.00 pp" in printed
+    assert "gain = +0.00 pp" in printed
+    assert "NOTHING SHIPS" in printed
+    # And the fold with no crosstab is named rather than quietly dropped.
+    assert "1 of 2 folds have one" in printed
+    assert "NO CROSSTAB" in printed and "ZZ2024" in printed
+
+
+@pytest.mark.skipif(not (REPO_OUTPUT / "ev_state_daily.csv").exists(),
+                    reason="no published output/ tree in this checkout")
+def test_the_crosstab_is_missing_where_the_panel_moved_most(full_baseline):
+    """THE COVERAGE DISQUALIFICATION, which this repo has applied six times.
+
+    Party-by-method exists in four of the nine scoreable folds, and the five it
+    does not cover are not a random five. Pennsylvania has no early in-person
+    channel at all and Iowa reports one undifferentiated mail figure, so the
+    panel's two LARGEST measured changes -- -27.64 and -23.12 registration points
+    -- have no crosstab to have one; Maryland's mail file is a corrupt zip; and
+    Colorado published no per-county mail matrix in 2022.
+
+    A term is only worth what it is worth where it exists. If a backfill ever
+    gives the largest fold a crosstab, this fails and the term is worth
+    re-measuring on a panel that can hold it.
+    """
+    scores = cf.validate(REPO_OUTPUT, full_baseline)
+    celled = [r for r in scores if r.cell_gain is not None]
+    assert celled, "four folds should still carry a crosstab"
+    assert len(celled) < len(scores) / 2, (
+        "the crosstab now covers half the panel -- re-measure it")
+    biggest = max(scores, key=lambda r: abs(r.final_truth))
+    assert biggest.cell_gain is None, (
+        f"{biggest.state} {biggest.cycle} moved {biggest.final_truth:+.2f} and now "
+        "HAS a party-by-method crosstab; docs/counterfactual.md has to be revisited")
+
+
+@pytest.mark.skipif(not (REPO_OUTPUT / "ev_state_daily.csv").exists(),
+                    reason="no published output/ tree in this checkout")
+def test_the_county_by_method_term_is_carried_by_one_state(full_baseline):
+    """AND THE SECOND DISQUALIFICATION: the jackknife, which is the same shape
+    the flow specification failed in.
+
+    Over the folds that have a crosstab the cell term beats the no-change null by
+    more than MIN_GAIN -- but drop Florida and it collapses to a quarter of the
+    bar, exactly as the daily-flow specification went from +1.59 to +0.27 without
+    Pennsylvania. Nothing in the cell term is fitted, so this jackknife is a mean
+    over folds with one more dropped; the scale version is refitted inside every
+    fold already.
+
+    Pinned as "some single fold takes it under the bar" rather than as Florida's
+    name, so a longer panel fails it for the right reason.
+    """
+    celled = [r for r in cf.validate(REPO_OUTPUT, full_baseline)
+              if r.cell_gain is not None]
+    assert len(celled) >= 2
+    gains = [r.cell_gain for r in celled]
+    worst = min(
+        sum(g for g in gains if g is not drop) / (len(gains) - 1)
+        for drop in gains)
+    assert worst < cf.MIN_GAIN, (
+        f"every jackknife fold now clears the bar (worst {worst:+.2f}); the "
+        "county x method term is no longer carried by one state and "
+        "docs/counterfactual.md has to be revisited")
+    # And the same-support county term does not clear it either, which is what
+    # says the method dimension is where the difference came from.
+    assert (sum(r.cell_county_gain for r in celled) / len(celled)) < cf.MIN_GAIN

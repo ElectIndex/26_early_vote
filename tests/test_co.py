@@ -14,7 +14,7 @@ from pathlib import Path
 
 import pytest
 
-from ev.adapters import co
+from ev.adapters import _methods, co
 from ev.adapters.base import NotYetPublished
 
 FIXTURES = Path(__file__).parent / "fixtures" / "co"
@@ -111,3 +111,42 @@ def test_no_workbook_for_today_is_not_yet_published(monkeypatch):
     monkeypatch.setattr(co.COScraper, "_load", lambda self, day, **kw: None)
     with pytest.raises(NotYetPublished):
         co.COScraper().fetch(2026, date(2026, 9, 5))
+
+
+# --------------------------------------------------------------------------
+# The party-by-method crosstab
+# --------------------------------------------------------------------------
+def test_the_two_channel_matrices_are_published_as_a_crosstab(parsed):
+    """Colorado ships the county x party matrix once per channel in 2024, so the
+    cells exist and `schema.MethodDay` is where they go. They must add back up
+    to the county row: this is the same ballots partitioned, not a second
+    estimate of them."""
+    cells = _methods.rows_of(parsed)
+    assert {r.method for r in cells} == {"mail", "inperson"}
+    by_county = {}
+    for row in cells:
+        entry = by_county.setdefault(row.county_fips, [0, 0, 0])
+        entry[0] += row.ballots_total
+        entry[1] += row.party_dem
+        entry[2] += row.party_rep
+    for county in parsed.county_rows:
+        assert by_county[county.county_fips] == [
+            county.ballots_total, county.party_dem, county.party_rep]
+
+
+def test_the_2022_workbook_yields_one_band_and_the_other_is_not_invented():
+    """⚠️ THE REFUSAL THAT KEEPS THIS TABLE HONEST.
+
+    Colorado's 2022 workbook ships `In_Person_by_Party_County` and NO per-county
+    mail matrix. `all_returned - in_person` is arithmetic and it is still a
+    number Colorado did not print, which is exactly why `mail_returned` is blank
+    on the 2022 county row too. So 2022 gets the in-person band and nothing
+    else — and because Colorado is an all-mail state that band is under 1% of
+    its ballots, which is what `counterfactual.reconciled_cells` refuses.
+    """
+    result = co.parse(BOOK_2022, 2022, date(2022, 11, 1))
+    cells = _methods.rows_of(result)
+    assert {r.method for r in cells} == {"inperson"}
+    counties = {r.county_fips: r.ballots_total for r in result.county_rows}
+    covered = sum(r.ballots_total for r in cells)
+    assert covered < 0.05 * sum(counties.values())

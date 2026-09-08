@@ -15,15 +15,16 @@ table, never into the reported columns of `ev_state_daily.csv`.
 
 **The headline finding, before anything else.** Measured against the only
 compositional change anyone can actually observe — the party registration those
-same states reported for those same ballots — the method is off by **9.99
+same states reported for those same ballots — the method is off by **11.39
 percentage points of margin** and the null model *"the composition has not
-changed at all"* is off by **9.27**. It is **−0.73 points worse than saying
-nothing**, against a bar of +1.00. County geography moves **1.48 points** across
-a window while the composition it is standing in for moves **9.27**. Fitting a
-scale factor to close the gap, leave-one-state-out, makes five of the eight folds
-worse and produces multipliers of **−0.65, −0.61, −0.32, −0.25, −0.09, −0.05 and
-+2.56** — pointing both ways, across a fiftyfold spread. A signal in the wrong
-unit would be fixed by one number. Nothing here is one number.
+changed at all"* is off by **10.84**. It is **−0.55 points worse than saying
+nothing**, against a bar of +1.00. County geography moves **1.41 points** across
+a window while the composition it is standing in for moves **10.84**. Fitting a
+scale factor to close the gap, leave-one-state-out, makes eight of the nine folds
+worse and produces multipliers of **−0.26, −0.14, −0.12, +0.16, +0.23, +0.39,
++0.45, +4.94 and +4.94** — pointing both ways, across a twentyfold spread. A
+signal in the wrong unit would be fixed by one number. Nothing here is one
+number.
 
 For comparison, `docs/party-estimate.md` recommended **against** shipping a model
 that bought 0.79 points, and `docs/regression.md` declined one at +0.17.
@@ -109,6 +110,32 @@ that exact three-way split puts **−0.73 between counties, −0.94 between town
 the same county, and −12.21 inside towns**. Twenty-nine times the resolution
 takes geography from 5% of the answer to 12%. See
 [Outside the counties](#outside-the-counties-2026-09-07--the-three-dimensions-that-vary-inside-one).
+
+**An eighth, added 2026-09-08, and it is a correction to this page as much as a
+finding.** The seventh said the between-method term "cannot be computed" because
+*"no state publishes party crossed with method"*. **That was true of `schema.py`
+and false of the sources.** Florida renders its mail and early county tables
+separately, each split by party; Kentucky carries DEM and REP columns per
+channel; North Carolina and Maine put the party and the channel on the same
+ballot row; Colorado ships a county × party matrix per channel. Five adapters
+were parsing the crosstab and adding the two channels together at the last step
+before writing a `CountyDay` that had nowhere to put it. `schema.MethodDay` and
+`output/methods/<st>.csv` hold it now, and the exact between-channel term buys
+**+1.77** over the null — over the bar, and refused twice: the crosstab exists in
+**four of the nine** folds and not in the panel's two largest changes, and
+**dropping Florida alone takes +1.77 to +0.24**. Verifying the claim also turned
+up a live bug: North Carolina renamed `ballot_req_type` from `ONE-STOP` to
+`EARLY VOTING` between cycles and `nc.py` matched literals, so `inperson`
+published as a flat **0** for 4,231,692 ballots on all 47 days of NC 2024. See
+[Party by method](#party-by-method-2026-09-08--the-crosstab-that-did-exist).
+
+**A ninth, added 2026-09-08 and not this document's own work.** Iowa's 2022
+backfill made the panel **nine** folds. IA 2024's early electorate moved
+**−23.12** registration points — the second largest in the panel — county
+geography reported 1.32 of it against a reach bound of 4.15, and its own MAE of
+22.52 took `MODEL_ERROR_PP` from 10.5 to **11.5**. Its method mix is 0.00 and it
+has no crosstab, so it makes every coverage row in this document worse and
+changes no conclusion in it.
 
 **Recommendation: do not ship the modelled margin.** Ship the thing underneath
 it, which is a count rather than a model: the like-for-like *party-registration*
@@ -252,7 +279,7 @@ dimension for which this repo holds that number.
 | **county** | every tracked state with a county file | **yes** | certified 2024 county returns are vendored, and the full-electorate identity above holds exactly |
 | **party registration** | ~30 states register by party; KY, MD, ME, NC, CO, IA, PA, FL, NV, SD report it on returned ballots | **no** — reported in its own unit | converting registration points to presidential points needs to know how registered Democrats actually *voted* in 2024. This repo does not have it. Kentucky's registration split sits ten points Democratic of its presidential split (`docs/party-estimate.md`), so the conversion is not a detail |
 | **age / race / sex** | `output/demo/*.csv` — GA, MD, MI, NC, SC | **no** — reported as a distance | **group-level 2024 presidential behaviour by demographic was not sourced for this feature.** Saying so plainly is the honest option; inventing a citation is not one |
-| **mail / in-person method** | `mail_returned` + `inperson`, every state row | **no** — and it cannot be | no state publishes party *crossed with* method, so the bands have no margins to be valued at. It is also **0.00 in Pennsylvania and Maryland**, which have only one channel each. [Measured](#outside-the-counties-2026-09-07--the-three-dimensions-that-vary-inside-one) at −1.52 |
+| **mail / in-person method** | `mail_returned` + `inperson`, every state row; the party crossed with it in `output/methods/*.csv` — FL, KY, ME, NC and CO 2024 | **no** — reported in the truth's own unit, four folds | FL, KY, NC, ME and CO **do** publish party crossed with method and their adapters had been adding the two channels together; `schema.MethodDay` holds the cells now. The between-channel term is exact where it exists and it exists in **4 of 9 folds** — not in PA or IA, which have one channel, nor MD, whose mail file is a corrupt zip. [Measured](#party-by-method-2026-09-08--the-crosstab-that-did-exist) at +1.77, +0.24 without Florida |
 | **sub-county geography** | `output/towns/*.csv` — Maine, and only Maine | **no** — one fold | the only within-county dimension carrying the truth's own unit, so its split is exact: −0.94 of Maine's −13.88, against the county level's −0.73. [Measured](#outside-the-counties-2026-09-07--the-three-dimensions-that-vary-inside-one) |
 
 `dims_used` names the dimensions inside the headline number. In every row this
@@ -347,40 +374,57 @@ geography could have reported there whatever its counties had done. See
 | 2024 | MD | 6 | +0.70 | −6.28 | 7.16 | 5.60 | **−1.56** | 1.56 | 5.60 | 6.17 | +0.97 | 0% | −0.05 | 5.52 | +0.08 |
 | 2024 | ME | 21 | −1.18 | −13.99 | 13.39 | 14.37 | **+0.98** | 0.98 | 14.37 | 1.68 | −0.62 | 100% | −0.61 | 14.97 | −0.60 |
 | 2024 | NC | 15 | −1.25 | −11.42 | 10.91 | 12.14 | **+1.23** | 1.23 | 12.14 | 5.48 | +0.60 | 100% | −0.65 | 12.94 | −0.79 |
-| **2022** | **PA** | 15 | −3.11 | **+5.57** | 7.21 | 2.48 | **−4.73** | 4.80 | 2.48 | 6.28 | +0.97 | **7%** | +2.56 | 14.71 | −12.22 |
-| 2024 | PA | 23 | −1.26 | −27.64 | 24.99 | 23.72 | **−1.27** | 2.09 | 23.72 | 4.57 | +0.98 | 52% | +2.56 | 26.98 | −3.26 |
+| **2022** | **PA** | 15 | −3.11 | **+5.57** | 7.21 | 2.48 | **−4.73** | 4.80 | 2.48 | 6.28 | +0.97 | **7%** | +4.94 | 26.16 | −23.68 |
+| 2024 | PA | 23 | −1.26 | −27.64 | 24.99 | 23.72 | **−1.27** | 2.09 | 23.72 | 4.57 | +0.98 | 52% | +4.94 | 30.01 | −6.29 |
+
+⚠️ **The 2024 rows above are the eight-fold panel's, and Iowa's 2022 backfill
+made it nine on 2026-09-08.** IA 2024 is the row to add and it is the second
+largest measured change in the table:
+
+| cycle | state | days | shift (final) | truth (final) | **MAE** | **null** | **gain** | mean \|shift\| | mean \|truth\| | **reach** | r | sign | LOO k | k-MAE | k-gain |
+| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| 2024 | IA | 11 | −1.32 | **−23.12** | 22.52 | 23.38 | **+0.86** | 0.86 | 23.38 | 4.15 | −0.59 | 100% | −0.26 | 23.60 | −0.22 |
+
+Iowa's early electorate moved 23.12 registration points and county geography
+reported 1.32 of it, against a reach bound of 4.15 — the seventh series in the
+panel whose answer was beyond what its counties could have said at any weighting.
+Its arrival moved the mean error 9.99 → 11.39 and the headline gain −0.73 →
+−0.55, in opposite directions, which is the third time in a row that has
+happened; see [the band](#the-uncertainty-band). The k column is refitted on
+nine folds throughout.
 
 Two `truth`s are smaller than their `reach`: Colorado's, where nothing happened,
 and **PA 2022's, where something did** — and that is the row to read first.
 
 | | |
 | --- | ---: |
-| mean MAE | **9.99 pp** |
-| mean MAE of the null (composition unchanged) | **9.27 pp** |
-| **what county geography buys** | **−0.73 pp** |
-| pooled by day rather than by series (98 days) | −0.74 pp |
-| how far the modelled shift moves | **1.48 pp** |
-| how far the composition it stands in for moves | **9.27 pp** |
-| leave-one-state-out fitted scale, mean gain | **−2.10 pp** |
-| **leave-one-CYCLE-out constant, mean gain** | **−3.35 pp** |
-| series whose measured change was **beyond county geography's reach** | **6 of 8** |
+| mean MAE | **11.39 pp** |
+| mean MAE of the null (composition unchanged) | **10.84 pp** |
+| **what county geography buys** | **−0.55 pp** |
+| pooled by day rather than by series (109 days) | −0.58 pp |
+| how far the modelled shift moves | **1.41 pp** |
+| how far the composition it stands in for moves | **10.84 pp** |
+| leave-one-state-out fitted scale, mean gain | **−3.49 pp** |
+| **leave-one-CYCLE-out constant, mean gain** | **−3.43 pp** |
+| series whose measured change was **beyond county geography's reach** | **7 of 9** |
+| **the county × METHOD crosstab, where it exists** | **+1.77 pp on 4 of 9 folds, +0.24 without Florida** |
 
 `--validate` prints its own verdict rather than leaving it to this page:
 
 ```
-VERDICT: NOTHING SHIPS (bar is +1.00 pp of gain over the no-change null; measured -0.73)
+VERDICT: NOTHING SHIPS (bar is +1.00 pp of gain over the no-change null; measured -0.55)
 ```
 
 The bar, `MIN_GAIN = 1.0`, is in code. It is the same bar `regress.py` sets.
 
 ### The three things in that table that decide it
 
-**1. It does not beat the null.** −0.73 points on eight folds against a bar of
+**1. It does not beat the null.** −0.55 points on nine folds against a bar of
 +1.00, and it is negative on five of them. `docs/party-estimate.md` declined at
 +0.79 and `docs/regression.md` declined at +0.17.
 
-**2. It barely moves.** The modelled shift travels 1.48 points while the measured
-composition travels 9.27. This is the same mechanism `docs/party-estimate.md`
+**2. It barely moves.** The modelled shift travels 1.41 points while the measured
+composition travels 10.84. This is the same mechanism `docs/party-estimate.md`
 found for `lean_vs_baseline`: **every state we track publishes every one of its
 counties**, so once coverage is complete the ballot weights are close to
 proportional to county size and the weighted mean is arithmetically pinned near
@@ -540,6 +584,9 @@ the product, `mix_distance()` the first factor, `margin_span()` the second, and
 | NC 2024 | 4.30% | 127.4 | **5.48** | 11.42 | 2.08× |
 | **PA 2022** | 4.75% | 132.4 | **6.28** | **5.57** | **0.89× — in reach** |
 | PA 2024 | 3.45% | 132.4 | **4.57** | 27.64 | **6.05×** |
+| IA 2024 | — | — | **4.15** | 23.12 | **5.57×** |
+
+(Iowa joined on 2026-09-08 and is the seventh of nine beyond its own bound.)
 
 **Six of eight, and both of the others are worth reading.** Colorado's early
 electorate moved 1.98 registration points between 2022 and 2024; the six beyond
@@ -668,6 +715,7 @@ cycle's county ballot mix.
 | NC 2024 | 15 | −11.42 | −1.85 | −9.57 | 84% | 1.94 | 10.20 | 12.14 | **+1.94** |
 | PA 2022 | 15 | **+5.57** | **−1.98** | **+7.55** | **135%** | 2.59 | 4.99 | 2.48 | **−2.51** |
 | PA 2024 | 23 | −27.64 | −1.10 | −26.54 | 96% | 0.82 | 23.15 | 23.72 | **+0.57** |
+| IA 2024 | 11 | −23.12 | −1.92 | −21.20 | 92% | 1.30 | 22.08 | 23.38 | **+1.30** |
 
 | | |
 | --- | ---: |
@@ -685,10 +733,12 @@ measured changes of 1.98 to 27.64. It is smaller than the reach bound in every
 fold, as it must be, and it is smaller by an order of magnitude in the folds
 that moved.
 
-**2. Closing the unit gap does not rescue the dimension.** −0.05 on the eight
-folds against a bar of +1.00. It was +0.30 on the seven folds that existed before
-Pennsylvania's second transition, and one state carried even that: drop North
-Carolina and it was +0.03. That is the same jackknife that turned the flow
+**2. Closing the unit gap does not rescue the dimension.** **+0.10** on the nine
+folds against a bar of +1.00. It was −0.05 on eight and +0.30 on the seven that
+existed before Pennsylvania's second transition, and no version of it has ever
+reached a third of the bar. One state has carried it every time the panel has
+been jackknifed, and which state that is keeps changing: dropping North Carolina
+takes it to **−0.13** and dropping Iowa to **−0.05**. That is the same jackknife that turned the flow
 specification's +1.59 into +0.27, applied to the strongest possible version of the
 county dimension — one that needs no fitted scale, no conversion and no
 assumption. `fit_scale` can be retired as an explanation. The unit was never the
@@ -735,7 +785,7 @@ were measured.
 
 #### 1. Coverage first, because it decides two of them before any arithmetic
 
-| dimension | where it exists | folds of the eight it covers |
+| dimension | where it exists | folds of the eight it covers (nine since 2026-09-08) |
 | --- | --- | ---: |
 | **county** (the incumbent) | every tracked state with a county file | **8 of 8** |
 | **mail / in-person method** | `mail_returned` + `inperson`, on every state row | **8 readable, 5 that move** |
@@ -803,11 +853,22 @@ state in the same position fails it for the same reason.
 
 #### 3. What the other five would need, and it is more than exists
 
-No state publishes party crossed with method — `schema.py` has no such column and
-`docs/party-estimate.md` has been asking for one for two revisions — so the
-between-method term cannot be computed either. It can be **bounded**, by exactly
-the argument [the reach bound](#the-reach-bound) makes for counties: for any
-partition into bands,
+> ⚠️ **CORRECTED 2026-09-08, and the correction is the reason this page has a
+> new section.** This paragraph used to open *"No state publishes party crossed
+> with method — `schema.py` has no such column"*. **The second clause was true
+> and the first was false**, and the two were run together into one sentence for
+> two revisions. Five of the states this tracker scrapes publish the crosstab,
+> their adapters were parsing it, and every one of them added the two channels
+> together at the last step before writing a `CountyDay`. `schema.MethodDay` and
+> `output/methods/<st>.csv` now hold it, and it is measured in
+> [Party by method](#party-by-method-2026-09-08--the-crosstab-that-did-exist).
+> The bound below is still the right tool where the crosstab does **not** exist,
+> which is five of the nine folds; it is superseded, on the four that have one,
+> by the exact term.
+
+The between-method term could not be computed when this was written. It can be
+**bounded**, by exactly the argument [the reach bound](#the-reach-bound) makes
+for counties: for any partition into bands,
 
 ```
 |between-band|  ≤  TV(band mix)  ×  (widest band margin − narrowest)
@@ -845,13 +906,15 @@ the second smallest in the panel — needs 28. The dimension is out of reach of 
 own answer in **seven of the eight folds** at the widest gap this repo has ever
 observed, against the county dimension's six of eight.
 
-⚠️ **And the fold most likely to arrive next is a fourth frozen one.** Iowa's
-2022 county backfill was in progress while this was measured. Iowa reports its
-absentee returns as a single mail figure and no in-person column at all — its
-mail share is **1.000** on every published 2024 day — and it holds no town table
-and no demographic table. An IA 2024-vs-2022 fold would add a ninth series with a
-method mix of 0.00, a county term and nothing else. It cannot change any
-conclusion here; it can only make the coverage row worse.
+⚠️ **And the fold most likely to arrive next is a fourth frozen one. It arrived
+on 2026-09-08 and it is.** Iowa's 2022 county backfill was in progress while this
+was measured. Iowa reports its absentee returns as a single mail figure and no
+in-person column at all — its mail share is **1.000** on every published 2024
+day, and its measured method-mix distance on the final matched day is **0.00** —
+and it holds no town table and no demographic table. So IA 2024-vs-2022 is a
+ninth series with a method mix of zero, a county term and nothing else, and its
+measured change of **−23.12** is the second largest in the panel. It changed no
+conclusion here and it made the coverage row worse, exactly as predicted.
 
 The same arithmetic disposes of the demographic tables, and it is the only thing
 that can, since nothing prices them. North Carolina's age mix moves **12.6**
@@ -977,10 +1040,16 @@ anything. `MIN_GAIN` is a bar for a panel, not for a single series.
 
 | dimension | between-part, final day | share of the change | folds it covers |
 | --- | ---: | ---: | ---: |
-| county | −1.10 (PA 2024) … −1.98 (PA 2022) | 4% – 16% | 8 of 8 |
-| **method** | **0.00 in PA and MD**; unpriceable elsewhere | out of reach in 7 of 8 | 5 that move |
+| county | −1.10 (PA 2024) … −1.98 (PA 2022) | 4% – 16% | 9 of 9 |
+| **method** | **−5.59** (FL) … **−0.30** (NC), and **0.00 in PA, MD and IA** | 3% – 113% | **4 of 9** |
 | **age / race / sex** | unpriceable — no band margins exist anywhere | needs a 91-to-872-point span | 1 – 2 |
-| **town** | **−0.94** (Maine) | **6.7%** | 1 of 8 |
+| **town** | **−0.94** (Maine) | **6.7%** | 1 of 9 |
+
+⚠️ **The method row was rewritten on 2026-09-08 and it is the only row in this
+table that moved.** It used to read "unpriceable elsewhere", on the strength of
+the sentence corrected above. It is priceable in four folds, it is the largest
+within-county term this repo has measured, and it still does not ship. See
+[Party by method](#party-by-method-2026-09-08--the-crosstab-that-did-exist).
 
 **Nothing here changes the recommendation, and the reason is sharper than
 "nothing scored well".** The county dimension was blind because every state
@@ -995,6 +1064,156 @@ ballots. What changed was **who,
 among the same people, in the same places, through the same channel, chose to
 return a ballot** — and that is behaviour, which this construction freezes by
 definition and which no partition of an electorate can recover.
+
+
+### Party by method, 2026-09-08 — the crosstab that did exist
+
+*[Outside the counties](#outside-the-counties-2026-09-07--the-three-dimensions-that-vary-inside-one)
+said the method dimension could only be bounded, because no state published party
+crossed with method. Five of them do. This is what it is worth.*
+
+#### What was actually in the files
+
+The claim was checked against the real source files rather than against the
+adapters' output, and it was wrong in five states at once:
+
+| state | where the crosstab is | both cycles? |
+| --- | --- | --- |
+| **FL** | `PublicStats` renders "Voted Vote-by-Mail" and "Voted Early" as two separate per-county tables, each split Republican / Democrat / Other / NPA | yes — 24 archived 2022 days and 34 archived 2024 days |
+| **KY** | the workbook carries `DEM/REP Ballots RETURNED`, `DEM/REP Excused In-person` and `DEM/REP No Excuse In-person` | yes — identical columns in the 2022 and 2024 workbooks, though 2022 is a single day |
+| **NC** | one row per ballot, `voter_party_code` beside `ballot_req_type` | yes |
+| **ME** | one row per ballot, `P` beside `RECTYPE` | yes |
+| **CO** | `Returned_Mail_Ballots_By_County` and `In_Person_Ballots_By_County`, each a county × party matrix | **no** — 2022 ships `In_Person_by_Party_County` and no mail matrix at all |
+
+`schema.MethodDay` is the row type and `output/methods/<st>.csv` the table, built
+on the `TownDay` precedent: its own file beside `counties/`, rows riding on
+`FetchResult` as an attribute, the band checked at construction so a bad label
+fails inside `adapter.fetch` rather than at write time. The band vocabulary is
+`normalize.method()`'s and there is no second copy of it. THE BLANK RULE applies
+twice: a band the state does not report is an **absent row**, never a row of
+zeros, and inside a row an unreported party bucket is blank — Kentucky's NPA and
+OTH are blank, and its mail band's total includes FPCA ballots its DEM and REP
+columns do not.
+
+#### And one bug fell out of the verification
+
+North Carolina spells `ballot_req_type` **`ONE-STOP`** in its 2022 file and
+**`EARLY VOTING`** in its 2024 one. `nc.py` matched the raw cell against a
+hand-written tuple of spellings that knew only the 2022 one, so all **4,231,692**
+of 2024's in-person ballots fell through both branches and `inperson` published as
+a flat **0** on every one of that cycle's 47 days — against a headline of
+4,520,768 and a mail figure of 297,034. Zero rather than blank, so it read as
+North Carolina reporting that nobody voted early in person: THE BLANK RULE
+inverted, which is the worse of the two errors.
+
+Nothing downstream had noticed because `estimate.method_split` believes a state's
+own mail figure first and treats the rest of the headline as in-person — a
+workaround written for this exact state, naming this exact number, in a docstring
+that had been describing a bug rather than a source. The fix is CLAUDE.md rule 4
+and nothing else: the label goes through `normalize.method()`, which already knew
+both spellings, and one it does not know raises `SchemaDrift`. **The published
+`shift_pp`, `truth`, `mix_split` and every scored number are unchanged to twelve
+decimal places** — none of them reads `inperson` — so this is a correction to the
+published table and not to the finding.
+
+#### The term, and the guard that makes it honest
+
+The predictor is `mix_split`'s between term over the finer partition: cells are
+**(county, method)** rather than counties, valued in the truth's own registration
+margins, with nothing fitted. `nested_split` with the county as the group takes
+it apart, and the first two terms sum to the fine between term exactly:
+
+```
+M_now − M_ref  =  Σ_c (W_now,c − W_ref,c)·M_ref,c            BETWEEN COUNTIES
+               +  Σ_c W_now,c · Σ_{b∈c} (w_now,b|c − w_ref,b|c)·m_ref,b
+                                                    BETWEEN CHANNELS IN A COUNTY
+               +  Σ_b w_now,b·(m_now,b − m_ref,b)              WITHIN CELLS
+```
+
+⚠️ **A one-band crosstab is not a partition, and Colorado is why
+`reconciled_cells` exists.** CO 2022 publishes the in-person matrix and nothing
+else, and `co.py` refuses to derive the mail band by subtraction — correctly, for
+the same reason `mail_returned` is blank on its county row: it is a number
+Colorado did not print. Colorado is an all-mail state, so that one band is
+**0.86%** of its ballots. Handed to the split unguarded, the two sides' shared
+support becomes Colorado's in-person voters alone, the decomposition reports
+−2.45 / +0.00 / −11.87 against a measured change of −1.98, and the fold scores a
+spurious **+1.28**. So a county's cells count only where they add up **exactly**
+to that county's own party split, on the same day, in the same table — a
+reconciliation rather than a threshold, because all five sources are exact
+aggregations of the same ballots. Colorado 2022 fails it and Colorado leaves the
+cell panel.
+
+#### The measurement
+
+Scored through `score_panel` on mature days, against the same no-change null, at
+the same ±3-day match tolerance, on the same nine-fold panel:
+
+| fold | days | measured | between counties | **between channels** | inside cells | **cell gain** | same-support county gain |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| FL 2024 | 8 | −4.94 | −0.13 | **−5.59** | +0.77 | **+6.36** | +0.38 |
+| KY 2024 | 6 | −13.22 | −0.03 | −1.34 | −11.85 | **−4.40** | +0.25 |
+| ME 2024 | 21 | −13.99 | −0.74 | −2.21 | −10.95 | **+2.71** | +0.46 |
+| NC 2024 | 15 | −11.42 | −1.85 | −0.30 | −9.27 | **+2.41** | +1.94 |
+
+| | |
+| --- | ---: |
+| mean gain over the no-change null, four folds | **+1.77 pp** |
+| the same-support county term on those four folds | +0.76 pp |
+| **jackknife — drop one more fold** | **+0.24 without FL**, +1.46, +1.56, +3.83 |
+| with a scale fitted leave-one-state-out (refitted in every fold) | **+0.44 pp** |
+| pooled by day rather than by series (50 days) | +2.35 pp |
+| folds the crosstab exists in | **4 of 9** |
+
+**It clears MIN_GAIN on the mean and it is refused twice over.**
+
+**1. Four of nine, and the five it misses are not a random five.** Pennsylvania
+has no early in-person channel at all and Iowa reports one undifferentiated mail
+figure with no in-person column, so the panel's **two largest measured changes —
+−27.64 and −23.12 registration points — have no crosstab to have**. Maryland's
+mail file is served as a corrupt zip. Colorado shipped no 2022 mail matrix. This
+is the disqualification this repo has now applied seven times: *a term available
+only where the data is richest is not a term either model can use.* The county
+term is defined in 9 of 9.
+
+**2. One state carries the mean, and dropping it leaves a quarter of the bar.**
++1.77 becomes **+0.24** without Florida — the identical shape the daily-flow
+specification failed in, where +1.59 became +0.27 without Pennsylvania. Florida
+is not an arbitrary outlier: it is the **one fold this page's own `required_span`
+said the method dimension could reach**, needing a 28-point channel gap against
+26.3 observed. That the argument's own prediction came true in the one place it
+said it would is the most interesting thing here, and one fold is still one fold.
+`MIN_GAIN` is a bar for a panel.
+
+**3. And Kentucky shows what the term is made of.** KY's cell term reads
+**+10.20** at seven days out while the truth is **+0.42**, then falls to −1.37 as
+the truth falls to −13.22. That is not composition; it is *when in-person voting
+opens*. KY's 2022 reference is a single day near the close while 2024 is still
+mail-only at the matched day, and the ±3-day tolerance that is harmless for
+county geography is not harmless for a channel mix. Sweeping the tolerance moves
+KY from −0.58 (±0) to −4.40 (±3) and moves nothing else at all — the method mix
+is a **calendar** variable before it is a compositional one, exactly as the
+fitted-gap specification found in 2026-09-07's sweep.
+
+**And what the four folds do say, which is worth keeping.** On the final matched
+day the cell term carries **116% of Florida's change, 21% of Maine's, 19% of
+North Carolina's and 10% of Kentucky's**, against the county term's 3%, 5%, 16%
+and 0.2%. So the method dimension is the largest within-county term this repo has
+measured — larger than Maine's 463 towns, which took geography from 5% to 12% —
+and 79% to 90% of the change is *still* inside a single county-and-channel cell in
+three of the four. The conclusion the whole search reaches does not move: the
+movement is not compositional. It is the same voters, in the same places, through
+the same channel, deciding differently about whether to return a ballot.
+
+`test_the_cell_split_is_exact_and_its_two_halves_add_up` pins the algebra,
+`test_a_one_band_crosstab_is_refused_rather_than_averaged_over` pins Colorado's
+guard, `test_the_crosstab_is_missing_where_the_panel_moved_most` pins the coverage
+disqualification against the live tree, and
+`test_the_county_by_method_term_is_carried_by_one_state` pins the jackknife — all
+four fail if a backfill changes any of it, so this section gets revisited rather
+than inherited. `test_the_cell_term_is_reported_and_is_never_a_filter` keeps the
+usual trap shut: `cell_gain` does not enter `gain`, and the headline stays the
+published method's over every scored series.
 
 ### Nine more specifications, swept 2026-09-07, and one of them looked like a finding
 
@@ -1510,7 +1729,7 @@ arithmetic:
    the other, so the two bounds are subtracted crosswise. It collapses to zero at
    complete coverage on both sides. This is a bound, not a confidence interval.
 
-2. **A flat ±10.5 points of model error**, `MODEL_ERROR_PP`. **Two rules set it,**
+2. **A flat ±11.5 points of model error**, `MODEL_ERROR_PP`. **Two rules set it,**
    and until 2026-09-07 only the first had ever bound: it is the measured mean
    absolute error, rounded up to the next half point, and it is **never narrower
    than the largest `shift_pp` this model publishes**. A band that did not contain
@@ -1530,7 +1749,8 @@ arithmetic:
    | 9.5 | 9.09 | the maturity gate corrected the domain |
    | 12.0 | 11.74 | Pennsylvania 2022 was unlocked |
    | 10.5 | 10.39 | Colorado's 2022 backfill added a seventh series |
-   | **10.5** | **9.99** | Pennsylvania 2020 added an eighth — **and the value did not move** |
+   | 10.5 | 9.99 | Pennsylvania 2020 added an eighth — **and the value did not move** |
+   | **11.5** | **11.39** | Iowa's 2022 backfill added a ninth, and IA 2024's own MAE is **22.52** |
 
    ⚠️ **The last two rows are dilution, not improvement, and the second is the
    clearer case because the band and the verdict moved in opposite directions.**
@@ -1542,9 +1762,9 @@ arithmetic:
    Pennsylvania publishes a +10.48, so the floor holds the band at 10.5.
 
    It is also a **mean** absolute error and never a maximum — Pennsylvania 2024's
-   own 24.99 is inside the panel this is fitted on, and ±10.5 does not cover it.
+   own 24.99 is inside the panel this is fitted on, and ±11.5 does not cover it.
 
-**A ±10.5-point band on a shift that runs −7.06 to +10.48 points across every
+**A ±11.5-point band on a shift that runs −7.06 to +10.48 points across every
 published row is not a caveat on the number. It is the number.** Before the
 maturity gate the file also carried shifts out to ±26, and every one of those was
 a phase artefact off a sliver of an electorate. What is left is not: the +10.48
@@ -1624,13 +1844,17 @@ the thing being held fixed.
   this repo does not have and that was not sourced for this feature.
 
   ⚠️ **And no dimension that varies INSIDE a county rescues either of them.**
-  All three the tracker collects were measured on 2026-09-07. The mail/in-person
-  mix is **exactly frozen** in Pennsylvania and Maryland, needs an impossible
-  channel gap in four more folds, and buys −1.52 leave-one-state-out; age, race
-  and sex have no band margins anywhere in this repo and cover one and two folds
-  of eight; and Maine's 463 towns inside 16 counties move geography's share of
-  its −13.88 from 5.3% to 12.0%. See
-  [Outside the counties](#outside-the-counties-2026-09-07--the-three-dimensions-that-vary-inside-one).
+  All three the tracker collects were measured on 2026-09-07, and the sharpest
+  of them was re-measured on 2026-09-08 once the party-by-method crosstab turned
+  out to exist. The mail/in-person mix is **exactly frozen** in Pennsylvania,
+  Maryland and Iowa; where the crosstab exists — four folds of nine — its
+  between-channel term is the largest within-county term in this repo and buys
+  **+1.77**, which falls to **+0.24** without Florida. Age, race and sex have no
+  band margins anywhere in this repo and cover one and two folds of nine; and
+  Maine's 463 towns inside 16 counties move geography's share of its −13.88 from
+  5.3% to 12.0%. See
+  [Outside the counties](#outside-the-counties-2026-09-07--the-three-dimensions-that-vary-inside-one)
+  and [Party by method](#party-by-method-2026-09-08--the-crosstab-that-did-exist).
 
   ⚠️ **And pricing party registration would destroy the only validation there
   is.** The truth column IS the party-registration shift; a model that predicted
@@ -1659,15 +1883,15 @@ the thing being held fixed.
 
 1. **Do not publish `implied_margin_2024`, `shift_pp` or "the early electorate is
    N points more Republican" as a modelled figure in any state.** It is worth
-   −0.73 points against "assume nothing changed" on a bar of +1.00 — it is worse
-   than saying nothing — it moves 1.48 points while the thing it describes moves
-   9.27, and its honest band is ±10.5 points on a quantity that spans
+   −0.55 points against "assume nothing changed" on a bar of +1.00 — it is worse
+   than saying nothing — it moves 1.41 points while the thing it describes moves
+   10.84, and its honest band is ±11.5 points on a quantity that spans
    **seventeen and a half** points across every published row. A band that
    contains every plausible answer says nothing.
 
    And the accuracy measurement is no longer the strongest argument against it.
    [The reach bound](#the-reach-bound) shows the number is *arithmetically*
-   incapable of the job in six of the eight series it can be scored on, needs no
+   incapable of the job in seven of the nine series it can be scored on, needs no
    ground truth to say so, and would say it just as loudly on a 2026 day — and on
    the one series where it *did* have the room and something happened, PA 2022, it
    pointed the wrong way.
@@ -1675,7 +1899,7 @@ the thing being held fixed.
    argument, which was the unit: 84% to 135% of every measured change happened
    between voters of the same county, and the county mix scored in the truth's
    own registration unit — no conversion, no fitted scale, nothing to calibrate —
-   buys −0.05.
+   buys +0.10.
    [Outside the counties](#outside-the-counties-2026-09-07--the-three-dimensions-that-vary-inside-one)
    closes the one after that, which was "then use a dimension that varies inside
    a county". There are three, none of them works, and the two sharpest reasons
@@ -1683,6 +1907,12 @@ the thing being held fixed.
    is *named* after — moves **exactly 0.00** in Pennsylvania, which has no early
    in-person voting; and Maine's 463 towns inside 16 counties, twenty-nine times
    the resolution, take geography from 5% of its measured change to 12%.
+   [Party by method](#party-by-method-2026-09-08--the-crosstab-that-did-exist)
+   closes the one after *that*, which was the sentence "no state publishes party
+   crossed with method" — five of them do, `schema.MethodDay` now holds the
+   cells, and the exact between-channel term buys **+1.77** on the four folds of
+   nine that have one, **+0.24** without Florida alone. It is the largest
+   within-county term this repo has measured and it is still one state's.
 
    ⚠️ **And there is no version of this that refuses instead.** Refusing where the
    reach bound is smaller than the model's own error bar is live-computable and
@@ -1738,13 +1968,17 @@ the thing being held fixed.
 5. **The genuinely better fix is more data and a sourced weight, not a better
    model.** Two things would change the answer, and neither is a refinement of
    this arithmetic:
-   * **A party split BY METHOD**, which no state we track publishes and which
-     `schema.py` has no column for. It is the one measurement that would make the
-     mail/in-person dimension computable rather than merely bounded, and
-     `docs/party-estimate.md` has been asking for it for two revisions for a
-     different reason. ⚠️ It would still be **0.00 in Pennsylvania**, which has
-     only one channel, so it would not touch the fold this whole document turns
-     on.
+   * ~~**A party split BY METHOD**, which no state we track publishes and which
+     `schema.py` has no column for.~~ **Found, built and measured on
+     2026-09-08.** Five states publish it, `schema.MethodDay` holds it, and the
+     between-channel term buys **+1.77** on the four folds that have one —
+     **+0.24 without Florida**, and it does not exist in five of nine folds
+     including the panel's two largest changes. The prediction attached to this
+     bullet was right: it is **0.00 in Pennsylvania**, which has only one
+     channel, so it does not touch the fold this document turns on. See
+     [Party by method](#party-by-method-2026-09-08--the-crosstab-that-did-exist).
+     What is still missing, and what would actually change the answer, is the
+     next bullet.
    * **A sourced, citable table of 2024 presidential vote by party registration
      and by demographic group, per state**, vendored the way the county baseline
      is. That would let the two dimensions that actually move be priced in
@@ -1793,6 +2027,8 @@ the signal is not."
 | `data/baseline/county_results_2024.csv` | vendored county weights, shared with `estimate.py` |
 | `tests/test_counterfactual.py` | 73 tests |
 | `output/towns/me.csv` | Maine by town, the one sub-county unit in the repo that carries a party split — read into `DayIndex.town_party` for `nested_split` and never an input to `shift_pp` |
+| `output/methods/<st>.csv` | party crossed with METHOD, per county per day — FL, KY, ME, NC and CO. Written by `schema.MethodDay` / `publish.publish_method_daily`, read into `DayIndex.method_party` through `counterfactual.reconciled_cells`, and never an input to `shift_pp` |
+| `tests/test_methods.py` | the row type, the published table, and the `FetchResult.extend` edge the attribute mechanism has |
 | `tests/fixtures/counterfactual/` | the real North Carolina slice — 100-county baseline, three matched days in each of 2022 and 2024, the state's own rows and its age/race/sex tables (county rows carry the party split too, which is what `mix_split` is pinned on), plus the three real 2026 days |
 | `output/counterfactual.csv` | per state per day: implied margin, actual margin, the shift, its band, which dimensions were used and what each covered |
 
