@@ -111,7 +111,11 @@ SOURCE_NAME = "electindex-estimate/pres2024-county-returns"
 #: `test_fitted_constants_still_match_the_data` refits and fails if the data
 #: moves away from these.
 #:
-#: 0.366 / 0.406 / 0.382 on earlier panels; 0.332 now that neither an
+#: 0.366 / 0.406 / 0.382 / 0.332 on earlier panels; 0.288 since Iowa 2022. Note
+#: what that fold did: the model beats geography there by 11.9 points (6.2
+#: against 18.1), the second-largest gain in the panel, and pulling the decay
+#: down to reach it helped Pennsylvania too -- PA 2024 went 3.8 to 1.7. Now that
+#: neither an
 #: out-of-reach series nor a universal vote-by-mail state trains it. Colorado's
 #: days were all mail_share ~1.00 with no selection behind them, which is exactly
 #: the shape that inflates this. PA 2022 is scored but no longer fitted on
@@ -119,7 +123,7 @@ SOURCE_NAME = "electindex-estimate/pres2024-county-returns"
 #: does not do: it changes what 2026 PUBLISHES, and it changes no number in the
 #: validation table, because every fold there refits on its own eleven or twelve
 #: series regardless. A constant cannot improve its own score.
-MAIL_SELECTION = 0.332
+MAIL_SELECTION = 0.288
 
 #: How fast that advantage decays as mail reaches more of the electorate. Fitted
 #: on the same panel over a 1.00-8.00 grid; every leave-one-state-out fold picks
@@ -129,13 +133,15 @@ MAIL_SELECTION = 0.332
 #: everybody, so there is nobody left for it to select and the correction is
 #: under a point).
 #:
-#: 5.00, then 5.75; 4.75 on the eleven series that can now teach it. See
+#: 5.00, 5.75, 4.75; 3.50 on the twelve series that can now teach it -- Iowa
+#: 2022 is a long shallow curve and it wants a gentler decay than the panel had
+#: settled on. See
 #: UNIVERSAL_VBM. Historically: 4.75 while Pennsylvania 2022 was training
 #: it -- PA 2022 alone asks for 1.00, the shallowest the grid allows, because in
 #: that cycle mail stayed Democratic however far it reached. That is the 2020-22
 #: mail regime talking, not a shape 2026 will repeat, and `within_reach` is why
 #: it no longer sets this constant. 5.75 on the corrected panel.
-MAIL_DECAY = 4.75
+MAIL_DECAY = 3.50
 
 #: The correction never exceeds this, in share points. The largest gap between a
 #: state's reported party split and its geography on any day this model was
