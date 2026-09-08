@@ -16,24 +16,24 @@ this"*, and that is the one guarantee the whole pipeline rests on.
 **The headline finding, before anything else.** The model has two terms: where
 the ballots came from, and how they arrived. The first term is the one this
 document previously argued should not ship — county geography alone was off by a
-mean of **6.9 points** and beat "quote the state's 2024 presidential result and
-stop" by **0.72**, which is to say it was laundering a known election result
+mean of **8.82 points** and beat "quote the state's 2024 presidential result and
+stop" by **0.71**, which is to say it was laundering a known election result
 through today's ballot counts. Adding the second term — a correction for the fact
 that the people who *ask for a mail ballot* are not a random draw from their
-county — takes the measured error to **4.62 points** and the gain over that same
-null to **+4.80**, out of sample, leave-one-state-out. Pennsylvania 2024, the
-worst state in the old table at 15.5, is **3.8**.
+county — takes the measured error to **4.30 points** and the gain over that same
+null to **+5.23**, out of sample, leave-one-state-out. Pennsylvania 2024, the
+worst state in the old table at 15.5, is **2.1**.
 
-That average is over the fifteen series **this model can be measured on**, and
-two of them — Pennsylvania 2020 at **15.3** and Pennsylvania 2022 at **13.5** —
+That average is over the eighteen series **this model can be measured on**, and
+two of them — Pennsylvania 2020 at **12.9** and Pennsylvania 2022 at **11.6** —
 finished beyond anything the model can say. They are averaged in anyway and
 flagged; see [the reach rule](#two-corrections-behind-those-figures-2026-09-07)
 for why they cannot TRAIN it and
 [The Pennsylvania problem](#the-pennsylvania-problem-measured-to-its-ceiling-2026-09-07)
 for why nothing reaches them. Without Pennsylvania entirely the panel measures
-**3.10**. There is no "midterms are harder" effect underneath any of it: the
-2022 folds score 4.83, the 2024 folds 3.14, and the whole of the difference is
-Pennsylvania 2022.
+**3.39**. There is no "midterms are harder" effect underneath any of it: the
+2022 folds score 4.39, the 2024 folds 3.12, and 2022 without Pennsylvania scores
+**3.49** — so the whole of the difference is Pennsylvania 2022.
 
 Those figures moved on 2026-09-06 and both directions are worth knowing. The
 gain fell from +4.44 because a three-day, eight-ballot series had been averaged
@@ -42,6 +42,26 @@ was the null's as much as the model's. The panel also grew from ten completed
 series to twelve, which took the final-day **signed** bias from −2.53 to −2.15
 (and it is **−0.46** averaged over every mature day rather than the last one —
 two different numbers that this document previously reported as one).
+
+**2026-09-08: seventeen series became eighteen, and the headline went UP.**
+(The paragraph above says fifteen; it had gone stale across two refits, which is
+the drift this section now exists to stop.) Three backfills landed — Delaware
+2022 out of the Internet Archive, under a directory *and* a filename that both
+changed between cycles, which is why four earlier checks read as absence;
+Washington 2022, live, at a `_assets/` path the wall never covered; and North
+Dakota 2022 and 2024. **Only Delaware can be scored here.** Washington runs a
+Top Two primary and does not register by party at all, and North Dakota does not
+register voters; both add county coverage and counterfactual rows and no
+estimate fold, because there is no reported split to be wrong against.
+
+Delaware 2022 is a three-day series the model beats geography on by **7.1
+points**, and adding that one series to the trainable panel moved both fitted
+mail constants — selection 0.288 → **0.340**, decay 3.50 → **4.25**. Every row
+in the table moved with them. The panel error went 4.18 → **4.30** and the gain
+over the null 5.37 → **5.23**: the model did not get worse, the fit stopped
+being tuned to a panel that was missing its sharpest mail-selection case. The
+final-day **signed** bias is now **−3.46**, which is the number behind the
+page's "leans Republican by about three at the close".
 
 It is still a model of a party split and not a count of one, it still gets
 Colorado slightly worse than before, and it still carries an assumption that
@@ -139,8 +159,8 @@ reached 97%, gets less than a point.
 
 | | | |
 | --- | ---: | --- |
-| `MAIL_SELECTION` | **0.366** | the mail advantage in share points at the limit where mail has reached nobody |
-| `MAIL_DECAY` | **5.0** | how fast it dies as mail reaches the electorate |
+| `MAIL_SELECTION` | **0.340** | the mail advantage in share points at the limit where mail has reached nobody |
+| `MAIL_DECAY` | **4.25** | how fast it dies as mail reaches the electorate |
 | `MAX_ADJUSTMENT` | **0.20** | the term never exceeds 20 points |
 | `MIDTERM_TURNOUT` | **0.73** | a midterm electorate against the presidential one the baseline measures |
 
@@ -261,10 +281,12 @@ margin = 2·share − 1) are the sum of two parts:
    | 50,000 – 250,000 | 4.6 pp |
    | over 250,000 | 2.6 pp |
 
-   So `MODEL_ERROR` is **±5 points** on a day with at least `THIN_BALLOTS`
-   (50,000) ballots in — above the 3.4-point measured mean deliberately, for a
+   So `MODEL_ERROR` is **±6 points** on a day with at least `THIN_BALLOTS`
+   (50,000) ballots in — above the 4.30-point measured mean deliberately, for a
    reason given below — and `THIN_MODEL_ERROR` is **±15** below that, which is
    the measured mean there. It was a flat ±10 when the model was geography alone.
+   The rule is *measured panel mean plus about 1.5 points of headroom, rounded*;
+   4.30 + 1.5 = 5.8, so the band stays at 6 rather than moving with every refit.
 
    A South Carolina series that stops eighteen days out at 17,000 all-mail
    ballots therefore reads 63% ±15 — 48 to 78, which is the honest way to say
