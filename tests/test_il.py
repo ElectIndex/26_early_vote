@@ -334,6 +334,25 @@ def test_the_history_refusal_covers_2022_too():
         il.ILScraper().fetch_history(2022)
 
 
+def test_the_refusal_records_the_widened_sweep_not_just_the_scoped_one():
+    """⚠️ WHY THIS TEST EXISTS. On the same day this was last checked, Delaware's
+    identical-looking "nothing archived" verdict was OVERTURNED -- it had been
+    reached by listing one directory, and the 2022 report was in a different tree
+    under a different name. A scoped sweep can only prove something about its
+    scope, so Illinois' refusal has to rest on a DOMAIN-wide one, and the
+    docstring has to say so or the next reader has no way to tell which kind was
+    run.
+
+    7,124 distinct urlkeys for the 2024 window and 355 for 2022, across
+    elections.il.gov and its four subdomains; the only thing under any `Counts/`
+    path is the form, the registration totals, and an archived 404.
+    """
+    assert "matchType=domain" in il.__doc__
+    assert "7,124 distinct urlkeys" in il.__doc__
+    assert "355 distinct" in il.__doc__
+    assert "prefix sweep can only prove something about the prefix" in il.__doc__
+
+
 def test_the_history_refusal_is_a_stop_not_a_fallthrough():
     """NotYetPublished STOPS the ladder. A SourceError here would let a weaker
     tier invent a statewide-only Illinois row and call it county data."""

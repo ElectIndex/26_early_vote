@@ -247,9 +247,14 @@ def test_adapter_identity():
     assert (scraper.state, scraper.name, scraper.tier) == ("MN", "mn-sos", 1)
 
 
-def test_there_is_no_archive_to_backfill_from():
-    with pytest.raises(NotYetPublished, match="overwrites its absentee data page"):
-        mn.MNScraper().fetch_history(2024)
+def test_fetch_history_refuses_the_cycle_that_is_still_running():
+    with pytest.raises(NotYetPublished, match="not an archived cycle"):
+        mn.MNScraper().fetch_history(date.today().year)
+
+
+def test_fetch_history_refuses_a_cycle_before_the_first_tracked_one():
+    with pytest.raises(NotYetPublished, match="before the first tracked cycle"):
+        mn.MNScraper().fetch_history(2020)
 
 
 def test_fetch_reads_the_page_and_parses_it(monkeypatch):
@@ -257,3 +262,181 @@ def test_fetch_reads_the_page_and_parses_it(monkeypatch):
     result = mn.MNScraper().fetch(2024, date(2024, 10, 3))
     assert result.state_rows[0].ballots_total == 107_421
     assert len(result.county_rows) == 87
+
+
+# --------------------------------------------------------------------------
+# The archived county series, rebuilt from the Internet Archive
+#
+# Every byte below is a real capture of the SoS's own page, and the stamps are
+# the real ones the CDX index returns. Nothing here touches the network: the
+# CDX fixture stands in for the index and the captures stand in for the fetch.
+# --------------------------------------------------------------------------
+FINAL24 = (FIX / "absentee-data_2024-11-05_general-final.html").read_bytes()
+CDX24 = (FIX / "cdx_2024_absentee-data.json").read_bytes()
+CDX22 = (FIX / "cdx_2022_absentee-data.json").read_bytes()
+
+#: The three real 2024 captures, keyed by their real Wayback stamps. The first
+#: is the AUGUST PRIMARY's page -- the Archive caught the URL before Minnesota
+#: swapped the election over -- which is exactly the capture that must be
+#: skipped rather than published as the general.
+CAPTURES_2024 = {
+    "20240919132653": PRIM26,
+    "20241003181752": GEN24,
+    "20241109152601": FINAL24,
+}
+
+
+@pytest.fixture
+def archive(monkeypatch):
+    """Serve the CDX index and the captures from fixtures, never the network."""
+    def fake_get(url, *, state, filename, **kwargs):
+        if url.startswith(mn.CDX_URL):
+            return CDX24 if "2024" in filename else CDX22
+        for stamp, body in CAPTURES_2024.items():
+            if stamp in url:
+                return body
+        if "20221014040640" in url:
+            return GEN22
+        raise AssertionError(f"unexpected fetch of {url}")
+
+    monkeypatch.setattr(mn, "get", fake_get)
+
+
+def test_2024_backfill_gives_two_days_of_all_87_counties(archive):
+    result = mn.MNScraper().fetch_history(2024)
+    assert sorted({r.day for r in result.county_rows}) == [
+        date(2024, 10, 3), date(2024, 11, 5)
+    ]
+    assert len(result.county_rows) == 2 * 87
+    assert len(result.state_rows) == 2
+
+
+def test_the_archived_election_day_final_is_minnesotas_own_figure(archive):
+    """1,271,636 accepted ballots as of November 5, 2024 -- a genuine
+    days_to_election 0 reading, which is the one the cycle comparison needs."""
+    result = mn.MNScraper().fetch_history(2024)
+    final = next(r for r in result.state_rows if r.day == date(2024, 11, 5))
+    assert (final.ballots_total, final.mail_requested) == (1_271_636, 1_420_287)
+    election_day = [r for r in result.county_rows if r.day == date(2024, 11, 5)]
+    assert sum(r.ballots_total for r in election_day) == 1_271_636
+    hennepin = next(r for r in election_day if r.county_fips == "27053")
+    assert (hennepin.county_name, hennepin.ballots_total) == (
+        "Hennepin County", 342_971
+    )
+
+
+def test_the_primary_capture_is_skipped_not_published_as_the_general(archive):
+    """The Archive caught this URL while the August primary was still up. Its
+    445,023 applications must never appear under the November general."""
+    result = mn.MNScraper().fetch_history(2024)
+    assert all(r.mail_requested != 445_023 for r in result.state_rows)
+    assert all(r.day.month in (10, 11) for r in result.state_rows)
+
+
+def test_2022_backfill_is_the_one_capture_the_archive_holds(archive):
+    result = mn.MNScraper().fetch_history(2022)
+    assert {r.day for r in result.county_rows} == {date(2022, 10, 13)}
+    assert len(result.county_rows) == 87
+    (state,) = result.state_rows
+    assert (state.ballots_total, state.mail_requested) == (99_252, 400_975)
+
+
+def test_the_archived_rows_obey_the_blank_rule_like_the_live_ones(archive):
+    """Minnesota has no party registration in any cycle, and neither of these
+    two-column layouts splits mail from in-person."""
+    result = mn.MNScraper().fetch_history(2024)
+    for row in result.state_rows + result.county_rows:
+        for field in ("party_dem", "party_rep", "party_oth", "party_npa"):
+            assert getattr(row, field) is None
+        assert row.mail_returned is None and row.inperson is None
+
+
+def test_an_archive_with_nothing_in_it_is_not_yet_published(monkeypatch):
+    monkeypatch.setattr(mn, "archive_stamps", lambda cycle: [])
+    with pytest.raises(NotYetPublished, match="nothing archived"):
+        mn.MNScraper().fetch_history(2024)
+
+
+def test_every_capture_drifting_is_reported_as_drift_not_as_absence():
+    """A changed vocabulary must be loud. Reporting it as "nothing archived"
+    would read as "the Archive has no Minnesota", which is a different fact."""
+    drifted = GEN24.replace(b"Accepted ballots (10/3/24)",
+                            b"Ballots we like (10/3/24)")
+
+    def only_drift(url, *, state, filename, **kwargs):
+        return drifted
+
+    import pytest as _pytest
+    with _pytest.MonkeyPatch.context() as m:
+        m.setattr(mn, "archive_stamps", lambda cycle: ["20241003181752"])
+        m.setattr(mn, "get", only_drift)
+        with pytest.raises(SchemaDrift, match="unrecognised statewide figure"):
+            mn.MNScraper().fetch_history(2024)
+
+
+# --------------------------------------------------------------------------
+# GUARD PARITY: the archive path runs the SAME parse the live path does
+# --------------------------------------------------------------------------
+def test_a_captures_as_of_is_its_own_stamp_so_the_run_date_guard_stays_live():
+    """`fetch` will not publish a page dated after the run; `fetch_history`
+    must not either, or a capture rewritten by the Archive could smuggle a
+    later reading in under an earlier stamp."""
+    assert mn.stamp_day("20241109152601") == date(2024, 11, 9)
+    with pytest.raises(SourceError, match="not a Wayback timestamp"):
+        mn.stamp_day("2024-11-09")
+
+
+def test_a_capture_dated_after_its_own_stamp_is_refused(monkeypatch):
+    monkeypatch.setattr(mn, "archive_stamps", lambda cycle: ["20241001000000"])
+    monkeypatch.setattr(mn, "get", lambda url, **k: GEN24)
+    # The capture says October 3; the stamp says October 1. `parse` raises
+    # SourceError, which this path skips, so the run reports absence.
+    with pytest.raises(NotYetPublished, match="nothing archived"):
+        mn.MNScraper().fetch_history(2024)
+
+
+def test_the_87_county_count_is_enforced_on_the_archive_path_too(monkeypatch):
+    short = GEN24.replace(
+        b'<th scope="row">Aitkin</th>\n<td class="text-right">5,600</td>\n'
+        b'<td class="text-right">989</td>\n', b"", 1)
+    monkeypatch.setattr(mn, "archive_stamps", lambda cycle: ["20241003181752"])
+    monkeypatch.setattr(mn, "get", lambda url, **k: short)
+    with pytest.raises(SchemaDrift):
+        mn.MNScraper().fetch_history(2024)
+
+
+# --------------------------------------------------------------------------
+# The landing page is PERMANENT, so a 404 on it is a re-path, not an absence
+# --------------------------------------------------------------------------
+def test_a_404_on_the_landing_page_falls_through_instead_of_blanking_minnesota():
+    """This URL answers 200 with ~65 KB every day of the year, carrying
+    whichever election is current. There is no state of the world in which
+    Minnesota "has not posted it yet" and the page 404s -- so reading a 404 as
+    NotYetPublished would STOP the ladder, publish nothing, and badge the state
+    with the same "early voting has not opened" it gets in July."""
+    def gone(url, *, filename, use_cache=False, min_bytes=4096):
+        raise mn.Missing(f"MN: {url} returned 404")
+
+    with pytest.MonkeyPatch.context() as m:
+        m.setattr(mn, "download", gone)
+        with pytest.raises(SourceError) as caught:
+            mn.MNScraper().fetch(2026, TODAY)
+    assert not isinstance(caught.value, NotYetPublished)
+
+
+def test_a_truncated_landing_page_is_also_a_refusal_not_an_absence():
+    def stub(url, *, filename, use_cache=False, min_bytes=4096):
+        raise mn.Missing(f"MN: {url} returned only 12 bytes")
+
+    with pytest.MonkeyPatch.context() as m:
+        m.setattr(mn, "download", stub)
+        with pytest.raises(SourceError):
+            mn.MNScraper().fetch(2026, TODAY)
+
+
+def test_the_primary_being_up_is_still_not_yet_published(monkeypatch):
+    """The fix must not blunt the REAL pending path: the page is there, it is
+    fine, and it is showing an election that is not ours."""
+    monkeypatch.setattr(mn, "download", lambda *a, **k: PRIM26)
+    with pytest.raises(NotYetPublished, match="no general-election section"):
+        mn.MNScraper().fetch(2026, TODAY)

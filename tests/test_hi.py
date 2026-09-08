@@ -19,6 +19,8 @@ from __future__ import annotations
 from datetime import date
 from pathlib import Path
 
+import re
+
 import pytest
 
 from ev.adapters import hi
@@ -171,12 +173,97 @@ def test_a_missing_column_raises_drift():
     assert "MAIL Voted (f)" in str(caught.value)
 
 
-def test_a_column_order_change_is_caught_by_the_reports_own_arithmetic():
-    """VOTED must equal b+d+f and TOTAL must equal a+d+e on every row, which is
-    what proves the nine values landed in the nine fields we think they did."""
+def test_the_arithmetic_catches_a_value_that_moved_across_the_sums():
+    """VOTED must equal b+d+f and TOTAL must equal a+d+e on every row.
+
+    That catches a value that crossed BETWEEN the two sums -- but not one that
+    moved within either, which is the next test.
+    """
     with pytest.raises(SchemaDrift) as caught:
         hi._check_arithmetic("15003", [1844, 221, 0, 2303, 480780, 154602, 1010, 1, 2])
     assert "VOTED" in str(caught.value)
+
+
+# --------------------------------------------------------------------------
+# ⚠️ THE ARITHMETIC IS COMMUTATIVE, SO IT IS NOT A COLUMN-ORDER CHECK
+#
+# `rows()` hands `build` nine numbers BY POSITION. The two things said to prove
+# they landed in the right nine fields were `_check_header` (which tested
+# presence only) and `_check_arithmetic` (which adds). Swap Hawaii's printed
+# ELECT block (a, b, c) with its MAIL block (e, f, g) -- three adjacent columns
+# -- and `VOTED = b+d+f` becomes `f+d+b` and `TOTAL = a+d+e` becomes `e+d+a`.
+# Both still hold. Hawaii would have published `mail_requested` of 2,555 for a
+# day it sent 732,780 ballots, with `ballots_total` correct and unremarkable.
+# --------------------------------------------------------------------------
+def _swap_elect_and_mail(nine: list[int]) -> list[int]:
+    a, b, c, d, e, f, g, voted, total = nine
+    return [e, f, g, d, a, b, c, voted, total]
+
+
+ELECTION_DAY_TOTALS = [2555, 326, 0, 4037, 732780, 230276, 1929, 234639, 739372]
+
+
+def test_the_arithmetic_alone_does_not_notice_the_elect_and_mail_blocks_swapping():
+    hi._check_arithmetic("statewide", ELECTION_DAY_TOTALS)          # the truth
+    hi._check_arithmetic("statewide", _swap_elect_and_mail(ELECTION_DAY_TOTALS))
+    # ...and the second call is the bug: it passes, and those nine values would
+    # have been published as Hawaii's mail figures.
+    swapped = _swap_elect_and_mail(ELECTION_DAY_TOTALS)
+    assert (swapped[4], swapped[5]) == (2555, 326)
+    assert (ELECTION_DAY_TOTALS[4], ELECTION_DAY_TOTALS[5]) == (732780, 230276)
+
+
+def _swap_headings(text: str, first: str, second: str) -> str:
+    """Swap two printed column headings, tolerating pypdf's line wrapping.
+
+    A real reordering moves the heading WITH its column, which is the only thing
+    a parser can see -- the numbers underneath carry no labels at all.
+    """
+    def find(tag):
+        return re.search(r"\s+".join(map(re.escape, tag.split())), text)
+
+    left, right = find(first), find(second)
+    assert left and right and left.start() < right.start(), (first, second)
+    return (text[:left.start()] + right.group(0) + text[left.end():right.start()]
+            + left.group(0) + text[right.end():])
+
+
+def test_the_header_must_be_in_the_order_the_values_are_read_in():
+    text = hi._text(ELECTION_DAY.read_bytes())
+    hi._check_header(text)                       # as published: in order
+    reordered = _swap_headings(text, "ELECT Sent (a)", "MAIL Sent (e)")
+    assert reordered != text
+    # Every tag is still present -- which is all the old check ever asked.
+    flat = " ".join(reordered.split())
+    assert all(tag in flat for tag in hi.COLUMN_TAGS)
+    with pytest.raises(SchemaDrift) as caught:
+        hi._check_header(reordered)
+    assert "not in the order" in str(caught.value)
+
+
+# --------------------------------------------------------------------------
+# ⚠️ A COUNTY THAT DID NOT PARSE IS DRIFT, NOT PARTIAL COVERAGE
+#
+# `rows()` skips any line it cannot resolve to a county -- that is how it walks
+# past the headings and the footer -- so a RENAMED county is skipped by the same
+# `except SchemaDrift: continue` and the run used to succeed with three of the
+# four. Hawaii's four clerks are the whole state; three is never "Maui has not
+# reported yet".
+# --------------------------------------------------------------------------
+def test_a_county_hawaii_renames_is_drift_not_three_quarters_of_a_state():
+    text = hi._text(ELECTION_DAY.read_bytes())
+    renamed = text.replace("Maui", "Maui Nui")
+    assert renamed != text
+    with pytest.raises(SchemaDrift) as caught:
+        hi.build(renamed, 2026)
+    message = str(caught.value)
+    assert "3 of 4" in message
+    assert "15009" not in message      # Maui is the one that went missing
+
+
+def test_the_four_counties_that_do_parse_are_still_the_whole_state(voted):
+    assert len({row.county_fips for row in voted.county_rows}) == 4
+    assert voted.state_rows, "four counties is full coverage, so a statewide row"
 
 
 def test_something_that_is_not_a_pdf_is_a_source_error():

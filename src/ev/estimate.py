@@ -111,7 +111,10 @@ SOURCE_NAME = "electindex-estimate/pres2024-county-returns"
 #: `test_fitted_constants_still_match_the_data` refits and fails if the data
 #: moves away from these.
 #:
-#: 0.366 / 0.406 / 0.382 / 0.332 on earlier panels; 0.288 since Iowa 2022. Note
+#: 0.366 / 0.406 / 0.382 / 0.332 / 0.288 on earlier panels; 0.340 since a
+#: five-state backfill (DE, LA, MN, NY, OK, OR, WI) took the panel to 18 series.
+#: Delaware 2022 is what moved it: a 9-county-day series the model beats
+#: geography on by 7.1 points. Note
 #: what that fold did: the model beats geography there by 11.9 points (6.2
 #: against 18.1), the second-largest gain in the panel, and pulling the decay
 #: down to reach it helped Pennsylvania too -- PA 2024 went 3.8 to 1.7. Now that
@@ -123,7 +126,7 @@ SOURCE_NAME = "electindex-estimate/pres2024-county-returns"
 #: does not do: it changes what 2026 PUBLISHES, and it changes no number in the
 #: validation table, because every fold there refits on its own eleven or twelve
 #: series regardless. A constant cannot improve its own score.
-MAIL_SELECTION = 0.288
+MAIL_SELECTION = 0.340
 
 #: How fast that advantage decays as mail reaches more of the electorate. Fitted
 #: on the same panel over a 1.00-8.00 grid; every leave-one-state-out fold picks
@@ -133,7 +136,7 @@ MAIL_SELECTION = 0.288
 #: everybody, so there is nobody left for it to select and the correction is
 #: under a point).
 #:
-#: 5.00, 5.75, 4.75; 3.50 on the twelve series that can now teach it -- Iowa
+#: 5.00, 5.75, 4.75, 3.50; 4.25 on the thirteen series that can now teach it -- Iowa
 #: 2022 is a long shallow curve and it wants a gentler decay than the panel had
 #: settled on. See
 #: UNIVERSAL_VBM. Historically: 4.75 while Pennsylvania 2022 was training
@@ -141,7 +144,7 @@ MAIL_SELECTION = 0.288
 #: that cycle mail stayed Democratic however far it reached. That is the 2020-22
 #: mail regime talking, not a shape 2026 will repeat, and `within_reach` is why
 #: it no longer sets this constant. 5.75 on the corrected panel.
-MAIL_DECAY = 3.50
+MAIL_DECAY = 4.25
 
 #: The correction never exceeds this, in share points. The largest gap between a
 #: state's reported party split and its geography on any day this model was

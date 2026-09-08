@@ -362,3 +362,73 @@ def test_the_adapter_is_registered_as_tier_one():
     assert scraper.state == "KS"
     assert scraper.name == "ks-sos"
     assert scraper.tier == TIER_SCRAPER
+
+
+# --------------------------------------------------------------------------
+# WHY KANSAS HAS NO COUNTY ROWS: THE SOURCE, NOT THE ADAPTER
+#
+# `test_kansas_publishes_no_county_or_demographic_rows` asserts what this module
+# emits, which proves nothing about what Kansas publishes. This is the evidence.
+# `powerbi_conceptualschema.json` is the verbatim 7,256-byte body of
+#
+#     POST https://wabi-us-gov-virginia-api.analysis.usgovcloudapi.net
+#          /public/reports/conceptualschema
+#          {"modelIds": [2023851], "userPreferredLocale": "en-US"}
+#          X-PowerBI-ResourceKey: de3b6e3c-b94e-419a-8d9c-9435eba72780
+#
+# fetched live and answering HTTP 200. It is the WHOLE dataset behind the
+# dashboard -- not the subset the visuals happen to bind -- so if a county
+# column existed anywhere in Kansas's advance-vote model, it would be in here.
+# (Note the path carries NO resource key: the keyed form 405s.)
+# --------------------------------------------------------------------------
+def _schema_entities() -> dict[str, list[str]]:
+    payload = _load("powerbi_conceptualschema.json")
+    return {
+        entity["Name"]: [p["Name"] for p in entity["Properties"]]
+        for schema in payload["schemas"]
+        for entity in schema["schema"]["Entities"]
+    }
+
+
+def test_the_whole_kansas_model_is_one_table_of_six_fields():
+    entities = _schema_entities()
+    assert entities["ADVANCE VOTE COUNTS 2026"] == [
+        "DATE",
+        "ADVANCE VOTING BALLOTS SENT",
+        "ADVANCE VOTING BALLOTS RETURNED",
+        "IN PERSON ADVANCE",
+        "Percentage of Total Ballots Returned",   # a measure, not read per row
+        "Total Number of Ballots Voted",          # a whole-table aggregate
+    ]
+    # Everything else in the model is Power BI's own date scaffolding.
+    others = [name for name in entities if name != "ADVANCE VOTE COUNTS 2026"]
+    assert all(name.startswith(("DateTableTemplate_", "LocalDateTable_"))
+               for name in others), others
+
+
+def test_no_geography_of_any_kind_exists_in_the_kansas_model():
+    """105 counties, and not one of them is nameable from this source. This is
+    what makes Kansas statewide-only -- the same fact South Dakota and Alaska
+    are tracked under -- and it is a property of the dashboard, not a choice."""
+    every_name = [
+        name
+        for entity, props in _schema_entities().items()
+        for name in [entity, *props]
+    ]
+    for word in ("COUNTY", "PRECINCT", "DISTRICT", "CITY", "TOWNSHIP",
+                 "REGION", "FIPS", "PARTY"):
+        assert not any(word in name.upper() for name in every_name), word
+
+
+def test_the_conceptualschema_and_the_visuals_agree():
+    """The report's four visuals bind the same one table the dataset holds, so
+    there is no hidden column a different report page could reach."""
+    bound: dict[str, set[str]] = {}
+    exploration = _load("powerbi_modelsAndExploration.json")["exploration"]
+    for query in ks._visual_queries(exploration):
+        for entity, props in ks._entity_columns(query).items():
+            bound.setdefault(entity, set()).update(props)
+    assert set(bound) == {"ADVANCE VOTE COUNTS 2026"}
+    assert bound["ADVANCE VOTE COUNTS 2026"] <= set(
+        _schema_entities()["ADVANCE VOTE COUNTS 2026"]
+    )

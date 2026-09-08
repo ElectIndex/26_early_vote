@@ -8,7 +8,22 @@ dependencies = [
     "openpyxl>=3.1",
     # Iowa publishes its absentee request/return report only as a PDF -- there is
     # no CSV or XLSX of it anywhere on sos.iowa.gov. Text-layer extraction only.
-    "pypdf>=5.0",
+    # ⚠️ UPPER-BOUNDED, AND THE BOUND IS LOAD-BEARING. pypdf's text extraction
+    # changes its SPACING between releases on identical bytes: Montana's
+    # dashboard title reads "2026 Montana Primary Election" under 6.16.1,
+    # "2026 M o n tan a P rim ary E lectio n" under 6.18.0 and
+    # "2 0 2 6  M o n ta n a" under 5.1.0. This was pinned `>=5.0`, CI resolved
+    # 6.18.0, and mt.py's `\s+` title patterns stopped matching -- so mt-sos
+    # raised SchemaDrift on TEN consecutive scheduled runs. It was invisible
+    # because SchemaDrift falls THROUGH: Montana quietly handed itself to the
+    # aggregator and reported `pending`, which reads as "early voting has not
+    # opened" rather than "our scraper is broken".
+    #
+    # EIGHT adapters parse PDFs -- ak, de, hi, ia, la, mt, nv, or -- and every
+    # one of them is exposed to the same drift. Raising this bound means
+    # re-running all eight against real fixtures, not just letting the suite go
+    # green on whatever pip resolved that morning.
+    "pypdf>=5.0,<6.17",
     # Browser TLS/HTTP2 fingerprint. Several state hosts (ohiosos.gov,
     # azsos.gov) sit behind a Cloudflare rule that scores any Python client's
     # JA3 as automation and answers 403 -- to their homepages and archived files

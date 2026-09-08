@@ -46,6 +46,32 @@ possible: Tableau's CSV export carries no title or timestamp, and the workbook
 exposes no other sheet (`.../AbsenteeBallots/Sheet1.csv` -> **404**).
 
 --------------------------------------------------------------------------
+THE TITLE IS READ WITH EVERY SPACE REMOVED, AND THAT IS LOAD-BEARING
+--------------------------------------------------------------------------
+
+Tableau draws this PDF glyph by glyph with explicit positioning, so the spaces
+in the extracted text are a text-extractor *heuristic* rather than characters in
+the file. `pyproject.toml` pins only `pypdf>=5.0`, and three versions read the
+same 285,506 bytes three different ways:
+
+    pypdf 6.16.1   "2026 Montana Primary Election Absentee Ballot Counts"
+    pypdf 6.18.0   "2026 M o n tan a P rim ary E lectio n  A b sen tee ..."
+    pypdf 5.1.0    "2 0 2 6  M o n ta n a  P rim a ry  E le c tio n  ..."
+
+The original patterns joined the words with `\\s+`, which matches the first line
+and neither of the others. GitHub Actions resolved pypdf 6.18.0, so from
+2026-09-06 `mt-sos` raised SchemaDrift on every published ingest run -- ten
+consecutive `output/ev_status.json` commits -- and the tests workflow was red on
+main with the same two failures, while the same code on a dev box with pypdf
+6.16.1 answered correctly. Because SchemaDrift FALLS THROUGH, the visible effect
+was not a loud break but Montana silently handing itself to the aggregator.
+
+So both patterns are matched against the extract with ALL whitespace stripped
+(`_compact`), which is the only reading of them that does not depend on a
+version's spacing heuristic. The phrases are specific enough that nothing else
+on a one-page dashboard can produce them.
+
+--------------------------------------------------------------------------
 JUDGEMENT CALLS
 --------------------------------------------------------------------------
 
@@ -113,17 +139,46 @@ EXPECTED_COUNTIES = len(_fips.CENSUS_COUNTIES["MT"])
 #: name in the file that does not resolve on its own.
 COUNTY_ALIASES = {"lewis & clark": "Lewis and Clark"}
 
-#: The dashboard title, whose first words name the election. VERIFIED for the
+#: ⚠️ BOTH PATTERNS BELOW ARE MATCHED AGAINST `_compact(text)`, NOT THE RAW
+#: EXTRACT, AND THAT IS NOT TIDINESS -- IT IS THE BUG THAT BROKE MONTANA IN
+#: PRODUCTION FOR THREE DAYS.
+#:
+#: Tableau draws this PDF one glyph at a time with explicit positioning, so how
+#: many spaces land between two letters is a *heuristic* in whatever pypdf the
+#: runner resolved, and pyproject pins only `pypdf>=5.0`. The same 285,506-byte
+#: file, from one machine:
+#:
+#:   pypdf 6.16.1  "2026 Montana Primary Election Absentee Ballot Counts"
+#:   pypdf 6.18.0  "2026 M o n tan a P rim ary E lectio n  A b sen tee B allo t..."
+#:   pypdf 5.1.0   "2 0 2 6  M o n ta n a  P rim a ry  E le c tio n  A b s e n..."
+#:
+#: A `\s+` between the words matches the first and not the other two. GitHub
+#: Actions resolved 6.18.0 on 2026-09-08, so `mt-sos` raised SchemaDrift on
+#: EVERY published ingest run from 2026-09-06 (`output/ev_status.json`, ten
+#: consecutive commits) and the tests workflow was red on main with the same two
+#: failures. SchemaDrift falls THROUGH, so Montana was also quietly handing
+#: itself to the aggregator instead of stopping the ladder.
+#:
+#: Removing every space is the only reading of this title that does not depend
+#: on a text-extractor's spacing heuristic, and the phrases are specific enough
+#: that nothing else on the page can produce them.
+#:
+#: The dashboard title's first words name the election. VERIFIED for the
 #: primary: "2026 Montana Primary Election Absentee Ballot Counts". The GENERAL
 #: wording is **UNVERIFIED** -- no general-election dashboard has been published
 #: in this cycle -- so the match is on the cycle year plus the word "General",
 #: with the other election types refused by name rather than by guesswork.
-TITLE = re.compile(
-    r"(\d{4})\s+Montana\s+(General|Primary|Special)\s+Election", re.I
-)
-COMPILED = re.compile(
-    r"Compiled On\s+(\d{1,2})/(\d{1,2})/(\d{4})"
-)
+TITLE = re.compile(r"(\d{4})Montana(General|Primary|Special)Election", re.I)
+COMPILED = re.compile(r"CompiledOn(\d{1,2})/(\d{1,2})/(\d{4})")
+
+#: How much of the extract to quote when neither pattern is there, so the log
+#: says what the page actually said rather than only that it did not match.
+_SNIPPET = 120
+
+
+def _compact(text: str) -> str:
+    """The extract with ALL whitespace removed. See the note on TITLE."""
+    return re.sub(r"\s+", "", text)
 
 
 def _int(raw: str) -> int:
@@ -153,11 +208,13 @@ def provenance(body: bytes, cycle: int) -> date:
     except Exception as exc:  # noqa: BLE001 - pypdf raises a zoo of types
         raise SourceError(f"MT: the dashboard PDF is not readable: {exc}") from exc
 
-    title = TITLE.search(text)
+    flat = _compact(text)
+    title = TITLE.search(flat)
     if title is None:
         raise SchemaDrift(
             "MT: the dashboard PDF carries no '<year> Montana <type> Election' "
-            "title, which is the only thing that says which election it holds"
+            "title, which is the only thing that says which election it holds "
+            f"(the extract begins {text[:_SNIPPET]!r})"
         )
     year, kind = int(title.group(1)), title.group(2).lower()
     if year != int(cycle) or kind != "general":
@@ -165,7 +222,7 @@ def provenance(body: bytes, cycle: int) -> date:
             f"MT: the absentee dashboard is showing the {year} {kind} election, "
             f"not the {cycle} general"
         )
-    compiled = COMPILED.search(text)
+    compiled = COMPILED.search(flat)
     if compiled is None:
         raise SchemaDrift("MT: the dashboard PDF carries no 'Compiled On' stamp")
     month, day, stamp_year = (int(g) for g in compiled.groups())

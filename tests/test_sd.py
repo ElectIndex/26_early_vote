@@ -224,11 +224,105 @@ def test_the_url_carries_the_cycle():
     assert "2026%20Election%20Information" in sd.PAGE.format(cycle=2026)
 
 
-def test_there_is_no_archive_to_backfill():
-    with pytest.raises(NotYetPublished, match="no archived daily file"):
-        sd.SDScraper().fetch_history(2024)
+def test_2022_is_deliberately_not_an_archived_cycle():
+    """Its page IS archived and fetches fine. It is refused because it is a
+    DIFFERENT report -- `Military` for `UOCAVA`, a party table headed `Ballots
+    Mailed | Mail Ballots Received | In-Person Voting`, and a 10/7 row South
+    Dakota itself retracts -- and rule 3 says measure it, do not guess."""
+    with pytest.raises(NotYetPublished, match="not one of the archived cycles"):
+        sd.SDScraper().fetch_history(2022)
+    assert sd.ARCHIVED_CYCLES == (2024,)
 
 
 def test_adapter_identity():
     scraper = sd.SDScraper()
     assert (scraper.state, scraper.name, scraper.tier) == ("SD", "sd-sos", 1)
+
+
+# --------------------------------------------------------------------------
+# The archived 2024 weekly series, out of the Internet Archive
+#
+# The live host serves 2022 and 2024 as the same 67,597-byte soft-404 (verified
+# 2026-09-08), so the archive is the only route. Every byte below is the real
+# capture taken the day after the 2024 election.
+# --------------------------------------------------------------------------
+FIX = Path(__file__).parent / "fixtures" / "sd"
+GEN24 = (FIX / "2024-General-Election-Absentee-Numbers-content.html").read_bytes()
+CDX24 = (FIX / "cdx_2024_absentee.json").read_bytes()
+
+
+@pytest.fixture
+def archive(monkeypatch):
+    def fake_get(url, *, state, filename, **kwargs):
+        if url.startswith(sd.CDX_URL):
+            return CDX24
+        return GEN24
+
+    monkeypatch.setattr(sd, "get", fake_get)
+
+
+def test_the_2024_backfill_is_the_whole_weekly_curve(archive):
+    result = sd.SDScraper().fetch_history(2024)
+    assert [r.day for r in result.state_rows] == [
+        date(2024, 9, 20), date(2024, 9, 27), date(2024, 10, 4),
+        date(2024, 10, 11), date(2024, 10, 18), date(2024, 10, 25),
+        date(2024, 11, 1),
+    ]
+    assert [r.ballots_total for r in result.state_rows] == [
+        1_305, 11_193, 22_868, 40_135, 62_572, 97_333, 141_554
+    ]
+
+
+def test_south_dakota_publishes_no_counties_in_any_cycle(archive):
+    """The defining fact about this source, and the archive path does not
+    change it."""
+    assert sd.SDScraper().fetch_history(2024).county_rows == []
+
+
+def test_the_archived_party_breakout_is_south_dakotas_own(archive):
+    """A snapshot of the latest date only, so the capture taken after the
+    election carries 11/1's."""
+    result = sd.SDScraper().fetch_history(2024)
+    final = result.state_rows[-1]
+    assert (final.party_dem, final.party_rep) == (35_862, 77_517)
+    assert (final.party_npa, final.party_oth) == (27_607, 567)
+    # IND + NPA are added together, LIB + OTH + No Labels likewise.
+    assert final.party_dem + final.party_rep + final.party_npa + final.party_oth \
+        == 141_553  # one ballot off SD's own total: the tables are hand-typed
+
+
+def test_the_party_columns_are_not_transposed(archive):
+    """South Dakota registers about two Republicans for every Democrat, and the
+    absentee split follows. A D column larger than the R column here would be
+    the transposition this report has shown elsewhere."""
+    final = sd.SDScraper().fetch_history(2024).state_rows[-1]
+    assert final.party_rep > final.party_dem
+    assert 1.8 < final.party_rep / final.party_dem < 2.5
+
+
+def test_mail_returned_stays_blank_on_the_archive_path_too(archive):
+    """"Ballots Received" already includes walk-ins and SD publishes no
+    mail-only count, so this is blank rather than a subtraction."""
+    for row in sd.SDScraper().fetch_history(2024).state_rows:
+        assert row.mail_returned is None
+        assert row.inperson is not None
+
+
+def test_an_archive_with_nothing_in_it_is_not_yet_published(monkeypatch):
+    monkeypatch.setattr(sd, "archive_stamps", lambda cycle: [])
+    with pytest.raises(NotYetPublished, match="nothing archived"):
+        sd.SDScraper().fetch_history(2024)
+
+
+def test_a_captures_as_of_is_its_own_stamp():
+    assert sd._stamp_day("20241106004829") == date(2024, 11, 6)
+    with pytest.raises(SourceError, match="not a Wayback timestamp"):
+        sd._stamp_day("nope")
+
+
+def test_the_run_date_filter_stays_live_on_the_archive_path(monkeypatch):
+    """A capture stamped October 8 cannot publish November 1's weekly row."""
+    monkeypatch.setattr(sd, "archive_stamps", lambda cycle: ["20241008000000"])
+    monkeypatch.setattr(sd, "get", lambda url, **k: GEN24)
+    result = sd.SDScraper().fetch_history(2024)
+    assert max(r.day for r in result.state_rows) == date(2024, 10, 4)

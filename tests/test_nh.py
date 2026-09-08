@@ -117,3 +117,54 @@ def test_sources_are_documentation_not_endpoints():
 def test_adapter_identity():
     scraper = nh.NHScraper()
     assert (scraper.state, scraper.name, scraper.tier) == ("NH", "nh-sos", 1)
+
+
+# --------------------------------------------------------------------------
+# The wall, and why it is no longer the reason this adapter is empty
+# --------------------------------------------------------------------------
+#: The REAL body sos.nh.gov returned to `requests` + DEFAULT_HEADERS on
+#: 2026-09-08: HTTP 403, 413 bytes of Akamai's "Access Denied" template. Shared
+#: with test_net.py because it is the generic Akamai shape as well as New
+#: Hampshire's.
+NH_WALL = (Path(__file__).parent / "fixtures" / "net"
+           / "akamai_access_denied.html").read_bytes()
+
+
+def test_new_hampshires_wall_is_now_something_the_transport_can_see():
+    """⚠️ The old docstring said sos.nh.gov "answers automated requests with HTTP
+    403 regardless of User-Agent", which is the sentence that stops the next
+    person looking. The User-Agent was never the variable -- Akamai is scoring
+    the TLS fingerprint, and `_net.get`'s 403 -> impersonate retry walks through
+    it. Measured 2026-09-08: `requests` -> 403 / 413 b of this; curl_cffi
+    `impersonate="chrome"` -> 200 and 2,960,857 bytes of the real page.
+    """
+    from ev.adapters import _net
+
+    assert len(NH_WALL) == 413
+    assert b"Access Denied" in NH_WALL
+    assert b"sos" in NH_WALL and b"nh" in NH_WALL
+    # It is a wall, not a short file: SourceError and fall through, never Missing.
+    assert _net.looks_like_wall(NH_WALL) is True
+
+
+def test_the_emptiness_is_a_finding_about_nh_not_about_our_reach():
+    """The docstring has to say, in words, that the page was re-read from BEHIND
+    the wall and still carried no counts. If someone deletes that, the adapter
+    goes back to being indistinguishable from a state we simply could not fetch.
+    """
+    doc = nh.__doc__
+    assert "2026-09-08" in doc
+    assert "reachable" in doc.lower()
+    assert "2,960,857" in doc  # the size of the page that was actually read
+    sources = " ".join(str(s) for s in [nh.SOURCES])
+    assert "absentee-ballots" in sources
+
+
+def test_the_ladder_policy_call_is_recorded_with_its_cost():
+    """NotYetPublished still STOPS the ladder here, and the reason is no longer
+    "a daily warning in the log": ladder.py records NotYetPublished from the
+    FLOOR as STATUS_FAILED, and data/manual/ is empty, so flipping this to
+    SourceError would badge New Hampshire `failed` on every run for ever."""
+    doc = nh.__doc__
+    assert "STATUS_FAILED" in doc
+    assert "manual" in doc

@@ -100,8 +100,41 @@ RE-VERIFIED 2026-09-08, three checks, all agreeing with the above:
   to have kept.
 * `PreElectionCounts.aspx` is still at 21 distinct captures, unchanged.
 
-The refusal is not stale. It is structural: an ASP.NET postback page archives as
-the form and never as the answer, and that cannot change retroactively.
+RE-VERIFIED AGAIN 2026-09-08, and this time the query itself was widened, which
+is the check the two sweeps above did NOT run. Both of them were scoped: to one
+page, to one download endpoint, to one `Counts/` directory. On the same day, a
+scoped sweep of exactly that kind was overturned for Delaware -- a CDX listing of
+one directory said "no 2022 report" and the file was sitting in a different tree
+under a different name -- so the scoping is the thing that had to be tested, not
+the conclusion.
+
+**A prefix sweep can only prove something about the prefix. So the whole domain
+was swept and the urlkeys grepped offline:**
+
+* `url=elections.il.gov&matchType=domain&from=20240901&to=20250228&collapse=urlkey`
+  returns **7,124 distinct urlkeys** across `elections.il.gov` and its four
+  subdomains (`ova`, `berep`, `idis3`, `move`). Grepping them for `count`,
+  `precinct`, `pre-election`, `ballot request`, `vbm`, `vote by mail`,
+  `early vot`, `absentee` and `grace` leaves, under any `Counts/` path,
+  **exactly four things**: `PreElectionCounts.aspx` and `RegistrationCounts.aspx`
+  (the forms), `Counts/Registration/Active and Inactive totals.{csv,txt}`
+  (registration, not voting), and
+  `Counts/PreElection/Pre-election Ballot Requests.txt` -- captured as
+  `text/html`, i.e. the archived 404 already described above.
+* The same query for `from=20220901&to=20230228` returns **355 distinct
+  urlkeys** and nine candidates, every one of them a static explainer or a
+  locations search: `ElectionInformation/pdf/earlyvoting.pdf`,
+  `votebymail.pdf`, `graceperiodreg.pdf`, `EarlyVotingLocationsSearch.aspx`.
+  No counts file of any kind.
+* The live dropdown, read again the same day, still offers only
+  `Please Select an Election`, `2026 General Election` and `2026 General
+  Primary`.
+
+So the answer is the same and now it is the answer to a much bigger question:
+across everything the Internet Archive holds of this whole domain in both
+windows, the pre-election counts exist only as the form. The refusal is not
+stale and it is not narrow. It is structural: an ASP.NET postback page archives
+as the form and never as the answer, and that cannot change retroactively.
 """
 
 from __future__ import annotations

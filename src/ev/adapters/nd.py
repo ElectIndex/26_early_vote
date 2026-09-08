@@ -8,7 +8,11 @@ of that are true and neither is disqualifying:
 
 * **The postbacks are STATELESS.** One `__VIEWSTATE` / `__EVENTVALIDATION` pair,
   scraped once from the GET, can be replayed for every county with no cookies
-  and no session. Fifty-three POSTs cost about 1.6 MB and half a minute.
+  and no session. Fifty-three POSTs cost about 1.6 MB and, PACED at `_net`'s own
+  courtesy interval, about 25 seconds. They are deliberately not fired flat out:
+  this is the one request path in the tree that does not go through `_net.get`,
+  so it never inherited the throttle, and the ban this repo actually took was
+  earned by going fast at exactly this kind of host. See `_county`.
 * **The county numbers reconcile to the state's own totals exactly.** A full
   harvest of the 2024 general sums to 95,908 sent / 91,556 returned / 99,007
   early -- byte-for-byte the statewide figures on the same page. So the county
@@ -68,12 +72,16 @@ from __future__ import annotations
 import html as _html
 import logging
 import re
+import time
 from datetime import date
 
 from ..calendar import election_date
 from ..schema import TIER_SCRAPER, CountyDay, StateDay
 from . import _fips
-from ._net import DEFAULT_HEADERS, SESSION, Missing, cache_path, get, looks_like_html
+from ._net import (
+    DEFAULT_HEADERS, DEFAULT_MIN_INTERVAL, SESSION, Missing, cache_path, get,
+    looks_like_html,
+)
 from .base import Adapter, FetchResult, NotYetPublished, SchemaDrift, SourceError
 
 log = logging.getLogger(__name__)
@@ -384,6 +392,18 @@ class NDScraper(Adapter):
         if use_cache and path.exists() and path.stat().st_size >= 4096:
             return path.read_text(encoding="utf-8", errors="replace")
 
+        # ⚠️ THIS LOOP IS 53 REQUESTS TO ONE STATE HOST, and it is the only
+        # request path in the tree that does not go through `_net.get` -- a
+        # POST, so it never met `_net`'s throttle and ran flat out. Fifty-three
+        # postbacks in "about half a minute", as the module docstring cheerfully
+        # says, is roughly two a second at a county election site. The host-wide
+        # 403 this repo actually took (see `_net.DEFAULT_MIN_INTERVAL`) was
+        # earned at about seven a second, and it cost half an hour and a wrong
+        # verdict about why a state was missing. The same courtesy interval is
+        # applied here by hand rather than by reaching into `_net`'s private
+        # throttle, and it costs one run 21 seconds twice a day.
+        time.sleep(DEFAULT_MIN_INTERVAL)
+
         form = {
             "__EVENTTARGET": COUNTY_CONTROL,
             "__EVENTARGUMENT": "",
@@ -473,7 +493,26 @@ class NDScraper(Adapter):
         through October 2022 and October 2024, which would rebuild the curve;
         that is a bigger job and is recorded in docs/coverage-research.md rather
         than wired in here.)
+
+        ⚠️ GUARD PARITY, and this is the half that was missing. `fetch` stamps
+        its rows with the RUN's date, which cannot be in the future. This path
+        stamps them with Election Day, which for the running cycle very much
+        can: `ELECTION_IDS` carries 2026, the portal answers for it, and
+        `backfill --cycle 2026` therefore harvested today's position -- a state
+        row of 0 ballots -- and dated it 2026-11-03. That row lands at
+        days_to_election 0 and becomes the cycle's FINAL for everything that
+        compares against it, which is the worst possible place to put a
+        fabricated number. Same failure as `de.py`'s future-dated capture; same
+        shape of guard as `wa.py`'s, which refuses a cycle that is not over.
         """
         if int(cycle) not in ELECTION_IDS:
             raise NotYetPublished(f"ND: no known election id for {cycle}")
-        return self._harvest(cycle, election_date(cycle), use_cache=True)
+        day = election_date(cycle)
+        if day > date.today():
+            raise NotYetPublished(
+                f"ND: the {cycle} general has not happened yet -- this path "
+                f"dates every row {day.isoformat()}, so backfilling a running "
+                f"cycle would publish today's position as that cycle's final. "
+                f"The daily `fetch` is what tracks {cycle}."
+            )
+        return self._harvest(cycle, day, use_cache=True)
