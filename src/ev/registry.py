@@ -67,7 +67,6 @@ TIER1: dict[str, str] = {
     "OH": "oh:OHScraper",
     "WI": "wi:WIScraper",
     "TX": "tx:TXScraper",
-    "NH": "nh:NHScraper",
     "TN": "tn:TNScraper",
     "MN": "mn:MNScraper",
     "CA": "ca:CAScraper",
@@ -83,6 +82,19 @@ TIER1: dict[str, str] = {
     # Statewide only, method only -- Alaska's report is keyed by House district,
     # which does not nest into boroughs, so no county rows are possible.
     "AK": "ak:AKScraper",
+    #
+    # ⚠️ NEW HAMPSHIRE IS DELIBERATELY ABSENT, and it is not a coverage gap.
+    # NH HAS NO EARLY VOTING. There is no in-person early period and no
+    # no-excuse absentee; a voter needs a statutory reason. So there is nothing
+    # for this pipeline to count, which is a different statement from "the state
+    # publishes nothing" -- the shape every other missing state has.
+    #
+    # Tracking it put a row on the public board badged "pending", which reads as
+    # "this state has not opened yet" and is false: it will not open, because
+    # there is no window to open. `src/ev/adapters/nh.py` and `tests/test_nh.py`
+    # are KEPT as the record of the research (the 2020 weekly prose, the 403,
+    # the absence of any machine-readable file) -- they simply are not wired
+    # here, and `ev probe` no longer asks. See docs/coverage-research.md.
     # Statewide only, method only -- Kansas's advance-voting Power BI model has
     # no geography column at all. Kansas DOES register by party; the dashboard
     # just does not break it out. See ks.py.
