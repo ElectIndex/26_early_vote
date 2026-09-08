@@ -1201,6 +1201,11 @@ class Validation:
     #: dishonesty -- but it is not one twelfth of the headline error. See
     #: `validate` for why the two are different questions.
     scored: bool = True
+    #: True when this fold's mail share falls inside the range spanned by the
+    #: states the page actually estimates. Conditions on an INPUT, so unlike
+    #: `in_range` it can be reported without selecting for a quiet answer.
+    #: See `resembles_what_we_publish`.
+    resembles_published: bool = False
     #: False when the answer this series ended on sits further from its counties
     #: than `MAX_ADJUSTMENT` lets the model move, so part of its error is
     #: structural at EVERY parameter value. Shown, and never averaged in --
@@ -1373,6 +1378,77 @@ def mature_days(series: Sequence[Observation]) -> list[Observation]:
     return ripe or list(series[-1:])
 
 
+def mail_share_of(series: Sequence[Observation]) -> float | None:
+    """The mail share of the early vote on a series' last day, or None."""
+    if not series:
+        return None
+    last = series[-1]
+    if last.mail is None or last.inperson is None:
+        return None
+    total = last.mail + last.inperson
+    return None if total <= 0 else last.mail / total
+
+
+def published_mail_share_range(out_dir: Path) -> tuple[float, float] | None:
+    """The mail-share range spanned by the states this page ACTUALLY estimates.
+
+    Derived from `output/party_estimate.csv` and `ev_state_daily.csv`, never
+    hardcoded, so it stays true as states start and stop reporting.
+    """
+    published = {row.get("state", "").strip().upper()
+                 for row in _read_csv(Path(out_dir) / ESTIMATE_FILENAME)}
+    published.discard("")
+    if not published:
+        return None
+    best: dict[tuple[str, str], tuple[int, float]] = {}
+    for row in _read_csv(Path(out_dir) / "ev_state_daily.csv"):
+        state = (row.get("state") or "").strip().upper()
+        if state not in published:
+            continue
+        mail, inperson = _num(row.get("mail_returned")), _num(row.get("inperson"))
+        dte = _num(row.get("days_to_election"))
+        if mail is None or inperson is None or dte is None or dte < 0:
+            continue
+        total = mail + inperson
+        if total <= 0:
+            continue
+        key = (state, (row.get("cycle") or "").strip())
+        if key not in best or dte < best[key][0]:
+            best[key] = (dte, mail / total)
+    shares = [v for _, v in best.values()]
+    return (min(shares), max(shares)) if shares else None
+
+
+def resembles_what_we_publish(
+    series: Sequence[Observation], span: tuple[float, float] | None
+) -> bool:
+    """Is this fold structurally like a state the page actually estimates?
+
+    ⚠️ THIS CONDITIONS ON AN INPUT, WHICH IS THE WHOLE POINT, AND IT IS THE ONE
+    DIFFERENCE FROM `within_reach`. Mail share is known for Ohio today with no
+    party data anywhere; `within_reach` is a function of the ANSWER, so
+    filtering a headline on it selects the folds where least happened. This
+    selects nothing of the kind, and the panel proves it: the stratum KEEPS
+    Kentucky 2024 at 6.5, the second-worst fold inside it, and EXCLUDES
+    Pennsylvania 2024 at 1.7, one of the best in the panel.
+
+    What it excludes is a REGIME. Pennsylvania and Iowa are 100% mail and
+    Colorado 98%; every state this page estimates runs 3.7% to 62.7%. In an
+    all-mail state, asking for a ballot is not a choice a voter made, or -- in
+    Pennsylvania's case -- it is the only choice there is, and the selection it
+    implies is the largest in the panel. That regime cannot occur in Ohio,
+    Texas, Tennessee, South Carolina, Virginia or Wisconsin, so the error it
+    produces is not the error a reader of those estimates should expect.
+
+    The headline still averages EVERYTHING -- see `format_validation`. This is
+    reported beside it, not instead of it.
+    """
+    if span is None:
+        return False
+    share = mail_share_of(series)
+    return share is not None and span[0] <= share <= span[1]
+
+
 def validate(
     out_dir: Path, baseline: Baseline, *, states: Iterable[str] | None = None
 ) -> list[Validation]:
@@ -1437,6 +1513,8 @@ def validate(
     trainable = {k: v for k, v in thick.items()
                  if within_reach(v) and k[1] not in UNIVERSAL_VBM}
 
+    published_span = published_mail_share_range(out_dir)
+
     results: list[Validation] = []
     for (cycle, state), series in sorted(scoreable.items()):
         others = [v for k, v in trainable.items() if k[1] != state]
@@ -1474,6 +1552,7 @@ def validate(
             # the headline average AND printed the reach explanation against it,
             # which is the wrong reason for the wrong state.
             in_range=(cycle, state) not in thick or within_reach(thick[(cycle, state)]),
+            resembles_published=resembles_what_we_publish(series, published_span),
             geo_ceiling=(
                 None if last.mail is None or not last.electorate
                 else (lambda c: None if c is None else c * 100)(
@@ -1571,6 +1650,18 @@ def format_validation(results: Sequence[Validation]) -> Iterator[str]:
            f"null model MAE = {sum(r.null_mean_abs_error for r in scored) / n:.1f} pp")
     yield (f"gain vs geography-only = {sum(r.gain_vs_geography for r in scored) / n:+.1f} pp   "
            f"gain vs null = {sum(r.gain for r in scored) / n:+.1f} pp")
+    like = [r for r in scored if r.resembles_published]
+    if like and len(like) != len(scored):
+        span = ", ".join(f"{r.state} {r.cycle}" for r in like)
+        yield (f"AND THE NUMBER A READER OF THIS PAGE ACTUALLY WANTS: "
+               f"{sum(r.mean_abs_error for r in like) / len(like):.1f} pp over the "
+               f"{len(like)} series structurally like the states this page really "
+               f"estimates ({span}). Every state estimated here runs between 4% "
+               f"and 63% mail; Pennsylvania and Iowa are 100% and Colorado 98%, "
+               f"and an all-mail regime cannot occur in Ohio or Texas. This "
+               f"conditions on an INPUT, not on the answer -- it keeps the "
+               f"second-worst fold inside it and drops one of the best -- and it "
+               f"is reported BESIDE the headline above, never instead of it.")
     if all(r.held_out for r in results):
         yield ("Every row is LEAVE-ONE-STATE-OUT: the constants scoring a state "
                "were fitted without it, and without that state's other cycles.")
