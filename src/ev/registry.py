@@ -163,7 +163,41 @@ def ladder(state: str) -> list[Adapter]:
     return adapters
 
 
+#: States with NO tier-1 scraper that are walked ANYWAY, because the fallback
+#: rungs carry them and a statewide count is worth more than a blank.
+#:
+#: Every one of these was investigated and rejected in `docs/coverage-research.md`
+#: for the same reason: the state publishes nothing machine-readable DURING the
+#: voting period. That verdict stands and none of them has an adapter. What it
+#: missed is that the verdict is about the STATE, not about the page -- the UF
+#: Election Lab tracker collected all fourteen through 2024, with real numbers
+#: (New Jersey 3.1M early ballots, Massachusetts 1.7M, Indiana 1.6M), and the
+#: ladder has always been able to reach them. Nothing walked them, so nothing
+#: asked.
+#:
+#: They cost one aggregator row each and they are honest about what they are:
+#: no `county` in their dims, so the front end badges them "Statewide only"
+#: without being told, and their rows carry the aggregator tier badge.
+#:
+#: ⚠️ ALABAMA IS DELIBERATELY ABSENT, and it is the one state here that is a
+#: finding rather than an omission: UF does not carry it at all, and Alabama has
+#: no early voting to carry -- absentee is excuse-required. Same category as New
+#: Hampshire, which is why neither is tracked.
+AGGREGATOR_ONLY: tuple[str, ...] = (
+    "AR", "DC", "IN", "MA", "MO", "MS",
+    "NE", "NJ", "NM", "RI", "UT", "VT", "WV", "WY",
+)
+
+
 @lru_cache(maxsize=1)
 def tracked_states() -> tuple[str, ...]:
-    """States with a tier-1 scraper declared, in ladder-build order."""
-    return tuple(TIER1)
+    """Every state the daily walk visits.
+
+    ⚠️ THIS IS NO LONGER `tuple(TIER1)`. "Tracked" is a decision about whether
+    the page should carry a state; "tier 1" is a decision about whether we wrote
+    a scraper for it. Conflating them meant a state with no scraper was never
+    walked at all -- so the three fallback rungs, which exist precisely for that
+    case and are tested for it, could never fire on the states that needed them
+    most.
+    """
+    return tuple(TIER1) + AGGREGATOR_ONLY
