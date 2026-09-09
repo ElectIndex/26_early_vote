@@ -114,12 +114,31 @@ def test_the_2024_days_reconcile_to_the_boards_own_cumulative_figure():
 # The heading is the only label, and it names the year
 # --------------------------------------------------------------------------
 def test_the_primary_is_up_today_and_that_stops_the_ladder():
-    with pytest.raises(NotYetPublished, match="no 2026 general-election section"):
+    with pytest.raises(NotYetPublished, match="has not opened its 2026 general-election section"):
         ny.parse(PRIM26, 2026, TODAY)
 
 
+def test_the_refusal_does_not_dump_the_pages_headings_at_a_reader():
+    """⚠️ `ladder` puts str(exc) into ev_status.json, and the state panel PRINTS it.
+
+    This message used to append `(its headings are [...])` -- seventeen items of
+    the Board's site navigation -- so New York's page read
+    "...its headings are ['Register', 'Vote', 'NYC Elections', ...]" under the
+    state's name. The list still exists and is still logged at DEBUG, because
+    the day the Board renames its section is exactly what it is for. It just
+    does not belong on a public page.
+    """
+    with pytest.raises(NotYetPublished) as exc:
+        ny.parse(PRIM26, 2026, TODAY)
+    message = str(exc.value)
+    assert "headings" not in message
+    # A bracket is the tell: this message carried a Python list repr.
+    assert "[" not in message and "]" not in message
+    assert len(message) < 140, f"too long for a page: {len(message)} chars"
+
+
 def test_the_2024_general_is_refused_when_asked_for_as_2026():
-    with pytest.raises(NotYetPublished, match="no 2026 general-election section"):
+    with pytest.raises(NotYetPublished, match="has not opened its 2026 general-election section"):
         ny.parse(GEN24, 2026, TODAY)
 
 
