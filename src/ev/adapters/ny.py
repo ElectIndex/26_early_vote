@@ -247,9 +247,21 @@ def find_general(page: str, cycle: int) -> int:
             continue
         if GENERAL_WORD in low:
             return position
+    # ⚠️ THE HEADING LIST GOES TO THE LOG, NOT INTO THE EXCEPTION.
+    #
+    # `ladder.run_state` puts `str(exc)` into `ev_status.json`'s `message`, and
+    # the state panel prints that message to the reader verbatim. So dumping
+    # seventeen navigation headings here put
+    # "...(its headings are ['Register', 'Vote', 'NYC Elections', ...])" on a
+    # public page under New York's name. The list is genuinely useful for
+    # spotting the day the Board renames its section -- which is the whole
+    # reason this function reads headings at all -- so it is kept, at DEBUG,
+    # where a diagnostic belongs.
+    found = [h for _, h in headings(page)]
+    log.debug("NY: no %s general heading; page offers %r", cycle, found)
     raise NotYetPublished(
-        f"NY: the NYC Board's check-in page has no {cycle} general-election "
-        f"section yet (its headings are {[h for _, h in headings(page)]})"
+        f"NY: the New York City Board's check-in page has not opened its "
+        f"{cycle} general-election section yet"
     )
 
 

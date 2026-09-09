@@ -5,14 +5,14 @@ AR,Arkansas,2026-11-03,,,true,method,,866061,,,,"no during-season file of its ow
 AZ,Arizona,2026-11-03,,,true,county,,,,,,registers by party; the SoS Sent/Accepted table publishes neither the party split nor a mail/in-person split -- county totals only
 CA,California,2026-11-03,,,true,county|method,,,,,,"registers by party, but the state workbook does not break it out"
 CO,Colorado,2026-11-03,,,true,county|party|method,,,,,,
-CT,Connecticut,2026-11-03,,,true,town|county|method,,,,,,"tracked; reports by municipality, counties summed from towns. Registers by party; the file publishes no split, so the estimate stands in"
+CT,Connecticut,2026-11-03,,,true,town|county|method,,866387,,,,"tracked; reports by municipality, counties summed from towns. Registers by party; the file publishes no split, so the estimate stands in"
 DC,District of Columbia,2026-11-03,,,true,method,,,,,,"no during-season file of its own; carried by the national aggregator, so statewide totals only"
 DE,Delaware,2026-11-03,,,true,county|method,78792,247172,,,,"tracked; registers by party but the file publishes no split, so the estimate stands in"
 FL,Florida,2026-11-03,,,true,county|party|method,,8289955,,,,
 GA,Georgia,2026-11-03,,,false,county|method,,4031303,,,,"Data Hub carries age/race/sex too, but its age bands overlap (35-40 and 40-45 share a year), so none of the three is published"
 HI,Hawaii,2026-11-03,,,false,county|method,,,,,,"tracked; no party registration in Hawaii, so the split is modelled"
 IA,Iowa,2026-11-03,,,true,county|party|method,370546,675464,,,,
-ID,Idaho,2026-11-03,,,true,county|method,,,,,,"registers by party, but the tracker publishes only a primary ballot-choice column, so no split is published"
+ID,Idaho,2026-11-03,,,true,county|method,,377597,,,,"registers by party, but the tracker publishes only a primary ballot-choice column, so no split is published"
 IL,Illinois,2026-11-03,,,false,county|method,,,,,,
 IN,Indiana,2026-11-03,,,false,method,,1579419,,,,"no during-season file of its own; carried by the national aggregator, so statewide totals only"
 KS,Kansas,2026-11-03,,,true,method,,,,,,"tracked, but statewide only -- no county breakdown, so no estimate is possible"
