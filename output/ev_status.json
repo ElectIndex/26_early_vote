@@ -2,7 +2,7 @@
  "as_of": "2026-09-09",
  "cycle": 2026,
  "days_to_election": 55,
- "generated_at": "2026-09-09T14:12:24+00:00",
+ "generated_at": "2026-09-09T17:47:56+00:00",
  "states": {
   "AK": {
    "attempts": [
@@ -569,14 +569,14 @@
   "NY": {
    "attempts": [
     {
-     "detail": "NY: the NYC Board's check-in page has no 2026 general-election section yet (its headings are ['Unofficial Election Night Results Unofficial Rank Choice Results', 'Register', 'Vote', 'NYC Elections', 'Poll Workers', 'Run for Office', 'NYC Board of Elections', 'Meetings', 'Information', 'Contact Us', 'Primary Election 2026', 'Executive Office', 'Queens', 'Bronx', 'Manhattan', 'Brooklyn', 'Staten Island'])",
+     "detail": "NY: the New York City Board's check-in page has not opened its 2026 general-election section yet",
      "name": "ny-nycboe",
      "result": "not_yet_published",
      "tier": 1
     }
    ],
-   "message": "NY: the NYC Board's check-in page has no 2026 general-election section yet (its headings are ['Unofficial Election Night Results Unofficial Rank Choice Results', 'Register', 'Vote', 'NYC Elections', 'Poll Workers', 'Run for Office', 'NYC Board of Elections', 'Meetings', 'Information', 'Contact Us', 'Primary Election 2026', 'Executive Office', 'Queens', 'Bronx', 'Manhattan', 'Brooklyn', 'Staten Island'])",
-   "retrieved_at": "2026-09-09T14:12:24+00:00",
+   "message": "NY: the New York City Board's check-in page has not opened its 2026 general-election section yet",
+   "retrieved_at": "2026-09-09T17:47:56+00:00",
    "rows": 0,
    "source": null,
    "status": "pending",
@@ -885,75 +885,12 @@
   "failed": 0,
   "files": [
    {
-    "added": 1,
-    "file": "ev_state_daily.csv",
-    "kept_better_tier": 0,
-    "kept_richer": 0,
-    "replaced": 6,
-    "rows": 1261
-   },
-   {
-    "added": 3,
-    "file": "fl.csv",
-    "kept_better_tier": 0,
-    "kept_richer": 0,
-    "replaced": 0,
-    "rows": 3595
-   },
-   {
-    "added": 0,
-    "file": "il.csv",
-    "kept_better_tier": 0,
-    "kept_richer": 0,
-    "replaced": 0,
-    "rows": 408
-   },
-   {
-    "added": 109,
-    "file": "nc.csv",
-    "kept_better_tier": 0,
-    "kept_richer": 0,
-    "replaced": 8,
-    "rows": 9956
-   },
-   {
-    "added": 0,
-    "file": "nd.csv",
-    "kept_better_tier": 0,
-    "kept_richer": 0,
-    "replaced": 0,
-    "rows": 318
-   },
-   {
-    "added": 6,
-    "file": "fl.csv",
-    "kept_better_tier": 0,
-    "kept_richer": 0,
-    "replaced": 0,
-    "rows": 6784
-   },
-   {
-    "added": 109,
-    "file": "nc.csv",
-    "kept_better_tier": 0,
-    "kept_richer": 0,
-    "replaced": 8,
-    "rows": 13920
-   },
-   {
-    "added": 18,
-    "file": "nc.csv",
-    "kept_better_tier": 0,
-    "kept_richer": 0,
-    "replaced": 65,
-    "rows": 1696
-   },
-   {
     "file": "ev_state_meta.csv",
     "rows": 50
    }
   ],
   "ok": 4,
+  "partial_run": true,
   "pending": 45
  }
 }
