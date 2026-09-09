@@ -178,8 +178,80 @@ def run_state(
         )
         outcome.attempts.append({"tier": adapter.tier, "name": label, "result": "ok"})
         log.info("%s: %s answered with %d rows", state, label, outcome.rows)
+
+        # ⚠️ A PARTIAL SOURCE MUST NOT BLOCK A STATEWIDE NUMBER THAT EXISTS.
+        #
+        # `ny.py` covers New York CITY -- five of sixty-two counties -- and
+        # correctly refuses to emit a StateDay, because five boroughs summed and
+        # labelled "New York" is worse than a hole. But it answers at tier 1, so
+        # the walk stopped there and New York got no statewide figure AT ALL,
+        # while the aggregator two rungs down was carrying the state Board of
+        # Elections' own number: 2,985,181 early votes in 2024, against roughly
+        # a million in the city. The page showed the city and called it the
+        # state. Texas is the same shape for the same reason.
+        #
+        # So a result with rows but NO state row keeps walking, and takes the
+        # first statewide row it finds below. Only `state_rows` -- the lower
+        # tier's counties and demographics are discarded unread, because the
+        # tier that won is the richer one and this is a top-up, not a merge.
+        # The row carries ITS OWN provenance, so the site labels it at the tier
+        # it actually came from rather than borrowing tier 1's badge.
+        if not result.state_rows:
+            _topup_statewide(state, adapters[index + 1:], cycle, as_of,
+                             result, outcome)
         return result, outcome
 
     outcome.status = STATUS_FAILED
     outcome.message = f"all {len(adapters)} tier(s) failed for {state}"
     return FetchResult(), outcome
+
+
+def _topup_statewide(
+    state: str,
+    rest: list[Adapter],
+    cycle: int,
+    as_of: date,
+    result: FetchResult,
+    outcome: StateOutcome,
+) -> None:
+    """Borrow a statewide row from below, for a partial source that has none.
+
+    Mutates `result` and `outcome` in place. Silent when nothing below has one,
+    which is the normal case and is not a failure: it means the state genuinely
+    has no statewide figure today, which is exactly what a blank should say.
+
+    Every failure here is swallowed. This runs AFTER a tier has already answered
+    with real data, so a crash in a lower rung must never turn a good run into a
+    bad one -- the worst outcome allowed is the one we already had.
+    """
+    for adapter in rest:
+        label = adapter.name or type(adapter).__name__
+        try:
+            extra = adapter.fetch(cycle, as_of)
+            provenance = adapter.provenance()
+        except Exception as exc:  # noqa: BLE001 -- see the docstring
+            outcome.attempts.append(
+                {"tier": adapter.tier, "name": label, "result": "topup_failed",
+                 "detail": f"{type(exc).__name__}: {exc}"}
+            )
+            continue
+        if not extra.state_rows:
+            outcome.attempts.append(
+                {"tier": adapter.tier, "name": label, "result": "topup_no_state_row",
+                 "detail": "answered, but carries no statewide row either"}
+            )
+            continue
+
+        rows = list(extra.state_rows)
+        for row in rows:
+            row.provenance = provenance
+        result.state_rows.extend(rows)
+        outcome.rows += len(rows)
+        outcome.attempts.append(
+            {"tier": adapter.tier, "name": label, "result": "topup_statewide",
+             "detail": f"statewide row only; {outcome.source_name} covers part of "
+                       f"{state} and publishes none"}
+        )
+        log.info("%s: statewide row topped up from %s (tier %s)",
+                 state, label, adapter.tier)
+        return
