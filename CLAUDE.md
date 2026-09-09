@@ -24,14 +24,24 @@ pytest
 |---|---|---|
 | 1 | `adapters/<st>.py` — the state's own file | whatever that state publishes |
 | 2 | `adapters/civicapi.py` — civicAPI's national API | statewide + counties + party |
-| 3 | `adapters/aggregator.py` — UF Election Lab | statewide only |
-| 4 | `adapters/manual.py` — `data/manual/` | a hand-typed statewide total |
+| 3 | the EAC's post-election survey (EAVS) | a past cycle's FINAL, by county |
+| 4 | `adapters/aggregator.py` — UF Election Lab | statewide only |
+| 5 | `adapters/manual.py` — `data/manual/` | a hand-typed statewide total |
 
-Tiers 2-4 are appended to every state automatically (`registry.FALLBACKS`), so a
-`TIER1` entry only ever names its own scraper. `publish.py`'s merge is relative
+Tiers 2, 4 and 5 are appended to every state automatically (`registry.FALLBACKS`),
+so a `TIER1` entry only ever names its own scraper. `publish.py`'s merge is relative
 (lower wins) and names no tier number; `schema.TIER_LABELS` is the one place the
 numbering is written down. See `docs/civicapi-source.md` for why civicAPI sits
 above the aggregator and what it deliberately refuses to publish.
+
+⚠️ **Tier 3 is the one rung with no module of its own**, and the table above is
+slightly misleading about it on purpose. The other four are entries in
+`registry.FALLBACKS`, walked in order for every state. EAVS is not walked at all:
+it is a 41 MB national CSV published over a year after the election, so a state
+that wants it reads it inside its OWN `fetch_history` (`id.py` does) and stamps
+the rows `TIER_SURVEY` / `eac-eavs`. A tier is a claim about where a row came
+from; a rung is a thing the ladder walks. They are usually the same and here
+they are not. `schema.py` has the full reasoning.
 
 ## Writing a state adapter — the contract
 

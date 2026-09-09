@@ -34,6 +34,12 @@ from ev.adapters.base import NotYetPublished, SchemaDrift
 FIXTURES = Path(__file__).parent / "fixtures" / "az"
 PAGE_2024 = (FIXTURES / "2024-election-info.html").read_text(encoding="utf-8", errors="replace")
 PAGE_EMPTY = (FIXTURES / "2026-election-info-no-table.html").read_text(encoding="utf-8", errors="replace")
+#: The DURING-SEASON 2024 page, from the slug this adapter did not know about --
+#: two days after early voting opened for the general. See test_az's
+#: `test_the_during_season_2024_page_is_still_the_primarys_table`.
+PAGE_2024_SEASON = (
+    FIXTURES / "2024-election-information_2024-10-11.html"
+).read_text(encoding="utf-8", errors="replace")
 
 
 @pytest.fixture
@@ -598,3 +604,73 @@ def test_2024_has_no_general_election_table_to_recover():
     assert parsed.state_rows[0].day == date(2024, 7, 29)
     with pytest.raises(NotYetPublished):
         az._refuse_a_stale_table(parsed, 2024)
+
+
+# --------------------------------------------------------------------------
+# The slug the survey did not know about
+# --------------------------------------------------------------------------
+def test_both_election_information_slugs_are_tried():
+    """⚠️ A PATH CHECK IS NOT EVIDENCE ABOUT ANOTHER PATH. The 2024 general's
+    season lived at `-election-information`; the short slug's earliest capture is
+    six days AFTER the election, so a survey that knew only it could only ever
+    have read a leftover."""
+    assert az.URLS[0] is az.URL
+    assert az.URLS[1].format(cycle=2024).endswith("/2024-election-information")
+
+
+def test_a_404_on_one_slug_is_not_absence_until_both_are(monkeypatch):
+    tried: list[str] = []
+
+    def fake_get(url, **kwargs):
+        tried.append(url)
+        if url.endswith("-election-info"):
+            raise az.Missing(url)
+        return PAGE_2024_SEASON.encode("utf-8")
+
+    monkeypatch.setattr(az, "get", fake_get)
+    markup = az.AZScraper()._load(2024, use_cache=False)
+    assert [u.rsplit("/", 1)[-1] for u in tried] == [
+        "2024-election-info", "2024-election-information"
+    ]
+    assert "Sent/Accepted Early Ballots" in markup
+
+
+def test_absence_is_only_reported_when_every_slug_is_missing(monkeypatch):
+    def fake_get(url, **kwargs):
+        raise az.Missing(url)
+
+    monkeypatch.setattr(az, "get", fake_get)
+    with pytest.raises(NotYetPublished, match="does not exist"):
+        az.AZScraper()._load(2024, use_cache=False)
+
+
+def test_the_during_season_2024_page_is_still_the_primarys_table():
+    """THE FINDING, held as a test so nobody has to re-survey it.
+
+    This fixture is the SoS's own page on 2024-10-11 -- two days after A.R.S.
+    16-542 opened early voting for the general, four weeks before it. It still
+    says "Primary Election", every county is stamped Jul 29, and the total is
+    July's. Arizona never published a 2024 general Sent/Accepted table."""
+    assert "Primary Election - Sent/Accepted Early Ballots" in PAGE_2024_SEASON
+    assert "General Election - Sent" not in PAGE_2024_SEASON
+
+    parsed = az.parse(PAGE_2024_SEASON, 2024)
+    assert len(parsed.county_rows) == 15
+    (state,) = parsed.state_rows
+    assert state.day == date(2024, 7, 29)
+    assert state.ballots_total == 921_671
+    assert state.mail_requested == 2_262_541
+    # ...and it is refused, on the live path and the history path alike.
+    with pytest.raises(NotYetPublished, match="before the 2024 general"):
+        az._refuse_a_stale_table(parsed, 2024)
+
+
+def test_the_during_season_page_and_the_leftover_are_the_same_numbers():
+    """Nothing moved between 2024-10-11 and 2024-11-11: not the timestamp, not
+    a single county. That is what makes this a never-published table rather than
+    a table we happened to read late."""
+    season = az.parse(PAGE_2024_SEASON, 2024)
+    leftover = az.parse(PAGE_2024, 2024)
+    assert {(r.county_fips, r.ballots_total) for r in season.county_rows} == {
+        (r.county_fips, r.ballots_total) for r in leftover.county_rows
+    }

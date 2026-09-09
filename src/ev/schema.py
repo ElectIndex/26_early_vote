@@ -27,15 +27,53 @@ from .normalize import METHOD_INPERSON, METHOD_MAIL
 # --------------------------------------------------------------------------
 TIER_SCRAPER = 1     # our own adapter against the state's own file
 TIER_CIVIC = 2       # civicAPI's national early-vote API (statewide + counties)
-TIER_AGGREGATOR = 3  # a third-party aggregator (statewide only)
-TIER_MANUAL = 4      # hand-entered statewide total
+TIER_SURVEY = 3      # an official POST-ELECTION census (the EAC's EAVS)
+TIER_AGGREGATOR = 4  # a third-party aggregator (statewide only)
+TIER_MANUAL = 5      # hand-entered statewide total
 
 TIER_LABELS = {
     TIER_SCRAPER: "state",
     TIER_CIVIC: "civicapi",
+    TIER_SURVEY: "survey",
     TIER_AGGREGATOR: "aggregator",
     TIER_MANUAL: "manual",
 }
+
+# WHY TIER_SURVEY EXISTS, AND WHY IT SITS HERE
+#
+# Three separate pieces of archaeology -- Arizona, Montana and Idaho -- reached
+# the EAC's Election Administration and Voting Survey independently and all
+# three stopped at the same wall: `ladder.py` stamps provenance FROM THE ADAPTER,
+# so EAVS rows read through `az.py` or `mt.py` or `id.py` would publish as that
+# state's own file at tier 1. Two of the three refused to wire it up rather than
+# tell that lie. They were right to, and the missing rung was the actual bug.
+#
+# EAVS is not a state file and not an aggregator. It is a federal census in
+# which the state's own election administrators report their own counts, so it
+# is official in the way tier 1 is official, and national in the way tier 3 is
+# national. What makes it a rung of its own is TIMING: it is published more than
+# a year after the election and can NEVER answer for a live cycle. It supplies
+# endpoints, never curves.
+#
+# ⚠️ It outranks the aggregator because for the one row they both produce -- a
+# past cycle's Election Day total -- the tracker is a snapshot and the survey is
+# the count. Idaho is the worked example: UF has 377,597, EAVS has 408,407, and
+# Idaho's own SoS dashboard says 408,325. UF stopped 92.5% of the way. Since
+# that total is the DENOMINATOR of "share of its 2024 early vote", the tracker's
+# number would inflate every 2026 Idaho reading on the site by eight percent.
+#
+# It sits BELOW civicAPI without that ever being tested, and deliberately so:
+# civicAPI serves the current election and has no archive (`civicapi.py` TRAP 5,
+# and its `fetch_history` is left unimplemented on purpose), so a survey row and
+# a civicAPI row cannot collide on any key. The order between them is a
+# statement of principle -- a live source we read ourselves outranks a survey we
+# receive -- and costs nothing, because it never arbitrates anything.
+#
+# Inserting here shifted the aggregator 3 -> 4 and manual 4 -> 5. Published rows
+# were renumbered in the same commit and no CSV carries the old numbering; the
+# front end's own TIERS map was moved to match. This is the second such insert
+# (civicAPI went in at 2 on 2026-09-06) and the procedure is the same both
+# times, because `publish.py` compares tiers RELATIVELY and names no number.
 
 
 def _utcnow() -> str:

@@ -459,10 +459,15 @@ def test_fetch_with_no_file_in_the_lookback_is_not_yet_published(monkeypatch):
         ct.CTScraper().fetch(2026, date(2026, 10, 20))
 
 
-def test_there_is_no_archive_to_backfill():
+def test_there_is_no_daily_archive_to_backfill(monkeypatch):
+    """The daily workbooks are deleted; a past cycle gets the certified FINAL.
+
+    2022 is the case with neither: no Statement of Vote under the verified
+    naming and no ballot files, so it is refused by name.
+    """
     with pytest.raises(NotYetPublished) as caught:
-        ct.CTScraper().fetch_history(2024)
-    assert "no 2024 archive" in str(caught.value)
+        ct.CTScraper().fetch_history(2022)
+    assert "2022" in str(caught.value)
 
 
 def _page(*names: str) -> bytes:
@@ -531,3 +536,252 @@ def test_a_listed_file_outside_the_generals_window_is_not_expected(monkeypatch, 
     monkeypatch.setattr(ct, "get", fake_get)
     result = ct.CTScraper().fetch(2026, date(2026, 10, 20))
     assert result.state_rows[-1].ballots_total == 30
+
+
+# --------------------------------------------------------------------------
+# The past cycle: the certified Statement of Vote
+# --------------------------------------------------------------------------
+#: A real slice of `2024_statement_of_vote.pdf` (200, 3,139,465 B, fetched
+#: 2026-09-09): its cover page, which is the only thing that names the election,
+#: plus all six pages of the "*Same-Day Registration (SDR), Turnout, Absentee &
+#: Early Voting Ballot Statistics" table -- printed pages 157-162, all 169 towns
+#: and the document's own TOTAL row, every heading and every digit verbatim. The
+#: 163 pages of candidate returns are dropped, and the cover's decorative image
+#: is stripped (766 KB of the 858 KB), which touches no text.
+STATEMENT_OF_VOTE_2024 = FIXTURES / "2024_statement_of_vote_stats_pages.pdf"
+
+#: Connecticut's certified 2024 general, off that TOTAL row.
+CT_2024_ABSENTEE_VOTED = 118_362
+CT_2024_EARLY_VOTED = 718_871
+CT_2024_TOTAL = CT_2024_ABSENTEE_VOTED + CT_2024_EARLY_VOTED     # 837,233
+
+ANDOVER = "0901301080"          # Andover town, Tolland County
+TOLLAND_COUNTY = "09013"
+NORTH_STONINGTON = "0901155500"  # the town pypdf splits across two lines
+MADISON = "0900944560"           # the town pypdf renders "M adison"
+
+
+@pytest.fixture(scope="module")
+def sov() -> bytes:
+    return STATEMENT_OF_VOTE_2024.read_bytes()
+
+
+@pytest.fixture(scope="module")
+def sov_result(sov):
+    return ct.sov_build(sov, 2024)
+
+
+def test_the_statement_of_vote_fixture_is_the_real_pdf(sov):
+    assert sov.startswith(b"%PDF")
+    cover = ct._compact(ct.sov_pages(sov)[0])
+    assert "StatementofVoteGeneralElectionNovember5,2024" in cover
+
+
+def test_every_one_of_connecticuts_169_towns_is_present(sov_result):
+    towns = _towns.rows_of(sov_result)
+    assert len(towns) == ct.SOV_TOWNS == 169
+    assert len({row.town_geoid for row in towns}) == 169
+
+
+def test_the_towns_roll_up_to_the_eight_counties_the_repo_keys_on(sov_result):
+    """CT's census 'counties' are planning regions now; `_fips` is not.
+
+    `_towns.county_of` slices digits 3-5 out of the 2020-vintage cousub GEOID,
+    which is the same table `data/baseline/county_results_2024.csv` is keyed by,
+    so the county rows join the presidential baseline.
+    """
+    assert [row.county_fips for row in sov_result.county_rows] == [
+        "09001", "09003", "09005", "09007", "09009", "09011", "09013", "09015",
+    ]
+    assert sov_result.county_rows[0].county_name == "Fairfield County"
+
+
+def test_the_county_rows_sum_to_the_documents_own_total(sov_result):
+    assert sum(row.ballots_total for row in sov_result.county_rows) == CT_2024_TOTAL
+    assert sum(row.mail_returned for row in sov_result.county_rows) == CT_2024_ABSENTEE_VOTED
+    assert sum(row.inperson for row in sov_result.county_rows) == CT_2024_EARLY_VOTED
+
+
+def test_the_statewide_row_is_the_certified_final(sov_result):
+    (state,) = sov_result.state_rows
+    assert (state.cycle, state.state, state.day) == (2024, "CT", date(2024, 11, 5))
+    assert state.ballots_total == CT_2024_TOTAL
+    assert state.mail_returned == CT_2024_ABSENTEE_VOTED
+    assert state.inperson == CT_2024_EARLY_VOTED
+
+
+def test_a_town_and_its_county_carry_the_documents_own_numbers(sov_result):
+    andover = {row.town_geoid: row for row in _towns.rows_of(sov_result)}[ANDOVER]
+    # Andover  2,399  2,118  88.29%   62  0  62   870  3  867   68  1  67
+    assert (andover.mail_returned, andover.inperson) == (62, 867)
+    assert andover.ballots_total == 62 + 867
+    assert _towns.county_of(ANDOVER) == TOLLAND_COUNTY
+
+
+def test_the_names_are_matched_with_every_space_removed(sov_result):
+    """pypdf renders 'Madison' as 'M adison' and splits 'North Stonington'.
+
+    Both are text-extractor spacing heuristics rather than bytes in the file --
+    Montana's lesson, in a second document -- so this is the test that a pypdf
+    upgrade which re-spaces the page does not silently drop two towns.
+    """
+    geoids = {row.town_geoid for row in _towns.rows_of(sov_result)}
+    assert MADISON in geoids
+    assert NORTH_STONINGTON in geoids
+
+
+def test_the_certified_final_reports_no_party_and_no_issued_count(sov_result):
+    """None, never 0. Connecticut registers by party; this document does not
+    report it, and the 'Received from Town Clerk' column is ballots RETURNED."""
+    (state,) = sov_result.state_rows
+    assert state.mail_requested is None
+    rows = [state, *sov_result.county_rows, *_towns.rows_of(sov_result)]
+    for row in rows:
+        assert (row.party_dem, row.party_rep, row.party_oth, row.party_npa) == (
+            None, None, None, None)
+        # One certified snapshot: there is no day-over-day change to report.
+        assert row.ballots_new is None
+
+
+def test_same_day_registration_is_not_early_voting_and_is_not_published(sov_result):
+    """52,853 SDR ballots were cast on Election Day. None of them is in here."""
+    (state,) = sov_result.state_rows
+    assert state.ballots_total == state.mail_returned + state.inperson
+
+
+# --------------------------------------------------------------------------
+# ...and the drift guards on it
+# --------------------------------------------------------------------------
+def _stats_pages(sov) -> list[str]:
+    return ct.sov_statistics(ct.sov_pages(sov))
+
+
+def test_the_totals_row_is_checked_against_the_sum_of_the_towns(sov, monkeypatch):
+    """One town's count edited: the sum stops matching and the run refuses."""
+    pages = _stats_pages(sov)
+    doctored = [page.replace("Andover 2,399 2,118 88.29% 62 0 62 870 3 867 68 1 67",
+                             "Andover 2,399 2,118 88.29% 62 0 62 870 3 999 68 1 67")
+                for page in pages]
+    assert doctored != pages, "the Andover row moved; update the test's needle"
+    towns, _names, totals = ct.sov_rows(doctored)
+    summed = [sum(counts[i] for counts in towns.values()) for i in range(ct._SOV_COUNTS)]
+    assert summed != totals
+
+
+def test_a_page_missing_a_column_is_not_read_as_a_statistics_page(sov):
+    pages = ct.sov_pages(sov)
+    blinded = [page.replace("Early", "Late") for page in pages]
+    with pytest.raises(SchemaDrift):
+        ct.sov_statistics(blinded)
+
+
+def test_the_columns_must_be_in_the_order_the_values_are_read_in(sov):
+    """⚠️ PRESENCE ALONE PROVES NOTHING -- hi.py's `_check_header` note applies.
+
+    The nine counts are consumed positionally and the only other check on them
+    is that they sum to the document's own totals row, which is commutative. So
+    printing the absentee block where the early block goes would publish 118,362
+    early votes and 718,871 absentee ones with the total unchanged.
+    """
+    tags = list(ct.SOV_COLUMN_TAGS)
+    # The absentee block printed where the early block goes: same thirteen
+    # headings, three of them moved, and every value still summing to the same
+    # totals row.
+    tags[4:7], tags[7:10] = tags[7:10], tags[4:7]
+    with pytest.raises(SchemaDrift) as caught:
+        ct.sov_statistics(["\n".join(tags)])
+    assert "order" in str(caught.value)
+
+
+def test_a_row_that_is_not_one_of_the_169_towns_is_drift(sov):
+    pages = _stats_pages(sov)
+    renamed = [page.replace("Andover ", "Andovre ") for page in pages]
+    with pytest.raises(SchemaDrift):
+        ct.sov_rows(renamed)
+
+
+def test_a_dropped_page_is_drift_not_partial_coverage(sov):
+    """Connecticut's towns ARE the state, so 140 of 169 is a parser that stopped
+    reading, never a town that has not reported."""
+    with pytest.raises(SchemaDrift) as caught:
+        ct.sov_rows(_stats_pages(sov)[:-1])
+    assert "169" in str(caught.value)
+
+
+def test_the_cover_line_is_read_as_one_match_not_two():
+    assert ct.sov_election(
+        ["Statement of Vote\nGeneral Election \nNovember 5, 2024"]
+    ) == ("general", date(2024, 11, 5))
+    with pytest.raises(SchemaDrift):
+        ct.sov_election(["General Election", "November 5, 2024"])
+
+
+def test_a_statement_of_vote_for_another_election_stops_the_ladder(sov):
+    """The 2024 document handed to a 2022 backfill is refused by its own cover.
+
+    NotYetPublished, not SourceError: there is no better source for a cycle whose
+    document we do not have, and falling through would let a weaker tier date its
+    own number Election Day 2022.
+    """
+    with pytest.raises(NotYetPublished) as caught:
+        ct.sov_build(sov, 2022)
+    assert "2024-11-05" in str(caught.value)
+
+
+# --------------------------------------------------------------------------
+# fetch_history's own guards
+# --------------------------------------------------------------------------
+def test_history_refuses_a_cycle_with_no_statement_of_vote_by_name():
+    with pytest.raises(NotYetPublished) as caught:
+        ct.CTScraper().fetch_history(2022)
+    assert "2022" in str(caught.value)
+
+
+def test_history_refuses_a_cycle_whose_election_has_not_happened(monkeypatch):
+    """⚠️ GUARD PARITY WITH nd.py. This path dates every row ELECTION DAY, which
+    for a running cycle is in the future -- and a row at days_to_election 0 is
+    that cycle's final for everything that compares against it."""
+    monkeypatch.setitem(ct.STATEMENT_OF_VOTE, 2026, "https://example.invalid/x.pdf")
+    with pytest.raises(NotYetPublished) as caught:
+        ct.CTScraper().fetch_history(2026)
+    assert "has not happened yet" in str(caught.value)
+
+
+def test_history_reads_the_document_and_stamps_the_town_rows(monkeypatch, sov):
+    seen = {}
+
+    def fake_get(url, *, state, filename, **kwargs):
+        seen["url"] = url
+        return sov
+
+    monkeypatch.setattr(ct, "get", fake_get)
+    result = ct.CTScraper().fetch_history(2024)
+    assert seen["url"] == ct.STATEMENT_OF_VOTE[2024]
+    assert len(result.county_rows) == 8
+    assert len(_towns.rows_of(result)) == 169
+    # ladder.py does not run for a backfill, and cli.py stamps only after the
+    # adapter returns -- ct.py stamps its own town rows, as me.py does.
+    assert all(row.provenance is not None for row in _towns.rows_of(result))
+
+
+def test_a_soft_404_instead_of_the_document_is_a_source_error(monkeypatch):
+    """portal.ct.gov answers a missing media item with HTTP 200 and its 404 page,
+    so 'did we get a PDF' is the only real status check."""
+    monkeypatch.setattr(
+        ct, "get",
+        lambda url, **kwargs: b"<html><head><title>404 Error Page</title></head></html>",
+    )
+    with pytest.raises(SourceError):
+        ct.CTScraper().fetch_history(2024)
+
+
+def test_the_columns_the_values_are_read_at_are_derived_from_the_header():
+    """The positional indices and the order check cannot drift apart.
+
+    `_SOV_ROW` eats the town name and the percentage; everything else is a
+    count, in the order the header declares it.
+    """
+    assert ct._SOV_COUNTS == 11
+    assert ct._SOV_COUNT_TAGS[ct._ABS_VOTED] == "NumberofAbsenteeBallotsVoted"
+    assert ct._SOV_COUNT_TAGS[ct._EARLY_VOTED] == "NumberofEarlyBallotsVoted"
+    assert set(ct._SOV_COUNT_TAGS) < set(ct.SOV_COLUMN_TAGS)

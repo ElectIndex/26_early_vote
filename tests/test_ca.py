@@ -1,6 +1,7 @@
-"""California: the SoS's VBM statistics workbook.
+"""California: the SoS's VBM statistics report.
 
-Two fixtures, both real:
+Five fixtures, all real, and between them every shape and vintage California has
+published this report in:
 
 * `vbm-statistics_2022-general_2022-10-27.xlsx` -- the DURING-SEASON snapshot,
   taken twelve days before the 2022 general. Its "VBM Press Version" sheet is
@@ -11,6 +12,19 @@ Two fixtures, both real:
 * `vbm-statistics_2022-general_final.xlsm` -- the same URL as served live today,
   byte for byte, 77,507 bytes. It is the FINAL restatement and carries only the
   one sheet, which is why the parser finds its sheet by name.
+* `vbm-statistics_2024-general_2024-10-31.xls` -- 129,536 bytes, legacy OLE2,
+  the ONLY workbook capture of the 2024 general (Wayback `20241101232312`,
+  `x-archive-orig-last-modified: Thu, 31 Oct 2024 16:15:00 GMT`). Its sheet is
+  called `Ballot Return Statistics`, not `VBM Press Version`, and its header
+  carries the in-person block -- including a SECOND column called `Sum`.
+* `vbm-statistics_2024-general_2024-10-19.pdf` -- 124,309 bytes, the during-season
+  PDF (Wayback `20241020170838`, last-modified 2024-10-19, printed "Ballot Return
+  Statistics as of: Saturday, October 19, 2024"). Three of the five distinct 2024
+  captures are PDFs, so this shape is most of the curve.
+* `vbm-statistics_2022-general_2022-10-25.pdf` -- 168,846 bytes, the 2022 PDF of
+  the same report, kept because it must be REFUSED. Its blank cells print as
+  nothing, so Alameda's line carries ten numbers where its neighbours carry
+  eleven and no reader can tell by position which channel went missing.
 """
 
 from __future__ import annotations
@@ -26,8 +40,13 @@ from ev.adapters.base import NotYetPublished, SchemaDrift, SourceError
 FIX = Path(__file__).parent / "fixtures" / "ca"
 SEASON = (FIX / "vbm-statistics_2022-general_2022-10-27.xlsx").read_bytes()
 FINAL = (FIX / "vbm-statistics_2022-general_final.xlsm").read_bytes()
+SEASON_2024 = (FIX / "vbm-statistics_2024-general_2024-10-31.xls").read_bytes()
+PDF_2024 = (FIX / "vbm-statistics_2024-general_2024-10-19.pdf").read_bytes()
+PDF_2022 = (FIX / "vbm-statistics_2022-general_2022-10-25.pdf").read_bytes()
 
 DAY = date(2022, 10, 27)
+DAY_2024 = date(2024, 10, 31)
+PDF_DAY_2024 = date(2024, 10, 19)
 
 
 # --------------------------------------------------------------------------
@@ -105,9 +124,153 @@ def test_california_registers_by_party_but_this_workbook_does_not_split_it():
 
 
 # --------------------------------------------------------------------------
+# The 2024 vintage: a renamed sheet, an in-person block, and TWO columns
+# both called "Sum"
+# --------------------------------------------------------------------------
+def test_the_2024_workbook_is_all_58_counties():
+    result = ca.parse(SEASON_2024, 2024, DAY_2024)
+    assert len(result.county_rows) == 58
+    assert len({r.county_fips for r in result.county_rows}) == 58
+
+
+def test_the_second_sum_is_the_in_person_block_not_the_returns(monkeypatch):
+    """⚠️ THE ONE THAT WOULD HAVE PUBLISHED CONFIDENT WRONG NUMBERS. The 2024
+    header prints `Sum` twice. A last-occurrence map reads Los Angeles' returns
+    as its in-person count -- 80,767 instead of 1,114,418, a factor of fourteen,
+    in a column that looks entirely plausible on a chart."""
+    la = next(r for r in ca.parse(SEASON_2024, 2024, DAY_2024).county_rows
+              if r.county_fips == "06037")
+    assert la.mail_returned == 1_114_418
+    assert la.inperson == 80_767
+    assert la.ballots_total == 1_195_185 == la.mail_returned + la.inperson
+
+
+def test_index_binds_a_repeated_name_to_its_first_column():
+    header = ["county", "sum", "regular ballots", "sum"]
+    index = ca._index(header)
+    assert index["sum"] == 1
+    assert ca._inperson_sum(header, index) == 3
+
+
+def test_a_vintage_with_no_in_person_block_has_no_in_person_column():
+    header = ["county", "sum", "total accepted vbm ballots"]
+    assert ca._inperson_sum(header, ca._index(header)) is None
+
+
+def test_the_counties_add_up_to_the_2024_totals_in_both_transports():
+    """The strongest check there is that the mapping is right, and it holds for
+    the workbook and the PDF alike: California's own printed Total row, re-added
+    from its own 58 counties, in all three published columns."""
+    for body, day in ((SEASON_2024, DAY_2024), (PDF_2024, PDF_DAY_2024)):
+        result = ca.parse(body, 2024, day)
+        (state,) = result.state_rows
+        assert sum(r.ballots_total for r in result.county_rows) == state.ballots_total
+        assert sum(r.mail_returned for r in result.county_rows) == state.mail_returned
+        assert sum(r.inperson for r in result.county_rows) == state.inperson
+
+
+def test_the_2024_statewide_row_carries_both_methods():
+    (row,) = ca.parse(SEASON_2024, 2024, DAY_2024).state_rows
+    assert row.mail_requested == 22_835_999
+    assert row.mail_returned == 5_832_308
+    assert row.inperson == 177_868
+    assert row.ballots_total == 6_010_176
+
+
+def test_a_total_ballots_cast_that_does_not_add_up_is_drift():
+    """The reconciliation that proves the column mapping rather than assuming
+    it: California's own grand total, re-added from its own two Sums."""
+    rows = ca._rows(SEASON_2024, 2024)
+    header = [ca._norm(c) for c in rows[3]]
+    at = ca._index(header)[ca.TOTAL_CAST]
+    rows[4][at] = 12_345
+
+    def fake(body, cycle):
+        return rows
+
+    import ev.adapters.ca as module
+    real, module._rows = module._rows, fake
+    try:
+        with pytest.raises(SchemaDrift, match="TOTAL BALLOTS CAST"):
+            ca.parse(SEASON_2024, 2024, DAY_2024)
+    finally:
+        module._rows = real
+
+
+# --------------------------------------------------------------------------
+# The PDF shape of the same table
+# --------------------------------------------------------------------------
+def test_the_2024_pdf_reads_as_the_same_rows_a_sheet_does():
+    """Three of the five distinct 2024 captures are PDFs, so this shape is most
+    of California's 2024 curve -- not a fallback."""
+    result = ca.parse(PDF_2024, 2024, PDF_DAY_2024)
+    assert len(result.county_rows) == 58
+    la = next(r for r in result.county_rows if r.county_fips == "06037")
+    assert (la.mail_returned, la.inperson, la.ballots_total) == (366_747, 193, 366_940)
+    (state,) = result.state_rows
+    assert (state.mail_returned, state.inperson, state.ballots_total) == (
+        1_865_988, 3_316, 1_869_304
+    )
+    assert state.mail_requested == 22_729_631
+
+
+def test_the_pdf_and_the_workbook_agree_about_what_a_row_means():
+    """Same parser, same reconciliations, two transports. The PDF day is earlier
+    than the workbook day, so every figure must be smaller and none may be a
+    different KIND of figure."""
+    pdf = ca.parse(PDF_2024, 2024, PDF_DAY_2024)
+    book = ca.parse(SEASON_2024, 2024, DAY_2024)
+    assert {r.county_fips for r in pdf.county_rows} == {
+        r.county_fips for r in book.county_rows
+    }
+    assert pdf.state_rows[0].ballots_total < book.state_rows[0].ballots_total
+
+
+def test_a_pdf_of_another_election_is_refused_by_name():
+    """The Arizona bug, refused before it can happen: a report is only this
+    cycle's if it says so on its own first line."""
+    with pytest.raises(NotYetPublished, match="is the 2024 general, not 2022's"):
+        ca.parse(PDF_2024, 2022, date(2022, 11, 8))
+
+
+def test_the_2022_pdf_is_refused_rather_than_read_by_position():
+    """⚠️ THE REASON THE PDF READER IS 2024-ONLY. 2022 leaves an unused return
+    channel BLANK; a blank cell prints as nothing at all, so Alameda's line
+    carries ten numbers where its neighbours carry eleven and nothing in the
+    text says WHICH channel went missing. Reading it by position shifts every
+    column left."""
+    with pytest.raises(SchemaDrift, match=r"prints 10 fields, not 19"):
+        ca.parse(PDF_2022, 2022, date(2022, 10, 25))
+
+
+def test_the_pdf_field_count_is_a_hard_equality():
+    assert ca.PDF_FIELDS == 19
+    assert len(ca.PDF_HEADER) == 21
+    assert ca.PDF_HEADER[0] == ca.COUNTY and ca.PDF_HEADER[-1] == ca.TOTAL_CAST
+
+
+def test_a_data_line_is_found_by_county_type_not_by_county_name():
+    """County names contain spaces; the three County Type values do not appear
+    anywhere else on the page."""
+    label, fields = ca._pdf_split("San Luis Obispo Polling Place 1 2 3")
+    assert label == "San Luis Obispo" and fields == ["1", "2", "3"]
+    assert ca._pdf_split("Accepted % of Voter-returned Ballots") == (None, [])
+
+
+def test_the_statewide_line_is_read_with_or_without_its_label():
+    """California rendered the same report two ways in 2024: in one the word
+    "Total" sits with its numbers, in the other it is laid out with the header
+    and the numbers print alone."""
+    labelled, fields = ca._pdf_split("Total " + " ".join(["1"] * ca.PDF_FIELDS))
+    assert labelled == "Total" and len(fields) == ca.PDF_FIELDS
+    bare, fields = ca._pdf_split(" ".join(["1,000"] * ca.PDF_FIELDS))
+    assert bare == "Total" and len(fields) == ca.PDF_FIELDS
+
+
+# --------------------------------------------------------------------------
 # The sheet has to prove it is the sheet we think it is
 # --------------------------------------------------------------------------
-def test_a_workbook_without_the_press_sheet_is_drift():
+def test_a_workbook_with_neither_known_sheet_name_is_drift():
     import io
     import openpyxl
 
@@ -115,8 +278,17 @@ def test_a_workbook_without_the_press_sheet_is_drift():
     book.active.title = "Something Else"
     buf = io.BytesIO()
     book.save(buf)
-    with pytest.raises(SchemaDrift, match="has no 'VBM Press Version' sheet"):
+    with pytest.raises(SchemaDrift, match="none of the sheets"):
         ca.parse(buf.getvalue(), 2022, DAY)
+
+
+def test_both_of_californias_sheet_names_are_accepted():
+    """⚠️ THE 2024 VINTAGE WAS UNREADABLE FOR WANT OF THIS. The module asserted
+    that "VBM Press Version" was the only sheet common to every version of the
+    file; 2024 shipped `Ballot Return Statistics` and nothing else."""
+    assert ca.SHEETS == ("Ballot Return Statistics", "VBM Press Version")
+    assert len(ca.parse(SEASON, 2022, DAY).county_rows) == 58
+    assert len(ca.parse(SEASON_2024, 2024, DAY_2024).county_rows) == 58
 
 
 def test_a_missing_column_is_drift():
@@ -196,16 +368,43 @@ def test_a_403_without_an_s3_body_falls_through_rather_than_stopping(monkeypatch
         ca.download("https://example.invalid/x.xlsx", filename="x.xlsx")
 
 
-def test_a_legacy_xls_body_says_so_rather_than_pretending_to_parse(monkeypatch):
-    """2024's file of this name is OLE2, which openpyxl cannot read and which
-    would need xlrd -- not a dependency of this project."""
+def test_a_legacy_xls_body_is_downloaded_rather_than_refused(monkeypatch):
+    """⚠️ IT USED TO BE REFUSED, and that is why California had no 2024.
+
+    `download` rejected any body not beginning `PK`, so the `.xls` entry in
+    EXTENSIONS, the `xlrd` dependency and `_rows`' OLE2 branch were all
+    unreachable -- and 2024, which California published only as OLE2 and as PDF,
+    could never be read whatever the parser could do with it."""
     class Response:
         status_code = 200
         content = b"\xd0\xcf\x11\xe0\xa1\xb1\x1a\xe1" + b"\0" * 8000
         headers = {"Last-Modified": "Fri, 01 Nov 2024 12:00:00 GMT"}
 
     monkeypatch.setattr(ca.SESSION, "get", lambda *a, **k: Response())
-    with pytest.raises(SourceError, match="legacy .xls or a PDF"):
+    body, written = ca.download("https://example.invalid/x.xls", filename="x.xls")
+    assert body.startswith(ca._OLE2_MAGIC)
+    assert written == date(2024, 11, 1)
+
+
+def test_a_pdf_body_is_downloaded_rather_than_refused(monkeypatch):
+    class Response:
+        status_code = 200
+        content = b"%PDF-1.7" + b"\0" * 8000
+        headers = {"Last-Modified": "Sun, 20 Oct 2024 12:00:00 GMT"}
+
+    monkeypatch.setattr(ca.SESSION, "get", lambda *a, **k: Response())
+    body, _ = ca.download("https://example.invalid/x.pdf", filename="x.pdf")
+    assert body.startswith(b"%PDF-")
+
+
+def test_a_body_that_is_neither_a_workbook_nor_a_pdf_is_a_source_error(monkeypatch):
+    class Response:
+        status_code = 200
+        content = b"<!doctype html>" + b" " * 8000
+        headers: dict[str, str] = {}
+
+    monkeypatch.setattr(ca.SESSION, "get", lambda *a, **k: Response())
+    with pytest.raises(SourceError, match="not a workbook or a PDF"):
         ca.download("https://example.invalid/x.xlsx", filename="x.xlsx")
 
 
@@ -262,9 +461,108 @@ def test_a_workbook_stamped_after_the_run_falls_through(monkeypatch):
         ca.CAScraper().fetch(2022, date(2022, 10, 26))
 
 
-def test_there_is_no_dated_archive_to_backfill_from():
-    with pytest.raises(NotYetPublished, match="overwrites one vbm-statistics URL"):
+# --------------------------------------------------------------------------
+# The archived series
+# --------------------------------------------------------------------------
+def test_a_cycle_that_is_not_over_has_nothing_to_backfill():
+    """GUARD PARITY, the shape nd.py and wa.py both carry. `fetch` stamps its
+    rows with the object's write date and refuses one after the run date; this
+    path must refuse a live cycle BY NAME rather than harvesting today's
+    position and filing it under a future Election Day."""
+    with pytest.raises(NotYetPublished, match="is not over"):
+        ca.CAScraper().fetch_history(2026)
+
+
+def test_a_cycle_with_nothing_archived_is_refused_by_name(monkeypatch):
+    monkeypatch.setattr(ca, "_archive_captures", lambda cycle: [])
+    with pytest.raises(NotYetPublished, match="nothing readable is archived"):
+        ca.CAScraper().fetch_history(2024)
+
+
+def test_a_capture_without_the_original_last_modified_is_skipped(monkeypatch):
+    """A crawl time is when we SAW the file, which is on or after when
+    California wrote it. Dating a row by it puts the row on the wrong day, so a
+    capture that kept no `x-archive-orig-last-modified` is dropped."""
+    monkeypatch.setattr(ca, "_archive_captures",
+                        lambda cycle: [("20241020170838", "https://x/vbm-statistics.pdf")])
+    monkeypatch.setattr(ca, "download", lambda *a, **k: (PDF_2024, None))
+    with pytest.raises(NotYetPublished, match="nothing readable is archived"):
+        ca.CAScraper().fetch_history(2024)
+
+
+def test_a_capture_stamped_outside_the_cycles_window_is_skipped(monkeypatch):
+    """The live 2022 workbook carries a 2025-06-16 re-upload stamp. The archived
+    copy of the same bytes carries its ORIGINAL one, which is the point -- but a
+    capture that somehow does not is refused here exactly as `fetch` refuses it."""
+    monkeypatch.setattr(ca, "_archive_captures",
+                        lambda cycle: [("20250616000000", "https://x/vbm-statistics.xlsm")])
+    monkeypatch.setattr(ca, "download", lambda *a, **k: (FINAL, date(2025, 6, 16)))
+    with pytest.raises(NotYetPublished, match="nothing readable is archived"):
         ca.CAScraper().fetch_history(2022)
+
+
+def test_the_archived_curve_is_one_day_per_capture_dated_by_last_modified(monkeypatch):
+    captures = [("20241020170838", "https://x/vbm-statistics.pdf"),
+                ("20241101232312", "https://x/vbm-statistics.xls")]
+    bodies = {"20241020170838": (PDF_2024, date(2024, 10, 19)),
+              "20241101232312": (SEASON_2024, date(2024, 10, 31))}
+    monkeypatch.setattr(ca, "_archive_captures", lambda cycle: captures)
+    monkeypatch.setattr(
+        ca, "download",
+        lambda url, **k: bodies[url.split("/web/", 1)[1].split("id_", 1)[0]],
+    )
+    result = ca.CAScraper().fetch_history(2024)
+    assert sorted({r.day for r in result.county_rows}) == [
+        date(2024, 10, 19), date(2024, 10, 31)
+    ]
+    assert len(result.county_rows) == 116
+    assert len(result.state_rows) == 2
+    # ...and the curve grows, which is what makes it a curve.
+    early, late = sorted(result.state_rows, key=lambda r: r.day)
+    assert early.ballots_total < late.ballots_total
+
+
+def test_a_capture_of_a_layout_we_cannot_map_is_skipped_not_guessed(monkeypatch):
+    """The 2022 PDFs. Skipping them costs two days of the 2022 curve; reading
+    them by position would shift every column left on any county with a blank
+    return channel."""
+    monkeypatch.setattr(ca, "_archive_captures",
+                        lambda cycle: [("20221027003352", "https://x/vbm-statistics.pdf")])
+    monkeypatch.setattr(ca, "download", lambda *a, **k: (PDF_2022, date(2022, 10, 26)))
+    with pytest.raises(NotYetPublished, match="nothing readable is archived"):
+        ca.CAScraper().fetch_history(2022)
+
+
+def test_the_cdx_sweep_dedupes_on_digest_and_keeps_each_captures_own_url(monkeypatch):
+    """⚠️ THE QUERY STRING IS PART OF THE KEY. CloudFront ignored `?os=...` and
+    served one object; the Archive keyed on the whole URL, so three of the five
+    distinct 2024 versions live only under junk-query variants. Asking for the
+    bare path at their timestamps gets a redirect to the nearest bare-path
+    capture and collapses a five-day curve to two."""
+    rows = [["timestamp", "original", "digest"],
+            ["20241105224543", "https://c/vbm-statistics.pdf", "AAA"],
+            ["20241106192325", "https://c/vbm-statistics.pdf?os=roku", "BBB"],
+            ["20241107110213", "https://c/vbm-statistics.pdf?os=wtmb", "BBB"],
+            ["20241020170838", "https://c/vbm-statistics.pdf", "CCC"]]
+
+    class Response:
+        status_code = 200
+        text = __import__("json").dumps(rows)
+
+    monkeypatch.setattr(ca.SESSION, "get", lambda *a, **k: Response())
+    got = ca._archive_captures(2024)
+    assert got == [("20241020170838", "https://c/vbm-statistics.pdf"),
+                   ("20241105224543", "https://c/vbm-statistics.pdf"),
+                   ("20241106192325", "https://c/vbm-statistics.pdf?os=roku")]
+
+
+def test_an_empty_cdx_answer_is_absence_not_a_fault(monkeypatch):
+    class Response:
+        status_code = 200
+        text = "  "
+
+    monkeypatch.setattr(ca.SESSION, "get", lambda *a, **k: Response())
+    assert ca._archive_captures(2024) == []
 
 
 # --------------------------------------------------------------------------
@@ -299,10 +597,12 @@ def test_a_403_that_is_not_s3_absence_is_a_refusal_not_absence():
         assert ca.looks_absent(marker + b" " * 400) is False
 
 
-def test_the_archive_route_is_documented_with_the_captures_it_would_read():
-    """It is unbuilt on purpose, but the survey behind it must not have to be
-    redone: three during-season 2022 captures and one 2024, all of this exact
-    key, all readable by `parse()` unchanged."""
+def test_the_archive_route_names_the_captures_it_reads():
+    """The survey behind it must not have to be redone: every distinct capture,
+    its served extension and the write date the Archive replayed for it."""
     doc = ca.CAScraper.fetch_history.__doc__
-    for stamp in ("2022-10-27", "2022-11-05", "2022-11-08", "2024-11-01"):
+    for stamp in ("20241020170838", "20241101232312", "20241105142944",
+                  "20241105224543", "20241106192325", "20221027003436",
+                  "20221105004307", "20221108015555", "20221111024125"):
         assert stamp in doc
+    assert "x-archive-orig-last-modified" in doc

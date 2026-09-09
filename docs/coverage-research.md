@@ -45,7 +45,7 @@ reason recorded below.
 | AK | no — keyed by **House District**, not borough | PDF/HTML | house district | method | high | — |
 | MA | no during-season since 2018; post-election XLSX is good | — | municipality (351) | — | high | — |
 | LA | no — early-vote stats are **post-election only** | XLS/PDF | parish | parish, party, race, sex, age | high | — |
-| CA | no — SoS publishes nothing until E+2 | — | — | — | high | — |
+| CA | ~~no~~ **yes** — SoS `vbm-statistics.{xlsx,xlsm,xls,pdf}` | XLSX/XLSM/XLS/PDF | county (58) | county, method | high | ~~rejected~~ **BUILT** `ca-sos`; 2022 + 2024 county curves backfilled from the Archive 2026-09-09 |
 | UT | no — the 2020 daily page was never revived | — | — | — | high | — |
 | NM, CT, RI, DE, VT, WV, DC | no | — | — | — | medium-high | — |
 | NE, WY, MO, IN, AL, AR | no | — | — | — | high | — |
@@ -620,6 +620,12 @@ Decisions worth carrying:
 
 ### California — `ca.py`. **The verdict above is wrong.**
 
+> ⚠️ **AND THREE OF THIS SECTION'S OWN CLAIMS ARE NOW WRONG TOO** — the sheet is
+> not always called "VBM Press Version", the 2024 header is not identical to the
+> 2022 one, and the archive route it calls impossible was built on 2026-09-09.
+> Read **"2024 county backfills, 2026-09-09"** at the end of this file before
+> acting on anything below.
+
 "The SoS publishes nothing on ballots returned while the vote-by-mail window is
 open" is not correct. It publishes this, on a constructible URL:
 
@@ -647,9 +653,9 @@ Alameda, ballots returned:  60,892 on 2022-10-27  ->  166,600 on 2022-11-05
 Statewide, ballots returned: 1,642,945 on 2022-10-27 -> 5,230,699 final
 ```
 
-The sheet to read is **"VBM Press Version"**, the only one present in every
-version (the during-season workbooks have eight sheets, the final has one).
-Header, identical across all of them:
+The sheet to read is **"VBM Press Version"** — ⚠️ **in 2022 only. 2024 renamed it
+`Ballot Return Statistics` and changed the header; see the 2026-09-09 section.**
+Header for 2022, identical across every 2022 file:
 
 ```
 COUNTY | County Type | REGISTRATION (15-day ROR) 2020 |
@@ -677,7 +683,10 @@ Two live risks, both handled rather than hidden:
   change. `.xlsx` and `.xlsm` are tried in order; a cycle that ships only `.xls`
   or only `.pdf` raises SourceError naming exactly that and California falls
   through to the aggregator, which is where it is today anyway. **Adding `xlrd`,
-  or a PDF route, would make California safe against both.**
+  or a PDF route, would make California safe against both.** ⚠️ Both were added,
+  and `xlrd` had ALREADY been added when this paragraph was last true — but
+  `download()` was still rejecting any body that did not begin `PK`, so neither
+  could be reached. See the 2026-09-09 section.
 
 The county-level plan in the brief was checked and is not needed: no California
 county publishes a during-season return file at a constructible URL today (there
@@ -2342,12 +2351,14 @@ because no general tracker has been published in this cycle. On this page a part
 column means party REGISTRATION, so Idaho ships `county|method` until the general
 tracker is read. Turning it on later is one function.
 
-**Backfill is refused by name.** Datawrapper keeps prior versions addressable, so
-walking them is tempting — but a version is an ordinal, not a timestamp, and
-Idaho publishes no machine-readable date anywhere (the "Last updated" line and
-the statewide counters are both client-side JavaScript). Undated snapshots that
-`backfill` then stamps with the election date is exactly what `nd.py` and `az.py`
-were both fixed for.
+~~**Backfill is refused by name.** Datawrapper keeps prior versions addressable,
+so walking them is tempting — but a version is an ordinal, not a timestamp, and
+Idaho publishes no machine-readable date anywhere.~~ **Half wrong, corrected
+2026-09-09 — see the Idaho entry at the bottom of this file.** `last-modified`
+DOES date a Datawrapper version (`jshNw` v1 = Thu, 09 Apr 2026; v51 = Wed, 20 May
+2026; v60 = 404). What actually rules 2024 out is that v1 is dated 2026 at all:
+the charts did not exist during the 2024 general, which ran on a Tableau workbook
+instead. `fetch_history` now reads the EAC's EAVS for a county FINAL.
 
 
 ---
@@ -2362,3 +2373,308 @@ suppression problem are in **georgia-source.md §7**; the short version is that
 Georgia now publishes county and method like any other tracked state, and the
 reCAPTCHA finding it was rejected for is untouched and still true about the file
 it describes.
+
+
+---
+
+# 2024 county backfills, 2026-09-09 — California BUILT, Arizona a hard negative
+
+Two states carried `county` in `dims_available` and had no county rows for any
+cycle. One turned out to be a bug in our own reader; the other turned out to be a
+table the state never published.
+
+## California — a five-day 2024 curve and a four-day 2022 one, from the Archive
+
+`output/counties/ca.csv` did not exist. It now carries **522 rows**: 58 counties
+on each of five 2024 days and each of four 2022 days.
+
+| cycle | days (as-of) | days_to_election |
+| --- | --- | --- |
+| 2024 | 10-19, 10-31, 11-04, 11-05, 11-06 | 17, 5, 1, 0, −1 |
+| 2022 | 10-26, 11-04, 11-07, 11-08 | 13, 4, 1, 0 |
+
+That is enough for `counterfactual.py` to score California on the 2024-vs-2022
+panel — three matched days within ±3 — and the score is the best available
+evidence that the parse is right: weighting the 58 counties by their early-ballot
+shares and by the certified 2024 county presidential margins implies a statewide
+margin of **20.58** at days_to_election 0 against an actual **20.80**.
+
+**Three separate things were wrong, and the third is the one that mattered.**
+
+1. **`ca.py` asserted the sheet is always called `VBM Press Version`.** True of
+   2022. 2024 shipped one sheet called `Ballot Return Statistics` and nothing
+   else, so every 2024 file raised SchemaDrift. Both names are now accepted.
+
+2. **`download()` refused any body not beginning `PK`.** So `EXTENSIONS`'
+   `.xls` entry, the declared `xlrd` dependency and `_rows`' OLE2 branch were all
+   unreachable — and 2024, which California published only as legacy OLE2 and as
+   PDF, could never have been read whatever the parser could do with it. The
+   magic-number gate moved into `_rows`, which is the function that dispatches
+   on it, and `.pdf` joined `EXTENSIONS`.
+
+3. **The archive route's stated blocker was false.** The old `fetch_history`
+   refused to exist on the ground that "a Wayback fetcher needs its own dating
+   rule (the capture is when we SAW the file)". It does not: the Wayback Machine
+   replays the original response's headers, so every capture still carries the
+   CDN's own `Last-Modified` as `x-archive-orig-last-modified`. The archived
+   route therefore dates its rows by **exactly the header the live route uses**,
+   and a 2022 row, a 2024 row and a 2026 row mean the same thing on the same day.
+   A capture without that header is skipped, never dated by its crawl time.
+
+   Verified per capture (CDX `matchType=prefix` over
+   `elections.cdn.sos.ca.gov/statewide-elections/<cycle>-general/vbm-statistics`,
+   `filter=statuscode:200`, deduplicated on digest):
+
+   | capture | served | bytes | `x-archive-orig-last-modified` |
+   | --- | --- | --- | --- |
+   | `20241020170838` | `.pdf` | 124,309 | Sat, 19 Oct 2024 17:39:03 GMT |
+   | `20241101232312` | `.xls` | 129,536 | Thu, 31 Oct 2024 16:15:00 GMT |
+   | `20241105142944` | `.pdf` | 233,881 | Mon, 04 Nov 2024 15:14:18 GMT |
+   | `20241105224543` | `.pdf` | 120,749 | Tue, 05 Nov 2024 17:38:26 GMT |
+   | `20241106192325` | `.pdf` | 121,406 | Wed, 06 Nov 2024 19:12:02 GMT |
+   | `20221027003436` | `.xlsm` | 452,327 | Wed, 26 Oct 2022 16:40:20 GMT |
+   | `20221105004307` | `.xlsm` | 456,693 | Fri, 04 Nov 2022 16:45:18 GMT |
+   | `20221108015555` | `.xlsm` | 457,042 | Mon, 07 Nov 2022 17:03:08 GMT |
+   | `20221111024125` | `.xlsm` | 77,507 | Tue, 08 Nov 2022 17:26:58 GMT |
+
+   The last of those is the same 77,507 bytes the CDN still serves live — but
+   live it answers `Last-Modified: Mon, 16 Jun 2025`, a re-upload `fetch()`
+   refuses as a leftover. The archive kept the original stamp, which is what
+   makes the same bytes usable in one place and not the other.
+
+**⚠️ THREE OF THE FIVE 2024 CAPTURES ARE ONLY REACHABLE THROUGH A QUERY STRING.**
+CloudFront ignores `?os=…&ref=app` and served one object; the Archive keys on the
+whole URL. The bare path has two captures; the junk-query variants hold three
+more distinct digests. Sweeping by prefix and carrying each capture's own
+`original` URL through to the fetch is what turns a two-day curve into a
+five-day one — asking for the bare path at those timestamps gets a redirect to
+the nearest bare-path capture, which the `Memento-Datetime` response header is
+how you catch.
+
+**What the 2024 report adds, and the trap in it.** 2024 dropped the registration
+column and added a whole in-person block (`Regular Ballots`, `Provisional
+(Non-CVR)`, `Conditional (CVR)`, `Conditional "Instant" CVR`, `Sum`,
+`Total Accepted`, `TOTAL BALLOTS CAST`). **`Sum` therefore appears twice in that
+header**, once closing the six vote-by-mail return channels and once closing the
+four in-person ones, so the obvious name→column map binds `RETURNED` to the
+in-person total: Los Angeles' 2024-11-05 `mail_returned` reads 424,340 instead
+of 1,641,552 — the count of ballots that did NOT come by mail. `_index` resolves every name to its first column; `_inperson_sum`
+finds the second `Sum` by position. Three arithmetic reconciliations — each
+printed Sum against its own channels, and `TOTAL BALLOTS CAST` against the two
+Sums — are what actually prove the mapping.
+
+**The in-person column stops meaning "early" on Election Day.** Statewide it goes
+3,316 (Oct 19) → 546,627 (Nov 4) → 857,153 (Nov 5) → 2,154,200 (Nov 6). Before
+Election Day it is early in-person voting at a vote centre and belongs on the
+curve; on the day and after it also holds people who voted on the day. Those
+rows are still published with honest dates, as `fl.py`, `ia.py` and `co.py`
+publish theirs, but anything reading `ballots_total` at days_to_election ≤ 0 as
+"early vote" has to know it.
+
+**The PDF reader is 2024-only, on purpose.** The 2022 PDFs of the same report
+cannot be read by position and must not be made to: the 2022 workbook leaves an
+unused return channel BLANK rather than writing 0, a blank cell prints as
+nothing, and Alameda's 2022-10-25 line carries ten numbers where its neighbours
+carry eleven — with nothing in the text saying which channel went missing.
+`_pdf_rows` requires exactly nineteen fields and raises SchemaDrift otherwise;
+`tests/fixtures/ca/vbm-statistics_2022-general_2022-10-25.pdf` is kept precisely
+to hold that refusal. It costs two days of the 2022 curve (as-of 10-31 and
+11-03) and is worth it.
+
+**Also verified live 2026-09-09, and it is why the backfill goes to the Archive
+at all:** every `…/2024-general/vbm-statistics.{xls,xlsx,pdf}` now answers 403
+with the 111-byte `<Code>AccessDenied</Code>` body. California WITHDREW the 2024
+files after certification. `…/vote-by-mail/vbm-statistics.xlsx` is live (200,
+115,826 b, `Last-Modified: Tue, 25 Aug 2026`) and is a different file — one sheet
+per election year, per-county `Ballots Issued / Voted & Counted / Returned Not
+Counted`, i.e. the CURED post-certification final (Alameda 2024 general: 961,304
+/ 595,991 / 6,076 = 602,067 returned, against 390,233 in the during-season report
+on Election Day). It is NOT wired in, deliberately: its Election-Day-dated row
+would collide with the during-season Election-Day row on the same key and mean
+something different, and the series a 2026 tracker will be compared against has
+to be the during-season one. It is recorded here so the next person does not have
+to find it again.
+
+## Arizona — the 2024 general's Sent/Accepted table was never published
+
+`output/counties/az.csv` is still empty for every cycle, and that is the correct
+answer. A daily 2024 county series **does not exist and cannot be recovered**.
+
+**A real gap was found and closed anyway.** Arizona publishes the page under TWO
+slugs and `az.py` knew only the short one:
+
+| exact URL | HTTP 200 captures | earliest 200 |
+| --- | --- | --- |
+| `azsos.gov/elections/election-information/2024-election-info` | 80 | **2024-11-11** |
+| `azsos.gov/elections/election-information/2024-election-information` | 12 | **2024-09-18** |
+
+The 2026-09-08 survey looked only at the short slug, whose earliest capture is
+six days AFTER the election — so it could only ever have read a leftover, and
+"the general's table was never published" and "we only ever looked after it was
+taken down" are different claims. `URLS` now tries both, and a 404 on one is not
+absence until both are 404. Same class of miss as Delaware's, same fix.
+
+**And the answer is unchanged, now on the right evidence.** All twelve 200
+captures of the `-information` slug were fetched and parsed, including
+`20241011045207` (two days after A.R.S. 16-542 opened early voting for the
+general) and `20241106030640` (the morning after it). Every one of them, and the
+live page today, carries:
+
+    card title    "Primary Election - Sent/Accepted Early Ballots"
+    Last Updated   Jul 29, 2024 13:41   (Maricopa and Pima 14:35)
+    Total          2,262,541 sent / 921,671 accepted
+
+identical across all thirteen documents; the string `General Election - Sent`
+appears in none of them. Arizona did not leave the primary's table up after the
+general — it never populated a general's table at all.
+`tests/fixtures/az/2024-election-information_2024-10-11.html` holds that finding
+so it never has to be re-surveyed.
+
+**No county recorder fills the gap.** CDX domain sweeps (`collapse=urlkey`,
+2024-09-01 → 2025-03-01, grepped offline) over `azsos.gov` (161,946 rows),
+`arizona.vote`, `elections.maricopa.gov`, `recorder.maricopa.gov`,
+`recorder.pima.gov`, `azcleanelections.gov`, `yavapaivotes.gov`,
+`pinalcountyaz.gov`, `mohave.gov`, `coconino.az.gov` and `cochise.az.gov` found
+no daily early-return file for any county. Specifically:
+
+* `elections.maricopa.gov/results-and-data/early-ballot-returns.html` and
+  `…/early-voting-statistics.html` — **zero Wayback captures ever**, live 404
+  (26,504 b / 26,510 b), absent from Maricopa's own sitemap. What Maricopa
+  publishes is *file layouts* for its early-ballot files
+  (`Early Ballots Returned PRR File Layout rev05212020.pdf`,
+  `File Layout - EV33_EV_Returns - 20250129.xlsx`) — the data itself is
+  public-records-request only, exactly as `az.RECORDER_SURVEY` concluded.
+* `recorder.pima.gov/VoterStats/EarlyVotingStatistics` — live 200, 103,457 b,
+  and it DOES now carry a 2024 General row (563,702 requested / 442,409
+  returned). One county of fifteen, populated after the election, and the
+  Archive has no capture of it between 2024-10-05 and 2025-02-26 — the whole
+  early-vote window — so there is no series in it.
+* `www.arizona.vote/early-ballot-statistics` — a real page in 2018–19 (219 CDX
+  rows), 404 from 2020 on; the only 2024-window row is a 301 → 404.
+* Ballot Progress Status (`apps.arizona.vote/electioninfo/BPS/47/0`) — a
+  post-election PROCESSING tracker (ballots tabulated / left to process), all
+  zeros after canvass. Not a sent/accepted series. Live it answers 403 under
+  every `curl_cffi` impersonation tried; the archived copy reads fine.
+* The signed statewide canvass PDF (`apps.azsos.gov/election/2024/ge/canvass/
+  20241105_GeneralCanvass_Signed.pdf`, 200, 8,385,830 b) is an image-only scan —
+  `pdftotext -layout` yields 19 bytes.
+
+**Two real 2024 finds that are NOT the deliverable, recorded so they are not
+mistaken for it:**
+
+* `apps.azsos.gov/election/2024/ge/EarlyBallotsDroppedElectionDayGENERAL.pdf`
+  (200, 86,176 b) — 15 counties, statewide 264,554. The HB2785 report of early
+  ballots dropped at polling places ON ELECTION DAY: one number, one day, a
+  subset of returns. Not sent/accepted and not a final.
+* The EAC's **2024 EAVS** (`eac.gov/sites/default/files/2026-02/2024_EAVS_for_
+  Public_Release_nolabel_V2_csv.zip`, 200, 2,119,187 b → 41,239,612 b CSV, 535
+  columns) has all fifteen Arizona counties with mail ballots transmitted
+  (C1a 3,582,082), returned by voters (C1b 2,859,348) and counted by mode
+  (F1d 2,597,974 mail, F1f 349,129 in-person early). Its Pima figure is 442,409
+  — an exact match to Pima's own page — and its F1a county totals match the SoS's
+  Ballot Progress Status exactly. **It is the only complete 2024 county final
+  that exists for Arizona.** It is deliberately not wired in: it is a federal
+  survey published fifteen months after the election, not Arizona's own file, so
+  publishing it through `az-sos` at `TIER_SCRAPER` would be a provenance lie —
+  and its mode split is drawn inconsistently by counties (Navajo reports zero
+  in-person early votes). Where a national post-election source belongs on the
+  ladder is a decision about the ladder, not about Arizona.
+
+**Live bot-wall status, re-tested 2026-09-09 rather than trusted:** plain
+`requests` → `azsos.gov` election-information page = 403 with a 5,824-byte
+"Just a moment" interstitial; `curl_cffi` with `impersonate="chrome"` = 200,
+328,358 bytes. `_net.get`'s existing retry-through-`curl_cffi` path still walks
+it. `apps.arizona.vote` is a harder wall — 403 under chrome110/120/131,
+safari17_0, chrome99_android and edge101 alike.
+
+
+---
+
+# Idaho 2024/2022 county finals, 2026-09-09 — EAVS, and a tier question left open
+
+`output/counties/id.csv` did not exist. Idaho's only 2024 rows anywhere were UF's
+single statewide 377,597, and this is what the hunt for a county source found.
+
+## What Idaho itself published in 2024, and why it is out of reach
+
+Not Datawrapper. In October 2024 the SAME page,
+`voteidaho.gov/data-and-dashboards/absentee-tracker/`, embedded **Tableau**, and
+the Internet Archive has it — `tests/fixtures/id/tracker_2024_general_wayback.html`,
+from the `20241105061717` capture (200, text/html, 19,177 b), heading "Absentee
+Stats for the 2024 Election Year", tab "General Election - Nov. 5" pointing at
+`AbsenteeNovember2024/Dashboard`. The Datawrapper charts that page carries today
+did not exist then: chart `jshNw` version 1 is `last-modified: Thu, 09 Apr 2026`.
+
+That workbook is **still live** (`public.tableau.com/views/AbsenteeNovember2024/
+Dashboard` → 302 to `/app/profile/voteidaho/viz/…`) and is still unusable here:
+its author disabled data download (`startSession` → `allow_view_underlying:
+false`; every crosstab endpoint 404s or returns an AWS WAF shell as HTTP 200),
+and `bootstrapSession` needs a `stickySessionKey` and a session-feature-flag blob
+only a real browser produces. Driven in a browser it yields **44 counties,
+408,325 early+absentee / 226,315 early / 182,010 absentees returned**, and its
+`Timestamp` sheet renders "Updated 25 February 2025" — one final, no date
+dimension on any of its eight sheets.
+
+## There is no Idaho county-by-day series for 2024, four ways
+
+The Tableau is a single snapshot; the Wayback CDX has **zero** captures of the
+viz page itself; the SoS's dated absentee XLSX series stopped after 2020; and
+TargetSmart's TargetEarly — which does carry all 44 counties
+(`ID_EV_Numbers.counties.csv.gz`, 200, 1,436,997 b → 193,263 rows) — publishes
+its DAILY file statewide-only, with the county×day path a soft-404 (200,
+`text/html`, 4,294 b of React shell). TargetEarly's county totals are also a
+voter-file credit measure running 15% below the clerks' (345,485 vs 408,325).
+UF says it outright: its Idaho 2024 page renders "Detailed data are not
+available in this state."
+
+## What was built: the county FINAL, from EAVS
+
+`https://www.eac.gov/research-and-data/datasets-codebooks-and-surveys` is scraped
+for the newest `<cycle>_EAVS_for_Public_Release_nolabel_V*.zip` — 2024 has
+shipped twice (V1 2025-06, V2 2026-02) and 2022 spells its extension `_CSV.zip`
+where 2024 spells it `_csv.zip`, so neither a pinned URL nor a case-sensitive
+pattern survives. Columns, from `2024_EAVS_Codebook.xlsx`: **C1b** "Mail Returned
+By Voters Total", **F1f** "In Person Early Voting", **F1a** "Total Voters".
+
+| | EAVS | Idaho SoS's own Tableau | apart |
+|---|---|---|---|
+| mail returned | 182,434 | 182,010 | 0.23% |
+| in-person early | 225,973 | 226,315 | 0.15% |
+| together | **408,407** | 408,325 | **0.02%** |
+
+44 counties, one row each at `days_to_election` 0. 2022 also parses (44 counties;
+no statewide row, because Benewah and Clark answered EAVS's `-99` for in-person
+early and a state total missing two counties is not a state total). **2020
+correctly REFUSES**: in that release the column labelled `F1a` comes back equal to
+`C1b` for Bear Lake County, so the code did not mean "total voters" that year and
+the identity check raises `SchemaDrift` rather than publishing it.
+
+## ⚠️ The open question this shares with Arizona
+
+The Arizona entry above reached EAVS too and deliberately did **not** wire it in:
+
+> "publishing it through `az-sos` at `TIER_SCRAPER` would be a provenance lie —
+> and its mode split is drawn inconsistently by counties (Navajo reports zero
+> in-person early votes). Where a national post-election source belongs on the
+> ladder is a decision about the ladder, not about Arizona."
+
+Both halves of that are answered for Idaho, and only for Idaho:
+
+* **The provenance is not a lie here.** `eavs_history` stamps its own rows
+  `eac-eavs`, not `id-sos`, rather than letting `backfill` stamp them — the same
+  thing `me.py` and `ct.py` do inside their own history paths. What the row says
+  is where the row came from.
+* **Idaho's mode split is corroborated, county by county.** The twelve Idaho
+  counties EAVS shows with zero in-person early votes are the same small counties
+  the SoS's own dashboard shows at two or fewer, and the two totals agree to
+  0.15%. That is exactly the check Arizona could not pass.
+
+What is **not** settled is the tier. These rows go out at `TIER_SCRAPER`, whose
+label is "state", on the reading that EAVS is an official administrative count of
+the state's own ballots reported by the state's own county clerks. That is a
+defensible reading and it is not the only one, and the consequence is concrete:
+at tier 1 Idaho's `ev_2024_total` becomes **408,407** instead of UF's 377,597,
+which is the same combined measure snapshotted 92.5% of the way to the final.
+**If the ladder grows a proper rung for national post-election sources, Idaho
+should move to it.** Flagged rather than settled, because Arizona is right that
+it is a decision about the ladder.

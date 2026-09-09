@@ -34,9 +34,11 @@ Seven things drive the parser.
 * **Only the current election's files stay up.** Sweeping every date from
   2026-07-20 to 2026-09-06 finds files on 08/14 through 09/03 -- the September 1
   special primary -- and nothing for the August 11 statewide primary, whose files
-  have been deleted. Sweeping the 2024 and 2022 folder names finds nothing at
-  all. So there is no archive, `fetch_history` says so, and the daily run is the
-  only way Connecticut's curve gets recorded.
+  have been deleted. Sweeping the 2024 and 2025 folder names finds nothing at
+  all either (204 URLs; `fetch_history` has the list). So there is no daily
+  archive and the daily run is the only way Connecticut's CURVE gets recorded --
+  a past cycle gets its certified FINAL from the Statement of Vote instead, at
+  the bottom of this docstring.
 
 * **Which election a file belongs to is checked twice.** The folder is shared
   across every election in a cycle, so a September run must not read the special
@@ -75,6 +77,70 @@ Seven things drive the parser.
   BACKWARDS: in Connecticut the "Independent Party" is a registered party, while
   `normalize.party("independent")` returns `npa`. So `PARTY_ALIASES` below is
   consulted FIRST, and only labels in neither table raise SchemaDrift.
+
+--------------------------------------------------------------------------
+THE PAST CYCLE: A CERTIFIED FINAL, NOT A CURVE
+--------------------------------------------------------------------------
+
+The daily workbooks above are DELETED when the next election starts, and that
+is now measured rather than assumed -- see `fetch_history` for the sweep. So a
+2024 daily series does not exist anywhere and this module does not pretend one
+does.
+
+What DOES exist is the certified **Statement of Vote**, and it carries the one
+table this repo needs:
+
+    https://portal.ct.gov/-/media/sots/electionservices/statementofvote_pdfs/
+        2024_statement_of_vote.pdf                    VERIFIED 200, 3,139,465 B
+
+Its last statistics section -- printed pages 157-162 of 170 -- is
+"*Same-Day Registration (SDR), Turnout, Absentee & Early Voting Ballot
+Statistics", one row per town over twelve columns:
+
+```
+Town  | Names on Official Check List (Active) | Number Checked as Having Voted |
+      | Percentage Checked as Having Voted    |
+      | Number of Absentee Ballots Received from Town Clerk / Rejected / Voted  |
+      | Number of Early Ballots Received / Rejected / Voted                     |
+      | Number of SDR Received / Rejected / Voted                               |
+Andover  2,399  2,118  88.29%   62  0  62      870  3  867      68  1  67
+...
+TOTAL   2,348,545 1,788,954 76.17%  120,422 2,060 118,362  720,173 1,302 718,871
+                                                             53,140 287 52,853
+```
+
+Five things this backfill does and why.
+
+* **"Voted", not "Received".** Received minus Rejected is Voted exactly, on every
+  row and on the totals line, so "Received" is ballots RETURNED to the town clerk
+  and "Voted" is the ones that counted. `read()` above already drops a `Void`
+  ballot from the daily files, so "Voted" is the same quantity the live path
+  publishes and is what `mail_returned` and `inperson` carry here.
+
+* **`mail_requested` is None.** The Statement of Vote never says how many
+  absentee ballots were ISSUED. None, never 0. Same for all four `party_*`
+  columns: Connecticut registers by party, but this document does not report it,
+  and four zeroes would read as nobody of any party having voted early.
+
+* **SDR is not early voting** and is not published at all. Same-day registrants
+  vote on Election Day.
+
+* **The town names are read with every space removed, and that is load-bearing.**
+  This is Montana's lesson (see `mt.py`'s TITLE note) in a second file: pypdf
+  extracts this table's headings as `To wn`, `Receiv ed`, `Hav ing`, and its
+  town names as `M adison`, `M anchester`, with `North Stonington` split across
+  two lines as `North Stonin` / `gton`. Every one of those is a text-extractor
+  spacing heuristic rather than bytes in the file, and `pyproject.toml` pins only
+  a RANGE of pypdf. So the header tags, the row names and the totals row are all
+  matched against the extract with ALL whitespace stripped, and the match on a
+  town name is EXACT after that -- never a prefix, never a nearest guess.
+
+* **Two gates make a mis-attribution impossible to publish.** All 169 towns must
+  resolve, each exactly once, and their columns must sum to the document's own
+  TOTAL row on all eleven counts. Both were measured against the real file:
+  169/169 and an exact match on every column. A header fragment swallowed into a
+  name, a page dropped, a town renamed -- any of them breaks one of the two, and
+  Rule 3 says raise rather than guess.
 """
 
 from __future__ import annotations
@@ -88,6 +154,7 @@ from html import unescape
 from urllib.parse import urljoin
 
 import openpyxl
+import pypdf
 
 from ..calendar import election_date
 from ..normalize import PARTY_DEM, PARTY_NPA, PARTY_OTH, PARTY_REP
@@ -237,6 +304,95 @@ _ANCHOR = re.compile(r'<a\b[^>]*href="([^"]+)"', re.IGNORECASE)
 _SOFT_404 = re.compile(r"<title>\s*404\s*Error", re.IGNORECASE)
 _DATE8 = re.compile(r"(\d{8})(?!\d)")
 _DATE6 = re.compile(r"(\d{6})(?!\d)")
+
+
+# --------------------------------------------------------------------------
+# The certified Statement of Vote -- the only past-cycle source. See the
+# module docstring's last section.
+# --------------------------------------------------------------------------
+#: Cycle -> the Statement of Vote for that cycle's general, VERIFIED live.
+#:
+#: Only 2024 is listed and that is deliberate: every other year's file was
+#: probed under this exact naming and answers portal.ct.gov's soft 404, so a
+#: constructed URL for it would be a guess. `fetch_history` refuses an
+#: unlisted cycle BY NAME rather than inventing one.
+#:
+#: VERIFIED live 2026-09-09 from this network:
+#:   .../statementofvote_pdfs/2024_statement_of_vote.pdf  200, 3,139,465 B, real PDF
+#:   .../statementofvote_pdfs/2022_statement_of_vote.pdf  200, soft-404 HTML
+#:   .../statementofvote_pdfs/2020_statement_of_vote.pdf  200, soft-404 HTML
+#:   .../statementofvote_pdfs/2026_statement_of_vote.pdf  200, soft-404 HTML
+STATEMENT_OF_VOTE = {
+    2024: HOST + "/-/media/sots/electionservices/statementofvote_pdfs/"
+                 "2024_statement_of_vote.pdf",
+}
+
+#: The twelve column headings of the statistics table, IN THE ORDER the values
+#: are read positionally. Matched against the extract with all whitespace
+#: removed, because pypdf renders them "To wn", "Receiv ed", "Hav ing".
+#:
+#: ⚠️ ORDER IS CHECKED, NOT JUST PRESENCE -- hi.py's `_check_header` is the
+#: precedent and the reason. The nine counts are consumed by position, and the
+#: only other check on them is that they sum to the document's own totals row,
+#: which is commutative and cannot see the absentee block printed where the
+#: early block was. Requiring the tags in order is what pins the positions.
+SOV_COLUMN_TAGS: tuple[str, ...] = (
+    "Town",
+    "NamesonOfficialCheckList(Active)",
+    "NumberCheckedasHavingVoted",
+    "PercentageCheckedasHavingVoted",
+    "NumberofAbsenteeBallotsReceivedfromTownClerk",
+    "NumberofAbsenteeBallotsRejected",
+    "NumberofAbsenteeBallotsVoted",
+    "NumberofEarlyBallotsReceived",
+    "NumberofEarlyBallotsRejected",
+    "NumberofEarlyBallotsVoted",
+    "NumberofSDRReceived",
+    "NumberofSDRRejected",
+    "NumberofSDRVoted",
+)
+
+#: The last heading, lowercased and compacted. A page's header block runs
+#: together with the first data row when pypdf wraps it, so a candidate name is
+#: cut at the LAST occurrence of this.
+_SOV_HEADER_END = "numberofsdrvoted"
+
+#: The caption that sits between the header and the first row on the continuation
+#: pages, likewise compacted and stripped off a candidate name.
+_SOV_CAPTION = "*same-dayregistration(sdr),turnout,absentee&earlyvotingballotstatistics"
+
+#: One statistics row: an optional name, the checklist count, the number checked
+#: as having voted, a percentage, then the NINE counts. Anchored at both ends so
+#: a line with a stray trailing figure cannot match.
+_SOV_ROW = re.compile(
+    r"^(?P<name>.*?)\s*(?P<listed>[\d,]+)\s+(?P<voted>[\d,]+)\s+[\d.]+%"
+    r"(?P<counts>(?:\s+[\d,]+){9})\s*$"
+)
+
+#: The cover page names the election. Both patterns are matched against the
+#: compacted extract, for the same reason the town names are.
+_SOV_KIND = re.compile(r"StatementofVote(General|Primary|Special)Election", re.I)
+_SOV_DAY = re.compile(
+    r"(January|February|March|April|May|June|July|August|September|October|"
+    r"November|December)(\d{1,2}),(\d{4})", re.I)
+
+_MONTHS = {
+    "january": 1, "february": 2, "march": 3, "april": 4, "may": 5, "june": 6,
+    "july": 7, "august": 8, "september": 9, "october": 10, "november": 11,
+    "december": 12,
+}
+
+#: Connecticut's 169 towns are the whole state; anything less is drift.
+SOV_TOWNS = 169
+
+#: A census county-subdivision name carries a type suffix the Statement of Vote
+#: does not ("Andover town" vs "Andover").
+_COUSUB_SUFFIX = re.compile(r"\s+(town|city|borough)$", re.IGNORECASE)
+
+
+def _compact(text: str) -> str:
+    """The extract with ALL whitespace removed. See the module docstring."""
+    return re.sub(r"\s+", "", text)
 
 
 # --------------------------------------------------------------------------
@@ -718,6 +874,255 @@ def build(files: list[tuple[str, bytes]], cycle: int, through: date) -> FetchRes
     return emit(tally, cycle, through, with_party=with_party)
 
 
+# --------------------------------------------------------------------------
+# Statement of Vote parsing
+# --------------------------------------------------------------------------
+def sov_index() -> dict[str, tuple[str, str]]:
+    """{compacted town name: (10-digit GEOID, census name)} for all 169 towns.
+
+    The Statement of Vote writes "Andover"; the census table writes "Andover
+    town". Stripping the type suffix is the whole crosswalk, and the keys are
+    compacted so pypdf's "M adison" lands on Madison.
+    """
+    index: dict[str, tuple[str, str]] = {}
+    for name in _towns.names("CT"):
+        bare = _COUSUB_SUFFIX.sub("", name)
+        key = _compact(bare).lower()
+        if key in index:  # pragma: no cover - the census table has no CT collisions
+            raise SchemaDrift(f"CT: two towns compact to {key!r}")
+        hit = _towns.lookup("CT", name)
+        if hit is None:  # pragma: no cover - names() and lookup() share a table
+            raise SchemaDrift(f"CT: census name {name!r} does not resolve")
+        index[key] = hit
+    return index
+
+
+def sov_pages(body: bytes) -> list[str]:
+    """The extracted text of every page, for one Statement of Vote PDF."""
+    try:
+        reader = pypdf.PdfReader(io.BytesIO(body))
+        return [page.extract_text() or "" for page in reader.pages]
+    except Exception as exc:  # noqa: BLE001 - pypdf raises a zoo of types
+        raise SourceError(f"CT: the Statement of Vote is not a readable PDF: {exc}") from exc
+
+
+def sov_election(pages: list[str]) -> tuple[str, date]:
+    """(kind, election day) off the Statement of Vote's own cover.
+
+    The kind and the date are read from ONE match rather than two, so a document
+    cannot be accepted as a general because the word "General" appears somewhere
+    else on a page that is dated something else.
+    """
+    for text in pages:
+        flat = _compact(text)
+        match = _SOV_KIND.search(flat)
+        if match is None:
+            continue
+        day = _SOV_DAY.match(flat, match.end())
+        if day is None:
+            continue
+        month = _MONTHS[day.group(1).lower()]
+        try:
+            return match.group(1).lower(), date(int(day.group(3)), month, int(day.group(2)))
+        except ValueError as exc:
+            raise SchemaDrift(f"CT: {day.group(0)!r} is not a date") from exc
+    raise SchemaDrift(
+        "CT: the Statement of Vote carries no 'Statement of Vote <type> Election "
+        "<Month> <D>, <YYYY>' cover line, which is the only thing that says which "
+        "election it is"
+    )
+
+
+def sov_statistics(pages: list[str]) -> list[str]:
+    """The pages of the SDR/turnout/absentee/early statistics table.
+
+    A page qualifies only if all thirteen headings are present AND IN ORDER --
+    the counts are consumed positionally, so see the note on SOV_COLUMN_TAGS.
+    """
+    out: list[str] = []
+    for text in pages:
+        flat = _compact(text)
+        seen = [(flat.find(tag), tag) for tag in SOV_COLUMN_TAGS]
+        if any(where < 0 for where, _ in seen):
+            continue
+        if seen != sorted(seen):
+            raise SchemaDrift(
+                "CT: a Statement of Vote statistics page prints its columns in "
+                f"the order {[tag for _, tag in sorted(seen)]}, not the order "
+                "this parser reads them by position"
+            )
+        out.append(text)
+    if not out:
+        raise SchemaDrift(
+            "CT: the Statement of Vote has no page carrying the SDR/turnout/"
+            "absentee/early statistics table"
+        )
+    return out
+
+
+def _sov_name(pending: str, prefix: str) -> str:
+    """A row's town name, compacted, with the page furniture cut off the front.
+
+    pypdf runs a page's whole header block -- and, on the continuation pages,
+    the table's caption -- together with the first data row, and it splits
+    "North Stonington" across two lines. Both are handled here rather than by
+    guessing at the name end: cut everything up to the LAST header heading, then
+    drop a leading caption. What is left must match a town EXACTLY.
+    """
+    candidate = _compact(f"{pending} {prefix}").lower()
+    cut = candidate.rfind(_SOV_HEADER_END)
+    if cut >= 0:
+        candidate = candidate[cut + len(_SOV_HEADER_END):]
+    if candidate.startswith(_SOV_CAPTION):
+        candidate = candidate[len(_SOV_CAPTION):]
+    return candidate
+
+
+def sov_rows(
+    pages: list[str],
+) -> tuple[dict[str, list[int]], dict[str, str], list[int] | None]:
+    """({town GEOID: eleven counts}, {GEOID: census name}, the totals row or None)."""
+    index = sov_index()
+    towns: dict[str, list[int]] = {}
+    names: dict[str, str] = {}
+    totals: list[int] | None = None
+    for text in pages:
+        pending = ""
+        for line in text.splitlines():
+            line = line.strip()
+            if not line:
+                continue
+            match = _SOV_ROW.match(line)
+            if match is None:
+                pending = f"{pending} {line}".strip()
+                continue
+            candidate = _sov_name(pending, match.group("name"))
+            pending = ""
+            counts = [
+                _sov_int(match.group("listed")), _sov_int(match.group("voted")),
+                *(_sov_int(value) for value in match.group("counts").split()),
+            ]
+            if not candidate:
+                totals = counts
+                continue
+            hit = index.get(candidate)
+            if hit is None:
+                raise SchemaDrift(
+                    f"CT: the Statement of Vote row {candidate!r} is not one of "
+                    f"Connecticut's {SOV_TOWNS} towns"
+                )
+            geoid, name = hit
+            if geoid in towns:
+                raise SchemaDrift(f"CT: {name} appears twice in the statistics table")
+            towns[geoid] = counts
+            names[geoid] = name
+    if len(towns) != SOV_TOWNS:
+        raise SchemaDrift(
+            f"CT: the statistics table produced {len(towns)} of {SOV_TOWNS} towns; "
+            f"Connecticut's towns are the whole state, so a missing one is a page "
+            f"or a name this parser no longer reads, not a town yet to report"
+        )
+    return towns, names, totals
+
+
+def _sov_int(raw: str) -> int:
+    try:
+        return int(raw.replace(",", ""))
+    except ValueError as exc:  # pragma: no cover - _SOV_ROW only matches digits
+        raise SchemaDrift(f"CT: {raw!r} is not a count") from exc
+
+
+#: The eleven counts a statistics row carries, in order: SOV_COLUMN_TAGS minus
+#: the town name and minus the percentage, which `_SOV_ROW` consumes separately.
+#: DERIVED from the tag list rather than written out again, so the positions the
+#: values are read at cannot drift away from the header order that is checked.
+_SOV_COUNT_TAGS: tuple[str, ...] = tuple(
+    tag for tag in SOV_COLUMN_TAGS
+    if tag not in ("Town", "PercentageCheckedasHavingVoted")
+)
+_SOV_COUNTS = len(_SOV_COUNT_TAGS)
+_ABS_VOTED = _SOV_COUNT_TAGS.index("NumberofAbsenteeBallotsVoted")
+_EARLY_VOTED = _SOV_COUNT_TAGS.index("NumberofEarlyBallotsVoted")
+
+#: No party breakdown and no issued count in this document. None, never 0.
+_SOV_BLANKS = {
+    "party_dem": None, "party_rep": None, "party_oth": None, "party_npa": None,
+}
+
+
+def sov_build(body: bytes, cycle: int) -> FetchResult:
+    """Canonical rows for one certified Statement of Vote.
+
+    Every row is dated the election's own day, which is why `fetch_history`
+    refuses a cycle whose election has not happened -- see the guard there.
+    """
+    pages = sov_pages(body)
+    kind, day = sov_election(pages)
+    if kind != "general" or day != election_date(cycle):
+        raise NotYetPublished(
+            f"CT: this Statement of Vote is the {day.isoformat()} {kind} election, "
+            f"not the {cycle} general ({election_date(cycle).isoformat()})"
+        )
+
+    towns, names, totals = sov_rows(sov_statistics(pages))
+    summed = [sum(counts[i] for counts in towns.values()) for i in range(_SOV_COUNTS)]
+    if totals is None:
+        raise SchemaDrift(
+            "CT: the statistics table printed no TOTAL row, which is the only "
+            "thing that proves no town was dropped between the last row read and "
+            "the end of the table"
+        )
+    if summed != totals:
+        raise SchemaDrift(
+            f"CT: the Statement of Vote's own totals row {totals} is not the sum "
+            f"of its {len(towns)} town rows {summed}"
+        )
+
+    result = FetchResult()
+    town_rows: list[TownDay] = []
+    by_county: dict[str, list[int]] = defaultdict(lambda: [0] * _SOV_COUNTS)
+    for geoid, counts in sorted(towns.items()):
+        town_rows.append(TownDay(
+            cycle=cycle, state="CT", town_geoid=geoid, day=day,
+            town_name=names.get(geoid, ""),
+            ballots_total=counts[_ABS_VOTED] + counts[_EARLY_VOTED],
+            # One certified snapshot, so there is no day-over-day change to
+            # report. None, never 0.
+            ballots_new=None,
+            mail_returned=counts[_ABS_VOTED],
+            inperson=counts[_EARLY_VOTED],
+            **_SOV_BLANKS,
+        ))
+        running = by_county[_towns.county_of(geoid)]
+        for position, value in enumerate(counts):
+            running[position] += value
+    _towns.attach(result, town_rows)
+
+    for fips, counts in sorted(by_county.items()):
+        result.county_rows.append(CountyDay(
+            cycle=cycle, state="CT", county_fips=fips, day=day,
+            county_name=_towns.county_name_of("CT", fips),
+            ballots_total=counts[_ABS_VOTED] + counts[_EARLY_VOTED],
+            ballots_new=None,
+            mail_returned=counts[_ABS_VOTED],
+            inperson=counts[_EARLY_VOTED],
+            **_SOV_BLANKS,
+        ))
+
+    result.state_rows.append(StateDay(
+        cycle=cycle, state="CT", day=day,
+        ballots_total=totals[_ABS_VOTED] + totals[_EARLY_VOTED],
+        ballots_new=None,
+        # The Statement of Vote never says how many absentee ballots were
+        # ISSUED; "Received from Town Clerk" is ballots returned. None, never 0.
+        mail_requested=None,
+        mail_returned=totals[_ABS_VOTED],
+        inperson=totals[_EARLY_VOTED],
+        **_SOV_BLANKS,
+    ))
+    return result
+
+
 class CTScraper(Adapter):
     """Tier 1 for Connecticut: the SOTS per-ballot early-voting and absentee files.
 
@@ -835,17 +1240,75 @@ class CTScraper(Adapter):
         return self._stamped(build(found, cycle, through))
 
     def fetch_history(self, cycle: int) -> FetchResult:
-        """There is no archive. Verified, not assumed.
+        """A past cycle's certified FINAL, out of the Statement of Vote.
 
-        Every date from 2026-07-20 to 2026-09-06 was probed in the 2026 folder:
-        files exist only for 2026-08-14 through 2026-09-03, the run-up to the
-        September 1 special primary. The August 11 statewide primary's files are
-        gone, and both `2024_absentee_ballot_data/` and
-        `2022_absentee_ballot_data/` answer portal.ct.gov's soft 404 for every
-        filename in either convention. Connecticut keeps the current election's
-        files and nothing else.
+        ⚠️ A FINAL, NOT A CURVE, AND THE DAILY FILES REALLY ARE GONE.
+
+        The per-ballot workbooks the live path reads are deleted when the next
+        election starts, and that is measured rather than assumed. Probed live
+        on 2026-09-09, every one answering portal.ct.gov's soft 404 (HTTP 200
+        with `<title>404 Error Page</title>`, 21,880 B) against a control -- the
+        current `2026_absentee_ballot_data/absentee_ballot_09032026.xlsx` -- that
+        served 47,911 B of real xlsx from the same directory shape:
+
+          * `2024_absentee_ballot_data/`, every date 2024-10-01..2024-11-12 in
+            all four filename conventions (`absentee_ballot_MMDDYYYY`,
+            `early_voting_MMDDYYYY`, `abs_detail_MMDDYY`, `ev_detail_MMDDYY`) --
+            172 URLs, 172 soft 404s;
+          * the same for `2025_absentee_ballot_data/` over the 2025 municipal
+            election's own window, 2025-10-28..2025-11-04 -- 32 more. That is the
+            control that turns "we guessed the 2024 name wrong" into "Connecticut
+            keeps one election's files": the 2025 files are ten months old and
+            equally gone;
+          * `2024/absentee_ballot_data/`, `2024-absentee-ballot-data/`,
+            `2024_voter_data/`, `2024_early_voting_data/`, `2024_ballot_data/`,
+            `absentee_ballot_data/` and `early-voting/`.
+
+        The index pages are gone too: `/sots/election-services/2024-voter-data`
+        and `-2022-` and `-2025-` all answer the soft 404, with and without
+        Sitecore's `?archived=true`, and the Wayback Machine holds ZERO captures
+        of any file under `portal.ct.gov/-/media/sots/` matching
+        `absentee_ballot|early_voting|abs_detail` -- including the 2026 ones that
+        are live right now, which is what makes the archive silent rather than
+        negative.
+
+        So there is no 2024 daily series, and this returns the certified
+        Statement of Vote's town table instead: 169 towns and 8 counties dated
+        Election Day, which is the denominator the site's "% of its 2024 early
+        vote" column wants and is NOT a series the counterfactual can pair
+        against a 2026 day.
+
+        ⚠️ GUARD PARITY, the same one `nd.py` carries. `fetch` stamps its rows
+        with the file's own date, which cannot be in the future. This path stamps
+        every row with ELECTION DAY, so a backfill of a running cycle would land
+        today's position -- or, worse, a Statement of Vote that does not exist --
+        at days_to_election 0 and make it that cycle's final. Refused by name.
         """
-        raise NotYetPublished(
-            f"CT: the Secretary of the State keeps only the current election's "
-            f"ballot files; there is no {cycle} archive to backfill from"
-        )
+        url = STATEMENT_OF_VOTE.get(int(cycle))
+        if url is None:
+            raise NotYetPublished(
+                f"CT: no Statement of Vote is published for {cycle} under the "
+                f"naming this module has verified, and the daily ballot files "
+                f"for a past election are deleted; there is nothing to backfill"
+            )
+        day_zero = election_date(cycle)
+        if day_zero > date.today():
+            raise NotYetPublished(
+                f"CT: the {cycle} general has not happened yet -- this path dates "
+                f"every row {day_zero.isoformat()}, so backfilling a running cycle "
+                f"would publish a certified final that does not exist. The daily "
+                f"`fetch` is what tracks {cycle}."
+            )
+        try:
+            body = get(url, state="CT", filename=f"{cycle}_statement_of_vote.pdf",
+                       min_bytes=4096)
+        except Missing as exc:
+            raise SourceError(f"CT: {url} is gone") from exc
+        if looks_like_html(body) or not body.startswith(b"%PDF"):
+            # portal.ct.gov answers a missing media item with HTTP 200 and its
+            # 404 page, so "did we get a PDF" is the only real status check.
+            raise SourceError(
+                f"CT: {url} did not return a PDF ({len(body)} bytes); "
+                f"portal.ct.gov serves its 404 page with HTTP 200"
+            )
+        return self._stamped(sov_build(body, cycle))

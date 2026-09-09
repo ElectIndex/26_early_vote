@@ -73,10 +73,9 @@ Judgement calls:
   yesterday's numbers under today's name, which would flatten a day of the curve.
   That raises SchemaDrift.
 
-There is **no archive**: a Wayback CDX sweep of `elections.hawaii.gov` from 2022
-returns zero captures of any `AbsenteeRecon*` file, and the live server 404s
-`AbsenteeReconDP-01-20241030.pdf` and `-20221101.pdf`. So `fetch_history` keeps
-the base class's `NotYetPublished`, which is the honest answer.
+There is **no archive**, and `fetch_history` below says so by name with the
+sweep that establishes it. The short version: the Office keeps ONE election's
+reports and the Wayback Machine never crawled this section at all.
 """
 
 from __future__ import annotations
@@ -452,4 +451,49 @@ class HIScraper(Adapter):
         raise NotYetPublished(
             f"HI: the Office of Elections has posted no absentee reconciliation "
             f"report on or before {as_of.isoformat()}"
+        )
+
+    def fetch_history(self, cycle: int) -> FetchResult:
+        """No archive, refused BY NAME. This is a measured negative, not a guess.
+
+        ⚠️ AND THE WAYBACK MACHINE IS THE HALF OF IT THAT PROVES NOTHING.
+
+        Three things were checked on 2026-09-09, and only the third is evidence:
+
+        1. **A CDX sweep** of `web.archive.org` with `matchType=domain` over
+           `elections.hawaii.gov`, 2022 to 2025, collapsed to 186,534 distinct
+           urlkeys, greped OFFLINE. It holds ZERO captures of any `AbsenteeRecon`
+           file. That reads like proof and is not: the same sweep holds zero
+           captures of `INDEX_URL` itself, which is live right now and lists 240
+           reports. The archive never crawled this section, so it is SILENT about
+           Hawaii rather than negative, and a path check in an archive that never
+           looked is exactly the false negative that hid Delaware's 2022 file.
+
+        2. **The Office's own index**, fetched live: HTTP 200, 189,456 B, listing
+           80 `AbsenteeReconState-` and 160 `AbsenteeReconDP-0N-` files. Every one
+           of them is dated 2026-06-25..2026-08-15 -- this cycle's PRIMARY. Not
+           one 2024 or 2022 report is listed. (`tests/fixtures/hi/` keeps an
+           excerpt, and the test asserts the dates are all in-cycle, so the day
+           Hawaii publishes an archive this stops being true loudly.)
+
+        3. **The live server, probed directly**, which is the part that counts.
+           34 URLs: `AbsenteeReconState-{stamp}.pdf` and
+           `AbsenteeReconDP-01-{stamp}.pdf` for 2024-10-08, -10-15, -10-21,
+           -10-25, -10-28, -10-30, -11-01, -11-04, -11-05, -11-06, -11-12, for
+           the 2024 primary's 08-01/08-08/08-10, and for 2022-10-25, -11-01 and
+           -11-08. **All 34 returned a real HTTP 404** (116,560 B error page) --
+           not a 403, not a challenge, not a soft 404: this host answers 200 with
+           a PDF for a file that exists and 404 for one that does not, and both
+           were observed in the same minute from the same client.
+
+        So the reports are deleted when the next election starts, exactly as
+        Connecticut deletes its workbooks, and there is nothing to backfill. The
+        refusal is by name so a future cycle cannot quietly inherit it.
+        """
+        raise NotYetPublished(
+            f"HI: the Office of Elections keeps only the current election's "
+            f"absentee reconciliation reports -- its index lists none before "
+            f"2026-06-25, and every {cycle} filename in the published convention "
+            f"404s on the live server -- so there is no {cycle} archive to "
+            f"backfill from"
         )

@@ -2,7 +2,8 @@
 
 | file | what it is |
 | --- | --- |
-| `2024-election-info.html` | REAL. A capture of the Secretary of State's 2024 election-information page, carrying the Sent/Accepted Early Ballots table the `az-sos` route parses. |
+| `2024-election-info.html` | REAL. A capture of the Secretary of State's 2024 election-information page, carrying the Sent/Accepted Early Ballots table the `az-sos` route parses. Wayback `20241111031426` — six days AFTER the general, the earliest 200 that slug has. |
+| `2024-election-information_2024-10-11.html` | REAL. The same card from the OTHER slug (`-election-information`), Wayback `20241011045207` — two days after early voting opened for the 2024 general. It still prints the July PRIMARY's table, unchanged. That is the evidence that Arizona never published a 2024 general Sent/Accepted table, rather than that we read the page too late. |
 | `2026-election-info-no-table.html` | REAL. The same page before the table appears — the normal state of the world outside an early-vote window, and the `NotYetPublished` case. |
 | `recorder-party-shape.SYNTHETIC.csv` | **NOT A REAL SOURCE FILE.** See below. |
 

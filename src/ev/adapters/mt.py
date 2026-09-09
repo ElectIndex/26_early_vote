@@ -94,6 +94,61 @@ JUDGEMENT CALLS
   (2026-06-15: 514,152 sent and 268,125 received both ways). A short download,
   or a county Tableau drops from the view, therefore fails loudly instead of
   publishing a statewide total that is quietly missing a county.
+
+--------------------------------------------------------------------------
+THERE IS NO 2024 ARCHIVE, AND THE ONE FINAL THAT EXISTS IS NOT PUBLISHED HERE
+--------------------------------------------------------------------------
+
+`fetch_history` refuses by name and the sweep behind it is written out there.
+The short version is that a Tableau view archives as its *placeholder*: the
+Secretary's own page, `sosmt.gov/elections/absentee-ballot-count/`, has 124
+Wayback captures including a dense 2024-10/11 run, and the 278,890-byte
+2024-11-04 capture contains the tokens `tableauPlaceholder`, `tableauViz` and
+`AbsenteeDash` and **not one county number**. `AbsenteeDash.csv` and `.pdf` have
+never been captured at all.
+
+The one thing that survived the 2024 cycle is the format that PRECEDED the
+dashboard, and it is in `tests/fixtures/mt/`: a real
+`Absentee-Counts-By-County` workbook, `County Name | Number Sent | Number
+Receive` over all 56 counties. It is the **primary**, and note what identifies
+it as such --
+
+```
+Montana Absentee Ballot Counts by County
+Compiled 5/16/2024 12:00:00 AM
+Updated Daily
+County Name   Number Sent   Number Receive
+BEAVERHEAD           3437                2
+```
+
+-- a compile date and nothing else. **This family names no election.** That is
+the same hole the survey rejected the CSV for, and it is why an archived file of
+this shape could never be published as a general-election final on the strength
+of its filename: only the Tableau PDF's title ever carried the election, and the
+Tableau PDF was never archived. The fixture pins the county vocabulary against
+the Secretary's own spellings (`LEWIS AND CLARK`, not Tableau's `Lewis & Clark`)
+so a rename is caught, and it is the worked example of why the refusal stands.
+
+**What DOES exist for 2024, and why it is not wired here.** The EAC's Election
+Administration and Voting Survey carries all 56 Montana counties for the
+November 5, 2024 general. VERIFIED 2026-09-09 by downloading and reading it:
+`https://www.eac.gov/sites/default/files/2026-02/2024_EAVS_for_Public_Release
+_nolabel_V2_csv.zip` (HTTP 200, 2,119,187 B) unzips to a 41,239,612-byte CSV,
+of which exactly 56 rows are `State_Abbr == MT`, with no `-88`/`-99` sentinel in
+any column read. Summed: `A1a` registered 800,573, `C1a` mail transmitted
+503,295, `C1b` mail returned 432,394, `F1a` total voters 612,423. Those bracket
+the Secretary's own 2024 press releases -- "more than 500,000 absentee ballots
+provided", "nearly 425,000 received entering Election Day" -- in the right
+direction.
+
+It is deliberately NOT wired in, for the reasons `il.py` sets out at length and
+which apply here unchanged: `ladder.py` stamps provenance from the adapter, so
+these rows would be published as `mt-sos` tier 1 when they are a FEDERAL SURVEY
+of Montana, and EAVS is national -- a new source is a repo-wide decision about a
+new tier, not a Montana patch. `C1b` is also a different quantity from the
+dashboard's "Ballots Received": it counts everything that arrived through the
+end of the count, not what was back on a given day. The URLs and column names
+are here so that decision can be made with the evidence rather than re-gathered.
 """
 
 from __future__ import annotations
@@ -344,3 +399,68 @@ class MTScraper(Adapter):
         except Missing as exc:
             raise NotYetPublished(f"MT: {exc}") from exc
         return parse(body, day, cycle)
+
+    def fetch_history(self, cycle: int) -> FetchResult:
+        """No archive, refused BY NAME. Measured on 2026-09-09, not assumed.
+
+        ⚠️ THE DASHBOARD HOLDS THE LAST ELECTION'S NUMBERS BETWEEN CYCLES, SO
+        "FETCH IT AND DATE IT ELECTION DAY" IS THE WORST AVAILABLE ANSWER.
+
+        `fetch` is safe only because the PDF names the election. A history path
+        has no such luxury -- the live view serves the 2026 primary today, and
+        stamping those counts 2024-11-05 would put the primary's 268,125
+        received ballots at days_to_election 0 as Montana's 2024 final. So the
+        question is only whether a DATED 2024 artefact exists, and it does not:
+
+        * **The Tableau view was never archived.** A Wayback CDX sweep with
+          `matchType=domain` over `tableau-ext.mt.gov`, 2015-2026, collapses to
+          9,074 urlkeys; a prefix sweep of `tableau-ext.mt.gov/t/SOS/` returns
+          exactly ONE row in all of history (the view itself, a 302, from
+          2026-06-11), and `/vizql/t/SOS/` returns none. `AbsenteeDash.csv` and
+          `AbsenteeDash.pdf` have no capture on any date. Common Crawl's
+          `CC-MAIN-2024-46` and `-51` indexes for that host hold only DEQ, HHS,
+          DOAMTAB and LEGFinance views.
+
+        * **The Secretary's page archives as the placeholder.**
+          `sosmt.gov/elections/absentee-ballot-count/` has 124 captures,
+          including 2024-10-13, -10-29, -11-01 through -11-05. The 2024-11-04
+          one is 278,890 bytes of `tableauPlaceholder` and contains no county
+          number. That is what a Tableau embed always archives as.
+
+        * **The domain sweep found no file either.** `sosmt.gov`,
+          `matchType=domain`, 2024-2025, 45,693 collapsed urlkeys greped
+          OFFLINE. The only county-level absentee workbook in it is
+          `docs/23/elections/63973/absentee-counts-by-county`, and it has TWO
+          captures ever -- 2024-06-17 and 2025-05-16 -- with the SAME digest
+          (`HT4EIPRTTHWHPKXSKT3M2FX6HGXK7JCK`), both the 2024 PRIMARY compiled
+          5/16/2024. It is in `tests/fixtures/mt/`, and the module docstring
+          says why a file of that family could not be published as a general's
+          final even if a November capture turned up.
+
+        * **Two live decoys, named so nobody re-finds them.**
+          `sosmt.gov/Portals/142/Elections/Documents/Absentee_Counts_By_County.xlsx`
+          is HTTP 200 today and byte-identical to its 2018 capture: it is the
+          2017 special election, "Compiled 5/31/2017". `.../Absentee-Turnout-
+          2000-Present.xlsx` is HTTP 200 and stops at "2018 General".
+
+        * **Election-night reporting has no absentee dimension.**
+          `electionresults.mt.gov` publishes turnout percent and precincts
+          reported, for the CURRENT election only.
+
+        A per-county 2024 FINAL does exist, in the EAC's EAVS, and the module
+        docstring carries its URL, its column names and the verified Montana
+        sums. It is a federal survey rather than the Secretary's own file, so
+        publishing it from here would stamp it `mt-sos` tier 1; `il.py` made the
+        same call for the same reason.
+        """
+        raise NotYetPublished(
+            f"MT: no dated {cycle} artefact exists to backfill -- the absentee "
+            f"dashboard is a Tableau view that archives as its placeholder "
+            f"(124 captures of the Secretary's page, none with a county number), "
+            f"AbsenteeDash.csv/.pdf have no Wayback capture on any date, and the "
+            f"one archived county workbook from the {cycle} cycle is the primary "
+            f"and names no election. The live view holds whichever election ran "
+            f"last, so there is nothing here that could honestly be dated "
+            f"{cycle}. See the module docstring for the EAVS final that exists "
+            f"instead, and for why it is not published from this adapter."
+        )
