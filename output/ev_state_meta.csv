@@ -6,7 +6,7 @@ AZ,Arizona,2026-11-03,,,true,county,,,,,,registers by party; the SoS Sent/Accept
 CA,California,2026-11-03,,,true,county|method,5230699,9137249,,,,"registers by party, but the state workbook does not break it out"
 CO,Colorado,2026-11-03,,,true,county|party|method,,,,,,
 CT,Connecticut,2026-11-03,,,true,town|county|method,,837233,,,,"tracked; reports by municipality, counties summed from towns. Registers by party; the file publishes no split, so the estimate stands in"
-DC,District of Columbia,2026-11-03,,,true,method,,,,,,"no during-season file of its own; carried by the national aggregator, so statewide totals only"
+DC,District of Columbia,2026-11-03,,,true,method,148267,242194,,,,"no during-season file of its own; carried by the national aggregator, so statewide totals only"
 DE,Delaware,2026-11-03,,,true,county|method,78792,247172,,,,"tracked; registers by party but the file publishes no split, so the estimate stands in"
 FL,Florida,2026-11-03,,,true,county|party|method,,8289955,,,,
 GA,Georgia,2026-11-03,,,false,county|method,,4052653,,,,"Data Hub carries age/race/sex too, but its age bands overlap (35-40 and 40-45 share a year), so none of the three is published"
@@ -23,14 +23,14 @@ MD,Maryland,2026-11-03,,,true,county|party|sex,,,,,,
 ME,Maine,2026-11-03,,,true,town|county|party|method,236972,378760,,,,reports by municipality; counties summed from towns
 MI,Michigan,2026-11-03,,,false,county|method,,3319560,,,,
 MN,Minnesota,2026-11-03,,,false,county|method,,1271636,,,,
-MO,Missouri,2026-11-03,,,false,method,,,,,,"no during-season file of its own; carried by the national aggregator, so statewide totals only; the party field has been optional only since 2023 and no breakdown is published, so there is nothing to report"
+MO,Missouri,2026-11-03,,,false,method,466242,1051700,,,,"no during-season file of its own; carried by the national aggregator, so statewide totals only; the party field has been optional only since 2023 and no breakdown is published, so there is nothing to report"
 MS,Mississippi,2026-11-03,,,false,method,,,,,,"no during-season file of its own; carried by the national aggregator, so statewide totals only"
 MT,Montana,2026-11-03,,,false,county,,,,,,"tracked; no party registration in Montana, and the dashboard reports returns without a mail/in-person split"
 NC,North Carolina,2026-11-03,,,true,county|party|method|age|race|sex,2187856,4520768,,,,
 ND,North Dakota,2026-11-03,,,false,county|method,106577,190563,,,,
 NE,Nebraska,2026-11-03,,,true,party|method,,364260,,,,"no during-season file of its own; carried by the national aggregator, so statewide totals only"
 NJ,New Jersey,2026-11-03,,,true,party|method,,,,,,"no during-season file of its own; carried by the national aggregator, so statewide totals only"
-NM,New Mexico,2026-11-03,,,true,party|method,,668859,,,,"no during-season file of its own; carried by the national aggregator, so statewide totals only"
+NM,New Mexico,2026-11-03,,,true,party|method,451934,668889,,,,"no during-season file of its own; carried by the national aggregator, so statewide totals only"
 NV,Nevada,2026-11-03,,,true,county|party|method,,,,,,
 NY,New York,2026-11-03,,,true,county|method,,,,,,New York City only (5 of 62 counties) -- never a state total
 OH,Ohio,2026-11-03,,,false,county|method,1473983,2620750,,,,
@@ -47,5 +47,5 @@ VA,Virginia,2026-11-03,,,false,county|method,992231,2376938,,,,
 VT,Vermont,2026-11-03,,,false,method,,234868,,,,"no during-season file of its own; carried by the national aggregator, so statewide totals only"
 WA,Washington,2026-11-03,,,false,county|method|sex,2464793,3583213,,,,"does not register by party at all -- Top Two primary, so there is no affiliation on the record"
 WI,Wisconsin,2026-11-03,,,false,county|method,741795,1540288,,,,
-WV,West Virginia,2026-11-03,,,true,party|method,,,,,,"no during-season file of its own; carried by the national aggregator, so statewide totals only"
-WY,Wyoming,2026-11-03,,,true,party|method,,76993,,,,"no during-season file of its own; carried by the national aggregator, so statewide totals only"
+WV,West Virginia,2026-11-03,,,true,party|method,,332929,,,,"no during-season file of its own; carried by the national aggregator, so statewide totals only"
+WY,Wyoming,2026-11-03,,,true,party|method,,115364,,,,"no during-season file of its own; carried by the national aggregator, so statewide totals only"
