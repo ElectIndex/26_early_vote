@@ -1,0 +1,3 @@
+cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_new,mail_returned,inperson,party_dem,party_rep,party_oth,party_npa,source_tier,source_name,retrieved_at
+2022,DC,11001,District of Columbia,2022-11-08,0,148267,,132829,15438,,,,,3,eac-eavs,2026-09-09T20:25:45+00:00
+2024,DC,11001,District of Columbia,2024-11-05,0,242194,,169280,72914,,,,,3,eac-eavs,2026-09-09T20:22:44+00:00

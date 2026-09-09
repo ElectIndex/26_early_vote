@@ -25,7 +25,7 @@ from .adapters import _methods, _towns
 from .adapters.base import FetchResult, NotYetPublished
 from .calendar import CURRENT_CYCLE, CYCLES, days_to_election
 from .ladder import STATUS_OK, STATUS_PENDING, run_state
-from .registry import ladder, tracked_states
+from .registry import history_ladder, ladder, tracked_states
 
 ROOT = Path(__file__).resolve().parents[2]
 OUTPUT_DIR = ROOT / "output"
@@ -170,7 +170,10 @@ def cmd_backfill(args) -> int:
     found, absent = [], []
 
     for state in _states(args.state):
-        for adapter in ladder(state):
+        # history_ladder, not ladder: backfill is the only caller that may reach
+        # the EAC survey rung. See registry.HISTORY_FALLBACKS for why putting it
+        # in the live ladder would stop the walk for every state.
+        for adapter in history_ladder(state):
             try:
                 result = adapter.fetch_history(args.cycle)
             except NotYetPublished:

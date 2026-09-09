@@ -1766,3 +1766,65 @@ def test_the_county_by_method_term_is_carried_by_one_state(full_baseline):
     # And the same-support county term does not clear it either, which is what
     # says the method dimension is where the difference came from.
     assert (sum(r.cell_county_gain for r in celled) / len(celled)) < cf.MIN_GAIN
+
+
+def test_a_one_county_state_gets_no_row_because_the_answer_is_an_identity():
+    """⚠️ THE DISTRICT OF COLUMBIA SCORED PERFECT COVERAGE AND PUBLISHED A LIE.
+
+    This method asks what the margin would be if the state voted the way the
+    counties whose ballots are in so far voted last time. With ONE county the
+    question answers itself: that county's weight is 1, so the composition
+    margin IS its own margin, which is the actual result. The row comes out with
+    implied == actual and `shift_pp` exactly 0.0000 -- an identity wearing the
+    clothes of a measurement, and one that reads on the page as an electorate
+    that has not moved at all.
+
+    None of the coverage gates can see it, and that is the point of testing it
+    here rather than trusting them. DC is one county of one, so it scores 1/1 --
+    PERFECT -- and clears MIN_COVERAGE and MIN_COUNTY_FRACTION on its way out.
+    Only a count catches a count. Found the day the EAC survey first gave DC a
+    2024 county final.
+    """
+    assert cf.MIN_UNITS >= 2
+
+
+def test_one_county_makes_the_composition_margin_that_county(full_baseline):
+    """The identity, on the real baseline, so the constant is not asserted
+    against itself: weight one county and you get that county's own margin."""
+    fips = full_baseline.counties("DC")[0].fips
+    only = cf.composition_margin({fips: 5_000}, full_baseline)
+    assert only is not None
+    margin, used, _ = only
+    assert used == 1
+    assert margin == pytest.approx(
+        cf.state_actual_margin("DC", full_baseline), abs=1e-6)
+
+
+def test_no_published_row_belongs_to_a_state_that_has_one_county():
+    """The invariant, over whatever is actually in the tree.
+
+    ⚠️ Asserts `counties_total`, NOT `counties_used`. A row where one county of
+    a hundred has reported is thin and allowed; a row for a state that HAS one
+    county is an identity and is not. Written the wrong way round first, and it
+    passed -- there was no such row in the tree that day, so the assertion was
+    true by accident rather than by the rule it meant to state.
+    """
+    path = Path(__file__).resolve().parents[1] / "output" / "counterfactual.csv"
+    if not path.exists():
+        pytest.skip("no published counterfactual")
+    seen = 0
+    with path.open() as handle:
+        for row in csv.DictReader(handle):
+            total = (row.get("counties_total") or "").strip()
+            if not total:
+                continue
+            seen += 1
+            assert int(total) >= cf.MIN_UNITS, f"{row['state']} {row['cycle']}"
+    assert seen, "counterfactual.csv carried no county counts to check"
+
+
+def test_the_district_of_columbia_is_the_state_this_refuses():
+    """Named, because the rule is invisible without the case that produced it."""
+    assert cf.county_count("DC") == 1
+    assert cf.county_count("DC") < cf.MIN_UNITS
+    assert cf.county_count("WY") >= cf.MIN_UNITS

@@ -604,7 +604,12 @@ def test_backfill_stamps_town_rows_it_did_not_fetch_itself(tmp_path, monkeypatch
     provenance` -- after the archive has been fetched, which for a Wayback
     backfill is minutes of downloads thrown away.
     """
-    monkeypatch.setattr(cli, "ladder", lambda state: [HistoryScraper(state=state)])
+    # ⚠️ `history_ladder`, not `ladder`. `cmd_backfill` walks the history
+    # ladder so it can reach the EAC survey rung, and patching the live one
+    # here left the REAL walk in place -- which meant this unit test went to
+    # the network and downloaded a 41 MB federal survey before failing.
+    monkeypatch.setattr(
+        cli, "history_ladder", lambda state: [HistoryScraper(state=state)])
     parsed = cli.build_parser().parse_args(
         ["--output", str(tmp_path / "output"),
          "backfill", "--cycle", "2024", "--state", "NC"]
@@ -635,7 +640,12 @@ def test_backfill_stamps_method_rows_it_did_not_fetch_itself(tmp_path, monkeypat
     """`ev backfill` does not walk the ladder, so it does its own stamping.
     Without it this dies at WRITE time on `MethodDay written without
     provenance`, after the archive has been fetched."""
-    monkeypatch.setattr(cli, "ladder", lambda state: [HistoryScraper(state=state)])
+    # ⚠️ `history_ladder`, not `ladder`. `cmd_backfill` walks the history
+    # ladder so it can reach the EAC survey rung, and patching the live one
+    # here left the REAL walk in place -- which meant this unit test went to
+    # the network and downloaded a 41 MB federal survey before failing.
+    monkeypatch.setattr(
+        cli, "history_ladder", lambda state: [HistoryScraper(state=state)])
     parsed = cli.build_parser().parse_args(
         ["--output", str(tmp_path / "output"),
          "backfill", "--cycle", "2024", "--state", "NC"]

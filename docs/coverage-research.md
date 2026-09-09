@@ -2678,3 +2678,95 @@ which is the same combined measure snapshotted 92.5% of the way to the final.
 **If the ladder grows a proper rung for national post-election sources, Idaho
 should move to it.** Flagged rather than settled, because Arizona is right that
 it is a decision about the ladder.
+
+---
+
+# The ladder grew the rung, 2026-09-09 — and it serves five states, not nine
+
+The open question at the end of the section above is closed. `schema.TIER_SURVEY`
+exists at 3, the aggregator moved to 4 and the manual file to 5, and Idaho's rows
+moved off `TIER_SCRAPER`. The reader is no longer Idaho's: `adapters/eavs.py`
+serves any state, `registry.history_ladder()` offers it to every state, and
+`backfill` is the only caller that can reach it.
+
+## The survey was offered to all 50 and it refused most of them
+
+No allowlist. The survey is the better judge of which states it can answer for,
+and `eavs.parse` refuses on the state's own evidence. What came back:
+
+| | jurisdictions | outcome |
+|---|---|---|
+| **NM** | 33 | counties + statewide, 2024 AND 2022 |
+| **WV** | 55 | counties both cycles; statewide 2024 only |
+| **WY** | 23 | counties both cycles; statewide 2024 only |
+| **DC** | 1 | counties + statewide, both cycles |
+| **MO** | 116 | statewide only, both cycles |
+| AZ | 15 | REFUSED — columns overlap |
+| IN | 92 | REFUSED — columns overlap |
+| NE | 93 | REFUSED — columns overlap |
+| MT | 56 | REFUSED — in-person unreported in all 56 |
+| SD | 66 | never reached; `sd-sos` answers at tier 1 |
+
+### ⚠️ "Both columns present" was NOT the gate, and three states prove it
+
+The screen that looked sufficient — C1b and F1f populated in every jurisdiction —
+passes Arizona, Indiana and Nebraska, and all three are wrong:
+
+    AZ  Apache County    21,608 mail + 16,601 early = 38,209   vs 32,685 voters
+    IN  Adams County      8,372 mail +  7,775 early = 16,147   vs 14,037 voters
+    NE  Boone County      3,118 mail +      0 early =  3,118   vs  3,095 voters
+
+Early ballots are a subset of all ballots, so a sum that exceeds total voters
+means the two columns are counting some of the same people twice. In Arizona an
+early in-person voter returns an early ballot in person and lands in both. Every
+value is populated and every value is plausible; only the survey's own identity
+catches it. That check was inherited from the Idaho reader and is the single most
+load-bearing line in the module.
+
+**Arizona's own objection was therefore right for a second reason.** It declined
+EAVS because "its mode split is drawn inconsistently by counties". That is
+exactly what this is, and it means AZ's 3.2M ballots stay out. Reading C1b alone
+as Arizona's early vote would probably be close to correct — 2,859,348 against a
+turnout near 3.44M is the right order for a state that votes ~80% early — but
+"probably close" is Rule 3's definition of a guess, and a guess in a DENOMINATOR
+is worse than a blank.
+
+### Montana: the mail column is real and the in-person column does not exist
+
+All 56 counties report C1b (432,394) and not one reports F1f. Publishing the sum
+would advertise 432,394 as Montana's 2024 early vote when the truth is that plus
+an unreported number — and that figure is the denominator of "share of its 2024
+early vote", so too small a value inflates every 2026 Montana reading all season.
+Montana publishes nothing here and the ladder continues past it.
+
+### Missouri: the file is right and the geography is not
+
+`KANSAS CITY CITY` carries FIPS 2938000000, a PLACE code, because Kansas City
+spans four counties and runs its own election board. Its ballots belong to no
+single county, so the four it overlaps are each short an unknown number and the
+whole county table is withheld — silently understating Jackson County is worse
+than having no Jackson row. The statewide sum still includes Kansas City, so
+Missouri gets a total and no counties.
+
+## Two numbers worth knowing before trusting these
+
+**New Mexico is the corroboration.** EAVS 668,889 against the UF tracker's
+668,859 — thirty ballots apart, on two chains that share no code and no source.
+West Virginia agrees to 0.26%. Those two are the evidence that the reader is
+doing what it claims.
+
+**Wyoming and Missouri diverge from UF and the survey is the fuller measure.**
+UF has Wyoming at 76,993, which is within fifty of EAVS's IN-PERSON figure alone
+(76,943) — the tracker appears to be carrying one mode. Missouri's UF row is
+303,843 against 1,051,700, and its tracker stopped updating on 11-01. Neither is
+a discrepancy to reconcile; they are trackers that measured less.
+
+## ⚠️ DC exposed a bug that had nothing to do with EAVS
+
+Giving the District a 2024 county final produced a counterfactual row reading
+`implied 86.6295, actual 86.6295, shift 0.0000`. With one county the composition
+margin IS that county's margin, which is the actual result — an identity wearing
+the clothes of a measurement, published as a state whose electorate had not
+moved. None of the coverage gates could see it: DC is one county of one, so it
+scores 1/1, PERFECT, and cleared both of them. `counterfactual.MIN_UNITS = 2`
+now refuses it outright. Only a count catches a count.
