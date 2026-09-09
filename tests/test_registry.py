@@ -109,9 +109,35 @@ def test_every_spec_names_the_module_for_its_own_state(state):
     assert class_name, f"{state}: {registry.TIER1[state]!r} names no class"
 
 
-def test_tracked_states_is_exactly_tier1_in_declaration_order():
+def test_tracked_states_is_tier1_then_the_aggregator_only_states():
+    """⚠️ "TRACKED" AND "TIER 1" ARE NOT THE SAME SET, and used to be.
+
+    Tier 1 is a decision about whether we wrote a scraper. Tracked is a decision
+    about whether the page should carry the state at all. While the two were the
+    same tuple, a state with no scraper was never walked — so the three fallback
+    rungs, which exist for exactly that case and are tested for it two functions
+    below, could never fire on the states that needed them most.
+    """
     registry.tracked_states.cache_clear()
-    assert registry.tracked_states() == tuple(registry.TIER1)
+    assert registry.tracked_states() == tuple(registry.TIER1) + registry.AGGREGATOR_ONLY
+    # No state may be in both: a tier-1 entry would never reach the fallbacks,
+    # and the walk would visit it twice.
+    assert not (set(registry.TIER1) & set(registry.AGGREGATOR_ONLY))
+
+
+def test_an_aggregator_only_state_is_walked_and_has_no_scraper_of_its_own():
+    for state in registry.AGGREGATOR_ONLY:
+        assert state in registry.tracked_states()
+        assert state not in registry.TIER1
+        # The ladder it gets is exactly the three fallbacks, in order.
+        assert [a.tier for a in registry.ladder(state)] == EXPECTED_TIERS[1:]
+
+
+def test_alabama_and_new_hampshire_are_tracked_by_nobody():
+    """The two states with no early vote to count. Findings, not omissions."""
+    for state in ("AL", "NH"):
+        assert state not in registry.TIER1
+        assert state not in registry.AGGREGATOR_ONLY
 
 
 def test_a_state_with_no_scraper_still_gets_the_three_fallbacks():

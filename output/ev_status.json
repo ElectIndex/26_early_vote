@@ -2,7 +2,7 @@
  "as_of": "2026-09-08",
  "cycle": 2026,
  "days_to_election": 56,
- "generated_at": "2026-09-08T22:24:22+00:00",
+ "generated_at": "2026-09-09T01:34:59+00:00",
  "states": {
   "AK": {
    "attempts": [
@@ -15,6 +15,28 @@
    ],
    "message": "AK: the results page carries no Election Statistics block yet",
    "retrieved_at": "2026-09-08T22:24:22+00:00",
+   "rows": 0,
+   "source": null,
+   "status": "pending",
+   "tier": null
+  },
+  "AR": {
+   "attempts": [
+    {
+     "detail": "civicAPI does not carry AR: no capabilities document",
+     "name": "civicapi",
+     "result": "SourceError",
+     "tier": 2
+    },
+    {
+     "detail": "UF tracker reports no ballots cast in AR as of 2026-08-12",
+     "name": "uf-election-lab",
+     "result": "not_yet_published",
+     "tier": 3
+    }
+   ],
+   "message": "UF tracker reports no ballots cast in AR as of 2026-08-12",
+   "retrieved_at": "2026-09-09T01:34:59+00:00",
    "rows": 0,
    "source": null,
    "status": "pending",
@@ -79,6 +101,28 @@
    ],
    "message": "CT: 2026-09-08 is outside the 2026 general's reporting window (opens 45 days out)",
    "retrieved_at": "2026-09-08T22:24:22+00:00",
+   "rows": 0,
+   "source": null,
+   "status": "pending",
+   "tier": null
+  },
+  "DC": {
+   "attempts": [
+    {
+     "detail": "civicAPI does not carry DC: no capabilities document",
+     "name": "civicapi",
+     "result": "SourceError",
+     "tier": 2
+    },
+    {
+     "detail": "UF tracker reports no ballots cast in DC as of 2026-08-12",
+     "name": "uf-election-lab",
+     "result": "not_yet_published",
+     "tier": 3
+    }
+   ],
+   "message": "UF tracker reports no ballots cast in DC as of 2026-08-12",
+   "retrieved_at": "2026-09-09T01:34:59+00:00",
    "rows": 0,
    "source": null,
    "status": "pending",
@@ -190,6 +234,28 @@
    "status": "ok",
    "tier": 1
   },
+  "IN": {
+   "attempts": [
+    {
+     "detail": "civicAPI does not carry IN: no capabilities document",
+     "name": "civicapi",
+     "result": "SourceError",
+     "tier": 2
+    },
+    {
+     "detail": "UF tracker reports no ballots cast in IN as of 2026-08-12",
+     "name": "uf-election-lab",
+     "result": "not_yet_published",
+     "tier": 3
+    }
+   ],
+   "message": "UF tracker reports no ballots cast in IN as of 2026-08-12",
+   "retrieved_at": "2026-09-09T01:34:59+00:00",
+   "rows": 0,
+   "source": null,
+   "status": "pending",
+   "tier": null
+  },
   "KS": {
    "attempts": [
     {
@@ -233,6 +299,28 @@
    ],
    "message": "LA: no absentee/early voter roster posted for the 2026 general as of 2026-09-08",
    "retrieved_at": "2026-09-08T22:24:22+00:00",
+   "rows": 0,
+   "source": null,
+   "status": "pending",
+   "tier": null
+  },
+  "MA": {
+   "attempts": [
+    {
+     "detail": "civicAPI does not carry MA: no capabilities document",
+     "name": "civicapi",
+     "result": "SourceError",
+     "tier": 2
+    },
+    {
+     "detail": "UF tracker reports no ballots cast in MA as of 2026-08-12",
+     "name": "uf-election-lab",
+     "result": "not_yet_published",
+     "tier": 3
+    }
+   ],
+   "message": "UF tracker reports no ballots cast in MA as of 2026-08-12",
+   "retrieved_at": "2026-09-09T01:34:59+00:00",
    "rows": 0,
    "source": null,
    "status": "pending",
@@ -302,6 +390,50 @@
    "status": "pending",
    "tier": null
   },
+  "MO": {
+   "attempts": [
+    {
+     "detail": "civicAPI does not carry MO: no capabilities document",
+     "name": "civicapi",
+     "result": "SourceError",
+     "tier": 2
+    },
+    {
+     "detail": "UF tracker reports no ballots cast in MO as of 2026-08-12",
+     "name": "uf-election-lab",
+     "result": "not_yet_published",
+     "tier": 3
+    }
+   ],
+   "message": "UF tracker reports no ballots cast in MO as of 2026-08-12",
+   "retrieved_at": "2026-09-09T01:34:59+00:00",
+   "rows": 0,
+   "source": null,
+   "status": "pending",
+   "tier": null
+  },
+  "MS": {
+   "attempts": [
+    {
+     "detail": "civicAPI does not carry MS: no capabilities document",
+     "name": "civicapi",
+     "result": "SourceError",
+     "tier": 2
+    },
+    {
+     "detail": "UF tracker reports no ballots cast in MS as of 2026-08-12",
+     "name": "uf-election-lab",
+     "result": "not_yet_published",
+     "tier": 3
+    }
+   ],
+   "message": "UF tracker reports no ballots cast in MS as of 2026-08-12",
+   "retrieved_at": "2026-09-09T01:34:59+00:00",
+   "rows": 0,
+   "source": null,
+   "status": "pending",
+   "tier": null
+  },
   "MT": {
    "attempts": [
     {
@@ -347,6 +479,72 @@
    "source": "nd-sos",
    "status": "ok",
    "tier": 1
+  },
+  "NE": {
+   "attempts": [
+    {
+     "detail": "civicAPI does not carry NE: no capabilities document",
+     "name": "civicapi",
+     "result": "SourceError",
+     "tier": 2
+    },
+    {
+     "detail": "UF tracker reports no ballots cast in NE as of 2026-08-12",
+     "name": "uf-election-lab",
+     "result": "not_yet_published",
+     "tier": 3
+    }
+   ],
+   "message": "UF tracker reports no ballots cast in NE as of 2026-08-12",
+   "retrieved_at": "2026-09-09T01:34:59+00:00",
+   "rows": 0,
+   "source": null,
+   "status": "pending",
+   "tier": null
+  },
+  "NJ": {
+   "attempts": [
+    {
+     "detail": "civicAPI does not carry NJ: no capabilities document",
+     "name": "civicapi",
+     "result": "SourceError",
+     "tier": 2
+    },
+    {
+     "detail": "UF tracker reports no ballots cast in NJ as of 2026-08-12",
+     "name": "uf-election-lab",
+     "result": "not_yet_published",
+     "tier": 3
+    }
+   ],
+   "message": "UF tracker reports no ballots cast in NJ as of 2026-08-12",
+   "retrieved_at": "2026-09-09T01:34:59+00:00",
+   "rows": 0,
+   "source": null,
+   "status": "pending",
+   "tier": null
+  },
+  "NM": {
+   "attempts": [
+    {
+     "detail": "civicAPI does not carry NM: no capabilities document",
+     "name": "civicapi",
+     "result": "SourceError",
+     "tier": 2
+    },
+    {
+     "detail": "UF tracker reports no ballots cast in NM as of 2026-08-12",
+     "name": "uf-election-lab",
+     "result": "not_yet_published",
+     "tier": 3
+    }
+   ],
+   "message": "UF tracker reports no ballots cast in NM as of 2026-08-12",
+   "retrieved_at": "2026-09-09T01:34:59+00:00",
+   "rows": 0,
+   "source": null,
+   "status": "pending",
+   "tier": null
   },
   "NV": {
    "attempts": [
@@ -444,6 +642,28 @@
    "status": "pending",
    "tier": null
   },
+  "RI": {
+   "attempts": [
+    {
+     "detail": "civicAPI does not carry RI: no capabilities document",
+     "name": "civicapi",
+     "result": "SourceError",
+     "tier": 2
+    },
+    {
+     "detail": "UF tracker reports no ballots cast in RI as of 2026-08-12",
+     "name": "uf-election-lab",
+     "result": "not_yet_published",
+     "tier": 3
+    }
+   ],
+   "message": "UF tracker reports no ballots cast in RI as of 2026-08-12",
+   "retrieved_at": "2026-09-09T01:34:59+00:00",
+   "rows": 0,
+   "source": null,
+   "status": "pending",
+   "tier": null
+  },
   "SC": {
    "attempts": [
     {
@@ -520,6 +740,28 @@
    "status": "pending",
    "tier": null
   },
+  "UT": {
+   "attempts": [
+    {
+     "detail": "civicAPI does not carry UT: no capabilities document",
+     "name": "civicapi",
+     "result": "SourceError",
+     "tier": 2
+    },
+    {
+     "detail": "UF tracker reports no ballots cast in UT as of 2026-08-12",
+     "name": "uf-election-lab",
+     "result": "not_yet_published",
+     "tier": 3
+    }
+   ],
+   "message": "UF tracker reports no ballots cast in UT as of 2026-08-12",
+   "retrieved_at": "2026-09-09T01:34:59+00:00",
+   "rows": 0,
+   "source": null,
+   "status": "pending",
+   "tier": null
+  },
   "VA": {
    "attempts": [
     {
@@ -531,6 +773,28 @@
    ],
    "message": "VA: ELECT has not stood up the 2026-11-03 general yet",
    "retrieved_at": "2026-09-08T22:24:22+00:00",
+   "rows": 0,
+   "source": null,
+   "status": "pending",
+   "tier": null
+  },
+  "VT": {
+   "attempts": [
+    {
+     "detail": "civicAPI does not carry VT: no capabilities document",
+     "name": "civicapi",
+     "result": "SourceError",
+     "tier": 2
+    },
+    {
+     "detail": "UF tracker reports no ballots cast in VT as of 2026-08-12",
+     "name": "uf-election-lab",
+     "result": "not_yet_published",
+     "tier": 3
+    }
+   ],
+   "message": "UF tracker reports no ballots cast in VT as of 2026-08-12",
+   "retrieved_at": "2026-09-09T01:34:59+00:00",
    "rows": 0,
    "source": null,
    "status": "pending",
@@ -567,81 +831,62 @@
    "source": null,
    "status": "pending",
    "tier": null
+  },
+  "WV": {
+   "attempts": [
+    {
+     "detail": "civicAPI does not carry WV: no capabilities document",
+     "name": "civicapi",
+     "result": "SourceError",
+     "tier": 2
+    },
+    {
+     "detail": "UF tracker reports no ballots cast in WV as of 2026-08-12",
+     "name": "uf-election-lab",
+     "result": "not_yet_published",
+     "tier": 3
+    }
+   ],
+   "message": "UF tracker reports no ballots cast in WV as of 2026-08-12",
+   "retrieved_at": "2026-09-09T01:34:59+00:00",
+   "rows": 0,
+   "source": null,
+   "status": "pending",
+   "tier": null
+  },
+  "WY": {
+   "attempts": [
+    {
+     "detail": "civicAPI does not carry WY: no capabilities document",
+     "name": "civicapi",
+     "result": "SourceError",
+     "tier": 2
+    },
+    {
+     "detail": "UF tracker reports no ballots cast in WY as of 2026-08-12",
+     "name": "uf-election-lab",
+     "result": "not_yet_published",
+     "tier": 3
+    }
+   ],
+   "message": "UF tracker reports no ballots cast in WY as of 2026-08-12",
+   "retrieved_at": "2026-09-09T01:34:59+00:00",
+   "rows": 0,
+   "source": null,
+   "status": "pending",
+   "tier": null
   }
  },
  "summary": {
   "failed": 0,
   "files": [
    {
-    "added": 0,
-    "file": "ev_state_daily.csv",
-    "kept_better_tier": 0,
-    "kept_richer": 0,
-    "replaced": 1,
-    "rows": 1243
-   },
-   {
-    "added": 0,
-    "file": "fl.csv",
-    "kept_better_tier": 0,
-    "kept_richer": 0,
-    "replaced": 0,
-    "rows": 3592
-   },
-   {
-    "added": 0,
-    "file": "il.csv",
-    "kept_better_tier": 0,
-    "kept_richer": 0,
-    "replaced": 0,
-    "rows": 306
-   },
-   {
-    "added": 0,
-    "file": "nc.csv",
-    "kept_better_tier": 0,
-    "kept_richer": 0,
-    "replaced": 0,
-    "rows": 9841
-   },
-   {
-    "added": 0,
-    "file": "nd.csv",
-    "kept_better_tier": 0,
-    "kept_richer": 0,
-    "replaced": 0,
-    "rows": 265
-   },
-   {
-    "added": 0,
-    "file": "fl.csv",
-    "kept_better_tier": 0,
-    "kept_richer": 0,
-    "replaced": 0,
-    "rows": 6778
-   },
-   {
-    "added": 0,
-    "file": "nc.csv",
-    "kept_better_tier": 0,
-    "kept_richer": 0,
-    "replaced": 0,
-    "rows": 13805
-   },
-   {
-    "added": 0,
-    "file": "nc.csv",
-    "kept_better_tier": 0,
-    "kept_richer": 0,
-    "replaced": 0,
-    "rows": 1667
-   },
-   {
     "file": "ev_state_meta.csv",
-    "rows": 51
+    "rows": 50
    }
   ],
   "ok": 4,
-  "pending": 31
+  "partial_run": true,
+  "pending": 44
  }
 }
