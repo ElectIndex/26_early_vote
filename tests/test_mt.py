@@ -275,3 +275,75 @@ def test_an_unreadable_title_still_says_what_the_page_did_say():
     with pytest.raises(SchemaDrift) as caught:
         mt.provenance(blank.getvalue(), 2026)
     assert "the extract begins" in str(caught.value)
+
+
+# --------------------------------------------------------------------------
+# The 2024 cycle: what the archive actually holds, and the refusal it forces
+# --------------------------------------------------------------------------
+#: The ONE county-level Montana absentee workbook the Internet Archive holds
+#: from the 2024 cycle, byte-for-byte as served: 11,524 B from
+#: `https://web.archive.org/web/20240617062207id_/`
+#: `https://sosmt.gov/docs/23/elections/63973/absentee-counts-by-county`
+#: (HTTP 200, `application/octet-stream`). It has exactly two captures ever --
+#: 2024-06-17 and 2025-05-16 -- and both carry the same digest, so this file is
+#: the whole of the 2024 archive.
+LEGACY_2024 = FIXTURES / "Absentee-Counts-By-County_2024-05-16.xlsx"
+
+
+def _legacy_rows():
+    import openpyxl
+
+    sheet = openpyxl.load_workbook(LEGACY_2024).worksheets[0]
+    rows = list(sheet.iter_rows(values_only=True))
+    numeric = [row for row in rows if isinstance(row[1], int)]
+    counties = [row for row in numeric if str(row[0] or "").strip()]
+    (totals,) = [row for row in numeric if not str(row[0] or "").strip()]
+    return rows, counties, totals
+
+
+def test_the_only_archived_2024_workbook_names_no_election():
+    """⚠️ THIS IS WHY `fetch_history` REFUSES RATHER THAN READING AN ARCHIVE.
+
+    The pre-Tableau format carries a compile date and nothing else. Montana's
+    dashboard holds the LAST election's numbers between cycles, so a file that
+    does not say which election it is cannot be dated Election Day on the
+    strength of when it happened to be captured -- which is the exact rejection
+    `coverage-research.md` made of the CSV, in a second file.
+    """
+    rows, _counties, _totals = _legacy_rows()
+    assert rows[0][0] == "Montana Absentee Ballot Counts by County"
+    assert rows[1][0] == "Compiled 5/16/2024 12:00:00 AM"
+    assert rows[2][0] == "Updated Daily"
+    assert rows[3] == ("County Name", "Number Sent", "Number Receive")
+    # 5/16/2024 is the run-up to Montana's June 4 PRIMARY, not the general, and
+    # nothing in the file says so -- only the date does.
+    flat = " ".join(str(cell) for row in rows for cell in row if cell)
+    assert "General" not in flat and "Primary" not in flat
+
+
+def test_every_county_the_secretary_spells_still_resolves():
+    """The Secretary's own spellings, not Tableau's.
+
+    This file writes `LEWIS AND CLARK`; the dashboard writes `Lewis & Clark`,
+    which is the one name COUNTY_ALIASES exists for. Both must resolve, or a
+    rename would land counts under the wrong FIPS.
+    """
+    _rows, counties, totals = _legacy_rows()
+    assert len(counties) == mt.EXPECTED_COUNTIES == 56
+    resolved = {mt._county(name)[0] for name, _sent, _received in counties}
+    assert len(resolved) == 56
+    assert mt._county("LEWIS AND CLARK") == mt._county("Lewis & Clark")
+    # The workbook's own unnamed totals row, which is the same coverage gate
+    # `parse` applies to the dashboard's `All` row.
+    assert totals[1] == sum(row[1] for row in counties) == 450_167
+    assert totals[2] == sum(row[2] for row in counties) == 10_015
+
+
+def test_history_is_refused_by_name_for_every_past_cycle():
+    for cycle in (2022, 2024):
+        with pytest.raises(NotYetPublished) as caught:
+            mt.MTScraper().fetch_history(cycle)
+        detail = str(caught.value)
+        assert str(cycle) in detail
+        # The refusal has to say WHY, or the next reader repeats the sweep.
+        assert "Tableau" in detail and "placeholder" in detail

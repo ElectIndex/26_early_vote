@@ -526,13 +526,146 @@ that `Ballots_Accepted_Counter` and `Early In-Person` appear nowhere in
   is its own kind of wrong.
 * **Party**, which Georgia does not register. The app's `Party` field is a
   primary ballot choice, exactly as in Idaho.
-* **History.** Every past election is one selection away, which is the trap: the
-  app holds each election's CURRENT position only, with no daily series, so a
-  backfill would stamp one Election-Day figure across a whole window.
-  `fetch_history` refuses by name.
+* ~~**History.** Every past election is one selection away, which is the trap:
+  the app holds each election's CURRENT position only, with no daily series, so
+  a backfill would stamp one Election-Day figure across a whole window.
+  `fetch_history` refuses by name.~~ **WRONG, and overturned 2026-09-09 — see
+  [§8](#8-the-daily-history-2026-09-09--the-app-does-hold-one).** The app holds a
+  per-ballot `Ballot Accepted Date` and already publishes a chart dimensioned by
+  it. `fetch_history` now returns a full daily county series.
 
 ### The phone call is still worth making
 
 (404) 656-2871. One token per run, one socket per run, once or twice a day — the
 mashup's own code handles HTTP 429 with a "receiving unusually high traffic"
 dialog, so the limit is real and visible.
+
+
+---
+
+# 8. The daily history, 2026-09-09 — the app DOES hold one
+
+**§7's last bullet was wrong, and it was wrong for an avoidable reason: nobody
+asked the app what fields it has.** Everything below was observed live from this
+machine on 2026-09-09, across a handful of sockets — one anonymous token and
+one socket per run, as §7 requires.
+
+## What the field list says
+
+`CreateSessionObject` with a `qFieldListDef` returns **56 fields**. Four of them
+end the argument:
+
+| field | source table | why it matters |
+|---|---|---|
+| `Ballot Accepted Date` | `Voter_Absentee_File_Agg` | tagged `$date`. A PER-BALLOT date on the same table as `County` and every ballot counter |
+| `Ballot Return Date` | `Voter_Absentee_File_Agg` | the other per-ballot date, untagged (text) |
+| `Ballot_Counter_Acceptedtrack` | `BuildAbsenteeTrack` | a day-expanded tracking table, joined to a `Calendar` on `%KeyDate` |
+| `Absentee_Min_Date` / `Absentee_Max_Date` / `Early_Voting_Min_Date` / `Early_Voting_Max_Date` | `Election Dates` | each election's OWN window, which is what the daily series is clipped to |
+
+`GetAllInfos` then returns **71 objects**, and one of them is the whole answer:
+
+```
+54790ae8-2a9d-4fe8-b98a-9850f42580b5   barchart  "Ballots Issued and Returned"
+    dimension  =[Ballot Accepted Date]
+    measure    "Ballots Accepted (EV)"
+```
+
+That is a published object **already dimensioned by a per-ballot date**. Its
+hypercube definition is fetched at run time exactly as the county tables' are,
+the `County` dimension is lifted off `CTgPMg` and added to it, and the same date
+dimension is added to `CTgPMg` — so both measures come out per county **per
+day**, with no expression transcribed into this repo. `ga.county_day_measures`
+is that, and `ga.HUB_DAY_DIM` pins the dimension only so a change is noticed.
+
+## It reconciles, twice
+
+Against the final tables this module already verifies:
+
+| measure | summed over days | the final table | gap |
+|---|---|---|---|
+| absentee accepted | 286,235 | 286,235 | **exact** |
+| early in person | 3,768,072 | 3,768,115 | −43 |
+| both, after the window clip | **4,052,653** | 4,054,350 | −1,697 (0.042%) |
+
+and independently against **georgiavotesvisual.com**, which derives its numbers
+from the SoS's own per-ballot absentee file down the *other* Georgia route (§1,
+the reCAPTCHA'd one) and therefore shares no host, no transport and no code with
+this:
+
+```
+GET https://georgiavotesvisual.com/static/absentee/absenteeSummary-2024_general-county.json
+    200, application/json, 346,134 b, 159 counties, votesByDay[]
+```
+
+| day | Data Hub, accepted date | georgiavotesvisual, return date |
+|---|---|---|
+| 2024-10-15 | 344,230 | 344,191 |
+| 2024-10-20 | 1,444,803 | 1,444,632 |
+| 2024-11-01 | 4,016,145 | 4,015,194 |
+| 2024-11-05 | 4,052,653 | 4,051,640 |
+
+0.025% apart across the entire curve, on two different date bases. That is
+about as strong a corroboration as this repo has for any state.
+
+## ⚠️ The dates are dirty, and the clip is Georgia's own
+
+`Ballot Accepted Date` for the 2024 general holds **90 distinct values**, of
+which many are impossible: `10/07/1951`, `02/15/1977`, `04/13/1987`,
+`10/21/2202`, `10/31/2224`. In all, **1,634 absentee ballots carry an accepted
+date after Election Day** — 12/01/2024, 12/31/2024, then 2025, 2027, 2028, 2202
+and 2224 — and another 20 carry one from before the window opened. Left alone
+the series would begin in 1951 and end two centuries out.
+
+The clip is `Absentee_Min_Date` (2024-09-17 for this election, read off the app)
+at the bottom and the election date at the top — never a span invented here, and
+never `days_to_election < 0`, which every other reader in this repo already
+refuses. The axis then starts at the first day a ballot was actually accepted,
+2024-09-19, the same choice `_emit` makes on the live path.
+
+## 2022 correctly refuses, and it is the app's limit, not ours
+
+`Election Date` holds **45 elections, and the oldest is 01/23/2024**:
+
+```
+python -m ev backfill --cycle 2022 --state GA --dry-run
+backfill 2022: 0 with history, 1 without
+  no daily archive: GA
+```
+
+`choose_election` raises `NotYetPublished` because 11/08/2022 is simply not in
+the model — the same refusal it gives for a general that has not started yet,
+one socket, no parsing. So 2024 is the only cycle this route can backfill, and
+the ladder falls through for 2022 (to UF, which has no GA county file for it
+either). If Georgia ever loads older elections into the app, this needs no code
+change.
+
+## What is NOT done, on purpose
+
+* **The last day is not topped up to the final.** 1,697 ballots have an accepted
+  date that is missing or outside the window; they were not accepted on any day
+  the series could place them on, so they stay out of it. The final is used to
+  CHECK the series (`ga._reconcile`) and never to complete it.
+* **No daily `mail_requested`.** Nothing in the app dates a REQUEST. Stamping
+  the final's 345,081 across forty-eight days would invent a curve. Blank.
+* **Still no age, race, sex or party**, for all the reasons in §7 — the daily
+  route changes none of them.
+
+## The result
+
+```
+python -m ev backfill --cycle 2024 --state GA --dry-run
+INFO ev.adapters.ga: GA: selected 11/05/2024 -> ['NOVEMBER 5, 2024 - GENERAL ELECTION']
+backfill 2024: 1 with history, 0 without
+```
+
+159 counties over 48 days, 2024-09-19 through 2024-11-05: **5,515 county rows**
+and 48 statewide rows, cumulative, mail and in-person separately. It is fewer
+than 159 × 48 because a county's rows begin at ITS first accepted ballot, not at
+the state's. Recorded frame by
+frame as `tests/fixtures/ga/engine_2024_history.json.gz` (89 frames, 2.2 MB raw,
+111 KB compressed — gzipped so the *complete* session could be kept rather than
+a trimmed one, because all 159 counties and all 48 days are what make the
+statewide curve and the reconciliation testable).
+
+Still one token per run and one socket per run. The rate limit in §7 has not
+moved and neither has the phone call.

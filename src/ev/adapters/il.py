@@ -135,6 +135,85 @@ across everything the Internet Archive holds of this whole domain in both
 windows, the pre-election counts exist only as the form. The refusal is not
 stale and it is not narrow. It is structural: an ASP.NET postback page archives
 as the form and never as the answer, and that cannot change retroactively.
+
+CHECKED AGAIN 2026-09-09, AND THIS TIME OFF elections.il.gov ENTIRELY
+--------------------------------------------------------------------
+Every sweep above is about ONE domain. That is still a scope, and the question
+it cannot answer is whether somebody ELSE kept Illinois' 2024 numbers. So this
+pass asked that instead, and the answer is a harder negative than the first one:
+
+* **The party who would have mirrored it did not track Illinois at all.** The
+  UF Election Lab's own page for this state and cycle --
+  `election.lab.ufl.edu/early-vote/2024-early-voting/2024-general-election-
+  early-vote-illinois/` (HTTP 200, 36,958 bytes, read from this network) --
+  prints "No Data" against all six of Total Early Votes, In-Person Early Votes,
+  Mail Ballots Returned, Mail Ballots Requested, Last Updated and Source, and
+  then says in words: *"Detailed data are not available in this state."* There
+  is no `Early-Vote-2024G` repository under `github.com/ElectProject` (it holds
+  `Early-Vote-2020G`, `VEST_Test`, `Early-Vote-2026P` and nothing else), and
+  even the 2020 tracker's `docs/IL.html` says "County reports have not been
+  updated". Illinois has never been in that dataset at county level.
+* **Illinois' own 2024 canvass carries no method dimension.** Unlike
+  PreElectionCounts, `elections.il.gov/ElectionOperations/ElectionVoteTotals
+  .aspx` DOES still offer "2024 GENERAL ELECTION" (option value 66), and its
+  postback yields eighteen direct CSVs under
+  `/Downloads/ElectionOperations/ElectionResults/ByOffice/66/`. The presidential
+  one is 7,247,259 bytes / 59,624 lines and its header is
+  `JurisdictionID, JurisContainerID, JurisName, EISCandidateID, CandidateName,
+  EISContestID, ContestName, PrecinctName, Registration, EISPartyID, PartyName,
+  VoteCount` -- precinct x candidate, with zero occurrences of "early",
+  "absentee", "grace" or "provisional" anywhere in the results tree. So the
+  official canvass cannot be turned into an early-vote series either, and
+  neither can anything built on top of it (MEDSL's county file inherits this:
+  Illinois' `mode` can only ever be TOTAL).
+* **Every county-run site is a single jurisdiction and holds nothing anyway.**
+  `matchType=domain` CDX sweeps for 2024-09-01..2025-03-01, grepped offline:
+  chicagoelections.gov 1,991 urlkeys (an `/outstanding-ballot-count` page,
+  Chicago only), chicagoelections.com 255, cookcountyclerkil.gov 3,306,
+  cookcountyclerk.com 446, dupagecounty.gov 1,753, dupageresults.gov 161,
+  lakecountyil.gov 24,196, willcountyclerk.gov 373 -- no per-county counts file
+  in any of them. `elections.cookcountyil.gov` and `kanecountyclerk.gov` are not
+  in the Archive at all in that window.
+* **A near-miss worth writing down.** `illinoiselectiondata.com/analysis/
+  earlyvote.php` (HTTP 200, 103,247 bytes) publishes exactly the table this
+  adapter wants -- per election authority, `Mail Bal Req | Mail Bal Ret | Mail
+  Bal Counted | EV BC | EV Bal Counted | Grace Per BC | Grace Per Counted | ...`
+  -- but only for the **2016 and 2014** generals. Grepping its HTML for 2018,
+  2020, 2022, 2024 and 2026 returns zero hits each. It is a live route to a 2016
+  Illinois county backfill and no route at all to 2024.
+
+WHAT DOES EXIST FOR 2024, AND WHY IT IS NOT WIRED HERE
+------------------------------------------------------
+There IS a clean per-authority 2024 FINAL: the EAC's Election Administration
+and Voting Survey. VERIFIED 2026-09-09 by downloading and reading it here --
+`https://www.eac.gov/sites/default/files/2026-02/2024_EAVS_for_Public_Release
+_nolabel_V2_csv.zip` (HTTP 200, 2,119,187 bytes) unzips to a 41,239,612-byte
+CSV of 6,461 rows x 535 columns, of which **exactly 108 are Illinois** -- the
+102 counties plus `BLOOMINGTON CITY`, `CHICAGO CITY`, `DANVILLE CITY`,
+`EAST ST. LOUIS CITY`, `GALESBURG CITY`, `ROCKFORD CITY`, a one-for-one match
+with CITY_BOARDS above. Summed over those 108 rows: `C1a` mail transmitted
+1,177,760, `C1b` mail returned 1,030,362, `F1d` mail votes counted 1,016,208,
+`F1f` in-person early 2,001,203, `F1a` total voters 5,717,147. One sentinel in
+the lot (Fulton County's `F1f` is -99).
+
+It is deliberately NOT wired into this adapter, for three reasons:
+
+1. **Provenance.** These rows would be stamped `il-sbe`, tier 1, and they are
+   not the Illinois SBE's -- they are a federal survey of it. `ladder.py` stamps
+   provenance from the adapter, so the only honest way to publish EAVS is as its
+   own source, and EAVS is national: that is a repo-wide decision about a new
+   tier, not an Illinois patch.
+2. **It measures something else.** `By-Mail Returned` in this file is ballots
+   back before Election Day; EAVS `C1b` includes everything that arrived through
+   the grace period, and `F1d`/`F1f` are ballots COUNTED, not cast-by-a-date.
+   Using an EAVS total as the denominator for a share whose numerator comes from
+   PreElectionCounts silently divides two different quantities.
+3. **There is no `Grace` column**, so Illinois' grace-period voting -- which
+   this adapter reports separately and folds into `inperson` -- cannot be
+   separated back out of `F1f`/`F1b`.
+
+The URLs and column names are here so that decision can be made with the
+evidence rather than re-gathered.
 """
 
 from __future__ import annotations
@@ -448,11 +527,20 @@ class ILScraper(Adapter):
         download path that carried the same file in 2021, and the answer is that
         a postback page archives as the form and never as the answer. Saying so
         here keeps the next reader from repeating the search.
+
+        The 2026-09-09 pass widened it off this domain altogether -- the UF
+        Election Lab never tracked Illinois, the official 2024 canvass carries no
+        mode dimension, and no county site mirrored it. The one thing that does
+        exist is a per-authority FINAL in the EAC's EAVS, which is a different
+        source measuring a different quantity; the docstring says why it is not
+        published from here.
         """
         raise NotYetPublished(
             f"IL: no {cycle} pre-election counts exist to fetch — the SBE purges "
             f"past elections from the dropdown, and every Wayback capture of "
             f"{INDEX} carries only the unselected form (no tables, no export "
             f"links). The static path that held this file in 2021 has no {cycle} "
-            f"capture and 404s today."
+            f"capture and 404s today. No third party mirrored it either; see the "
+            f"module docstring for the off-domain sweep and for the EAVS final "
+            f"that exists instead."
         )

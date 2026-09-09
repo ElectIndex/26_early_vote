@@ -144,6 +144,24 @@ log = logging.getLogger(__name__)
 #: VERIFIED: the `<cycle>-election-info` slug exists for both 2024 and 2026.
 URL = "https://azsos.gov/elections/election-information/{cycle}-election-info"
 
+#: ⚠️ AND IT IS NOT THE ONLY SLUG, WHICH HID THE WHOLE 2024 SEASON. Arizona also
+#: publishes `<cycle>-election-INFORMATION`, and in 2024 that is the one that was
+#: live while the general's early-vote window was open. VERIFIED 2026-09-09 in
+#: the Internet Archive, captures of each exact URL:
+#:
+#:   .../2024-election-info          80 x HTTP 200, the EARLIEST 2024-11-11
+#:   .../2024-election-information   12 x HTTP 200, 2024-09-18 .. 2024-11-06
+#:
+#: so a survey that only knew the short slug saw the 2024 page for the first
+#: time six days after the election and concluded from a leftover. This is the
+#: same class of miss as `de.py`'s -- a report that exists under a directory and
+#: a filename nobody checked -- and the fix is the same: try every name we have
+#: seen, in the order the live site uses them. It does NOT change the answer for
+#: 2024 (see `fetch_history`), and that is exactly why it had to be checked
+#: rather than assumed.
+URLS = (URL, "https://azsos.gov/elections/election-information/"
+             "{cycle}-election-information")
+
 COUNTY_COLUMN = "county"
 UPDATED_COLUMN = "last updated"
 SENT_COLUMN = "sent"
@@ -338,17 +356,32 @@ class AZScraper(Adapter):
     tier = TIER_SCRAPER
 
     def _load(self, cycle: int, *, use_cache: bool) -> str:
-        url = URL.format(cycle=cycle)
-        try:
-            body = get(url, state="AZ", filename=f"{cycle}-election-info.html",
-                       use_cache=use_cache, min_bytes=2048)
-        except Missing as exc:
-            raise NotYetPublished(f"AZ: {url} does not exist yet") from exc
-        if looks_like_challenge(body):
-            # Reachability, not absence: the report may well be sitting behind
-            # this. Fall through to the next tier rather than stopping the ladder.
-            raise SourceError(f"AZ: {url} answered with a Cloudflare bot challenge")
-        return body.decode("utf-8", errors="replace")
+        """The cycle's election-information page, under either of its slugs.
+
+        See URLS: the short slug is what 2026 uses and what is tried first; the
+        long one is where the 2024 general's season actually lived. A 404 on one
+        is not absence until BOTH are 404 -- that mistake is what made a
+        November leftover look like the whole of Arizona's 2024.
+        """
+        problems: list[str] = []
+        for template in URLS:
+            url = template.format(cycle=cycle)
+            slug = url.rsplit("/", 1)[-1]
+            try:
+                body = get(url, state="AZ", filename=f"{slug}.html",
+                           use_cache=use_cache, min_bytes=2048)
+            except Missing:
+                problems.append(f"{url} does not exist")
+                continue
+            if looks_like_challenge(body):
+                # Reachability, not absence: the report may well be sitting
+                # behind this. Fall through to the next tier rather than
+                # stopping the ladder.
+                raise SourceError(
+                    f"AZ: {url} answered with a Cloudflare bot challenge"
+                )
+            return body.decode("utf-8", errors="replace")
+        raise NotYetPublished(f"AZ: {'; '.join(problems)}")
 
     def fetch(self, cycle: int, as_of: date) -> FetchResult:
         result = parse(self._load(cycle, use_cache=False), cycle)
@@ -422,18 +455,61 @@ class AZScraper(Adapter):
         path and the history path must not disagree about what counts as this
         cycle's data.
 
-        ⚠️ AND FOR 2024 THERE IS NO SUCH TABLE ANYWHERE, so this correctly yields
-        nothing. Checked 2026-09-08 against the Internet Archive's CDX index --
-        every capture of this URL between 2024-10-01 and 2024-11-30 is either a
-        7.8 KB Cloudflare 403 (the crawler was walled through the whole early-vote
-        window) or one of two 200s, 2024-11-11 and 2024-11-29. Both were fetched
-        and BOTH still print `Jul 29, 2024 13:41 ... Total 2,262,541 / 921,671` --
-        the PRIMARY's table, sitting there three weeks after the general. Arizona
-        never replaced it. So the general's Sent/Accepted numbers were not
-        archived, are not live, and cannot be recovered from this source; the
-        stale-table refusal below is the whole answer and not a step towards one.
-        Do not "fix" this by relaxing EARLY_WINDOW_DAYS -- that publishes July's
-        primary as November's general, which is the exact bug it was added for.
+        ⚠️ AND FOR 2024 THERE IS NO SUCH TABLE ANYWHERE. This is now settled, and
+        settled on much better evidence than the note it replaces.
+
+        The 2026-09-08 pass looked only at `<cycle>-election-info` and found two
+        200s, 2024-11-11 and 2024-11-29, both showing the primary. That was the
+        right conclusion from the wrong evidence: the earliest 200 of that slug
+        is SIX DAYS AFTER the election, so it could only ever have shown a
+        leftover, and "the general's table was never published" and "we only ever
+        looked after it was taken down" are different claims. See URLS.
+
+        Re-checked 2026-09-09 against the slug that WAS live during the season,
+        `.../2024-election-information`. Twelve HTTP 200 captures span
+        2024-09-18 to 2024-11-06; every one was fetched and parsed, including
+        `20241011045207` -- two days after A.R.S. 16-542 opened early voting --
+        and `20241106030640`, the morning after the general. Every one of the
+        twelve, and the live page today, carries:
+
+            card title   "Primary Election - Sent/Accepted Early Ballots"
+            Last Updated  Jul 29, 2024 13:41  (Maricopa and Pima 14:35)
+            Total         2,262,541 sent / 921,671 accepted
+
+        identical across all thirteen documents, and the string "General Election
+        - Sent" appears in NONE of them. Arizona did not merely leave the
+        primary's table up after the general -- it never populated a general's
+        table at all, not while ballots were going out, not on election night,
+        not since. The general's Sent/Accepted numbers were never published here,
+        so they cannot be recovered here.
+
+        The refusal below is the whole answer and not a step towards one. Do not
+        "fix" it by relaxing EARLY_WINDOW_DAYS -- that publishes July's primary
+        as November's general, which is the exact bug it was added for.
+
+        WHAT DOES EXIST FOR ARIZONA 2024, none of it this table, all verified
+        2026-09-09 and none of it wired up:
+
+        * `apps.azsos.gov/election/2024/ge/EarlyBallotsDroppedElectionDayGENERAL.pdf`
+          -- 200, 86,176 b. Real, 15 counties, statewide 264,554. But it is the
+          HB2785 report of early ballots dropped at polling places ON ELECTION
+          DAY: one number, one day, a subset. Not sent/accepted, and not a final.
+        * `recorder.pima.gov/VoterStats/EarlyVotingStatistics` -- 200, 103,457 b,
+          now carrying a 2024 General row (563,702 requested / 442,409 returned).
+          ONE county of fifteen, populated after the election; the Archive has no
+          capture of it between 2024-10-05 and 2025-02-26, so no series.
+        * The EAC's 2024 Election Administration and Voting Survey
+          (`eac.gov/sites/default/files/2026-02/2024_EAVS_for_Public_Release_`
+          `nolabel_V2_csv.zip`, 200, 2,119,187 b) has all fifteen counties with
+          mail ballots transmitted/returned and votes counted by mode -- and its
+          Pima figure is 442,409, matching Pima's own page exactly. It is the
+          only complete 2024 county final that exists. It is ALSO a federal
+          survey published fifteen months after the election, not Arizona's own
+          file, so publishing it through `az-sos` at TIER_SCRAPER would be a
+          provenance lie; and its mode split is drawn inconsistently by counties
+          (Navajo reports zero in-person early votes). Wiring it in is a decision
+          about what a national post-election source is worth and where it sits
+          on the ladder, which is not this adapter's to make alone.
         """
         if cycle >= date.today().year:
             raise NotYetPublished(f"AZ: {cycle} is not an archived cycle")

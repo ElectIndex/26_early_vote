@@ -750,6 +750,48 @@ HUB_REQUESTED = "Ballots Requested"
 #: label is what gets pinned, and the two tables need two constants.
 HUB_ACCEPTED_EV = "Ballots Accepted (EV)"
 
+#: ⚠️ THE OBJECT THAT MAKES A DAILY HISTORY POSSIBLE, and the reason the
+#: refusal that used to live in `fetch_history` is gone. "Ballots Issued and
+#: Returned", on the early-voting sheet, is the ONE published object dimensioned
+#: by a PER-BALLOT date instead of by the `Calendar` table -- so its own
+#: hypercube, re-dimensioned by County as well, yields ballots accepted per
+#: county per DAY rather than one final position. See `county_day_measures`.
+HUB_EV_BY_DAY = "54790ae8-2a9d-4fe8-b98a-9850f42580b5"
+
+#: What that chart is dimensioned by, verbatim from its own `qFieldDefs`. It is
+#: an expression wrapping one field rather than the bare field, which is why it
+#: is pinned as a string and asserted rather than composed here: the DEFINITION
+#: is lifted off the app at run time and this constant only proves it is still
+#: the one we think it is.
+HUB_DAY_DIM = "=[Ballot Accepted Date]"
+
+#: The election's own absentee window-open date, from the app's `Election Dates`
+#: table. Georgia's `Ballot Accepted Date` carries real data-entry damage --
+#: 1951, 1977, 2202, 2224 all appear in the 2024 general -- so the daily series
+#: has to be clipped, and this is the state's OWN boundary rather than one we
+#: invented. The window CLOSE is the election date, which `calendar.py` already
+#: knows and which every other reader in this repo treats as day zero.
+HUB_ABSENTEE_START = "Absentee_Min_Date"
+
+#: How far the daily series may fall short of the final table it is checked
+#: against. It can never run the other way -- the day-dimensioned cube reads a
+#: SUBSET of the same ballots through the same measure -- so the shortfall is
+#: exactly the ballots whose accepted date is missing or lands outside the
+#: election's own window.
+#:
+#: MEASURED on the 2024 general, and the two ceilings are different sizes for a
+#: reason. Per county the damage is concentrated and lopsided: absentee-by-mail
+#: is where the bad dates live (a mail ballot logged as accepted in 2224 is
+#: still a mail ballot), and Cobb loses 689 of 25,760 absentee ballots, 2.67%,
+#: while the worst early-in-person county loses 0.03%. Statewide the same
+#: damage is 1,697 of 4,054,350, 0.042%. So a county may be 5% short before this
+#: is called drift, but the STATE may only be 1% short -- the loose bound
+#: catches one county's dates falling apart, the tight one catches the day
+#: dimension quietly dropping ballots everywhere at once.
+HISTORY_SHORTFALL_FRACTION = 0.05
+HISTORY_SHORTFALL_FLOOR = 25
+HISTORY_STATE_SHORTFALL_FRACTION = 0.01
+
 #: The field the saved selection sits on, and the one we take control of.
 HUB_ELECTION_FIELD = "Election Date"
 HUB_ELECTION_NAME = "Election Name"
@@ -968,6 +1010,66 @@ def _names_in_scope(engine: Engine, doc: int) -> list[str]:
     return out
 
 
+#: One engine page. The whole 2024 general comes back in nine of them.
+HUB_PAGE = 500
+
+
+def _matrix(engine: Engine, session: int, height: int, width: int) -> list[list[dict]]:
+    """Every row of a session hypercube, paged."""
+    rows: list[list[dict]] = []
+    top = 0
+    while top < height:
+        pages = engine.call(session, "GetHyperCubeData", {
+            "qPath": "/qHyperCubeDef",
+            "qPages": [{"qTop": top, "qLeft": 0,
+                        "qHeight": min(HUB_PAGE, height - top), "qWidth": width}],
+        }).get("qDataPages", [])
+        if not pages or not pages[0].get("qMatrix"):
+            break
+        rows.extend(pages[0]["qMatrix"])
+        top += len(pages[0]["qMatrix"])
+    return rows
+
+
+def _object_cube(engine: Engine, doc: int, object_id: str) -> dict:
+    """One published object's hypercube DEFINITION, straight off the app.
+
+    The state's set-analysis is never transcribed into this repo -- see the
+    module docstring and `test_suppression_is_turned_OFF_on_our_own_cube`, which
+    asserts that no measure expression appears in this file. Everything the
+    adapter builds starts from what this returns.
+    """
+    handle = _handle(engine.call(doc, "GetObject", {"qId": object_id}),
+                     f"GetObject({object_id})")
+    props = engine.call(handle, "GetProperties", {}).get("qProp", {})
+    cube = props.get("qHyperCubeDef")
+    if not cube:
+        raise SchemaDrift(f"GA: object {object_id} carries no hypercube")
+    return cube
+
+
+def _dimension(cube: dict, fields: list[str], object_id: str) -> dict:
+    """The object's sole dimension, refused unless it is over `fields`."""
+    dims = cube.get("qDimensions", [])
+    got = [f for d in dims for f in d.get("qDef", {}).get("qFieldDefs", [])]
+    if got != fields:
+        raise SchemaDrift(
+            f"GA: object {object_id} is dimensioned by {got!r}, not {fields!r}"
+        )
+    return dims[0]
+
+
+def _measures(cube: dict, wanted: tuple[str, ...], object_id: str) -> list[dict]:
+    """The object's measures named by `wanted`, in the app's own order."""
+    labels = [m.get("qDef", {}).get("qLabel") or "" for m in cube.get("qMeasures", [])]
+    missing = [w for w in wanted if w not in labels]
+    if missing:
+        raise SchemaDrift(f"GA: object {object_id} no longer publishes {missing}; "
+                          f"it has {labels!r}")
+    return [m for m in cube.get("qMeasures", [])
+            if (m.get("qDef", {}).get("qLabel") or "") in wanted]
+
+
 def county_measures(engine: Engine, doc: int, object_id: str,
                     wanted: tuple[str, ...]) -> dict[str, dict[str, int]]:
     """`{COUNTY: {label: value}}` for one published table, WITHOUT suppression.
@@ -976,25 +1078,10 @@ def county_measures(engine: Engine, doc: int, object_id: str,
     set-analysis is never transcribed into this repo; only the two suppression
     flags are overridden. See the module docstring.
     """
-    handle = _handle(engine.call(doc, "GetObject", {"qId": object_id}),
-                     f"GetObject({object_id})")
-    props = engine.call(handle, "GetProperties", {}).get("qProp", {})
-    cube = props.get("qHyperCubeDef")
-    if not cube:
-        raise SchemaDrift(f"GA: object {object_id} carries no hypercube")
-
-    dims = cube.get("qDimensions", [])
-    fields = [f for d in dims for f in d.get("qDef", {}).get("qFieldDefs", [])]
-    if fields != ["County"]:
-        raise SchemaDrift(
-            f"GA: object {object_id} is dimensioned by {fields!r}, not ['County']"
-        )
-
+    cube = _object_cube(engine, doc, object_id)
+    _dimension(cube, ["County"], object_id)
+    _measures(cube, wanted, object_id)
     labels = [m.get("qDef", {}).get("qLabel") or "" for m in cube.get("qMeasures", [])]
-    missing = [w for w in wanted if w not in labels]
-    if missing:
-        raise SchemaDrift(f"GA: object {object_id} no longer publishes {missing}; "
-                          f"it has {labels!r}")
 
     cube = dict(cube)
     cube["qSuppressZero"] = False
@@ -1012,30 +1099,20 @@ def county_measures(engine: Engine, doc: int, object_id: str,
 
     want_at = {label: 1 + i for i, label in enumerate(labels) if label in wanted}
     out: dict[str, dict[str, int]] = {}
-    top = 0
-    while top < height:
-        pages = engine.call(session, "GetHyperCubeData", {
-            "qPath": "/qHyperCubeDef",
-            "qPages": [{"qTop": top, "qLeft": 0,
-                        "qHeight": min(500, height - top), "qWidth": width}],
-        }).get("qDataPages", [])
-        if not pages or not pages[0].get("qMatrix"):
-            break
-        for row in pages[0]["qMatrix"]:
-            name = (row[0].get("qText") or "").strip()
-            if not name:
-                continue
-            values: dict[str, int] = {}
-            for label, index in want_at.items():
-                cell = row[index]
-                number = cell.get("qNum")
-                if number is None or cell.get("qIsNull"):
-                    raise SchemaDrift(
-                        f"GA: {name} has no numeric {label!r} in {object_id}"
-                    )
-                values[label] = int(round(float(number)))
-            out[name] = values
-        top += len(pages[0]["qMatrix"])
+    for row in _matrix(engine, session, height, width):
+        name = (row[0].get("qText") or "").strip()
+        if not name:
+            continue
+        values: dict[str, int] = {}
+        for label, index in want_at.items():
+            cell = row[index]
+            number = cell.get("qNum")
+            if number is None or cell.get("qIsNull"):
+                raise SchemaDrift(
+                    f"GA: {name} has no numeric {label!r} in {object_id}"
+                )
+            values[label] = int(round(float(number)))
+        out[name] = values
     return out
 
 
@@ -1101,6 +1178,295 @@ def hub_build(absentee: dict[str, dict[str, int]], early: dict[str, dict[str, in
     return result
 
 
+# ==========================================================================
+# THE DAILY HISTORY -- county x day, out of the same app
+# ==========================================================================
+#
+# `fetch_history` used to refuse by name, on the reasoning that "the app holds
+# each election's CURRENT position only, with no daily history, so a backfill
+# would stamp one Election-Day figure across a whole window". THAT REASONING WAS
+# WRONG, and it was wrong because nobody had asked the app what fields it has.
+#
+# Measured 2026-09-09, live: the data model carries `Ballot Accepted Date`, a
+# per-ballot date on `Voter_Absentee_File_Agg` -- the same table `County` and
+# every ballot counter live on -- and the early-voting sheet publishes a bar
+# chart, `HUB_EV_BY_DAY`, that is already dimensioned by it. Adding the county
+# dimension to that object's own hypercube, and the same date dimension to the
+# absentee table's, yields ballots accepted per county per day. Both were
+# checked against the finals this module already verifies:
+#
+#     absentee accepted, summed over days   286,235   final 286,235   exact
+#     early in-person, summed over days   3,768,072   final 3,768,115  -43
+#
+# and independently against georgiavotesvisual.com's 2024 county series, which
+# is derived from the SoS's own per-ballot absentee file down the OTHER route
+# (`GAScraper`, the reCAPTCHA'd one) and so shares no code, no host and no
+# transport with this: 4,016,145 here against 4,015,194 there on 2024-11-01,
+# 4,052,653 against 4,051,640 on Election Day. 0.025% apart across the whole
+# curve, on a return-date basis rather than an accepted-date one.
+#
+# ⚠️ AND THE DATES ARE DIRTY, which is the one thing that needs care. Georgia's
+# `Ballot Accepted Date` for the 2024 general contains 1951-10-07, 1977-02-15,
+# 2202-10-21 and 2224-10-31 among ninety distinct values. Left alone the series
+# would begin in 1951. The clip is the election's OWN window -- `Absentee_Min_Date`
+# off the app's `Election Dates` table at the bottom, the election date at the
+# top -- never a span invented here.
+
+
+def window_start(engine: Engine, doc: int) -> date:
+    """When the SELECTED election's absentee window opened, per the app itself.
+
+    This is the bottom of the clip and it has to come from Georgia, not from us:
+    a hardcoded "45 days before" would be a number this repo made up, and it
+    would silently move every cycle Georgia changed its statute.
+    """
+    _, values = field_values(engine, doc, HUB_ABSENTEE_START)
+    live = sorted({v["text"] for v in values if v["state"] != "X" and v["text"]})
+    if len(live) != 1:
+        raise SchemaDrift(
+            f"GA: {HUB_ABSENTEE_START} offers {live[:5]!r} under one selected "
+            "election, not a single window-open date"
+        )
+    return _parse_day(live[0])
+
+
+def county_day_measures(engine: Engine, doc: int, cube: dict, dims: list[dict],
+                        label: str,
+                        object_id: str) -> tuple[dict[tuple[str, date], int], int]:
+    """`{(COUNTY, day): ballots}` for one measure, plus the UNDATED remainder.
+
+    ⚠️ SUPPRESSION IS ON HERE, which is the exact opposite of `county_measures`,
+    and so is the reason. There it is off because a county missing from a
+    159-row table is indistinguishable from a county reporting a real zero. Here
+    the cube is county x day and the zeros ARE the cross product -- a county
+    accepted no ballots on a Sunday -- and `hub_history` puts every one of them
+    back on a continuous axis anyway. What a genuinely missing county would cost
+    is caught downstream instead, by `_reconcile`, against the final table.
+
+    The second return value is ballots whose date cell is null. They are real
+    ballots on no day: not dropped in silence, and not placed on a day we chose.
+    They come out in the shortfall that `_reconcile` bounds.
+    """
+    keep = _measures(cube, (label,), object_id)
+    cube = dict(cube)
+    cube["qDimensions"] = dims
+    cube["qMeasures"] = keep
+    cube["qSuppressZero"] = True
+    cube["qSuppressMissing"] = True
+    cube["qInitialDataFetch"] = []
+    session = _handle(engine.call(doc, "CreateSessionObject", {"qProp": {
+        "qInfo": {"qType": "ev-day-table"}, "qHyperCubeDef": cube,
+    }}), "CreateSessionObject(day table)")
+
+    layout = engine.call(session, "GetLayout", {}).get("qLayout", {}).get("qHyperCube", {})
+    height = int(layout.get("qSize", {}).get("qcy", 0))
+    if height <= 0:
+        raise SchemaDrift(
+            f"GA: object {object_id} produced no per-day rows for this election"
+        )
+
+    out: dict[tuple[str, date], int] = {}
+    undated = 0
+    for row in _matrix(engine, session, height, 3):
+        county = (row[0].get("qText") or "").strip()
+        if not county:
+            continue
+        cell = row[2]
+        number = cell.get("qNum")
+        if number is None or cell.get("qIsNull"):
+            raise SchemaDrift(f"GA: {county} has no numeric {label!r} in {object_id}")
+        value = int(round(float(number)))
+        text = (row[1].get("qText") or "").strip()
+        if not text or text == "-" or row[1].get("qIsNull"):
+            undated += value
+            continue
+        # A date this cannot read is drift, not a row to drop: the whole series
+        # hangs off this cell. Georgia's own bad YEARS parse fine and are
+        # clipped by the window below, which is a different problem.
+        day = _parse_day(text)
+        out[(county, day)] = out.get((county, day), 0) + value
+    return out, undated
+
+
+def _clip(daily: dict[tuple[str, date], int], start: date,
+          election_day: date) -> dict[tuple[str, date], int]:
+    """Only the days inside the election's own window. See the section header."""
+    return {(county, day): value for (county, day), value in daily.items()
+            if start <= day <= election_day}
+
+
+def _reconcile(kind: str, daily: dict[str, int], final: dict[str, int]) -> None:
+    """Refuse unless every county's daily total accounts for its final one.
+
+    The day-dimensioned cube reads a SUBSET of the ballots the final table
+    reads -- the same measure, dimensioned one level finer -- so the difference
+    can only ever run one way, and a county whose days total MORE than its final
+    means the two objects have stopped measuring the same thing. A county that
+    falls too far short means the day dimension has started dropping ballots, or
+    that a county vanished out of the suppressed cube entirely.
+    """
+    # A county in the day cube and not in the final table would never be
+    # emitted -- the row loop walks the final table's counties -- so it would
+    # vanish in silence, which is the one failure this whole function exists to
+    # make impossible.
+    extra = sorted(set(daily) - set(final))
+    if extra:
+        raise SchemaDrift(
+            f"GA: {extra[:5]} report {kind} ballots by day but are missing from "
+            "the final county table"
+        )
+
+    for county in sorted(final):
+        want = final[county]
+        got = daily.get(county, 0)
+        if got > want:
+            raise SchemaDrift(
+                f"GA: {county} totals {got:,} {kind} ballots across its days but "
+                f"only {want:,} in the final table -- the two objects disagree"
+            )
+        allowed = max(HISTORY_SHORTFALL_FLOOR,
+                      int(HISTORY_SHORTFALL_FRACTION * want))
+        if want - got > allowed:
+            raise SchemaDrift(
+                f"GA: {county}'s {kind} days total {got:,} against a final of "
+                f"{want:,} -- {want - got:,} ballots short, more than the "
+                f"{allowed:,} the window and the null dates can explain"
+            )
+
+    total_want = sum(final.values())
+    total_got = sum(daily.get(county, 0) for county in final)
+    if total_want - total_got > int(HISTORY_STATE_SHORTFALL_FRACTION * total_want):
+        raise SchemaDrift(
+            f"GA: the {kind} daily series totals {total_got:,} statewide against "
+            f"a final of {total_want:,} -- {total_want - total_got:,} ballots "
+            "short across every county at once"
+        )
+
+
+def hub_history(absentee_days: dict[tuple[str, date], int],
+                early_days: dict[tuple[str, date], int],
+                absentee: dict[str, dict[str, int]],
+                early: dict[str, dict[str, int]],
+                start: date, election_day: date, cycle: int) -> FetchResult:
+    """A past cycle's DAILY county curve, clipped, reconciled and cumulated.
+
+    This is a SERIES, not a final: one row per county per day from the day
+    Georgia's absentee window opened to Election Day, each row cumulative, on a
+    continuous axis so nothing downstream has to interpolate.
+
+    The last row is what the DAY dimension says, not what the final table says,
+    and those differ by the ballots whose accepted date is missing or outside
+    the election's own window -- 1,697 of 4,054,350 in the 2024 general, 0.042%.
+    Topping the last day up to the final would move those ballots onto a day
+    they were not accepted on, which is exactly the invention `_reconcile` and
+    the window clip exist to prevent. The final is used to CHECK the series and
+    never to complete it.
+    """
+    only_absentee = sorted(set(absentee) - set(early))
+    only_early = sorted(set(early) - set(absentee))
+    if only_absentee or only_early:
+        raise SchemaDrift(
+            f"GA: the two county tables disagree on which counties exist "
+            f"(absentee only: {only_absentee[:5]}, early only: {only_early[:5]})"
+        )
+
+    mail_days = _clip(absentee_days, start, election_day)
+    ev_days = _clip(early_days, start, election_day)
+    _reconcile("absentee", _by_county(mail_days),
+               {c: v[HUB_ACCEPTED] for c, v in absentee.items()})
+    _reconcile("early in-person", _by_county(ev_days),
+               {c: v[HUB_ACCEPTED_EV] for c, v in early.items()})
+
+    per_day: dict[tuple[str, date], _Bucket] = defaultdict(_Bucket)
+    for (county, day), value in mail_days.items():
+        per_day[(county, day)].mail += value
+    for (county, day), value in ev_days.items():
+        per_day[(county, day)].inperson += value
+    for bucket in per_day.values():
+        bucket.total = bucket.mail + bucket.inperson
+
+    if not per_day:
+        raise NotYetPublished(
+            f"GA: no ballot was accepted between {start.isoformat()} and "
+            f"{election_day.isoformat()} in the {cycle} election"
+        )
+
+    result = FetchResult()
+    # The axis starts where the ballots do, not where the window opens -- the
+    # same choice `_emit` makes on the live path, and for the same reason: the
+    # page draws a curve from its first point, and Georgia's window opens
+    # several days before the first ballot comes back.
+    span = _span(min(day for _, day in per_day), election_day)
+    statewide: dict[date, _Bucket] = defaultdict(_Bucket)
+
+    for name in sorted(absentee):
+        hit = _fips.lookup("GA", name.title())
+        if hit is None:
+            raise SchemaDrift(f"GA: unrecognised county name {name!r}")
+        fips, canonical = hit
+        running = _Bucket()
+        for day in span:
+            today = per_day.get((name, day))
+            if today:
+                running.total += today.total
+                running.mail += today.mail
+                running.inperson += today.inperson
+                statewide[day].total += today.total
+                statewide[day].mail += today.mail
+                statewide[day].inperson += today.inperson
+            if running.total == 0:
+                # Nothing has been accepted in this county yet. A zero row here
+                # would say "Georgia counted no ballots", which is true, but the
+                # live path does not write one either and the page draws a curve
+                # from where it starts.
+                continue
+            result.county_rows.append(CountyDay(
+                cycle=cycle, state="GA", county_fips=fips, day=day,
+                county_name=canonical,
+                ballots_total=running.total,
+                ballots_new=today.total if today else 0,
+                mail_returned=running.mail,
+                inperson=running.inperson,
+                # Georgia registers no voters by party. Never 0.
+                party_dem=None, party_rep=None, party_oth=None, party_npa=None,
+            ))
+
+    covered = len({r.county_fips for r in result.county_rows})
+    if covered != GA_COUNTIES:
+        log.warning("GA: %d of %d counties have a daily curve; publishing "
+                    "counties only", covered, GA_COUNTIES)
+        return result
+
+    running = _Bucket()
+    for day in span:
+        today = statewide.get(day)
+        if today:
+            running.total += today.total
+            running.mail += today.mail
+            running.inperson += today.inperson
+        result.state_rows.append(StateDay(
+            cycle=cycle, state="GA", day=day,
+            ballots_total=running.total,
+            ballots_new=today.total if today else 0,
+            # ⚠️ NOT the final table's `Ballots Requested`. Nothing in this app
+            # dates a REQUEST, so there is no daily requested series to publish
+            # and stamping the final's 345,081 on every day would invent one.
+            # Blank means not reported. See THE BLANK RULE in schema.py.
+            mail_requested=None,
+            mail_returned=running.mail,
+            inperson=running.inperson,
+            party_dem=None, party_rep=None, party_oth=None, party_npa=None,
+        ))
+    return result
+
+
+def _by_county(daily: dict[tuple[str, date], int]) -> dict[str, int]:
+    totals: dict[str, int] = defaultdict(int)
+    for (county, _), value in daily.items():
+        totals[county] += value
+    return dict(totals)
+
+
 class GADataHubScraper(Adapter):
     """Tier 1 for Georgia: the SoS Election Data Hub's Qlik app.
 
@@ -1127,6 +1493,10 @@ class GADataHubScraper(Adapter):
     `NotYetPublished` until the general enters the model, which is the honest
     answer: on 2026-09-08 the app's newest election was AUGUST 25, 2026, and
     November 3 was simply not there yet.
+
+    `fetch_history` reads the same app for a PAST cycle and returns a full daily
+    county SERIES -- see the section header above it. It used to refuse, on a
+    reason that turned out to be false.
     """
 
     state = "GA"
@@ -1134,24 +1504,8 @@ class GADataHubScraper(Adapter):
     tier = TIER_SCRAPER
 
     def fetch(self, cycle: int, as_of: date) -> FetchResult:
-        try:
-            from websockets.sync.client import connect
-        except ImportError as exc:  # pragma: no cover - a packaging failure
-            raise SourceError(f"GA: websockets is not installed: {exc}") from exc
-
-        access = hub_token()
         target = election_date(cycle)
-        try:
-            session = connect(
-                f"wss://{HUB_TENANT}/app/{HUB_APP_ID}",
-                additional_headers={"Authorization": f"Bearer {access}"},
-                max_size=64 * 1024 * 1024,
-                open_timeout=HUB_TIMEOUT,
-            )
-        except Exception as exc:
-            raise SourceError(f"GA: could not open the engine socket: {exc}") from exc
-
-        with session as ws:
+        with self._session() as ws:
             engine = Engine(ws)
             doc = _handle(engine.call(-1, "OpenDoc", {"qDocName": HUB_APP_ID}),
                           "OpenDoc")
@@ -1162,15 +1516,82 @@ class GADataHubScraper(Adapter):
 
         return hub_build(absentee, early, as_of, cycle)
 
+    def _session(self):
+        """One token, one socket. See docs/georgia-source.md §7 on the limit."""
+        try:
+            from websockets.sync.client import connect
+        except ImportError as exc:  # pragma: no cover - a packaging failure
+            raise SourceError(f"GA: websockets is not installed: {exc}") from exc
+        access = hub_token()
+        try:
+            return connect(
+                f"wss://{HUB_TENANT}/app/{HUB_APP_ID}",
+                additional_headers={"Authorization": f"Bearer {access}"},
+                max_size=64 * 1024 * 1024,
+                open_timeout=HUB_TIMEOUT,
+            )
+        except Exception as exc:
+            raise SourceError(f"GA: could not open the engine socket: {exc}") from exc
+
     def fetch_history(self, cycle: int) -> FetchResult:
-        # ⚠️ GUARD PARITY, and a refusal rather than a walk. Every past election
-        # IS in this app -- `Election Date` lists 24 of them -- so a backfill
-        # looks one selection away. It is not: the app holds each election's
-        # CURRENT position only, with no daily history, so every past cycle
-        # would come back as a single Election-Day figure stamped across the
-        # window. `backfill` would then date it at the election date, which is
-        # the fabricated-final-row bug `nd.py` was fixed for.
-        raise NotYetPublished(
-            f"GA: the Data Hub holds no daily history for {cycle}, only each "
-            "election's final position"
-        )
+        """A past cycle's DAILY county curve. A SERIES, not a final row.
+
+        ⚠️ THIS USED TO REFUSE BY NAME, and the refusal's stated reason -- "the
+        app holds each election's current position only, with no daily
+        history" -- was simply untrue. It was written without asking the app for
+        its field list. `Ballot Accepted Date` is a per-ballot date sitting on
+        the same table as `County` and every ballot counter, the early-voting
+        sheet already publishes a chart dimensioned by it, and re-dimensioning
+        those hypercubes by county AND day gives the whole curve. See the
+        section header above for the two independent checks it passes and for
+        the dirty dates it has to be clipped against.
+
+        ⚠️ GUARD PARITY WITH `fetch`. Same selection discipline, and it is not
+        optional here either: the app ships with a saved selection on the 2024
+        PRIMARY, so a history run that skipped `choose_election` would return
+        March's numbers under November's cycle. The two paths differ in exactly
+        one thing -- this one refuses a cycle that has not finished, because an
+        in-progress election's "history" is what `fetch` is for.
+
+        VERIFIED live 2026-09-09 against the 2024 general: 159 counties, 50 days
+        (2024-09-17 through 2024-11-05), 4,052,653 ballots on the last day of
+        which 284,581 absentee and 3,768,072 early in person.
+        """
+        if cycle >= datetime.now().year:
+            raise NotYetPublished(
+                f"GA: {cycle} is not an archived cycle -- fetch() reads the "
+                "election that is still moving"
+            )
+        election_day = election_date(cycle)
+        with self._session() as ws:
+            engine = Engine(ws)
+            doc = _handle(engine.call(-1, "OpenDoc", {"qDocName": HUB_APP_ID}),
+                          "OpenDoc")
+            choose_election(engine, doc, election_day)
+            start = window_start(engine, doc)
+
+            absentee_cube = _object_cube(engine, doc, HUB_ABSENTEE_TABLE)
+            day_cube = _object_cube(engine, doc, HUB_EV_BY_DAY)
+            # Both dimensions are lifted off the app's own objects and swapped
+            # between them; neither is composed here. The date one is an
+            # EXPRESSION over a field rather than a bare field name, so writing
+            # it out would be transcribing the app -- the thing this module
+            # refuses to do with the measures for the same reason.
+            county_dim = _dimension(absentee_cube, ["County"], HUB_ABSENTEE_TABLE)
+            day_dim = _dimension(day_cube, [HUB_DAY_DIM], HUB_EV_BY_DAY)
+            dims = [county_dim, day_dim]
+
+            absentee_days, mail_undated = county_day_measures(
+                engine, doc, absentee_cube, dims, HUB_ACCEPTED, HUB_ABSENTEE_TABLE)
+            early_days, ev_undated = county_day_measures(
+                engine, doc, day_cube, dims, HUB_ACCEPTED_EV, HUB_EV_BY_DAY)
+
+            absentee = county_measures(engine, doc, HUB_ABSENTEE_TABLE,
+                                       (HUB_ACCEPTED, HUB_REQUESTED))
+            early = county_measures(engine, doc, HUB_EARLY_TABLE, (HUB_ACCEPTED_EV,))
+
+        if mail_undated or ev_undated:
+            log.info("GA %d: %d absentee and %d early ballots carry no accepted "
+                     "date and sit on no day", cycle, mail_undated, ev_undated)
+        return hub_history(absentee_days, early_days, absentee, early,
+                           start, election_day, cycle)

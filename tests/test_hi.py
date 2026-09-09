@@ -271,9 +271,43 @@ def test_something_that_is_not_a_pdf_is_a_source_error():
         hi.parse(b"<html>not posted yet</html>", 2026)
 
 
-def test_no_archive_means_history_is_not_yet_published():
-    with pytest.raises(NotYetPublished):
-        hi.HIScraper().fetch_history(2024)
+# --------------------------------------------------------------------------
+# The index page, and the measured negative about past cycles
+# --------------------------------------------------------------------------
+#: A real excerpt of https://elections.hawaii.gov/resources/absentee-voting-report/
+#: fetched 2026-09-09 (HTTP 200, 189,456 B): the page head verbatim plus the
+#: "County Voting Report by D/P" block for the six most recent report days, every
+#: anchor as the Office wrote it. The other ~230 links are elided, and the
+#: comment in the file says so.
+INDEX = FIXTURES / "absentee-voting-report-index-excerpt.html"
+
+
+def test_the_index_page_parses_into_report_dates(monkeypatch):
+    monkeypatch.setattr(hi, "get", lambda *args, **kwargs: INDEX.read_bytes())
+    assert hi.HIScraper()._index_dates() == [
+        date(2026, 6, 22), date(2026, 8, 11), date(2026, 8, 12),
+        date(2026, 8, 13), date(2026, 8, 14), date(2026, 8, 15),
+    ]
+
+
+def test_the_index_lists_nothing_from_a_past_cycle():
+    """⚠️ THIS IS THE EVIDENCE UNDER `fetch_history`'s REFUSAL, NOT DECORATION.
+
+    The Office keeps one election's reports. The day it starts keeping an
+    archive, this fails and the refusal below can be replaced by a real
+    backfill -- which is the only way a documented negative stays honest.
+    """
+    stamps = hi._INDEX_LINK.findall(INDEX.read_text(encoding="utf-8"))
+    assert stamps, "the index excerpt lists no reports at all"
+    assert {stamp[:4] for stamp in stamps} == {"2026"}
+
+
+def test_no_archive_means_history_is_refused_by_name():
+    """Not the base class's shrug: the sweep behind it is in the docstring."""
+    for cycle in (2022, 2024):
+        with pytest.raises(NotYetPublished) as caught:
+            hi.HIScraper().fetch_history(cycle)
+        assert str(cycle) in str(caught.value)
 
 
 def test_the_adapter_declares_itself_correctly():

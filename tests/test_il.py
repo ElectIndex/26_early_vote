@@ -363,3 +363,39 @@ def test_the_history_refusal_is_a_stop_not_a_fallthrough():
 def test_adapter_identity():
     scraper = il.ILScraper()
     assert (scraper.state, scraper.name, scraper.tier) == ("IL", "il-sbe", 1)
+
+
+def test_the_refusal_also_records_the_search_OFF_elections_il_gov():
+    """⚠️ WHY THIS TEST EXISTS, and it is one level up from the one above.
+
+    That test made the refusal rest on a DOMAIN-wide sweep rather than a scoped
+    one. But a domain is still a scope: it can only prove that ILLINOIS did not
+    keep the file, never that nobody did. The 2026-09-09 pass asked the other
+    question -- did anyone mirror it -- and the docstring has to carry that
+    answer or the next reader cannot tell which of the two searches was run.
+
+    The load-bearing facts, each verified from this network on that date:
+    the UF Election Lab's own IL 2024 page says "Detailed data are not available
+    in this state"; the official 2024 canvass exists but has no mode column; and
+    the EAC's EAVS 2024 release holds exactly 108 Illinois rows -- this file's
+    102 counties plus its six city boards -- as a FINAL, not a series.
+    """
+    doc = il.__doc__
+    assert "Detailed data are not available in this state" in doc
+    assert "Early-Vote-2024G" in doc
+    assert "ElectionVoteTotals" in doc
+    assert "108 are Illinois" in doc
+    assert "illinoiselectiondata.com" in doc
+
+
+def test_the_eavs_final_is_documented_as_NOT_wired_and_why():
+    """A per-authority 2024 final exists. Publishing it from `il-sbe` would
+    stamp a federal survey with the SBE's provenance, and its columns measure
+    ballots COUNTED through the grace period rather than returned by a date. The
+    docstring must keep both reasons, so the next reader inherits the decision
+    rather than only the URL."""
+    doc = il.__doc__
+    assert "NOT wired into this adapter" in doc
+    assert "Provenance" in doc
+    assert "It measures something else" in doc
+    assert "no `Grace` column" in doc
