@@ -89,12 +89,10 @@ import csv
 import io
 import logging
 import re
-import zipfile
 from datetime import date
 
-from ..calendar import election_date
-from ..schema import TIER_SCRAPER, TIER_SURVEY, CountyDay, Provenance, StateDay
-from . import _fips
+from ..schema import TIER_SCRAPER, CountyDay, StateDay
+from . import _fips, eavs
 from ._net import Missing, get
 from .base import Adapter, FetchResult, NotYetPublished, SchemaDrift, SourceError
 
@@ -382,279 +380,50 @@ class IDScraper(Adapter):
 # `text/html`, 4,294 bytes of React shell) and its county totals are a voter-file
 # credit measure running 15% below the clerks' own (345,485 against 408,325).
 #
-# What DOES exist is the county FINAL, and this is it.
+# What DOES exist is the county FINAL, and this is it -- and it does not live
+# here. `adapters/eavs.py` reads the EAC's survey for ANY state; Idaho was
+# simply the first to need it, and the whole reader was written in this module
+# before three other states turned out to want the same file.
+#
+# Everything below is an alias. The parse, the release picker, the zip reader
+# and the sentinel handling are the shared ones, byte-for-byte -- verified by
+# running both against the real 2024 file and comparing all 44 counties and the
+# statewide row before this module stopped carrying its own copy.
+#
+# ⚠️ The aliases are NOT nostalgia. `eavs.parse` takes a state and Idaho's did
+# not, so `eavs_parse` here is a partial application that keeps Idaho's call
+# shape. Tests and any caller reading `idaho.EAVS_NAME` still work, and there is
+# exactly one implementation to fix when the EAC reissues the file.
 
-#: The EAC's index of every EAVS release. Scraped rather than pinned for the
-#: same reason the Datawrapper stub is: the file this page points at is
-#: REPLACED. 2024 has shipped twice already -- V1 in 2025-06 and V2 in 2026-02,
-#: with an errata note -- and a pinned V1 URL would keep answering 200 forever.
-EAVS_INDEX = "https://www.eac.gov/research-and-data/datasets-codebooks-and-surveys"
-EAVS_HOST = "https://www.eac.gov"
+EAVS_INDEX = eavs.INDEX
+EAVS_HOST = eavs.HOST
+EAVS_LINK = eavs.LINK
+EAVS_VERSION = eavs.VERSION
+EAVS_MAIL_RETURNED = eavs.MAIL_RETURNED
+EAVS_INPERSON = eavs.INPERSON
+EAVS_TOTAL_VOTERS = eavs.TOTAL_VOTERS
+EAVS_STATE = eavs.STATE_COL
+EAVS_FIPS = eavs.FIPS_COL
+EAVS_JURISDICTION = eavs.JURISDICTION
+EAVS_NOT_A_COUNT = eavs.NOT_A_COUNT
+EAVS_MIN_BYTES = eavs.MIN_BYTES
 
-#: `<cycle>_EAVS_for_Public_Release_nolabel_V<n>_csv.zip`, as the index links it.
-#: The `nolabel` build is the one with bare question codes as headers; the
-#: labelled build repeats the whole question text and is 30x the size.
-EAVS_LINK = re.compile(
-    r'href="([^"]*?(\d{4})_EAVS_for_Public_Release_nolabel[^"]*?\.zip)"', re.I
-)
+#: NOT `id-sos`: these numbers reach us from the Election Assistance Commission,
+#: even though every one of them was reported to the EAC by an Idaho county
+#: clerk. They ride `schema.TIER_SURVEY`, not TIER_SCRAPER -- see schema.py for
+#: why a rung had to exist before this could ship honestly.
+EAVS_NAME = eavs.NAME
 
-#: The version token inside that filename, used to pick the NEWEST release.
-EAVS_VERSION = re.compile(r"_V(\d+(?:\.\d+)*)", re.I)
-
-#: The three columns this reads, with the codebook's own names for them
-#: (2024_EAVS_Codebook.xlsx, fetched 2026-09-09):
-#:
-#:     C1b   "Mail Returned By Voters Total"
-#:     F1f   "In Person Early Voting"
-#:     F1a   "Total Voters"
-#:
-#: VERIFIED against Idaho's own Secretary of State dashboard for the same
-#: election (`AbsenteeNovember2024`, read in a browser): EAVS C1b 182,434
-#: against the SoS's 182,010 (0.23%), EAVS F1f 225,973 against 226,315 (0.15%),
-#: and the two summed 408,407 against 408,325 (0.02%). Two independent chains,
-#: and the same 15 counties report two or fewer in-person early votes in both.
-EAVS_MAIL_RETURNED = "C1b"
-EAVS_INPERSON = "F1f"
-EAVS_TOTAL_VOTERS = "F1a"
-EAVS_STATE = "State_Abbr"
-EAVS_FIPS = "FIPSCode"
-EAVS_JURISDICTION = "Jurisdiction_Name"
-
-#: ⚠️ `C1a` ("Mail Transmitted Total", 196,032) IS NOT PUBLISHED as
-#: `mail_requested`, and that is deliberate. Idaho's own dashboard reports
-#: 187,682 absentees issued for the same election -- 4.4% apart, which is far
-#: outside the 0.2% the other two columns agree to, and nothing in the codebook
-#: explains the gap. A number this module cannot reconcile against the state
-#: that reported it is a blank, not a row. See THE BLANK RULE in schema.py.
-
-#: ⚠️ THE CODES ARE NOT STABLE ACROSS CYCLES, and `eavs_parse`'s own identity
-#: check is what notices. 2024 and 2022 both parse; **2020 correctly refuses** --
-#: in the 2020 release the column labelled `F1a` comes back equal to `C1b` for
-#: Bear Lake County (3,365 against 3,365 with 185 early votes on top), so
-#: "total voters" is not what that code meant that year. That is Rule 3 doing
-#: its job: the file is there, its columns are not what we parse, and a
-#: SchemaDrift falls through rather than publishing a plausible wrong number.
-#:
-#: EAVS's own "this is not a count" codes. -88 is "not applicable", -99 is "data
-#: not available", and a handful of cells are simply empty. All three mean the
-#: same thing here and it is `None`, NEVER 0 -- nationally 337 jurisdictions
-#: answer -99 for in-person early voting and writing 0 for those would publish
-#: "no one voted early" for a county that did not answer the question.
-#: (Idaho uses none of them in these three columns: its fifteen zeroes are real
-#: zeroes, small counties that ran no early-voting site.)
-EAVS_NOT_A_COUNT = frozenset({"-88", "-99", ""})
-
-#: What the rows are stamped with. NOT `id-sos`: these numbers reach us from the
-#: Election Assistance Commission, even though every one of them was reported to
-#: the EAC by an Idaho county clerk.
-#:
-#: THE TIER QUESTION THIS ADAPTER RAISED IS NOW SETTLED, AND NOT IN ITS FAVOUR.
-#: These rows first shipped at TIER_SCRAPER, on the argument that an official
-#: administrative count of the state's own ballots is the thing tier 1 means.
-#: That argument was wrong in the way the Arizona work said it was: tier 1 is a
-#: claim about WHO PUBLISHED THE FILE, and the EAC published this one. Arizona
-#: and Montana both reached EAVS the same day and both declined to wire it in
-#: for exactly that reason. Three refusals against one adoption is not a tie.
-#:
-#: `schema.TIER_SURVEY` is the rung all three were missing, and it is where
-#: these rows belong: official like tier 1, national like tier 4, and -- the
-#: part that makes it its own rung -- published more than a year late, so it can
-#: only ever supply an endpoint. See schema.py for why it outranks the
-#: aggregator, which is the one thing the original note got right: UF's Idaho
-#: 2024 row is 377,597 against this file's 408,407 and the SoS's own 408,325.
-#: Being the better number was never the same claim as being the state's file.
-EAVS_NAME = "eac-eavs"
-
-#: The download is 2.1 MB compressed and 41 MB inside. A short body is a wall or
-#: an error page, never the survey.
-EAVS_MIN_BYTES = 500_000
+eavs_release = eavs.release
+eavs_rows = eavs.rows
+eavs_count = eavs.count
 
 
-def eavs_release(index: bytes, cycle: int) -> str:
-    """The NEWEST EAVS release URL for `cycle`, from the EAC's own index page.
-
-    Raises `NotYetPublished` for a cycle the EAC has not posted. Verified live
-    2026-09-09: the page links 2020, 2022 and 2024 CSVs, and the 2022 one spells
-    its extension `_CSV.zip` where 2024's is `_csv.zip` -- which is why the
-    pattern above is case-insensitive and why a case-sensitive one silently
-    loses a whole cycle.
-    """
-    found: list[tuple[list[int], str]] = []
-    for href, year in EAVS_LINK.findall(index.decode("utf-8", "replace")):
-        if int(year) != cycle:
-            continue
-        hit = EAVS_VERSION.search(href)
-        version = [int(p) for p in hit.group(1).split(".")] if hit else [0]
-        found.append((version, href))
-    if not found:
-        raise NotYetPublished(
-            f"ID: the EAC has published no EAVS release for {cycle}"
-        )
-    _, href = max(found)
-    return href if href.startswith("http") else EAVS_HOST + href
-
-
-def eavs_rows(body: bytes, state: str) -> list[dict[str, str]]:
-    """One state's jurisdiction rows out of the national EAVS zip.
-
-    The member is found by SUFFIX, never by name: the 2024 V1 zip wraps its CSV
-    in a directory and the V2 zip does not, so a name match would have broken on
-    the release that replaced it.
-    """
-    try:
-        archive = zipfile.ZipFile(io.BytesIO(body))
-    except zipfile.BadZipFile as exc:
-        raise SchemaDrift("ID: the EAVS download is not a readable zip") from exc
-    members = [n for n in archive.namelist() if n.lower().endswith(".csv")]
-    if len(members) != 1:
-        raise SchemaDrift(f"ID: the EAVS zip holds {members[:5]}, not one CSV")
-
-    with archive.open(members[0]) as handle:
-        reader = csv.DictReader(
-            io.TextIOWrapper(handle, encoding="utf-8-sig", errors="replace")
-        )
-        required = {EAVS_STATE, EAVS_FIPS, EAVS_JURISDICTION,
-                    EAVS_MAIL_RETURNED, EAVS_INPERSON, EAVS_TOTAL_VOTERS}
-        missing = required - set(reader.fieldnames or [])
-        if missing:
-            raise SchemaDrift(f"ID: EAVS is missing columns {sorted(missing)}")
-        return [row for row in reader
-                if (row.get(EAVS_STATE) or "").strip().upper() == state]
-
-
-def eavs_count(raw: str | None, what: str) -> int | None:
-    """One EAVS cell as a count, or `None` when it is one of EAVS's own codes."""
-    text = (raw or "").strip()
-    if text in EAVS_NOT_A_COUNT:
-        return None
-    try:
-        value = int(text)
-    except ValueError as exc:
-        raise SchemaDrift(f"ID: EAVS {what} is {raw!r}, which is not a count") from exc
-    if value < 0:
-        # A negative that is not one of the two codes we know is a code we do
-        # not know. Rule 3: do not bucket an unrecognised value.
-        raise SchemaDrift(f"ID: EAVS {what} is {value}, an unrecognised code")
-    return value
-
-
-def eavs_parse(rows: list[dict[str, str]], cycle: int, day: date) -> FetchResult:
-    """Idaho's county FINAL for one cycle. ONE ROW PER COUNTY, dated Election Day.
-
-    This is deliberately not dressed up as a curve. Every row lands on
-    `days_to_election` 0, which is where the number actually belongs: EAVS is a
-    post-election administrative count of the whole election, not a snapshot
-    taken on some day during it. That is the same bargain `nv.py` and `az.py`
-    strike for their own cycles, and it is what "share of its 2024 early vote"
-    needs a denominator for.
-    """
-    result = FetchResult()
-    totals = {"mail": 0, "inperson": 0, "voted": 0}
-    complete = True
-
-    for row in rows:
-        code = (row.get(EAVS_FIPS) or "").strip()
-        name = (row.get(EAVS_JURISDICTION) or "").strip()
-        # EAVS keys jurisdictions with a ten-digit code whose first five digits
-        # are the county FIPS. Idaho's jurisdictions ARE its counties; a state
-        # that runs elections by township would not survive this and does not
-        # reach it.
-        fips = code[:5]
-        hit = _fips.lookup("ID", name.title().replace(" County", ""))
-        if hit is None or hit[0] != fips:
-            raise SchemaDrift(
-                f"ID: EAVS jurisdiction {name!r} / {code!r} is not an Idaho county"
-            )
-        _, canonical = hit
-
-        mail = eavs_count(row.get(EAVS_MAIL_RETURNED), f"{name} {EAVS_MAIL_RETURNED}")
-        early = eavs_count(row.get(EAVS_INPERSON), f"{name} {EAVS_INPERSON}")
-        voted = eavs_count(row.get(EAVS_TOTAL_VOTERS), f"{name} {EAVS_TOTAL_VOTERS}")
-
-        # ⚠️ NOT `(mail or 0) + (early or 0)`. A county that did not report one
-        # half has an UNKNOWN early vote, not a half-sized one.
-        total = None if mail is None or early is None else mail + early
-        if total is None:
-            complete = False
-        elif voted is not None and total > voted:
-            # EAVS's own identity: early ballots are a subset of all ballots.
-            # Idaho violates it in zero counties; a violation means a column has
-            # started counting something else.
-            raise SchemaDrift(
-                f"ID: {name} reports {mail} mail + {early} early = {total} "
-                f"against {voted} total voters"
-            )
-        else:
-            totals["mail"] += mail
-            totals["inperson"] += early
-            totals["voted"] += total
-
-        result.county_rows.append(CountyDay(
-            cycle=cycle, state="ID", county_fips=fips, day=day,
-            county_name=canonical,
-            ballots_total=total,
-            # EAVS is one post-election figure. There is no previous day, so
-            # there is no "new today" -- blank, never 0.
-            ballots_new=None,
-            mail_returned=mail,
-            inperson=early,
-            # Idaho registers by party and EAVS does not carry it. Never 0.
-            party_dem=None, party_rep=None, party_oth=None, party_npa=None,
-        ))
-
-    if not result.county_rows:
-        raise SchemaDrift("ID: EAVS carried no Idaho jurisdictions")
-
-    covered = len({r.county_fips for r in result.county_rows})
-    if covered != EXPECTED_COUNTIES or not complete:
-        # Same rule as the live path: a statewide total over a subset of
-        # counties looks exactly like an Idaho turnout figure and is not one.
-        log.warning("ID: EAVS covers %d of %d counties (complete=%s); "
-                    "publishing counties only", covered, EXPECTED_COUNTIES,
-                    complete)
-        return result
-
-    result.state_rows.append(StateDay(
-        cycle=cycle, state="ID", day=day,
-        ballots_total=totals["voted"],
-        ballots_new=None,
-        # ⚠️ C1a is NOT published here -- see the constant above.
-        mail_requested=None,
-        mail_returned=totals["mail"],
-        inperson=totals["inperson"],
-        party_dem=None, party_rep=None, party_oth=None, party_npa=None,
-    ))
-    return result
+def eavs_parse(rows: list[dict[str, str]], cycle: int, day) -> FetchResult:
+    """Idaho's county final. `eavs.parse` with the state already supplied."""
+    return eavs.parse(rows, "ID", cycle, day)
 
 
 def eavs_history(cycle: int) -> FetchResult:
-    """Fetch, parse and STAMP a past cycle's EAVS county final.
-
-    The stamp is applied here rather than left to `ladder`/`backfill` because
-    these rows did not come from `id-sos` and must not say they did. See
-    `EAVS_NAME`.
-    """
-    if cycle >= date.today().year:
-        raise NotYetPublished(
-            f"ID: {cycle} is not an archived cycle -- EAVS is a post-election "
-            "survey and fetch() reads the tracker while the election is on"
-        )
-    try:
-        index = get(EAVS_INDEX, state="ID", filename="eac_datasets.html",
-                    min_bytes=4096)
-    except Missing as exc:
-        raise SourceError(f"ID: the EAC dataset index is gone: {exc}") from exc
-
-    url = eavs_release(index, cycle)
-    try:
-        # An archived, dated, immutable release: safe to serve from cache, and
-        # the alternative is a 2 MB download on every backfill run.
-        body = get(url, state="ID", filename=f"eavs_{cycle}.zip",
-                   min_bytes=EAVS_MIN_BYTES, use_cache=True)
-    except Missing as exc:
-        raise SourceError(f"ID: the EAC links {url} and it is not there: "
-                          f"{exc}") from exc
-
-    result = eavs_parse(eavs_rows(body, "ID"), cycle, election_date(cycle))
-    result.stamp(Provenance(tier=TIER_SURVEY, name=EAVS_NAME))
-    return result
+    """Idaho's EAVS county final for a past cycle, stamped `eac-eavs`."""
+    return eavs.history("ID", cycle)

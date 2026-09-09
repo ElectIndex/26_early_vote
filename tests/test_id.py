@@ -447,22 +447,50 @@ def test_the_surveys_own_identity_is_checked(eavs_rows):
         idaho.eavs_parse(broken, 2024, date(2024, 11, 5))
 
 
-def test_a_jurisdiction_that_is_not_an_idaho_county_is_DRIFT(eavs_rows):
-    """Rule 4. EAVS keys jurisdictions by a ten-digit code, not by name.
+def test_a_jurisdiction_is_placed_by_its_FIPS_and_not_by_its_name(eavs_rows):
+    """Rule 4, and the name is now advisory rather than a second lock.
 
-    The first five digits are the county FIPS and BOTH are checked against the
-    census list, because a state that runs elections by township would produce
-    plausible-looking rows that are not counties at all.
+    ⚠️ THIS TEST USED TO ASSERT THE OPPOSITE OF ITS FIRST HALF. It checked that
+    a wrong NAME raises SchemaDrift, on the reasoning that name and code should
+    corroborate each other. Generalising this reader to other states showed the
+    name cannot carry that weight: New Mexico's own EAVS submission spells
+    `DONA ANA COUNTY`, having lost the ñ somewhere upstream, and it matches no
+    census name while its code 35013 is exactly right. Refusing it would have
+    dropped a real county over a diacritic.
+
+    So the code places the row and the census supplies the canonical name.
     """
-    broken = [dict(r) for r in eavs_rows]
-    broken[0]["Jurisdiction_Name"] = "NONESUCH COUNTY"
-    with pytest.raises(SchemaDrift, match="not an Idaho county"):
-        idaho.eavs_parse(broken, 2024, date(2024, 11, 5))
+    renamed = [dict(r) for r in eavs_rows]
+    renamed[0]["Jurisdiction_Name"] = "NONESUCH COUNTY"
+    result = idaho.eavs_parse(renamed, 2024, date(2024, 11, 5))
+    assert len(result.county_rows) == 44
+    assert "Nonesuch" not in {r.county_name for r in result.county_rows}
 
+
+def test_a_jurisdiction_outside_any_county_withholds_the_county_rows(eavs_rows):
+    """Not drift, and not a partial file either -- no county rows at all.
+
+    ⚠️ ALSO A REVERSAL, and Missouri is the reason. This raised SchemaDrift on a
+    code that is not one of the state's counties, which is right for Idaho,
+    whose jurisdictions ARE its counties, and wrong in general: Missouri's
+    `KANSAS CITY CITY` carries 2938000000, a PLACE code, because Kansas City
+    spans four counties and runs its own election board. That is the file being
+    correct, not the file being broken.
+
+    Its ballots therefore belong to no single county, and the four counties it
+    overlaps are each short an unknown number. Publishing the other 114 would
+    understate Jackson County silently, so the whole county table is withheld
+    and only the statewide total -- which still includes Kansas City -- ships.
+    """
     shifted = [dict(r) for r in eavs_rows]
     shifted[0]["FIPSCode"] = "9900100000"
-    with pytest.raises(SchemaDrift, match="not an Idaho county"):
-        idaho.eavs_parse(shifted, 2024, date(2024, 11, 5))
+    result = idaho.eavs_parse(shifted, 2024, date(2024, 11, 5))
+    assert result.county_rows == []
+    # The statewide row survives: every jurisdiction still answered both
+    # columns, so the SUM is still the whole state even though one of its
+    # addresses is unusable.
+    assert len(result.state_rows) == 1
+    assert result.state_rows[0].ballots_total == 408_407
 
 
 def test_a_download_that_is_not_a_zip_is_DRIFT():

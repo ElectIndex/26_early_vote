@@ -163,6 +163,41 @@ def ladder(state: str) -> list[Adapter]:
     return adapters
 
 
+#: Rungs that exist ONLY for `backfill`. Not in FALLBACKS, and the distinction is
+#: load-bearing rather than tidy.
+#:
+#: ⚠️ `EAVSAdapter.fetch()` raises NotYetPublished, because a post-election
+#: survey has nothing to say about a live cycle. By Rule 1 that STOPS the ladder.
+#: In FALLBACKS it would sit above the aggregator and end the walk before the
+#: aggregator was ever asked -- silently, for every state, every day, which is
+#: the same class of bug as the one that left fourteen states unwalked.
+HISTORY_FALLBACKS: tuple[str, ...] = (
+    "eavs:EAVSAdapter",
+)
+
+
+def history_ladder(state: str) -> list[Adapter]:
+    """The ladder `backfill` walks: the live one plus the history-only rungs.
+
+    EAVS is offered to EVERY state rather than an allowlist, because the survey
+    itself is the better judge of which states it can serve. `eavs.parse` refuses
+    a statewide total unless every jurisdiction answered both of its columns and
+    refuses county rows it cannot place inside a county, so a state it cannot
+    honestly answer for produces nothing and the walk simply continues to the
+    aggregator. Montana, New Jersey and Mississippi all fall through on their
+    own evidence; no list has to be kept in step with a file the EAC reissues.
+
+    Tier order does the rest. A state with a real archived file of its own
+    answers at tier 1 and EAVS is never fetched.
+    """
+    state = state.upper()
+    adapters = ladder(state)
+    adapters += [a for a in (_resolve(s, state) for s in HISTORY_FALLBACKS)
+                 if a is not None]
+    adapters.sort(key=lambda a: a.tier)
+    return adapters
+
+
 #: States with NO tier-1 scraper that are walked ANYWAY, because the fallback
 #: rungs carry them and a statewide count is worth more than a blank.
 #:

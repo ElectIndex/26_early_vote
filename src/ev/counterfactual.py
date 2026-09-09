@@ -218,6 +218,30 @@ THIN_BALLOTS = 50_000
 MIN_COVERAGE = 0.85
 MIN_COUNTY_FRACTION = 0.85
 
+#: ⚠️ HOW MANY COUNTIES THE STATE HAS. Not how many have reported, and not a
+#: coverage fraction -- none of the three substitutes for the others.
+#:
+#: This method asks what the margin would be if the state voted like the counties
+#: whose ballots are in so far. Where a state HAS one county that question
+#: answers itself: there is no other county for the electorate to be weighted
+#: toward, so the composition margin is that county's margin, which is the actual
+#: result. The row comes out with implied == actual and `shift_pp` exactly
+#: 0.0000 -- an identity wearing the clothes of a measurement, and one that reads
+#: on the page as an electorate that has not moved at all.
+#:
+#: The coverage gates cannot see it. The District of Columbia is one county of
+#: one, so it scores 1/1 -- PERFECT coverage -- and sails through MIN_COVERAGE
+#: and MIN_COUNTY_FRACTION on its way to publishing a fake zero. Found when the
+#: EAC survey first gave DC a 2024 county final.
+#:
+#: ⚠️ AND THE FIRST FIX FOR IT WAS WRONG IN AN INSTRUCTIVE WAY. Gating on the
+#: number of counties USED refused thirteen legitimate rows along with DC's:
+#: one county of North Carolina's hundred is a thin estimate, not an identity --
+#: implied and actual genuinely differ, and thin is what MIN_COVERAGE and
+#: THIN_BALLOTS are already for. Only a state that has nowhere else to weight
+#: toward produces the identity.
+MIN_UNITS = 2
+
 #: THE MATURITY GATE. A reference curve smaller than this is not an early
 #: electorate, it is a stub, and nothing can be measured against it. South
 #: Carolina's 2022 county series tops out at 16,975 ballots against 1,579,112 in
@@ -1479,6 +1503,16 @@ def compare_day(
         return None
     margin, used, ballots = here
     ref_margin, ref_used, ref_ballots = there
+    # ⚠️ THE STATE'S county count, NOT the number that have reported so far, and
+    # the difference is the whole point. One county of North Carolina's hundred
+    # is a THIN estimate -- implied and actual genuinely differ, and the coverage
+    # gates already mark it low confidence. One county of DC's one is an
+    # IDENTITY: there is no other county for the electorate to be weighted
+    # toward, so implied is actual by construction. Gating on `used` conflated
+    # the two and refused thirteen legitimate thin days along with DC's fake one.
+    if (county_count(state) or 0) < MIN_UNITS:
+        # Not "low confidence" -- no row at all. See MIN_UNITS.
+        return None
 
     state_counties = baseline.counties(state)
     now_row = now.state_rows.get(dte)

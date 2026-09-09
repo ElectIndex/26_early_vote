@@ -24,7 +24,7 @@ pytest
 |---|---|---|
 | 1 | `adapters/<st>.py` — the state's own file | whatever that state publishes |
 | 2 | `adapters/civicapi.py` — civicAPI's national API | statewide + counties + party |
-| 3 | the EAC's post-election survey (EAVS) | a past cycle's FINAL, by county |
+| 3 | `adapters/eavs.py` — the EAC's post-election survey | a past cycle's FINAL, by county |
 | 4 | `adapters/aggregator.py` — UF Election Lab | statewide only |
 | 5 | `adapters/manual.py` — `data/manual/` | a hand-typed statewide total |
 
@@ -34,14 +34,22 @@ so a `TIER1` entry only ever names its own scraper. `publish.py`'s merge is rela
 numbering is written down. See `docs/civicapi-source.md` for why civicAPI sits
 above the aggregator and what it deliberately refuses to publish.
 
-⚠️ **Tier 3 is the one rung with no module of its own**, and the table above is
-slightly misleading about it on purpose. The other four are entries in
-`registry.FALLBACKS`, walked in order for every state. EAVS is not walked at all:
-it is a 41 MB national CSV published over a year after the election, so a state
-that wants it reads it inside its OWN `fetch_history` (`id.py` does) and stamps
-the rows `TIER_SURVEY` / `eac-eavs`. A tier is a claim about where a row came
-from; a rung is a thing the ladder walks. They are usually the same and here
-they are not. `schema.py` has the full reasoning.
+⚠️ **Tier 3 is `adapters/eavs.py` and it is NOT in `registry.FALLBACKS`.** It is
+in `HISTORY_FALLBACKS`, and `backfill` walks `history_ladder()` where `ingest`
+walks `ladder()`. That separation is load-bearing, not tidy: `EAVSAdapter.fetch`
+raises `NotYetPublished` because a post-election survey has nothing to say about
+a live cycle, and by Rule 1 that STOPS the walk. Sitting above the aggregator in
+the live ladder it would end every state's walk before the aggregator was ever
+asked, silently, every day.
+
+The survey is offered to EVERY state rather than an allowlist, because it is the
+better judge of which ones it can answer for — `eavs.parse` refuses a statewide
+total unless every jurisdiction answered both columns, refuses county rows it
+cannot place inside a county, and raises `SchemaDrift` when a state's mail and
+in-person columns sum past its own total voters (Arizona, Indiana and Nebraska
+all do). A state it cannot answer for produces nothing and the walk continues.
+`docs/coverage-research.md` has the per-state results; `schema.py` has the
+reasoning for the rung.
 
 ## Writing a state adapter — the contract
 
