@@ -2,7 +2,7 @@
  "as_of": "2026-09-08",
  "cycle": 2026,
  "days_to_election": 56,
- "generated_at": "2026-09-09T01:34:59+00:00",
+ "generated_at": "2026-09-09T02:46:19+00:00",
  "states": {
   "AK": {
    "attempts": [
@@ -214,6 +214,22 @@
    ],
    "message": "IA: no 2026 general-election absentee report posted yet (https://sos.iowa.gov/elections/pdf/2026/general/AbsenteeCounty2026.pdf came back as HTML, not a PDF; IA: https://sos.iowa.gov/sites/default/files/2026-11/ABS%20Counties%202026.pdf returned 404; IA: https://sos.iowa.gov/sites/default/files/2026-10/ABS%20Counties%202026.pdf returned 404; IA: https://sos.iowa.gov/sites/default/files/2026-09/ABS%20Counties%202026.pdf returned 404)",
    "retrieved_at": "2026-09-08T22:24:22+00:00",
+   "rows": 0,
+   "source": null,
+   "status": "pending",
+   "tier": null
+  },
+  "ID": {
+   "attempts": [
+    {
+     "detail": "ID: the tracker is showing the 2026 Primary election, not the 2026 General",
+     "name": "id-sos",
+     "result": "not_yet_published",
+     "tier": 1
+    }
+   ],
+   "message": "ID: the tracker is showing the 2026 Primary election, not the 2026 General",
+   "retrieved_at": "2026-09-09T02:46:19+00:00",
    "rows": 0,
    "source": null,
    "status": "pending",
@@ -887,6 +903,6 @@
   ],
   "ok": 4,
   "partial_run": true,
-  "pending": 44
+  "pending": 45
  }
 }
