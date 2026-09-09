@@ -719,3 +719,140 @@ def test_the_timestamp_rule_is_per_row_not_per_file(tmp_path):
     stamps = {r["date"]: r["retrieved_at"] for r in csv.DictReader(path.open())}
     assert stamps["2026-10-19"] == "first", "unchanged row was restamped"
     assert stamps["2026-10-20"] == "second", "changed row kept a stale stamp"
+
+
+# --------------------------------------------------------------------------
+# A PARTIAL TIER-1 SOURCE MUST NOT BLOCK A STATEWIDE NUMBER THAT EXISTS
+# --------------------------------------------------------------------------
+
+class _CountiesOnly(Adapter):
+    """New York's shape: real county rows, and deliberately no StateDay.
+
+    `ny.py` covers five of sixty-two counties, so a summed "New York" total
+    would be wrong in the one direction that looks right. It publishes counties
+    and refuses the state row.
+    """
+
+    state = "NY"
+    name = "ny-nyc"
+    tier = TIER_SCRAPER
+
+    def fetch(self, cycle: int, as_of: date) -> FetchResult:
+        from ev.schema import CountyDay
+        out = FetchResult()
+        out.county_rows.append(CountyDay(
+            cycle=cycle, state="NY", county_fips="36061", day=as_of,
+            county_name="New York County", ballots_total=1000, inperson=1000,
+        ))
+        return out
+
+
+class _StatewideOnly(Adapter):
+    """The aggregator's shape: one statewide row, no counties."""
+
+    state = "NY"
+    name = "uf-election-lab"
+    tier = TIER_AGGREGATOR
+
+    def fetch(self, cycle: int, as_of: date) -> FetchResult:
+        out = FetchResult()
+        out.state_rows.append(StateDay(
+            cycle=cycle, state="NY", day=as_of, ballots_total=2_985_181,
+            inperson=2_985_181,
+        ))
+        return out
+
+
+def test_a_partial_scraper_borrows_a_statewide_row_from_below():
+    """The city is not the state, and the state's number was two rungs down.
+
+    Before this, `ny-nyc` answered at tier 1 and the walk stopped, so New York
+    had no statewide figure at all while the aggregator was carrying the state
+    Board's own count. The page showed the five boroughs and called it New York.
+    """
+    result, outcome = run_state("NY", [_CountiesOnly(), _StatewideOnly()],
+                                2026, date(2026, 10, 20))
+    assert outcome.status == STATUS_OK
+    # The WINNER is still tier 1: this is a top-up, not a demotion.
+    assert outcome.tier == TIER_SCRAPER
+    assert outcome.source_name == "ny-nyc"
+    assert len(result.county_rows) == 1
+    assert len(result.state_rows) == 1
+    assert result.state_rows[0].ballots_total == 2_985_181
+    # ...and the borrowed row is labelled at the tier it came from, not tier 1.
+    assert result.state_rows[0].provenance.tier == TIER_AGGREGATOR
+    assert result.county_rows[0].provenance.tier == TIER_SCRAPER
+    assert any(a["result"] == "topup_statewide" for a in outcome.attempts)
+    assert outcome.rows == 2
+
+
+def test_only_the_statewide_row_is_borrowed_never_the_counties():
+    """A top-up is not a merge. The tier that won is the richer one."""
+
+    class _RicherBelow(_StatewideOnly):
+        def fetch(self, cycle: int, as_of: date) -> FetchResult:
+            from ev.schema import CountyDay
+            out = super().fetch(cycle, as_of)
+            out.county_rows.append(CountyDay(
+                cycle=cycle, state="NY", county_fips="36001", day=as_of,
+                county_name="Albany County", ballots_total=7,
+            ))
+            return out
+
+    result, _ = run_state("NY", [_CountiesOnly(), _RicherBelow()],
+                          2026, date(2026, 10, 20))
+    assert [r.county_fips for r in result.county_rows] == ["36061"]
+    assert len(result.state_rows) == 1
+
+
+def test_a_source_that_already_has_a_state_row_is_left_alone():
+    """No extra fetch, no borrowed row, nothing changed for the other states."""
+    calls = []
+
+    class _Counted(_StatewideOnly):
+        def fetch(self, cycle: int, as_of: date) -> FetchResult:
+            calls.append(1)
+            return super().fetch(cycle, as_of)
+
+    result, outcome = run_state("NC", [_Answers(), _Counted()],
+                                2026, date(2026, 10, 20))
+    assert outcome.status == STATUS_OK
+    assert calls == [], "the lower rung must not be fetched at all"
+    assert not any(a["result"].startswith("topup") for a in outcome.attempts)
+
+
+def test_a_crash_below_cannot_spoil_a_good_run():
+    """The top-up runs after real data is already in hand.
+
+    The worst outcome it is allowed to produce is the one we already had, so
+    every failure below is swallowed and recorded rather than raised.
+    """
+
+    class _Explodes(Adapter):
+        state = "NY"
+        name = "boom"
+        tier = TIER_AGGREGATOR
+
+        def fetch(self, cycle: int, as_of: date) -> FetchResult:
+            raise RuntimeError("kaboom")
+
+    result, outcome = run_state("NY", [_CountiesOnly(), _Explodes()],
+                                2026, date(2026, 10, 20))
+    assert outcome.status == STATUS_OK
+    assert len(result.county_rows) == 1
+    assert result.state_rows == []
+    assert any(a["result"] == "topup_failed" for a in outcome.attempts)
+
+
+def test_nothing_below_with_a_state_row_is_a_quiet_blank():
+    """A state that genuinely has no statewide figure keeps its honest hole."""
+
+    class _AlsoCountiesOnly(_CountiesOnly):
+        name = "civicapi"
+        tier = TIER_CIVIC
+
+    result, outcome = run_state("NY", [_CountiesOnly(), _AlsoCountiesOnly()],
+                                2026, date(2026, 10, 20))
+    assert outcome.status == STATUS_OK
+    assert result.state_rows == []
+    assert any(a["result"] == "topup_no_state_row" for a in outcome.attempts)
