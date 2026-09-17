@@ -112,7 +112,7 @@ if git diff --cached --quiet; then
 fi
 
 git -c user.name="electindex-local" \
-    -c user.email="liggett.davis@gmail.com" \
+    -c user.email="38298732+daveslosttt@users.noreply.github.com" \
     commit --quiet -m "data: early vote $(date -u +%F) (local backup run)"
 
 for attempt in 1 2; do
