@@ -25,7 +25,7 @@
 
 set -euo pipefail
 
-REPO="/Users/davisliggett/ElectIndex/earlyvote"
+REPO="${EARLYVOTE_REPO:-$HOME/ElectIndex/earlyvote}"
 BRANCH="main"
 STATUS_URL="https://raw.githubusercontent.com/ElectIndex/26_early_vote/main/output/ev_status.json"
 THRESHOLD_HOURS="${EV_BACKUP_THRESHOLD_HOURS:-5}"
