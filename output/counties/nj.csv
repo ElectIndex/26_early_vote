@@ -1,0 +1,12 @@
+cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_new,mail_returned,inperson,party_dem,party_rep,party_oth,party_npa,source_tier,source_name,retrieved_at
+2026,NJ,34003,Bergen County,2026-09-18,46,139,,139,,104,6,29,,2,civicapi,2026-09-21T16:14:48+00:00
+2026,NJ,34005,Burlington County,2026-09-18,46,623,,623,,446,120,57,,2,civicapi,2026-09-21T16:14:48+00:00
+2026,NJ,34007,Camden County,2026-09-18,46,2643,,2643,,2150,265,228,,2,civicapi,2026-09-21T16:14:48+00:00
+2026,NJ,34011,Cumberland County,2026-09-18,46,1,,1,,1,,,,2,civicapi,2026-09-21T16:14:48+00:00
+2026,NJ,34015,Gloucester County,2026-09-18,46,4055,,4055,,2934,714,407,,2,civicapi,2026-09-21T16:14:48+00:00
+2026,NJ,34017,Hudson County,2026-09-18,46,1610,,1610,,1288,126,196,,2,civicapi,2026-09-21T16:14:48+00:00
+2026,NJ,34019,Hunterdon County,2026-09-18,46,666,,666,,356,225,85,,2,civicapi,2026-09-21T16:14:48+00:00
+2026,NJ,34021,Mercer County,2026-09-18,46,21,,21,,19,,2,,2,civicapi,2026-09-21T16:14:48+00:00
+2026,NJ,34025,Monmouth County,2026-09-18,46,7,,7,,2,5,,,2,civicapi,2026-09-21T16:14:48+00:00
+2026,NJ,34027,Morris County,2026-09-18,46,69,,69,,49,7,13,,2,civicapi,2026-09-21T16:14:48+00:00
+2026,NJ,34035,Somerset County,2026-09-18,46,6,,6,,5,,1,,2,civicapi,2026-09-21T16:14:48+00:00
