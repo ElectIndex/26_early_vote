@@ -223,6 +223,30 @@ AGGREGATOR_ONLY: tuple[str, ...] = (
     "NE", "NJ", "NM", "RI", "UT", "VT", "WV", "WY",
 )
 
+#: STATES WHOSE COUNTY FILE IS A FIXED PIECE OF THE STATE, and which the two
+#: county-weighted models (`estimate.py`, `counterfactual.py`) therefore REFUSE
+#: by name. Both models ask what a state's early vote looks like if its
+#: ballots came from the counties that have reported; where the county source
+#: only ever covers one part of the state, that question has an answer about
+#: the part and none about the state.
+#:
+#: The coverage columns cannot catch this. `coverage_share` and
+#: `county_coverage` measure county ballots against the state's OWN statewide
+#: row, and a partial source publishes no statewide row (the rule tx.py and
+#: ny.py both follow), so the ratio reads a perfect 1.0 over five counties of
+#: sixty-two. `coverage_electorate` sees it -- 0.33 for New York -- but a
+#: consumer has to know to look, and the page did not.
+#:
+#: Texas is deliberately NOT here. Its Secretary of State prints ~30 of 254
+#: counties, but they are the thirty largest and hold most of the electorate,
+#: and every Texas row says what fraction it covers. New York City is one city
+#: holding two fifths of the state, and nothing but the city is ever coming.
+PARTIAL_GEOGRAPHY: dict[str, str] = {
+    "NY": "the county file is New York City's five boroughs (5 of 62 counties, "
+          "about two fifths of the electorate); the state publishes no county "
+          "figures of its own, so a county-weighted model is a model of the city",
+}
+
 
 @lru_cache(maxsize=1)
 def tracked_states() -> tuple[str, ...]:

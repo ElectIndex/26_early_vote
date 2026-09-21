@@ -492,6 +492,50 @@ def test_no_estimable_state_writes_nothing(tmp_path, baseline):
     assert not (out / est.ESTIMATE_FILENAME).exists()
 
 
+#: New York City's five boroughs -- the whole of what the NYC Board's page
+#: covers, and the whole of what New York's county file holds.
+BRONX, KINGS, MANHATTAN, QUEENS, STATEN = "36005", "36047", "36061", "36081", "36085"
+
+
+def _ny_out_dir(tmp_path: Path) -> Path:
+    """An output/ tree where New York looks exactly as it does in production:
+    county rows for the five boroughs, no statewide row of its own, and a
+    tier-4 statewide total that carries no party."""
+    out = tmp_path / "output"
+    (out / "counties").mkdir(parents=True)
+    day = "2024-10-30"
+    with (out / "counties" / "ny.csv").open("w", newline="") as fh:
+        w = csv.writer(fh)
+        w.writerow(["cycle", "state", "county_fips", "county_name", "date",
+                    "days_to_election", "ballots_total"])
+        for fips, n in [(BRONX, 60000), (KINGS, 180000), (MANHATTAN, 150000),
+                        (QUEENS, 140000), (STATEN, 40000)]:
+            w.writerow([2024, "NY", fips, "", day, 6, n])
+    with (out / "ev_state_daily.csv").open("w", newline="") as fh:
+        w = csv.DictWriter(fh, STATE_DAILY_COLUMNS)
+        w.writeheader()
+        w.writerow({c: "" for c in STATE_DAILY_COLUMNS} | {
+            "cycle": 2024, "state": "NY", "date": day, "days_to_election": 6,
+            "ballots_total": 1500000, "source_tier": 4, "source_name": "uf-election-lab",
+        })
+    return out
+
+
+def test_new_york_is_refused_because_its_counties_are_the_city(tmp_path, full_baseline):
+    """The one state whose county file is a CITY. The NYC Board's check-ins
+    cover 5 of 62 counties holding two fifths of the electorate, and New York
+    publishes nothing else by county. Weighting those five by their 2024 lean
+    says how New York City leans, which is not a fact about New York -- and
+    with no statewide row of its own the coverage column reads a perfect 1.0,
+    so nothing downstream can tell. The refusal has to be here, by name."""
+    out = _ny_out_dir(tmp_path)
+    assert est.build(out, full_baseline, states=["NY"]) == []
+    # `force` exists to score the method against states that report party.
+    # New York reports none, so there is nothing to score and no reason the
+    # refusal should bend.
+    assert est.build(out, full_baseline, states=["NY"], force=True) == []
+
+
 def test_a_state_that_reports_party_gets_no_estimate(tmp_path, baseline):
     """North Carolina publishes the real thing; modelling over it is noise."""
     out = _out_dir(tmp_path)

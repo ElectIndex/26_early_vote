@@ -258,6 +258,22 @@ both exist: 74 of 100 counties had reported, but every ballot returned so far wa
 in one of those 74, so `coverage_share` is 1.00 while `coverage_electorate` is
 well under it.
 
+**And one state is refused by name, because neither column can catch it.**
+New York's county file is the New York City Board's check-ins for the five
+boroughs — 5 of 62 counties, about two fifths of the electorate — and the state
+publishes no county figures of its own, ever. Weighting those five by their 2024
+lean answers how the *city* leans (it said 70% Democratic for 2022 and 2024),
+which is not a fact about New York; and because the NYC adapter publishes no
+statewide row (the rule `tx.py` set), `coverage_share` read a perfect 1.00 over
+five counties of sixty-two. `coverage_electorate` did see it (0.33), but a
+consumer has to know to look. Since 2026-09-12 `registry.PARTIAL_GEOGRAPHY`
+names New York and `build()` skips it before any arithmetic, `force` included —
+`force` exists to score the method against states that report party, and New
+York reports none. The 18 rows it had published (nine per cycle, 2022 and 2024)
+were dropped in the same rebuild. Texas is deliberately *not* on that list: its
+thirty counties are the thirty largest, hold most of the electorate, and every
+Texas row says what fraction it covers.
+
 ### The uncertainty band
 
 `est_dem_lo` / `est_dem_hi` (and the same band doubled onto the margin, since

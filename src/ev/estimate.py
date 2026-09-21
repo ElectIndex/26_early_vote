@@ -74,6 +74,7 @@ from typing import Iterable, Iterator, Sequence
 from . import publish
 from .adapters import _fips
 from .calendar import days_to_election
+from .registry import PARTIAL_GEOGRAPHY
 
 log = logging.getLogger(__name__)
 
@@ -1111,6 +1112,13 @@ def build(
             continue
         if not baseline.counties(state):
             log.warning("%s: no county baseline; skipped", state)
+            continue
+        # A county file that is a fixed piece of the state (New York: the
+        # city's five boroughs) weights to the piece, and `force` does not
+        # bend this: it exists to score the method against states that report
+        # party, and a state here reports none.
+        if state in PARTIAL_GEOGRAPHY:
+            log.info("%s: refused -- %s", state, PARTIAL_GEOGRAPHY[state])
             continue
         for (cycle, day), ballots in sorted(read_county_ballots(out_dir, state).items()):
             if cycle_filter and cycle not in cycle_filter:

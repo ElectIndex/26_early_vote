@@ -205,7 +205,7 @@ def test_a_state_with_no_reference_series_produces_no_row(tmp_path, nc_baseline)
 
 
 # --------------------------------------------------------------------------
-# THE MATURITY GATE
+# THE MATURITY GATE -- one gate, two domains
 #
 # The model is validated on mature days and, until 2026-09-06, published on
 # every day. 181 of the 260 rows in output/counterfactual.csv came from days
@@ -216,6 +216,13 @@ def test_a_state_with_no_reference_series_produces_no_row(tmp_path, nc_baseline)
 #
 # Nothing in that is composition. It is phase: early in a window the returns
 # are mail, and a mail electorate's geography is nothing like a finished one's.
+#
+# From 2026-09-06 to 2026-09-20 the gate REFUSED those days. Since 2026-09-20
+# it LABELS them: an immature day is published with `confidence == "early"`
+# and a band of EARLY_ERROR_PP, measured on exactly those days, and it never
+# enters the scoring panel that MODEL_ERROR_PP is measured on. The one refusal
+# that survives is the stub floor -- a reference curve that never became an
+# electorate cannot be a yardstick for anything, early or otherwise.
 # --------------------------------------------------------------------------
 def test_completeness_is_measured_against_the_reference_cycles_final(nc_baseline):
     """⚠️ The denominator is the FINISHED curve, never the running one.
@@ -249,21 +256,90 @@ def test_the_gate_refuses_a_reference_curve_that_is_a_stub(tmp_path, nc_baseline
     assert cf.build(_tree(tmp_path, counties), nc_baseline) == []
 
 
-def test_the_gate_refuses_an_immature_reference_day(tmp_path, nc_baseline):
-    """A reference day that is 1% of its own cycle is mail, not an electorate."""
+def test_an_immature_reference_day_is_published_as_early(tmp_path, nc_baseline):
+    """A reference day that is 1% of its own cycle is mail, not an electorate.
+
+    It is still published -- as "early", with the early band, and with the
+    share that made it early on the row -- because the ballots are real and a
+    reader can see exactly how far short of the floor the comparison falls.
+    """
     counties = (_county(2024, 10, {MECKLENBURG: 900, ALAMANCE: 100})
                 + _county(2022, 10, {MECKLENBURG: 9, ALAMANCE: 1})
                 + _county(2022, 0, {MECKLENBURG: 900, ALAMANCE: 100}))
     rows = cf.build(_tree(tmp_path, counties), nc_baseline)
     # d-10 in 2024 matches d-10 in 2022, which holds 1% of the 2022 curve.
-    assert [r.days_to_election for r in rows] == []
+    assert [r.days_to_election for r in rows] == [10]
+    row = rows[0]
+    assert row.early
+    assert row.confidence == "early"
+    assert row.reference_completeness == pytest.approx(0.01)
+    assert row.completeness == pytest.approx(1.0)
 
 
-def test_the_gate_refuses_a_current_day_that_has_barely_started(tmp_path, nc_baseline):
-    """The live half. North Carolina's 2026 eight ballots must not get a row."""
+def test_a_current_day_that_has_barely_started_is_published_as_early(tmp_path, nc_baseline):
+    """The live half. North Carolina's 2026 eight ballots get a row, labelled.
+
+    The label is the whole point: the row says "early", carries the early
+    band rather than the mature one, and publishes 0.0008% completeness beside
+    the figure so nobody can read it as a reading.
+    """
     counties = (_county(2026, 10, {MECKLENBURG: 8}, scale=1)
                 + _county(2024, 10, {MECKLENBURG: 900, ALAMANCE: 100}))
-    assert cf.build(_tree(tmp_path, counties), nc_baseline) == []
+    rows = cf.build(_tree(tmp_path, counties), nc_baseline)
+    assert [r.days_to_election for r in rows] == [10]
+    row = rows[0]
+    assert row.confidence == "early"
+    assert row.completeness == pytest.approx(8 / (1000 * BALLOT_SCALE))
+    assert row.reference_completeness == pytest.approx(1.0)
+    assert (row.shift_hi - row.shift_lo) / 2 >= cf.EARLY_ERROR_PP
+    assert cf.EARLY_ERROR_PP > cf.MODEL_ERROR_PP
+
+
+def test_an_early_band_always_contains_no_change(tmp_path, nc_baseline):
+    """An early day may publish a large shift; it may not publish a CLAIM.
+
+    Mecklenburg alone against Alleghany alone is the widest composition swing
+    the fixture can produce, on a day that is a sliver of the reference curve.
+    The mature domain keeps the null inside every band through the constant
+    (MODEL_ERROR_PP is never narrower than the largest mature shift); on the
+    early domain the largest shift is a moving target -- Pennsylvania's mail
+    phase published +47.7 on 2026-09-17 and moves daily -- so the same rule is
+    applied per row instead. Whatever the shift, zero is inside the band.
+    """
+    counties = (_county(2026, 10, {MECKLENBURG: 40}, scale=1)
+                + _county(2024, 10, {ALLEGHANY: 900, ALAMANCE: 100}))
+    row = cf.build(_tree(tmp_path, counties), nc_baseline)[0]
+    assert row.confidence == "early"
+    assert abs(row.shift_pp) > cf.EARLY_ERROR_PP, "the fixture must exceed the band"
+    assert row.shift_lo <= 0.0 <= row.shift_hi
+    assert row.shift_lo <= row.shift_pp <= row.shift_hi
+
+
+def test_early_days_never_enter_the_scoring_panel(tmp_path, nc_baseline):
+    """Publishing early rows must not move MODEL_ERROR_PP by a hair.
+
+    The scoring panel and the mature publication domain are the same set of
+    days, as they have been since the gate landed. The early domain is scored
+    on its own, and only there.
+    """
+    counties = (_county(2024, 10, {MECKLENBURG: 600, ALAMANCE: 400})
+                + _county(2024, 30, {MECKLENBURG: 6, ALAMANCE: 4})
+                + _county(2022, 10, {MECKLENBURG: 700, ALAMANCE: 300})
+                + _county(2022, 30, {MECKLENBURG: 7, ALAMANCE: 3}))
+    states = [_state(2024, 10, 1000 * BALLOT_SCALE, party_dem=600 * BALLOT_SCALE, party_rep=400 * BALLOT_SCALE),
+              _state(2024, 30, 10 * BALLOT_SCALE, party_dem=6 * BALLOT_SCALE, party_rep=4 * BALLOT_SCALE),
+              _state(2022, 10, 1000 * BALLOT_SCALE, party_dem=700 * BALLOT_SCALE, party_rep=300 * BALLOT_SCALE),
+              _state(2022, 30, 10 * BALLOT_SCALE, party_dem=7 * BALLOT_SCALE, party_rep=3 * BALLOT_SCALE)]
+    out = _tree(tmp_path, counties, states)
+    published = {r.days_to_election: r.confidence for r in cf.build(out, nc_baseline)}
+    # d-10 reads "low" -- two of North Carolina's hundred counties -- which is
+    # the point: "early" is a different kind of label from the four input
+    # checks, and the mature day keeps whichever of those applies to it.
+    assert published == {10: "low", 30: "early"}
+    mature = cf.score_panel(out, nc_baseline)
+    early = cf.score_panel(out, nc_baseline, early=True)
+    assert [d.days_to_election for d in mature[(2024, "NC")]] == [10]
+    assert [d.days_to_election for d in early[(2024, "NC")]] == [30]
 
 
 def test_a_row_that_clears_the_gate_carries_the_two_shares_it_cleared_it_on(
@@ -278,13 +354,31 @@ def test_a_row_that_clears_the_gate_carries_the_two_shares_it_cleared_it_on(
     assert row.to_dict()["completeness"] == "1.0000"
 
 
-def test_the_published_table_never_carries_an_immature_row(full_baseline):
-    """The regression that motivated all of this, checked against real output/."""
+def test_the_published_table_keeps_its_two_domains_apart(full_baseline):
+    """The regression that motivated all of this, checked against real output/.
+
+    Every row is in exactly one domain, and the label says which. A mature row
+    clears the floor on both sides and sits inside the mature band; an early
+    row misses it on at least one side, says "early", and carries a band that
+    contains no change.
+    """
     rows = cf.build(REPO_OUTPUT, full_baseline)
     if not rows:
         pytest.skip("no published output/ tree in this checkout")
-    assert all(r.completeness >= cf.MATURE_FRACTION for r in rows)
-    assert all(r.reference_completeness >= cf.MATURE_FRACTION for r in rows)
+    early = [r for r in rows if r.confidence == "early"]
+    mature = [r for r in rows if r.confidence != "early"]
+    assert all(r.early for r in early) and not any(r.early for r in mature)
+    assert all(r.completeness >= cf.MATURE_FRACTION for r in mature)
+    assert all(r.reference_completeness >= cf.MATURE_FRACTION for r in mature)
+    assert all(min(r.completeness, r.reference_completeness) < cf.MATURE_FRACTION
+               for r in early)
+    assert all(r.shift_lo <= 0.0 <= r.shift_hi for r in early)
+    assert all((r.shift_hi - r.shift_lo) / 2 >= cf.EARLY_ERROR_PP for r in early)
+    # The immature half of the gate is what NC 2026 fails today; the table
+    # must carry it, not silently drop it again.
+    assert any(r.state == "NC" and r.cycle == 2026 for r in early), \
+        "North Carolina 2026 is the row this domain exists for"
+    rows = mature
     # ⚠️ THIS BOUND USED TO BE A FLAT 5.0, on the reasoning that every row above
     # five points was a phase artefact. Pennsylvania proved that was a fact about
     # the panel, not a law: PA publishes +10.48 on a day that clears both halves
@@ -297,6 +391,36 @@ def test_the_published_table_never_carries_an_immature_row(full_baseline):
     # number; a published shift larger than the band would be this model making a
     # claim, which is precisely what it has not earned.
     assert max(abs(r.shift_pp) for r in rows) < cf.MODEL_ERROR_PP
+
+
+BRONX, KINGS, MANHATTAN, QUEENS, STATEN = "36005", "36047", "36061", "36081", "36085"
+
+
+def test_new_york_is_refused_because_its_counties_are_the_city(tmp_path, full_baseline):
+    """Same refusal as estimate.py's, for the same reason: the NYC Board's five
+    boroughs are the whole of New York's county file, so a composition built
+    from them is the city's, and `county_coverage` reads 1.0 because there is
+    no statewide row of New York's own to measure it against. Two matched,
+    mature days that would otherwise publish -- and must not."""
+    boroughs = {BRONX: 60, KINGS: 180, MANHATTAN: 150, QUEENS: 140, STATEN: 40}
+    counties = (_county(2024, 6, boroughs, state="NY")
+                + _county(2022, 6, {k: v // 3 for k, v in boroughs.items()}, state="NY")
+                + _county(2022, 0, {k: v // 2 for k, v in boroughs.items()}, state="NY"))
+    out = _tree(tmp_path, counties, [], state="NY")
+    assert cf.build(out, full_baseline, states=["NY"]) == []
+
+
+def test_the_published_tables_carry_no_partial_geography_state(full_baseline):
+    """Checked against real output/: the rows that were there before the
+    refusal must be gone, not merely no longer produced."""
+    from ev.registry import PARTIAL_GEOGRAPHY
+    for name in ("counterfactual.csv", "party_estimate.csv"):
+        path = REPO_OUTPUT / name
+        if not path.exists():
+            pytest.skip("no published output/ tree in this checkout")
+        with path.open(newline="", encoding="utf-8") as fh:
+            states = {row["state"] for row in csv.DictReader(fh)}
+        assert not (states & set(PARTIAL_GEOGRAPHY)), name
 
 
 def test_a_missing_state_never_produces_a_zero_shift(tmp_path, nc_baseline):
@@ -561,7 +685,7 @@ def test_partial_coverage_widens_the_band(tmp_path, nc_baseline):
 def test_confidence_is_never_high(nc_out, nc_baseline):
     """No amount of coverage repairs a method that does not beat the null."""
     for row in cf.build(nc_out, nc_baseline):
-        assert row.confidence in ("low", "medium")
+        assert row.confidence in ("early", "low", "medium")
 
 
 def test_a_thin_day_is_low_confidence(tmp_path, nc_baseline):
@@ -596,16 +720,21 @@ def test_north_carolina_2024_against_2022_is_pinned(nc_out, nc_baseline):
     Both days say the same thing: county geography moves about a point while the
     party registration of the very same ballots moves eleven to thirteen.
 
-    The fixture carries a THIRD day, 30 days out, and it is deliberately not
-    here. Its 2022 reference is 23,278 ballots -- 1.1% of that cycle's eventual
-    2,187,856 -- and until THE MATURITY GATE landed this module published a
-    -0.77 point "compositional shift" off it. A 1%-complete electorate is mail,
-    and the difference between mail and a finished early electorate is phase,
-    not composition. `test_the_gate_refuses_an_immature_reference_day` pins the
-    refusal; this test pins that the row is gone.
+    The fixture carries a THIRD day, 30 days out. Its 2022 reference is 23,278
+    ballots -- 1.1% of that cycle's eventual 2,187,856 -- and this module
+    publishes a -0.77 point "compositional shift" off it. A 1%-complete
+    electorate is mail, and the difference between mail and a finished early
+    electorate is phase, not composition, which is why the row is labelled
+    "early", carries the early band, and is not in the panel the other two are
+    scored on. `test_an_immature_reference_day_is_published_as_early` pins the
+    label; this test pins that the two mature rows are untouched by it.
     """
     rows = {r.days_to_election: r for r in cf.build(nc_out, nc_baseline)}
-    assert sorted(rows) == [0, 10]
+    assert sorted(rows) == [0, 10, 30]
+    assert rows[30].confidence == "early"
+    assert rows[30].shift_pp == pytest.approx(-0.77, abs=0.01)
+    assert rows[30].reference_completeness < cf.MATURE_FRACTION
+    assert rows[10].confidence == rows[0].confidence == "medium"
 
     expected = {  # dte: (shift_pp, party_margin_shift_pp, age_shift_tv)
         10: (-1.41, -13.09, 12.60),
@@ -1224,6 +1353,33 @@ def test_model_error_matches_the_measured_validation(full_baseline):
     measured = sum(r.mean_abs_error for r in scores) / len(scores)
     assert cf.MODEL_ERROR_PP == pytest.approx(measured, abs=1.0)
     assert cf.MODEL_ERROR_PP >= measured, "the band must not be narrower than the error"
+
+
+@pytest.mark.skipif(not (REPO_OUTPUT / "ev_state_daily.csv").exists(),
+                    reason="no published output/ tree in this checkout")
+def test_early_error_matches_the_measured_early_domain(full_baseline):
+    """EARLY_ERROR_PP is measured the same way, on the days the other one is not.
+
+    It is refitted from output/ here so that a change in the data moves the
+    constant rather than quietly widening the gap between the band and the
+    error it claims to be.
+    """
+    # COMPLETED cycles only: the running cycle's early days are the rows this
+    # band is stamped on, and they grow with every ingest. See score_panel.
+    scores = cf.validate(REPO_OUTPUT, full_baseline, early=True, completed_only=True)
+    assert scores, "the early domain must be scoreable from the published tree"
+    assert all(v.cycle < max(cf.CYCLES) for v in scores), "the running cycle leaked in"
+    measured = sum(r.mean_abs_error for r in scores) / len(scores)
+    assert cf.EARLY_ERROR_PP == pytest.approx(measured, abs=1.0)
+    assert cf.EARLY_ERROR_PP >= measured, "the band must not be narrower than the error"
+    # And the two panels share no day: a fold's early days and its mature days
+    # are disjoint by construction.
+    mature = cf.score_panel(REPO_OUTPUT, full_baseline)
+    early = cf.score_panel(REPO_OUTPUT, full_baseline, early=True)
+    for fold, days in early.items():
+        overlap = {d.days_to_election for d in days} & {
+            d.days_to_election for d in mature.get(fold, [])}
+        assert not overlap, fold
 
 
 # --------------------------------------------------------------------------

@@ -1990,7 +1990,7 @@ it: the 2022 curve is 19 days long now and still tops out at the same 16,975.
 
 ## The maturity gate
 
-**Three refusals, all computable while a cycle is still running**, in
+**Three conditions, all computable while a cycle is still running**, in
 `is_comparable()`:
 
 1. the reference curve is a real early electorate, not a stub
@@ -2000,6 +2000,97 @@ it: the 2022 curve is 19 days long now and still tops out at the same 16,975.
 
 Both shares are published, as `completeness` and `reference_completeness`, so a
 reader can check the gate rather than take it on trust.
+
+**Since 2026-09-20 only the first is a refusal.** A day that fails 2 or 3 is
+published with **`confidence: early`** and its own band, `EARLY_ERROR_PP`; a day
+that passes all three is what it always was. The two domains are scored
+separately and never share a day — see
+[One gate, two domains](#one-gate-two-domains-2026-09-20) below.
+
+### One gate, two domains (2026-09-20)
+
+From 2026-09-06 the gate **refused** immature days. That made the page's
+Members' tab an empty wall for the whole of September and most of October — its
+copy promised North Carolina "on 15 September", the date NC's 2024 county series
+first matches a 2026 day within tolerance, but under the 25% floor NC could not
+appear before about **19 October** (its 2024 curve crossed a quarter of its final
+at d‑15) and nobody at all before Pennsylvania on ~10 October. The decision, made
+knowing the numbers below, was to **publish those days labelled** rather than
+hide them.
+
+**What changed, and what did not.**
+
+- `is_comparable()` is unchanged and is still what `score_panel()` admits, so
+  `MODEL_ERROR_PP` and every number in [The result](#the-result) are measured on
+  exactly the same days as before. The rebuild on 2026-09-20 changed **zero
+  values in zero mature rows**.
+- `compare_day()` refuses on condition 1 alone. A day short of the floor on either
+  side is published with `early=True`: **`confidence` reads `early`**, the band is
+  `EARLY_ERROR_PP` in place of `MODEL_ERROR_PP`, and the band is widened per row so
+  that it always **contains zero** — the same "never publish a claim" invariant the
+  mature domain gets from its constant, applied per row because the largest early
+  shift moves every morning.
+- `score_panel(early=True)` / `python -m ev counterfactual --validate --early`
+  score the early domain on its own. It is the complement of the mature panel
+  above the stub floor, and the two are disjoint by construction (tested).
+- **The early band is measured on completed cycles only**
+  (`completed_only=True`). The rows it is stamped on today *are* the running
+  cycle's immature days, and they grow with every ingest: scored over them too
+  the figure read 26.68 on the 2026-09-17 tree and 24.09 three days later, with
+  the mature panel unchanged at 10.62. A band that moves every morning is not a
+  measurement, and one measured on the rows it covers is marking its own
+  homework. The mature panel has no such problem yet only because no 2026 day
+  is mature; the same switch is there for it.
+
+**The early band is a measurement, and it is not a small one.** Seven completed
+folds (PA 2022; FL, IA, MD, ME, NC and PA 2024), 2026-09-20, against the same
+registration truth as the headline panel:
+
+| | days | folds | MAE | null | gain | largest \|shift\| |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| early domain, completed cycles, mean over folds | 247 | 7 | **23.21** | 22.31 | −0.90 | 46.40 |
+| mature domain (the headline) | 113 | 13 | 10.62 | 10.59 | −0.03 | 10.48 |
+
+So `EARLY_ERROR_PP = 23.5` — the measured mean, rounded up to the next half point,
+more than twice the mature band on a quantity that spans under ten. Binned by how
+complete the *less* complete side is (every early day on the 2026-09-17 tree, the
+running cycle included — illustrative, not the rule), the error is not evenly spread:
+
+| completeness (min of both sides) | days | folds | MAE | largest \|shift\| |
+| --- | ---: | ---: | ---: | ---: |
+| under 0.1% | 178 | 8 | **60.8** | 47.7 |
+| 0.1% – 1% | 32 | 5 | 10.6 | 44.7 |
+| 1% – 5% | 34 | 6 | 19.0 | 46.4 |
+| 5% – 10% | 9 | 5 | 11.3 | 26.4 |
+| 10% – 25% | 26 | 6 | 12.5 | 20.7 |
+| ≥ 25% (mature) | 113 | 13 | 13.8 pooled | 10.5 |
+
+The 178 days under a tenth of a percent are a state's first handful of mail
+ballots against last cycle's first handful; the figure that comes out is the
+difference between two accidents. One flat band was chosen over a binned one
+because five or six folds per bin is not a measurement to hang a second constant
+on, and because the page draws each row's own `shift_lo`/`shift_hi` — a reader
+sees the ±27 whisker beside a ±11 one and needs no legend to tell them apart.
+
+**What the table published on 2026-09-20:**
+
+| | ballots | 2024 reference day | complete | 2024 actual | implied | band |
+| --- | ---: | ---: | ---: | ---: | ---: | --- |
+| NC d‑44 | 5,539 | 572 | 0.12% | −3.26 | **−18.46** | [−42.2, +11.8] |
+| PA d‑44 | 1,729 | 166 | 0.09% | −1.73 | −20.57 | [−45.8, +8.2] |
+| FL d‑44 | 131 | 100 | 0.00% | −13.22 | −0.14 | [−13.9, +40.1] |
+
+Three days earlier, on the 2026-09-17 tree, North Carolina's row read **+9.12**
+off 3,996 ballots against a 152-ballot reference day: a 27.6-point swing of the
+"implied 2024 result" in three days of September mail. Every one of those bands
+contains zero, and every one of those figures is phase. The published row says so
+in three places — the label, the two completeness columns, and the width of the
+band — and that is the entire case for publishing it.
+
+Rows by domain after the rebuild: 2022 — 16 mature, 55 early; 2024 — 167 mature,
+273 early; 2026 — 41 early (PA 29, NC 6, FL 6). New York's seven mature rows left
+the table in the same rebuild, for the unrelated reason in
+[Which states can have a counterfactual at all](#which-states-can-have-a-counterfactual-at-all).
 
 ### The denominator is the reference cycle's final, and that is the whole point
 
@@ -2095,7 +2186,19 @@ answer, so IL is one of the **sixteen** — AK, AZ, CA, CT, GA, HI, IL, KS, MI, 
 MT, ND, NH, NV, NY, SD — that **can never get a counterfactual** until a 2024
 county backfill exists for them, no matter how much 2026 data arrives. (Arizona
 used to appear in the table above on the strength of one July 2024 snapshot; it
-holds no 2024 county rows today.)
+holds no 2024 county rows today. New York has since had its 2024 backfill and
+is now refused for a different reason — next paragraph.)
+
+**New York is refused outright, whatever it holds.** Its 2024 county series is
+the New York City Board's five boroughs and nothing else — 5 of 62 counties,
+about two fifths of the electorate — and the state publishes no county figures
+of its own. A composition built from them is the city's, and because the NYC
+adapter emits no statewide row, `county_coverage` read a perfect 1.0000 over
+five counties (the seven 2024 rows it published all said so). Since 2026-09-12
+`registry.PARTIAL_GEOGRAPHY` names it and `build()` skips it before any
+comparison is attempted; the same list governs `estimate.py`. Those seven rows
+were dropped in the same rebuild. Texas, the other partial source, stays:
+its thirty counties are the thirty largest and hold most of the electorate.
 
 ⚠️ **That list was twenty-one until 2026-09-08.** DE, LA, OK, OR and WA came off
 it in one afternoon. Note what the five arrivals were worth: Louisiana, Oklahoma

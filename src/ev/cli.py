@@ -458,6 +458,11 @@ def build_parser() -> argparse.ArgumentParser:
                           "compositional change there is -- the reported party "
                           "registration of the same ballots -- and print the "
                           "per-state error in percentage points of margin")
+    cfa.add_argument("--early", action="store_true",
+                     help="with --validate: score the EARLY domain instead -- "
+                          "the days short of the maturity floor that are "
+                          "published as confidence=early -- which is where "
+                          "EARLY_ERROR_PP comes from")
 
     def _counterfactual(args):
         from . import counterfactual as cf

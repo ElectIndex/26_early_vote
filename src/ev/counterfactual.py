@@ -140,6 +140,7 @@ from typing import Callable, Iterable, Iterator, Sequence
 
 from . import publish
 from .calendar import CYCLES, election_date
+from .registry import PARTIAL_GEOGRAPHY
 from .estimate import (
     Baseline,
     CountyLean,
@@ -392,7 +393,71 @@ MIN_REFERENCE_BALLOTS = THIN_BALLOTS
 #:
 #: `test_model_error_matches_the_measured_validation` refits it from output/ and
 #: fails if the data moves away from it.
+#:
+#:  11.0   10.62  2026-09-20: THE EARLY DOMAIN GOT ITS OWN BAND, AND THIS ONE
+#:         DID NOT MOVE. See EARLY_ERROR_PP. Immature days are published again
+#:         -- labelled, not silently -- and they are scored on their own panel,
+#:         so the mature panel this constant is measured on is byte-identical
+#:         to the day before. That separation is the whole design: publishing
+#:         a day the model is not scored on is exactly what the gate was built
+#:         to stop, so an early row carries a band measured on early days.
 MODEL_ERROR_PP = 11.0
+
+#: THE EARLY BAND. The measured error of this method on the days THE MATURITY
+#: GATE holds outside the scored domain -- a reference curve that IS an
+#: electorate (>= MIN_REFERENCE_BALLOTS), but a day on one side or the other
+#: that has not reached MATURE_FRACTION of it. Same construction as
+#: MODEL_ERROR_PP: mean absolute error against the same states' reported party
+#: registration, mean over folds, rounded up to the next half point.
+#:
+#: From 2026-09-06 to 2026-09-20 these days were refused outright. They are
+#: published again because a member opening the tab in September was meeting a
+#: wall that promised North Carolina "on 15 September" and then showed nothing
+#: for five more weeks; what changed is that the row now says what it is.
+#: `confidence` reads "early", the two completeness columns say by how much,
+#: and the band is this number rather than the mature one.
+#:
+#: ⚠️ READ THE VALUE BEFORE READING ANY ROW IT COVERS. Measured 2026-09-20 on
+#: the SEVEN COMPLETED folds (PA 2022; FL, IA, MD, ME, NC and PA 2024): 23.21
+#: points, against a no-change null of 22.31 -- more than twice the mature
+#: error, on a quantity (a state's 2024 presidential margin) that spans under
+#: ten. `python -m ev counterfactual --validate --early` prints it.
+#:
+#: ⚠️ COMPLETED CYCLES ONLY, and this is the rule rather than a detail. The
+#: rows this band is stamped on today ARE the running cycle's immature days,
+#: and they grow with every ingest; scored over them too the figure read 26.68
+#: on the 2026-09-17 tree and 24.09 three days later, with the mature panel
+#: unchanged at 10.62. A band that moves every morning is not a measurement,
+#: and one measured on the rows it covers is marking its own homework.
+#: `score_panel(completed_only=True)` is the switch.
+#:
+#: Binned by how complete the LESS complete side is (every early day on the
+#: 2026-09-17 tree, running cycle included -- illustrative, not the rule):
+#:
+#:     under 0.1%   178 days   8 folds   MAE 60.8   largest |shift| 47.7
+#:     0.1% - 1%     32 days   5 folds   MAE 10.6   largest |shift| 44.7
+#:     1% - 5%       34 days   6 folds   MAE 19.0   largest |shift| 46.4
+#:     5% - 10%       9 days   5 folds   MAE 11.3   largest |shift| 26.4
+#:     10% - 25%     26 days   6 folds   MAE 12.5   largest |shift| 20.7
+#:
+#: The 178 days under a tenth of a percent are not a hard case; they are a
+#: state's first handful of mail ballots compared against last cycle's first
+#: handful, and the number that comes out is the difference between two
+#: accidents. It is published because the page's framing of this model as a
+#: labelled curiosity that does not beat the null (docs/counterfactual.md) is
+#: the condition of ANY row shipping, and that framing is no less true here.
+#:
+#: ⚠️ THE FLOOR RULE IS APPLIED PER ROW, NOT TO THIS CONSTANT. The mature band
+#: is never narrower than the largest mature shift published, so that every
+#: mature band contains "nothing changed"; on the early domain the largest
+#: shift is a daily-moving target (Pennsylvania's mail phase published +47.7 on
+#: 2026-09-17 and it moves every day), so folding it into the constant would
+#: mean chasing it with a commit every morning. `compare_day` widens an early
+#: band to include zero instead -- the same invariant, kept where it can be
+#: kept. `test_an_early_band_always_contains_no_change` is the assertion.
+#:
+#: `test_early_error_matches_the_measured_early_domain` refits it from output/.
+EARLY_ERROR_PP = 23.5
 
 #: With complete coverage on both sides the band's half-width is exactly
 #: MODEL_ERROR_PP, so the confidence threshold has to sit strictly above it or it
@@ -422,7 +487,9 @@ COUNTERFACTUAL_COLUMNS = [
     "reference_counties_used", "reference_county_coverage",
     "ballots", "reference_ballots",
     # How far through each electorate is, against the reference cycle's finished
-    # early vote. The gate that admitted this row is `>= MATURE_FRACTION` on both.
+    # early vote. A row with `>= MATURE_FRACTION` on both is mature and carries
+    # MODEL_ERROR_PP; one short on either side is `confidence: early` and
+    # carries EARLY_ERROR_PP. These two columns are the reason on the row.
     "completeness", "reference_completeness",
     # Reported, never folded in: a party REGISTRATION point is not a
     # presidential margin point, and this repo holds nothing that converts one
@@ -1027,7 +1094,7 @@ def is_comparable(
     fraction: float = MATURE_FRACTION,
     floor: int = MIN_REFERENCE_BALLOTS,
 ) -> str | None:
-    """None if the two days can be compared; otherwise why they cannot.
+    """None if the two days are a MATURE comparison; otherwise why they are not.
 
     THE MATURITY GATE, and the reason it exists: this model is validated only on
     mature days, and until 2026-09-06 it PUBLISHED on every day. 181 of the 260
@@ -1041,16 +1108,40 @@ def is_comparable(
     None of that is composition. Early in a window the returns are mail, and a
     mail electorate's geography is nothing like the eventual early electorate's;
     the difference between a 3%-complete snapshot and a finished one is phase,
-    and this model reports phase as composition. So it refuses instead. Three
-    conditions, all of them computable live:
+    and this model reports phase as composition. Three conditions, all of them
+    computable live:
 
       1. the reference curve is a real early electorate, not a stub;
       2. the reference day is itself mature within that curve;
       3. this cycle's day has reached the same share of it.
+
+    ⚠️ SINCE 2026-09-20 THIS IS THE SCORING GATE AND ONLY HALF OF THE PUBLISHING
+    ONE. `score_panel` still admits exactly the days this returns None for, so
+    MODEL_ERROR_PP is measured on the same domain it always was. `compare_day`
+    refuses on condition 1 alone -- a stub is not a yardstick for anything --
+    and PUBLISHES a day that fails 2 or 3, labelled `confidence: early`, with
+    EARLY_ERROR_PP for its band. `phase()` is that second half on its own.
     """
     if reference_final < floor:
         return (f"reference curve tops out at {reference_final:,} ballots, "
                 f"below the {floor:,} needed to measure against")
+    return phase(now_ballots, reference_ballots, reference_final, fraction=fraction)
+
+
+def phase(
+    now_ballots: dict[str, int],
+    reference_ballots: dict[str, int],
+    reference_final: int,
+    *,
+    fraction: float = MATURE_FRACTION,
+) -> str | None:
+    """None if both days are mature within the reference curve; otherwise why not.
+
+    Conditions 2 and 3 of `is_comparable`, with the stub floor left to the
+    caller. The name is the finding: what a day short of the floor reports is
+    the PHASE of an early-vote window, not the composition of an electorate.
+    A row this returns a reason for is published as "early".
+    """
     there = completeness(reference_ballots, reference_final)
     if there is None or there < fraction:
         return (f"reference day is {0.0 if there is None else there:.0%} of that "
@@ -1358,6 +1449,11 @@ class Counterfactual:
     #: because THE MATURITY GATE that admitted the row is the same number.
     completeness: float | None = None
     reference_completeness: float | None = None
+    #: Short of THE MATURITY GATE on at least one side. The band is
+    #: EARLY_ERROR_PP, `confidence` reads "early", and the row is outside the
+    #: panel MODEL_ERROR_PP is measured on. The completeness pair above is the
+    #: reason, published.
+    early: bool = False
     dims_used: tuple[str, ...] = ("county",)
     dims_reported: tuple[str, ...] = ("county",)
     party_margin_shift_pp: float | None = None
@@ -1404,7 +1500,14 @@ class Counterfactual:
         whether the INPUTS are complete enough for the band to mean anything --
         and no amount of coverage repairs the finding that county geography does
         not beat the no-change null, so the top of this scale is "medium".
+
+        "early" sits below "low" and is a different kind of statement: not that
+        the inputs are thin, but that the day is outside the domain the model
+        is scored on at all. It is set by THE MATURITY GATE, not by any of the
+        four checks below, and it wins over all of them.
         """
+        if self.early:
+            return "early"
         thin = min(self.ballots, self.reference_ballots) < THIN_BALLOTS
         short_coverage = any(
             c is not None and c < MIN_COVERAGE
@@ -1476,9 +1579,15 @@ def compare_day(
     """One state-day against the same state at the same days-out last cycle.
 
     Returns None -- never a zero shift -- when there is no matching reference
-    day, when either side has nothing weightable, or when the state has no 2024
-    county baseline. That is the rule the whole feature turns on: a state without
-    the data produces no row.
+    day, when either side has nothing weightable, when the state has no 2024
+    county baseline, or when the reference curve never became an electorate.
+    That is the rule the whole feature turns on: a state without the data
+    produces no row.
+
+    A day that HAS the data but is short of THE MATURITY GATE on either side
+    is published with `early=True`: `confidence` reads "early" and the band is
+    EARLY_ERROR_PP, widened if need be so that it contains zero. It never
+    enters the scoring panel; see `score_panel`.
     """
     state = state.upper()
     actual = state_actual_margin(state, baseline)
@@ -1488,14 +1597,23 @@ def compare_day(
     if ref_dte is None:
         return None
 
-    # THE MATURITY GATE. Publish only on the domain the model is scored on.
+    # THE MATURITY GATE, in its two halves. A stub reference curve is refused:
+    # nothing can be measured against a series that never became an electorate
+    # (South Carolina 2022, 16,975 ballots). A day short of the floor on either
+    # side is PUBLISHED, and labelled -- see EARLY_ERROR_PP for why and at what
+    # measured cost.
     reference_final = reference.final_ballots()
-    refusal = is_comparable(
+    if reference_final < MIN_REFERENCE_BALLOTS:
+        log.debug("%s %s d-%d: no row -- reference curve tops out at %s ballots, "
+                  "below the %s needed to measure against",
+                  state, now.cycle, dte, f"{reference_final:,}",
+                  f"{MIN_REFERENCE_BALLOTS:,}")
+        return None
+    early = phase(
         now.counties.get(dte, {}), reference.counties.get(ref_dte, {}), reference_final
     )
-    if refusal:
-        log.debug("%s %s d-%d: no row -- %s", state, now.cycle, dte, refusal)
-        return None
+    if early:
+        log.debug("%s %s d-%d: early -- %s", state, now.cycle, dte, early)
 
     here = composition_margin(now.counties.get(dte, {}), baseline)
     there = composition_margin(reference.counties.get(ref_dte, {}), baseline)
@@ -1547,9 +1665,17 @@ def compare_day(
         ref_margin, cover_ref, [c for c in state_counties if c.fips not in seen_ref],
         state_counties)
     # Interval arithmetic on a difference: the shift is widest when this cycle
-    # sits at one end of its bound and the reference at the other.
-    lo = (lo_now - hi_ref) - MODEL_ERROR_PP
-    hi = (hi_now - lo_ref) + MODEL_ERROR_PP
+    # sits at one end of its bound and the reference at the other. The flat
+    # term is the band measured on THIS row's domain.
+    error = EARLY_ERROR_PP if early else MODEL_ERROR_PP
+    lo = (lo_now - hi_ref) - error
+    hi = (hi_now - lo_ref) + error
+    if early:
+        # The floor rule, per row: an early band always contains "nothing
+        # changed". The mature domain gets this from the constant; here the
+        # largest published shift moves daily, so the row is widened instead.
+        # See EARLY_ERROR_PP.
+        lo, hi = min(lo, 0.0), max(hi, 0.0)
 
     # Dimensions that exist but are NOT priced.
     reported = ["county"]
@@ -1589,6 +1715,7 @@ def compare_day(
         completeness=completeness(now.counties.get(dte, {}), reference_final),
         reference_completeness=completeness(
             reference.counties.get(ref_dte, {}), reference_final),
+        early=bool(early),
         dims_used=("county",),
         dims_reported=tuple(reported),
         party_margin_shift_pp=party_shift,
@@ -1628,6 +1755,13 @@ def build(
             continue
         if not baseline.counties(state):
             log.warning("%s: no county baseline; skipped", state)
+            continue
+        # A county file that is a fixed piece of the state (New York: the
+        # city's five boroughs) composes the piece, and `county_coverage`
+        # reads 1.0 because there is no statewide row of the state's own to
+        # measure it against. Refused by name; see registry.PARTIAL_GEOGRAPHY.
+        if state in PARTIAL_GEOGRAPHY:
+            log.info("%s: refused -- %s", state, PARTIAL_GEOGRAPHY[state])
             continue
         series = read_series(out_dir, state)
         for cycle in sorted(cycle_filter):
@@ -1948,8 +2082,25 @@ def score_panel(
     *,
     states: Iterable[str] | None = None,
     tolerance: int = DTE_MATCH_TOLERANCE,
+    early: bool = False,
+    completed_only: bool = False,
 ) -> dict[tuple[int, str], list[ScoredDay]]:
     """Every state-day where the shift can be modelled AND measured.
+
+    `early=False` (the default, and what `validate` and MODEL_ERROR_PP use) is
+    the mature domain: the days `is_comparable` admits. `early=True` is its
+    complement above the stub floor -- the days `compare_day` publishes as
+    "early" -- and is what EARLY_ERROR_PP is measured on. The two are disjoint
+    by construction, and there is a test that says so.
+
+    ⚠️ `completed_only=True` leaves the RUNNING cycle out, and EARLY_ERROR_PP
+    is measured with it set. The early rows being published today ARE the
+    running cycle's immature days; scoring the band on them would be the band
+    marking its own homework, and it would move every morning as the ingest
+    added a day (26.68 on the 2026-09-17 tree, 24.09 three days later, with
+    the mature panel unchanged at 10.62). A band is a statement about
+    finished history. The mature panel has no such problem yet only because
+    no 2026 day is mature; the same switch is there for it when one is.
 
     Keyed by (cycle, state) because the SERIES is the unit: Maine contributes 121
     days and Kentucky 3, and pooling them by day would score Maine and call it a
@@ -1995,6 +2146,8 @@ def score_panel(
             continue
         series = read_series(out_dir, state)
         for cycle, reference_cycle in sorted(REFERENCE_CYCLE.items()):
+            if completed_only and cycle >= max(CYCLES):
+                continue
             now, reference = series.get(cycle), series.get(reference_cycle)
             if now is None or reference is None or not reference.counties:
                 continue
@@ -2003,12 +2156,17 @@ def score_panel(
                 ref_dte = reference.at(dte, tolerance)
                 if ref_dte is None:
                     continue
-                # The SAME gate compare_day publishes under. A model scored on a
-                # domain wider than the one it publishes on is scoring days its
-                # own output never contains; narrower, and it is publishing days
-                # it has never been measured on. Both were true here before.
-                if is_comparable(now.counties[dte], reference.counties[ref_dte],
-                                 reference_final):
+                # The SAME gate compare_day publishes under, in the same two
+                # halves. A model scored on a domain wider than the one it
+                # publishes on is scoring days its own output never contains;
+                # narrower, and it is publishing days it has never been
+                # measured on. Both were true here before 2026-09-06; since
+                # 2026-09-20 each published domain is scored on itself.
+                if reference_final < MIN_REFERENCE_BALLOTS:
+                    continue
+                immature = phase(now.counties[dte], reference.counties[ref_dte],
+                                 reference_final) is not None
+                if immature != early:
                     continue
                 here = composition_margin(now.counties[dte], baseline)
                 there = composition_margin(reference.counties[ref_dte], baseline)
@@ -2397,6 +2555,8 @@ def validate(
     *,
     states: Iterable[str] | None = None,
     tolerance: int = DTE_MATCH_TOLERANCE,
+    early: bool = False,
+    completed_only: bool = False,
 ) -> list[Validation]:
     """Score the method against the only measured composition change there is.
 
@@ -2404,8 +2564,13 @@ def validate(
     series it scores is marking its own homework, and `docs/regression.md` is the
     standing example in this repo of seven specifications that looked like they
     had found something until they were measured against the right null.
+
+    `early=True` scores the early domain instead -- see `score_panel`. Every
+    fitted quantity is then fitted on early days too, which is the honest
+    version of the question for that domain and nothing more.
     """
-    panel = score_panel(out_dir, baseline, states=states, tolerance=tolerance)
+    panel = score_panel(out_dir, baseline, states=states, tolerance=tolerance,
+                        early=early, completed_only=completed_only)
     results: list[Validation] = []
     for (cycle, state), days in sorted(panel.items()):
         if not days:
@@ -2758,7 +2923,14 @@ def cmd_counterfactual(args) -> int:
     baseline = load_baseline(args.baseline)
 
     if args.validate:
-        for line in format_validation(validate(out_dir, baseline, states=args.state)):
+        early = bool(getattr(args, "early", False))
+        if early:
+            print(f"EARLY DOMAIN -- days short of the {MATURE_FRACTION:.0%} maturity "
+                  f"floor on either side, COMPLETED cycles only (the running cycle's "
+                  f"early days are the rows this band is stamped on); the panel "
+                  f"EARLY_ERROR_PP ({EARLY_ERROR_PP}) is measured on. Not the headline panel.")
+        for line in format_validation(validate(out_dir, baseline, states=args.state,
+                                               early=early, completed_only=early)):
             print(line)
         return 0
 
