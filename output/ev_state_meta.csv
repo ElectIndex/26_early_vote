@@ -41,7 +41,7 @@ RI,Rhode Island,2026-11-03,,,true,party|method,,,,,,"no during-season file of it
 SC,South Carolina,2026-11-03,,,false,county|method,,1579112,,,,
 SD,South Dakota,2026-11-03,,,true,party|method,,,,,,
 TN,Tennessee,2026-11-03,,,false,county|method,,,,,,
-TX,Texas,2026-11-03,,,false,county|method,,,,,,largest counties only (~30 of 254) -- never a statewide total
+TX,Texas,2026-11-03,,,false,county|method,,,,,,all 254 counties daily; statewide row only when every county is listed
 UT,Utah,2026-11-03,,,true,party|method,,943058,,,,"no during-season file of its own; carried by the national aggregator, so statewide totals only"
 VA,Virginia,2026-11-03,,,false,county|method,992231,2376938,,,,
 VT,Vermont,2026-11-03,,,false,method,,234868,,,,"no during-season file of its own; carried by the national aggregator, so statewide totals only"
