@@ -459,6 +459,28 @@ def test_a_real_page_that_merely_mentions_the_vendor_is_not_a_wall():
     assert _net.looks_like_wall(page) is False
 
 
+#: The GENUINE Texas SoS election list, 2026-09-23: HTTP 200, 28,733 bytes --
+#: under WALL_MAX_BYTES, and carrying Cloudflare's injected passive sensor.
+TX_REAL_PAGE = (Path(__file__).parent / "fixtures" / "tx"
+                / "elections_live_2026-09-23.html").read_bytes()
+
+
+def test_a_small_real_page_carrying_cloudflares_sensor_is_not_a_wall():
+    """The bare `/cdn-cgi/challenge-platform` marker called this page a block, so
+    every ingest recorded Texas as walled and the state never reached the page.
+    The sensor loads `.../scripts/jsd/main.js`; only the challenge loads `.../h/`.
+    """
+    assert len(TX_REAL_PAGE) < _net.WALL_MAX_BYTES
+    assert b"/cdn-cgi/challenge-platform/scripts/jsd/" in TX_REAL_PAGE
+    assert b'id="idElection"' in TX_REAL_PAGE
+    assert _net.looks_like_wall(TX_REAL_PAGE) is False
+    il = (Path(__file__).parent / "fixtures" / "il" / "PreElectionCounts.html").read_bytes()
+    assert _net.looks_like_wall(il) is False
+    # ...while the real challenge page is still caught.
+    assert b"/cdn-cgi/challenge-platform/h/" in CLOUDFLARE_CHALLENGE
+    assert _net.looks_like_wall(CLOUDFLARE_CHALLENGE) is True
+
+
 def test_ordinary_data_is_never_a_wall():
     assert _net.looks_like_wall(BODY) is False
     assert _net.looks_like_wall(b"") is False

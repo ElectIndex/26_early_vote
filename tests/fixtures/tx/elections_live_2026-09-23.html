@@ -1,0 +1,629 @@
+
+
+<!doctype html>
+
+<html lang="en-US">
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Elections</title>
+<!-- Metadata Info -->
+<meta charset="utf-8">
+<meta name="viewport"
+	content="width=device-width, initial-scale=1, maximum-scale=1 ">
+<meta http-equiv="x-ua-compatible" content="ie=edge">
+
+<link rel="shortcut icon"
+	href="/Elections/images/global/favicon.ico"
+	type="image/x-icon" />
+<!-- Stylesheet Info -->
+<link rel="stylesheet"
+	href="https://use.fontawesome.com/releases/v5.8.1/css/all.css"
+	integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf"
+	crossorigin="anonymous">
+<link href="/Elections/css/bootstrap.css"
+	rel="stylesheet">
+<link href="/Elections/css/normalize.css"
+	rel="stylesheet">
+<!-- <link href="css/mdb.css" rel="stylesheet"> -->
+<link href="/Elections/css/forms.css"
+	rel="stylesheet">
+<link href="/Elections/css/global.css"
+	rel="stylesheet">
+<link href="/Elections/css/custom.css"
+	rel="stylesheet">
+<link href="/Elections/css/compatible.css"
+	rel="stylesheet">
+<script type="text/javascript">
+	var electionList = [
+    	
+			{id:51742,isGrouped:false},
+		
+			{id:51830,isGrouped:false},
+		
+			{id:2,isGrouped:true},
+		
+			{id:49664,isGrouped:false},
+		
+			{id:50643,isGrouped:false},
+		
+			{id:50676,isGrouped:false},
+		
+			{id:50026,isGrouped:false},
+		
+			{id:50027,isGrouped:false},
+		
+			{id:49698,isGrouped:false},
+		
+			{id:49665,isGrouped:false},
+		
+			{id:49666,isGrouped:false},
+		
+			{id:49681,isGrouped:false},
+		
+			{id:49379,isGrouped:false},
+		
+			{id:1,isGrouped:true},
+		
+			{id:47009,isGrouped:false},
+		
+			{id:47689,isGrouped:false},
+		
+			{id:47292,isGrouped:false},
+		
+			{id:47293,isGrouped:false},
+		
+			{id:47058,isGrouped:false},
+		
+			{id:47072,isGrouped:false},
+		
+			{id:47010,isGrouped:false},
+		
+			{id:47011,isGrouped:false},
+		
+			{id:45706,isGrouped:false},
+		
+			{id:47012,isGrouped:false},
+		
+			{id:46891,isGrouped:false},
+		
+			{id:46928,isGrouped:false},
+		
+			{id:46750,isGrouped:false},
+		
+			{id:46698,isGrouped:false},
+		
+			{id:45820,isGrouped:false},
+		
+			{id:45749,isGrouped:false},
+		
+			{id:45703,isGrouped:false},
+		
+			{id:45648,isGrouped:false},
+		
+			{id:44144,isGrouped:false},
+		
+			{id:44823,isGrouped:false},
+		
+			{id:44376,isGrouped:false},
+		
+			{id:44387,isGrouped:false},
+		
+			{id:44520,isGrouped:false},
+		
+			{id:44145,isGrouped:false},
+		
+			{id:44146,isGrouped:false},
+		
+			{id:44147,isGrouped:false},
+		
+			{id:44148,isGrouped:false},
+		
+			{id:44149,isGrouped:false},
+		
+	];
+	function submitForm() {
+		if($("#idElection").val()){
+			$("#elecErr").html("");
+			var isGroupedElection = false;
+			for(var election of electionList) {
+				if($('#idElection').val() == election.id && election.isGrouped){
+					console.log("is val");
+					isGroupedElection = true;
+					break;
+				}
+			}
+			if(isGroupedElection) {
+				$("#electionsInfoForm").attr("action", "/Elections/getGroupedElection.do");
+			} else {
+				$("#electionsInfoForm").attr("action", "/Elections/getElectionEVDates.do");
+			}
+			document.electionsInfoForm.submit();
+		}else{
+			$("#elecErr").html("Election is Required");
+		}
+	}
+	
+	function removeValidation(){
+		$("#elecErr").html("");
+	}
+</script>
+<body>
+	<main> 
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+	
+</head>
+<body>
+
+	<header>
+		<a href="#mainContent" class="hidden">Skip to Main Content</a>
+		<!-- <div id="header-alerts">
+			<span><strong>Election Outlook: </strong> <a href="/about/newsreleases/2019/041919.shtml">The Secretary of State Reminds Texans to Plan Their Trip to the Polls</a> &nbsp;<strong>|</strong>&nbsp; <a href="https://www.votetexas.gov/register-to-vote/need-id.html">More about Identification Requirements for Voting</a> &nbsp;<strong>|</strong>&nbsp; <a href="https://www.votetexas.gov/register-to-vote/index.html">Monday, October 7, 2019 is the last day to register to vote for the November 5, 2019 Uniform Election</a> &nbsp;<strong>|</strong>&nbsp; <a href="https://www.votetexas.gov/voting/what.html">What&rsquo;s on the Ballot?</a> &nbsp;<strong>|</strong>&nbsp; <a href="https://teamrv-mvp.sos.texas.gov/MVP/mvp.do">Am I Registered to Vote?</a> &nbsp;<strong>|</strong>&nbsp; <a href="https://enrpages.sos.state.tx.us/">Election Night Returns</a> &nbsp;|&nbsp;<a href="https://www.votetexas.gov/index.html"> Voter Information</a> &nbsp;<strong>|</strong>&nbsp; <a href="https://www.votetexas.gov/harvey/index.html">Voting Issues for Texas Harvey Evacuees</a> &nbsp;<strong>|</strong>&nbsp; <a href="/elections/conducting/2018-security-update.shtml">2018 Texas Election Security Update</a></span>
+		</div> -->
+		<div id="top_navigation">
+			<ul class="top_navigation">
+			   <li><a href="https://www.sos.texas.gov/index.html">Home</a> | </li>
+			   <li><a href="https://www.sos.texas.gov/about/index.shtml">About the Office </a>|</li>
+				<li><a href="https://www.sos.texas.gov/about/newsreleases/index.shtml">Press Releases</a> |</li>
+				<li><a href="https://www.sos.texas.gov/siteindex.shtml">Site Index</a> |</li>
+				<li><a href="https://www.sos.texas.gov/help.shtml">Help</a> |</li>
+				<li><a href="https://www.sos.texas.gov/contact.shtml">Contacts</a> |</li>
+				<li><a href="https://www.surveymonkey.com/r/sosweb"><strong>Web Survey</strong></a> |</li>
+				<li><a href="https://www.sos.texas.gov/sos_espanol.shtml">En Espa&ntilde;ol</a></li>
+			</ul>
+		</div>
+		<div id="header"> 
+
+		<a href="https://www.sos.texas.gov">
+			<img src="images/global/header.jpg" width="630" height="96" alt="Office of the Texas Secretary of State"/></a></div> 
+		
+		<div id="top-wrapper">
+		<div id="search"> 
+
+		<FORM id="ThunderstoneSearchForm" class="ThunderstoneForm" METHOD=get ACTION="https://www.sos.texas.gov/search.shtml" style="margin:0;">
+		<INPUT TYPE="hidden" NAME="dropXSL" VALUE=""/>
+		<INPUT TYPE=hidden NAME=pr VALUE="default"/>
+		<INPUT TYPE=hidden NAME=prox VALUE="page"/>
+		<INPUT TYPE=hidden NAME=rorder VALUE="500"/>
+		<INPUT TYPE=hidden NAME=rprox VALUE="500"/>
+		<INPUT TYPE=hidden NAME=rdfreq VALUE="500"/>
+		<INPUT TYPE=hidden NAME=rwfreq VALUE="500"/>
+		<INPUT TYPE=hidden NAME=rlead VALUE="500"/>
+		<INPUT TYPE=hidden NAME=sufs VALUE="0"/>
+		<INPUT TYPE=hidden NAME=order VALUE="r"/>
+		<INPUT TYPE=hidden NAME=rdepth VALUE="0"/>
+
+		<label for="query">Search for this:</label><INPUT SIZE=22 name="query" class=" queryAutocomplete" id="query" placeholder="Search" title="Search" /><INPUT TYPE=submit VALUE="Go"/>
+		</FORM>
+
+		</div> 
+		
+		<div id="navcontainer">
+			<ul id="navlist">
+			<li id="active" class="dropdown">
+				<a href="https://www.sos.texas.gov/elections/index.shtml" onmouseout="popDown('HM_Menu2')"  onmouseover="popUp('HM_Menu2',event)" >Elections</a>
+				<div class="dropdown-content">
+					<a href="https://www.sos.state.tx.us/elections/index.shtml">Current Election Information</a>
+					<a href="https://www.votetexas.gov/">Voter Texas.gov - Voter Information</a>
+					<a href="https://www.sos.texas.gov/elections/laws/voter-registration-agencies.shtml">Voter Registration Agencies</a>
+					<a href="https://www.sos.state.tx.us/elections/conducting/index.shtml">Conducting Elections</a>
+					<a href="https://www.sos.texas.gov/elections/candidates/index.shtml">Candidate Information</a>
+					<a href="https://www.sos.texas.gov/elections/voter/current.shtml">Officials and Officeholders</a>
+		            <a href="https://www.sos.texas.gov/elections/historical/index.shtml">Election Results</a>
+		            <a href="https://www.sos.texas.gov/elections/laws/education-resources.shtml">Voter Education &amp; Seminar Information</a>
+		            <a href="https://www.sos.texas.gov/elections/hava/index.shtml">Help America Vote Act (HAVA) Funding</a>
+	              	<a href="https://www.sos.texas.gov/elections/funds/index.shtml">Election Funds Management</a>
+		            <a href="https://www.sos.texas.gov/elections/laws/resources_legal.shtml">Forms, Resources and Legal Library</a>
+		            <a href="https://www.sos.texas.gov/elections/laws/votingsystems.shtml">Voting Systems</a>
+		            <a href="https://www.votetexas.gov/faq/">Frequently Asked Questions (FAQs)</a>
+		            <a href="https://www.sos.texas.gov/elections/contact.shtml">Contact Us</a>
+				</div>
+			</li>
+			
+			<li id="active" class="dropdown">
+			<a href="https://www.sos.texas.gov/corp/index.shtml" onmouseout="popDown('HM_Menu5')"  onmouseover="popUp('HM_Menu5',event)" >Business Services</a> 
+				<div class="dropdown-content">
+				  <a href="https://www.sos.texas.gov/corp/index.shtml">Business Basics</a>
+					<a href="https://www.sos.texas.gov/corp/business-startup.shtml">Business Start-Up Information</a>
+					<a href="https://www.sos.texas.gov/corp/forms_option.shtml">Business Forms</a>  
+					<a href="https://www.sos.texas.gov/corp/options.shtml">Filing Options</a>
+					<a href="https://direct.sos.state.tx.us/help/help-corp.asp?pg=fee">Fee Schedule</a>
+					<a href="https://www.sos.texas.gov/corp/copies.shtml">Copies &amp; Certificates</a>
+					<a href="https://www.sos.texas.gov/corp/publicinfo.shtml">Access Entity Information</a>
+					<a href="https://www.sos.texas.gov/corp/registeredagents.shtml">Registered Agents</a>
+					<a href="https://www.sos.texas.gov/corp/nonprofit_org.shtml">Nonprofit Organizations</a>
+					<a href="https://www.sos.texas.gov/corp/foreign_outofstate.shtml">Foreign or Out-of-State Entities</a>
+					<a href="https://www.sos.texas.gov/ucc/index.shtml">Uniform Commercial Code</a>
+					<a href="https://www.sos.texas.gov/corp/tradepatents.shtml">Trademarks</a>
+					<a href="https://www.sos.texas.gov/corp/service-of-process.shtml">Service of Process</a>
+					<a href="https://www.sos.texas.gov/corp/business-law.shtml">Texas Business Law</a>
+					<a href="https://www.sos.texas.gov/corp/generalfaqs.shtml">Frequently Asked Questions (FAQs)</a>
+					<a href="https://www.sos.texas.gov/corp/contact.shtml">Contact Us</a>
+				</div>
+			</li>
+			
+			<li id="active" class="dropdown">
+			<a href="https://www.sos.texas.gov/statdoc/index.shtml" onmouseout="popDown('HM_Menu8')"  onmouseover="popUp('HM_Menu8',event)" >Notary, Apostilles &amp; Authentications</a>
+				<div class="dropdown-content">
+				        <a href="https://www.sos.texas.gov/statdoc/index.shtml">About  Notary Public and Apostille Services</a>
+					    <a href="https://www.sos.texas.gov/statdoc/statforms.shtml">Forms</a>
+						<a href="https://www.sos.texas.gov/statdoc/notary-public.shtml">Notary Public</a>
+						<a href="https://www.sos.texas.gov/authinfo.shtml">Apostilles/Authentication of Documents</a>
+					    <a href="https://www.sos.texas.gov/statdoc/faqs.shtml">Frequently Asked Questions (FAQs)</a>
+						<a href="https://www.sos.texas.gov/statdoc/contact.shtml">Contact Us</a>
+				</div>
+			</li>
+			<li id="active" class="dropdown">
+			<a href="https://www.sos.texas.gov/texreg/index.shtml" onmouseout="popDown('HM_Menu4')"  onmouseover="popUp('HM_Menu4',event)" >Rules &amp; Open Meetings</a>
+				<div class="dropdown-content">
+				    <a href="https://www.sos.texas.gov/texreg/index.shtml">Texas Register</a>
+					<a href="https://www.sos.texas.gov/tac/index.shtml">Texas Administrative Code</a>
+					<a href="https://www.sos.texas.gov/open/index.shtml">Open Meetings</a>
+					<a href="https://www.sos.texas.gov/texreg/subinfo.shtml">Subscription Services</a>
+					<a href="https://www.sos.texas.gov/texreg/transfers/index.shtml">Rule Transfers and Agency Name Changes</a>
+					<a href="https://www.sos.texas.gov/texreg/liaisons.shtml">Liaison General Info</a>
+					<a href="https://texreg.sos.state.tx.us/tac/liaison_center$.startup">Liaison Login</a>
+					<a href="https://www.sos.texas.gov/texreg/resources.shtml">Other Resources</a>
+					<a href="https://www.sos.texas.gov/texreg/faqs.shtml">Frequently Asked Questions (FAQs)</a>
+					<a href="https://www.sos.texas.gov/texreg/contact.shtml">Contact Us</a> 
+				</div>
+			</li>
+			<li id="active" class="dropdown">
+				<a href="https://www.sos.texas.gov/border/index.shtml" onmouseout="popDown('HM_Menu3')"  onmouseover="popUp('HM_Menu3',event)" >International Relations</a>
+				<div class="dropdown-content">
+				    <a href="https://www.sos.state.tx.us/border/index.shtml">Border Relations With Mexico</a>
+					<a href="https://www.sos.state.tx.us/border/intlprotocol/index.shtml">International Relations</a>
+					<a href="https://www.sos.state.tx.us/statdoc/notary-public.shtml#notariopublico">&iquest;Notario P&uacute;blico?</a>
+					<a href="https://www.sos.state.tx.us/authinfo.shtml">Apostilles/Authentication of Documents</a>
+					<a href="https://www.sos.state.tx.us/border/contact.shtml">Contact Us</a>
+				</div>
+			</li>
+			<li id="active" class="dropdown">
+				<a href="https://www.sos.texas.gov/other/index.shtml"  onmouseout="popDown('HM_Menu9')"  onmouseover="popUp('HM_Menu9',event)" >Forms & Other Services</a>
+				<div class="dropdown-content">
+				    <a href="https://www.sos.state.tx.us/other/index.shtml">Other Services and Searches</a>
+					<a href="https://www.sos.state.tx.us/forms.shtml">Forms</a>
+					<a href="https://webservices.sos.state.tx.us/legbills/index.aspx">Legislative Bills</a>
+					<a href="https://www.sos.texas.gov/statdoc/cso.shtml">Credit Services Organizations</a>
+					<a href="https://www.sos.texas.gov/statdoc/seal.shtml">State Seal of Texas</a>
+					<a href="https://www.sos.texas.gov/statdoc/athlete-agents.shtml">Athlete Agents</a>
+					<a href="https://www.sos.texas.gov/statdoc/healthspas/index.shtml">Health Spas</a>
+					<a href="https://www.sos.texas.gov/other/faqs.shtml">Frequently Asked Questions (FAQs)</a>
+					<a href="https://www.sos.texas.gov/contact.shtml">Contact Us</a>
+				</div>
+			</li>
+			</ul>
+		</div>
+		</div>    
+	</header>
+	
+	<script language="javascript1.2" type="text/javascript">
+		//here you place the ids of every element you want.
+		//var ids=new Array('msg1','msg2','msg3','msg4');
+		var ids=new Array('msg1','msg2');
+		
+		function switchid(id){	
+			hideallids();
+			showdiv(id);
+		}
+		
+		function hideallids(){
+			//loop through the array and hide each element by id
+			for (var i=0;i<ids.length;i++){
+				hidediv(ids[i]);
+			}		  
+		}
+		
+		function hidediv(id) {
+			//safe function to hide an element with a specified id
+			if (document.getElementById) { // DOM3 = IE5, NS6
+				document.getElementById(id).style.display = 'none';
+			}
+			else {
+				if (document.layers) { // Netscape 4
+					document.id.display = 'none';
+				}
+				else { // IE 4
+					document.all.id.style.display = 'none';
+				}
+			}
+		}
+		
+		function showdiv(id) {
+			//safe function to show an element with a specified id
+				  
+			if (document.getElementById) { // DOM3 = IE5, NS6
+				document.getElementById(id).style.display = 'inline';
+			}
+			else {
+				if (document.layers) { // Netscape 4
+					document.id.display = 'inline';
+				}
+				else { // IE 4
+					document.all.id.style.display = 'inline';
+				}
+			}
+		}
+		</script>
+		
+	<script language="javascript" type="text/javascript">
+	
+	function MM_findObj(n, d) { //v4.0
+	  var p,i,x;  if(!d) d=document; if((p=n.indexOf("?"))>0&&parent.frames.length) {
+	    d=parent.frames[n.substring(p+1)].document; n=n.substring(0,p);}
+	  if(!(x=d[n])&&d.all) x=d.all[n]; for (i=0;!x&&i<d.forms.length;i++) x=d.forms[i][n];
+	  for(i=0;!x&&d.layers&&i<d.layers.length;i++) x=MM_findObj(n,d.layers[i].document);
+	  if(!x && document.getElementById) x=document.getElementById(n); return x;
+	}
+	
+	function MM_reloadPage(init) {  //reloads the window if Nav4 resized
+	  if (init==true) with (navigator) {if ((appName=="Netscape")&&(parseInt(appVersion)==4)) {
+	    document.MM_pgW=innerWidth; document.MM_pgH=innerHeight; onresize=MM_reloadPage; }}
+	  else if (innerWidth!=document.MM_pgW || innerHeight!=document.MM_pgH) location.reload();
+	}
+	
+	MM_reloadPage(true);
+	
+	function MM_showHideLayers() { //v3.0
+	  var i,p,v,obj,args=MM_showHideLayers.arguments;
+	  for (i=0; i<(args.length-2); i+=3) if ((obj=MM_findObj(args[i]))!=null) { v=args[i+2];
+	    if (obj.style) { obj=obj.style; v=(v=='show')?'visible':(v='hide')?'hidden':v; }
+	    obj.visibility=v; }
+	}
+	
+	if(window.event + "" == "undefined") event = null;
+	function HM_f_PopUp(){return false};
+	function HM_f_PopDown(){return false};
+	popUp = HM_f_PopUp;
+	popDown = HM_f_PopDown;
+	
+	
+	</script>
+
+<script>
+	function toggle_visibility(id) {
+		var e = document.getElementById(id);
+		e.style.display = ((e.style.display!='none') ? 'none' : 'block');
+	}
+	
+</script>
+
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a3fd73a99dcd9258',t:'MTc5MDIwNzQyOA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
+	<section class="content-wrapper">
+		<div class="container-fluid">
+			<form name="electionsInfoForm" id="electionsInfoForm" method="post">
+				<div class="row pt-4">
+					<div class="col-12 col-md-4 col-lg-3">
+						<ul class="custom-list">
+							<li><a href="https://www.votetexas.gov"><img
+									src="images/global/logo_votetexas-1.png"
+									alt="Visit VoteTexas.gov for voter specific information"
+									width="164" height="54" border="0"></a></li>
+							<li><a href="https://www.sos.texas.gov/elections/index.shtml">Current Election
+									Information</a></li>
+							<li><a
+								href="https://www.sos.texas.gov/elections/laws/voter-registration-agencies.shtml">Voter
+									Registration Agencies</a></li>
+							<li><a href="https://www.sos.texas.gov/elections/conducting/index.shtml">Conducting
+									Elections</a></li>
+							<li><a href="https://www.sos.texas.gov/elections/candidates/index.shtml">Candidate
+									Information</a></li>
+							<li><a href="https://www.sos.texas.gov/elections/voter/current.shtml">Officials
+									and Officeholders</a></li>
+							<li><a href="https://www.sos.texas.gov/elections/historical/index.shtml">Election
+									Results</a></li>
+							<li><a href="https://www.sos.texas.gov/elections/laws/education-resources.shtml">Voter
+									Education &amp;<br> Seminar Information
+							</a></li>
+							<li><a href="https://www.sos.texas.gov/elections/hava/index.shtml">Help America
+									Vote Act <br> (HAVA) Funding
+							</a></li>
+							<li><a href="https://www.sos.texas.gov/elections/funds/index.shtml">Election
+									Funds Management</a></li>
+							<li><a href="https://www.sos.texas.gov/elections/laws/resources_legal.shtml">Forms,
+									Resources and <br> Legal Library
+							</a></li>
+							<li><a href="https://www.sos.texas.gov/elections/laws/votingsystems.shtml">Voting
+									Systems</a></li>
+							<li><a href="https://www.votetexas.gov/faq/index.html">Frequently
+									Asked Questions (FAQs)</a></li>
+							<li><a href="https://www.sos.texas.gov/elections/contact.shtml">Contact Us</a></li>
+						</ul>
+					</div>
+					<div class="col-12 col-md-8 col-lg-9">
+						<div class="form-group row">
+						<h2 class="col-12 text-center">Election Information & Turnout Data</h2>
+						
+							<label
+								class="col-sm-4 col-md-6 col-lg-3 col-form-label text-right align-self-center mb-3"
+								for="idElection"><strong>Select Election:</strong></label>
+							<div class="col-sm-6 col-md-6 col-lg-6 my-2 text-center">
+								<select class="form-control" name="idElection" id="idElection"
+									onchange="return removeValidation();">
+									<option value="">-- Select Election --</option>
+									
+										<option value="51742">2025 SPECIAL ELECTION CONGRESSIONAL DISTRICT 18</option>
+									
+										<option value="51830">2025 SPECIAL ELECTION SENATE DISTRICT 9</option>
+									
+										<option value="2">2025 MAY 3RD LOCAL ELECTIONS</option>
+									
+										<option value="49664">2024 NOVEMBER 5TH GENERAL ELECTION</option>
+									
+										<option value="50643">2024 SPECIAL ELECTION CONGRESSIONAL DISTRICT 18</option>
+									
+										<option value="50676">2024 SPECIAL ELECTION HOUSE DISTRICT 56</option>
+									
+										<option value="50026">2024 MAY 28TH DEMOCRATIC PRIMARY RUNOFF</option>
+									
+										<option value="50027">2024 MAY 28TH REPUBLICAN PRIMARY RUNOFF</option>
+									
+										<option value="49698">2024 SPECIAL ELECTION SENATE DISTRICT 15</option>
+									
+										<option value="49665">2024 MARCH 5TH DEMOCRATIC PRIMARY</option>
+									
+										<option value="49666">2024 MARCH 5TH REPUBLICAN PRIMARY</option>
+									
+										<option value="49681">2024 SPECIAL RUNOFF ELECTION HOUSE DISTRICT 2</option>
+									
+										<option value="49379">2023 SPECIAL ELECTION HOUSE DISTRICT 2</option>
+									
+										<option value="1">2023 MAY 6TH LOCAL ELECTIONS</option>
+									
+										<option value="47009">2022 NOVEMBER 8TH GENERAL ELECTION</option>
+									
+										<option value="47689">SPECIAL ELECTION CONGRESSIONAL DISTRICT 34</option>
+									
+										<option value="47292">2022 MAY 24TH REPUBLICAN PRIMARY RUNOFF</option>
+									
+										<option value="47293">2022 MAY 24TH DEMOCRATIC PRIMARY RUNOFF</option>
+									
+										<option value="47058">2022 MAY 7TH CONSTITUTIONAL AMENDMENT</option>
+									
+										<option value="47072">2022 SPECIAL ELECTION HOUSE DISTRICT 147</option>
+									
+										<option value="47010">2022 MARCH 1ST REPUBLICAN PRIMARY</option>
+									
+										<option value="47011">2022 MARCH 1ST DEMOCRATIC PRIMARY</option>
+									
+										<option value="45706">2021 NOVEMBER 2ND CONSTITUTIONAL AMEND.</option>
+									
+										<option value="47012">2021 SPECIAL RUNOFF ELECTION HOUSE DISTRICT 118</option>
+									
+										<option value="46891">2021 SPECIAL ELECTION HOUSE DISTRICT 118</option>
+									
+										<option value="46928">2021 SPECIAL RUNOFF ELECTION HOUSE DISTRICT 10</option>
+									
+										<option value="46750">2021 SPECIAL ELECTION HOUSE DISTRICT 10</option>
+									
+										<option value="46698">2021 SPECIAL RUNOFF ELECTION CD 6</option>
+									
+										<option value="45820">2021 SPECIAL ELECTION CONGRESSIONAL DISTRICT 6</option>
+									
+										<option value="45749">2021 SPECIAL RUNOFF ELECTION HOUSE DISTRICT 68</option>
+									
+										<option value="45703">2021 SPECIAL ELECTION HOUSE DISTRICT 68</option>
+									
+										<option value="45648">2020 SPECIAL RUNOFF ELECTION SENATE DISTRICT 30</option>
+									
+										<option value="44144">2020 NOVEMBER 3RD GENERAL ELECTION</option>
+									
+										<option value="44823">2020 SPECIAL ELECTION SENATE DISTRICT 30</option>
+									
+										<option value="44376">2020 JULY 14TH REPUBLICAN PRIMARY RUNOFF</option>
+									
+										<option value="44387">2020 JULY 14TH DEMOCRATIC PRIMARY RUNOFF</option>
+									
+										<option value="44520">2020 SPECIAL ELECTION SENATE DISTRICT 14</option>
+									
+										<option value="44145">2020 MARCH 3RD DEMOCRATIC PRIMARY</option>
+									
+										<option value="44146">2020 MARCH 3RD REPUBLICAN PRIMARY</option>
+									
+										<option value="44147">2020 SPECIAL RUNOFF ELECTION HOUSE DISTRICT 28</option>
+									
+										<option value="44148">2020 SPECIAL RUNOFF ELECTION HOUSE DISTRICT 148</option>
+									
+										<option value="44149">2020 SPECIAL RUNOFF ELECTION HOUSE DISTRICT 100</option>
+									
+								</select>
+							<span id="elecErr" class="fontError" style="color: red"></span>
+							</div>
+							<div class=" col-md-12 col-3 col-lg-3 my-2">
+								<div class="custom-sideenotice ">
+									<a href="https://www.sos.texas.gov/elections/earlyvoting/archive.shtml" class="ui-link float-sm-right">Past Early Voting Totals </a>
+								</div>
+							</div>
+						</div>
+						<div class="form-group row">
+							<div class="col-lg-2 offset-lg-5 col-md-3 offset-md-5 col-sm-4 offset-sm-4 text-center">
+								<!-- <input type="button" class="btn btn-primary" onclick="submitForm();" value="Submit"/> -->
+								<button type="button" class="btn-primary btn btn-sm mt-1" onclick="return submitForm();">Submit</button>
+							</div>
+						</div>
+						<input type="hidden" name="results" id="results" value="" /> <input
+							type="hidden" name="elecDateName" id="elecDateName" value="" />
+						<input type="hidden" name="cdElectionType" id="cdElectionType" />
+					</div>
+				</div>
+			</form>
+		</div>
+		
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+</head>
+<body>
+
+ <footer>
+ <div id="lower-container">
+			<div id="lower-div">
+			  
+			<div id="lower-nav-col-1">
+				  <ul>
+					<li><a href="https://www.sos.texas.gov/corp/sosda/index.shtml">SOSDirect -Business Filings</a></li>
+					<li><a href="https://www.sos.texas.gov/corp/filingandothergeneralfaqs.shtml#CC">Business Copies and Certificates</a></li>
+					<li><a href="https://www.sos.texas.gov/ucc/index.shtml">Uniform Commercial Code</a></li>
+					<li><a href="https://www.sos.texas.gov/corp/texas-businesses-against-trafficking.shtml">Texas Businesses Against Trafficking</a></li>
+					<li><a href="http://www.texas.gov">Texas.gov </a></li>
+				  </ul>
+			</div>
+				
+
+			<div id="lower-nav-col-2">
+			<ul>
+				  <li><a href="https://www.votetexas.gov">VoteTexas.gov - Voter Information</a></li>
+				  <li><a href="https://www.votetexas.gov/register-to-vote/where-to-get-an-application-2.html">Register to Vote</a> <strong>&amp;</strong>  <a href="https://www.votetexas.gov/register-to-vote/need-id.html">Voter I.D. </a></li>
+				  <li><a href="https://www.sos.texas.gov/policies.shtml">Website Policies</a></li>
+				  <li><a href="https://www.sos.texas.gov/records.shtml">Open Records</a></li>
+				  <li><a href="https://www.sos.texas.gov/contact.shtml">Contacts</a></li>
+				</ul>
+			</div>
+
+				
+			<div id="lower-nav-col-3">
+				<ul>
+					<li><a href="https://www.tsl.texas.gov/trail/index.html">Statewide Search</a></li>
+					<li><a href="http://www.texashomelandsecurity.com/">Texas Homeland Security</a></li>
+					<li><a href="https://comptroller.texas.gov/transparency/spending/">Where the Money Goes</a></li>
+					<li><a href="https://sao.fraud.texas.gov/ReportFraud/">Fraud Reporting</a></li>
+					<li><a href="http://veterans.portal.texas.gov">Texas Veterans Portal</a></li>
+				</ul>
+			</div>	
+			  
+				</div>
+				
+			<div id="sub-footer">
+			  
+				<a href="https://www.facebook.com/txsecretary">
+					<img src="images/social/facebook-blue.png" width="31" height="31" alt="Facebook"/></a>&nbsp;<a href="https://www.instagram.com/texassecretary/">
+					<img src="images/social/instagram-blue.png" width="31" height="31" alt="Instragram"/></a>&nbsp; <a href="https://twitter.com/TXsecofstate">
+					<img src="images/social/twitter-blue.png" width="31" height="31" alt="Twitter"/></a>&nbsp;<a href="https://www.youtube.com/channel/UC7NJ9yjB4K-1MOMFzH6hAbQ/videos">
+					<img src="images/social/youtube-blue.png" width="31" height="31" alt="YouTube"/></a>&nbsp;<a href="/rss/index.shtml">
+					<img src="images/social/rss-blue.png" width="31" height="31" alt="RSS Feed"/></a>&nbsp;<a href="https://public.govdelivery.com/accounts/TXSOS/subscriber/new?qsp=TXSOS_1">
+					<img src="images/social/mail-blue.png" width="31" height="31" alt="Receive email updates"/></a>
+
+
+				
+			</div>
+		</div>
+                
+            </footer>
+
+
+
+</body>
+</html>
+	</section>
+	</main>
+	<!-- Scripts -->
+	<script src="/Elections/js/jquery-3.3.1.min.js"></script>
+	<script src="/Elections/js/popper.min.js"></script>
+	<script src="/Elections/js/bootstrap.js"></script>
+	
+</body>
+</html>

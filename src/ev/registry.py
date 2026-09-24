@@ -237,9 +237,9 @@ AGGREGATOR_ONLY: tuple[str, ...] = (
 #: sixty-two. `coverage_electorate` sees it -- 0.33 for New York -- but a
 #: consumer has to know to look, and the page did not.
 #:
-#: Texas is deliberately NOT here. Its Secretary of State prints ~30 of 254
-#: counties, but they are the thirty largest and hold most of the electorate,
-#: and every Texas row says what fraction it covers. New York City is one city
+#: Texas is NOT here: its Secretary of State's report lists all 254 counties
+#: every day (verified against the 2022 and 2024 archives; the "~30 of 254"
+#: once written here was never true of 2020+). New York City is one city
 #: holding two fifths of the state, and nothing but the city is ever coming.
 PARTIAL_GEOGRAPHY: dict[str, str] = {
     "NY": "the county file is New York City's five boroughs (5 of 62 counties, "

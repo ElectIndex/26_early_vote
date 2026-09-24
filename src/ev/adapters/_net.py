@@ -115,9 +115,19 @@ SESSION.mount("https://", _TicketAdapter())
 #:                                 with HTTP 200 and a 1,030-byte interstitial.
 #:                                 (tests/fixtures/nv/incapsula_block.html)
 #:   `Incapsula incident ID`       the same wall's other rendering.
-#:   `/cdn-cgi/challenge-platform` Cloudflare's managed challenge; azsos.gov
-#:   `cf_chl_opt`                  answered `requests` with 403 + a 5,867-byte
-#:                                 "Just a moment..." page.
+#:   `/cdn-cgi/challenge-platform/h/` Cloudflare's managed challenge;
+#:   `cf_chl_opt`                  azsos.gov answered `requests` with 403 + a
+#:                                 5,867-byte "Just a moment..." page, which
+#:                                 loads `/cdn-cgi/challenge-platform/h/g/
+#:                                 orchestrate/chl_page/...`.
+#:
+#: ⚠️ NOT the bare `/cdn-cgi/challenge-platform`. Cloudflare injects a passive
+#: sensor (`/cdn-cgi/challenge-platform/scripts/jsd/main.js`) into GENUINE pages
+#: it fronts, and some of those pages are small: the Texas SoS early-voting app
+#: (28,733 b) and the Illinois pre-election counts page (28,898 b) both sit under
+#: WALL_MAX_BYTES. The bare prefix called the real Texas page a bot wall and
+#: kept the state off the tracker (2026-09-23). Only the challenge ORCHESTRATOR
+#: lives under `/h/`, so that is the marker.
 #:   `edgesuite&#46;net`           Akamai's "Access Denied" template, which points
 #:   `edgesuite.net`               the reader at an errors.edgesuite.net writeup.
 #:                                 sos.nh.gov answers `requests` with 403 + 413
@@ -133,7 +143,7 @@ SESSION.mount("https://", _TicketAdapter())
 WALL_MARKERS = (
     b"_Incapsula_Resource",
     b"Incapsula incident ID",
-    b"/cdn-cgi/challenge-platform",
+    b"/cdn-cgi/challenge-platform/h/",
     b"cf_chl_opt",
     b"errors.edgesuite.net",
     b"errors&#46;edgesuite&#46;net",
@@ -151,6 +161,9 @@ WALL_MARKERS = (
 #:   walls  212 b (Imperva stub) .. 5,950 b (Cloudflare "Just a moment")
 #:   pages  135,760 b (nvsos.gov) .. 2,960,857 b (sos.nh.gov)
 #: 32 KiB sits 5x above the largest wall and 4x below the smallest real page.
+#: ⚠️ That margin was measured on DATA pages. Small real pages exist (Texas SoS
+#: 28,733 b, Illinois 28,898 b, both carrying an injected Cloudflare sensor), so
+#: the markers themselves must not match a sensor -- see WALL_MARKERS.
 #: A wall that ever grows past it is a MISSED block, which is exactly today's
 #: behaviour and no worse; a real page under it would be a WRONG verdict, which
 #: is why the gate is here at all.

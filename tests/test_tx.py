@@ -3,10 +3,10 @@
 Two fixtures, and the difference between them is the whole point of this
 adapter. The 2022 one is the real table for 2022-10-24 with all 254 counties and
 the SoS's TOTAL row (only the per-line indentation is stripped; every cell is
-verbatim). The 2024 one is the same report truncated to its first 30 counties
-plus the TOTAL -- the shape the SoS used when it published only the largest
-counties -- so the TOTAL row it carries is a partial total that must never reach
-the statewide table.
+verbatim). The 2024 one is a SYNTHETIC truncation of the real report to its
+first 30 counties plus the TOTAL. The real 2024 report lists all 254 counties;
+this fixture exists only to prove that IF a report ever came back short, its
+TOTAL -- a partial total -- would never reach the statewide table.
 
 The 2024 layout also has a ninth column the 2022 one does not, which is why
 columns are matched by header name.
