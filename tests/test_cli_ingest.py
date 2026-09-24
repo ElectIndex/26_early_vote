@@ -655,3 +655,26 @@ def test_backfill_stamps_method_rows_it_did_not_fetch_itself(tmp_path, monkeypat
         (tmp_path / "output" / "methods" / "nc.csv").open()))
     assert [r["method"] for r in rows] == ["mail"]
     assert rows[0]["source_name"] == "stub-history"
+
+
+def test_own_source_posted_reads_tier_one_rows_from_disk(tmp_path):
+    """The switch back to the state is remembered between runs by what is on disk."""
+    from ev.cli import own_source_posted
+
+    head = "cycle,state,date,ballots_total,source_tier,source_name\n"
+    (tmp_path / "ev_state_daily.csv").write_text(
+        head
+        + "2026,VA,2026-09-23,94283,4,uf-election-lab\n"   # a fallback: not posted
+        + "2024,WI,2024-10-01,5,1,wi-wec\n"                # another cycle: not posted
+        + "2026,NC,2026-09-23,8169,1,nc-sbe\n"
+    )
+    (tmp_path / "counties").mkdir()
+    (tmp_path / "counties" / "ny.csv").write_text(
+        "cycle,state,county_fips,date,ballots_total,source_tier,source_name\n"
+        "2026,NY,36061,2026-10-25,10,1,nyc-boe\n"          # counties-only tier 1
+    )
+    assert own_source_posted(tmp_path, "NC", 2026) is True
+    assert own_source_posted(tmp_path, "NY", 2026) is True
+    assert own_source_posted(tmp_path, "VA", 2026) is False
+    assert own_source_posted(tmp_path, "WI", 2026) is False
+    assert own_source_posted(tmp_path, "TX", 2026) is False

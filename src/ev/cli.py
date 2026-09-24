@@ -14,6 +14,7 @@
 from __future__ import annotations
 
 import argparse
+import csv
 import json
 import logging
 import sys
@@ -25,6 +26,7 @@ from .adapters import _methods, _towns
 from .adapters.base import FetchResult, NotYetPublished
 from .calendar import CURRENT_CYCLE, CYCLES, days_to_election
 from .ladder import STATUS_OK, STATUS_PENDING, run_state
+from .schema import TIER_SCRAPER
 from .registry import history_ladder, ladder, tracked_states
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -36,6 +38,26 @@ log = logging.getLogger("ev")
 
 def _states(argv_states: list[str] | None) -> list[str]:
     return [s.upper() for s in argv_states] if argv_states else list(tracked_states())
+
+
+def own_source_posted(out_dir: Path, state: str, cycle: int) -> bool:
+    """Has the state's OWN scraper already published rows for this cycle?
+
+    Read from what is on disk, so the answer survives between runs: statewide
+    rows first, then the county file, because a tier-1 source that covers only
+    part of a state (NY City) publishes counties and no statewide row.
+    """
+    want_cycle, want_tier = str(cycle), str(TIER_SCRAPER)
+    for path in (out_dir / "ev_state_daily.csv",
+                 out_dir / "counties" / f"{state.lower()}.csv"):
+        if not path.exists():
+            continue
+        with path.open(newline="", encoding="utf-8") as fh:
+            for row in csv.DictReader(fh):
+                if (row.get("cycle") == want_cycle and row.get("state") == state
+                        and row.get("source_tier") == want_tier):
+                    return True
+    return False
 
 
 def cmd_ingest(args) -> int:
@@ -53,7 +75,10 @@ def cmd_ingest(args) -> int:
     per_state_demo: dict[str, list] = {}
 
     for state in states:
-        result, outcome = run_state(state, ladder(state), args.cycle, as_of)
+        result, outcome = run_state(
+            state, ladder(state), args.cycle, as_of,
+            own_source_posted=own_source_posted(out_dir, state, args.cycle),
+        )
         outcomes.append(outcome)
         if not outcome.ok:
             continue
@@ -253,7 +278,10 @@ def cmd_probe(args) -> int:
     for state in _states(args.state):
         rungs = ladder(state)
         tiers = ",".join(f"{a.tier}:{a.name}" for a in rungs) or "(none)"
-        _, outcome = run_state(state, rungs, args.cycle, as_of)
+        _, outcome = run_state(
+            state, rungs, args.cycle, as_of,
+            own_source_posted=own_source_posted(OUTPUT_DIR, state, args.cycle),
+        )
         # ⚠️ THE REFUSALS ARE WHY THIS COMMAND EXISTS, and it used to print only
         # `status` and `message`. A state whose every tier answered 403 from an
         # Actions runner printed as `pending` with the word "403" nowhere on the

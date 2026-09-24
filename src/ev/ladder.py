@@ -17,6 +17,15 @@ Two rules, and they are the whole design:
      is a statement about one source, not about the world. The zero the old rule
      guarded against is still refused, by `_has_real_ballots`.
 
+     ⚠️ AND ONLY UNTIL THE STATE'S OWN SOURCE HAS POSTED. Once the top rung has
+     published rows this cycle (`own_source_posted`), its "not yet" means
+     "today's file is not up yet", which most of these scrapers say every
+     morning. Falling through then would flip the state onto a fallback for a
+     day and back again, splicing two sources' definitions into one series. So
+     for a state that has started posting, the old hard stop applies: the walk
+     ends, nothing is published, and the page keeps the state's own last figure.
+     Outages (SourceError) still fall through as RULE 2 says.
+
      One refinement, and it is about the STATUS only, never the walk: raised by
      the LAST rung it is recorded as STATUS_FAILED rather than STATUS_PENDING.
      Getting that far means every rung above it failed, and the last rung is the
@@ -72,8 +81,14 @@ def run_state(
     adapters: list[Adapter],
     cycle: int,
     as_of: date,
+    *,
+    own_source_posted: bool = False,
 ) -> tuple[FetchResult, StateOutcome]:
-    """Walk one state's ladder and return the first tier that answered."""
+    """Walk one state's ladder and return the first tier that answered.
+
+    `own_source_posted`: the top rung has already published rows for this
+    cycle, so its NotYetPublished stops the walk. See RULE 1.
+    """
     outcome = StateOutcome(state=state, status=STATUS_NO_SOURCE)
     if not adapters:
         outcome.message = f"no adapters registered for {state}"
@@ -103,6 +118,16 @@ def run_state(
                 {"tier": adapter.tier, "name": label, "result": "not_yet_published",
                  "detail": str(exc)}
             )
+            if index == 0 and own_source_posted and last_rung:
+                # The state is already publishing; today's file is just late.
+                outcome.status = STATUS_PENDING
+                outcome.message = (
+                    f"{exc} -- {label} has published this cycle, so its last "
+                    f"figure stands rather than a fallback's"
+                )
+                log.info("%s: %s not up yet today; holding its last figure",
+                         state, label)
+                return FetchResult(), outcome
             if declined is not None or index != last_rung:
                 if declined is None:
                     declined = exc

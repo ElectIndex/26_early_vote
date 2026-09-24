@@ -228,6 +228,35 @@ def test_not_yet_published_then_the_floor_declining_is_pending_not_failed(tmp_pa
     assert outcome.message == "not open"
 
 
+def test_once_the_state_has_posted_its_not_yet_holds_its_own_last_figure():
+    """"Use the state once it starts posting": a late morning file must not
+    flip the state onto a fallback for a day and back."""
+    result, outcome = run_state(
+        "VA", [_Raises(NotYetPublished("today's file is not up")), _Answers(total=94_283)],
+        2026, date(2026, 10, 20), own_source_posted=True)
+    assert outcome.status == STATUS_PENDING
+    assert result.state_rows == []
+    assert "last figure stands" in outcome.message
+    assert [a["result"] for a in outcome.attempts] == ["not_yet_published"]
+
+
+def test_once_the_state_has_posted_an_OUTAGE_still_falls_through():
+    """Only its "not yet" is held; a broken source is still RULE 2."""
+    _, outcome = run_state(
+        "VA", [_Raises(SourceError("502")), _Answers(total=94_283)],
+        2026, date(2026, 10, 20), own_source_posted=True)
+    assert outcome.status == STATUS_OK and outcome.tier == TIER_AGGREGATOR
+
+
+def test_when_the_state_answers_it_is_used_over_the_fallback():
+    result, outcome = run_state(
+        "VA", [_Answers(tier=TIER_SCRAPER, name="va-elect", total=100_000),
+               _Answers(total=94_283)],
+        2026, date(2026, 10, 20))
+    assert outcome.source_name == "va-elect"
+    assert [r.ballots_total for r in result.state_rows] == [100_000]
+
+
 def test_source_error_falls_through():
     result, outcome = run_state("NC", [_Raises(SourceError("502")), _Answers()],
                                 2026, date(2026, 10, 20))
