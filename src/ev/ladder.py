@@ -2,9 +2,20 @@
 
 Two rules, and they are the whole design:
 
-  1. NotYetPublished STOPS the walk. A state that has not opened early voting has
-     no data at ANY tier, so falling through would only let a weaker source
-     manufacture a zero. "Nothing yet" is recorded as a status, not as a row.
+  1. NotYetPublished NARROWS the walk. A state that has not opened early voting
+     has no data at ANY tier, and falling through freely would let a weaker
+     source manufacture a zero. So below a NotYetPublished the walk continues
+     ONLY for a source carrying a real, non-zero statewide ballot count; a lower
+     rung with nothing, or with zeros, is passed over and "nothing yet" is
+     recorded as a status, not as a row.
+
+     ⚠️ This used to be a hard STOP, and on 2026-09-23 it was hiding 112,733
+     ballots. Virginia, Wisconsin, South Dakota and Colorado were all answering
+     "not posted yet" from their own sites -- Virginia's ELECT had not stood up
+     the general's page -- while the UF tracker two rungs down was carrying
+     94,283 / 13,449 / 3,462 / 1,539 real ballots for them. "My file is not up"
+     is a statement about one source, not about the world. The zero the old rule
+     guarded against is still refused, by `_has_real_ballots`.
 
      One refinement, and it is about the STATUS only, never the walk: raised by
      the LAST rung it is recorded as STATUS_FAILED rather than STATUS_PENDING.
@@ -69,6 +80,9 @@ def run_state(
         return FetchResult(), outcome
 
     last_rung = len(adapters) - 1
+    #: The first NotYetPublished seen. Once set, only a rung with real ballots
+    #: may answer; see RULE 1.
+    declined: NotYetPublished | None = None
     for index, adapter in enumerate(adapters):
         label = adapter.name or type(adapter).__name__
         try:
@@ -84,11 +98,17 @@ def run_state(
             # attempt is recorded and the ladder falls through to civicAPI.
             provenance = adapter.provenance()
         except NotYetPublished as exc:
-            # RULE 1: stop. There is no better source for data that does not exist.
+            # RULE 1: narrow. Keep walking, but only for real ballots.
             outcome.attempts.append(
                 {"tier": adapter.tier, "name": label, "result": "not_yet_published",
                  "detail": str(exc)}
             )
+            if declined is not None or index != last_rung:
+                if declined is None:
+                    declined = exc
+                    log.info("%s: not yet published (%s); looking below for real "
+                             "ballots only", state, label)
+                continue
             if index and index == last_rung:
                 # ⚠️ ...EXCEPT FROM THE FLOOR OF THE LADDER, WHICH KNOWS NOTHING
                 # ABOUT THE WORLD.
@@ -154,6 +174,17 @@ def run_state(
             log.warning("%s: %s returned no rows", state, label)
             continue
 
+        if declined is not None and not _has_real_ballots(result):
+            # A better source said "not yet", and this one has no real count to
+            # contradict it with -- exactly the manufactured zero RULE 1 exists
+            # to refuse.
+            outcome.attempts.append(
+                {"tier": adapter.tier, "name": label, "result": "passed_over",
+                 "detail": "a better source reports nothing yet, and this one "
+                           "carries no non-zero statewide ballot count"}
+            )
+            continue
+
         result.stamp(provenance)
         # ...AND THE FOURTH TABLE, which `FetchResult.stamp` cannot reach.
         # Town rows ride on the result as an ATTRIBUTE rather than a field (see
@@ -201,9 +232,21 @@ def run_state(
                              result, outcome)
         return result, outcome
 
+    if declined is not None:
+        # Somebody who can see the state said "not yet", and nobody below had a
+        # real count. That is the old RULE 1 answer, reached the long way round.
+        outcome.status = STATUS_PENDING
+        outcome.message = str(declined)
+        return FetchResult(), outcome
+
     outcome.status = STATUS_FAILED
     outcome.message = f"all {len(adapters)} tier(s) failed for {state}"
     return FetchResult(), outcome
+
+
+def _has_real_ballots(result: FetchResult) -> bool:
+    """True if some statewide row carries a positive ballot count."""
+    return any((row.ballots_total or 0) > 0 for row in result.state_rows)
 
 
 def _topup_statewide(

@@ -185,14 +185,47 @@ class _Answers(Adapter):
         return FetchResult(state_rows=[StateDay(cycle, "NC", as_of, ballots_total=self._total)])
 
 
-def test_not_yet_published_stops_the_walk():
+def test_not_yet_published_passes_over_a_weaker_tier_with_no_real_ballots():
     """The rule that stops a weaker tier inventing a zero for a state that
     simply has not opened early voting yet."""
-    result, outcome = run_state("NC", [_Raises(NotYetPublished("not open")), _Answers()],
-                                2026, date(2026, 9, 20))
+    for total in (0, None):
+        result, outcome = run_state(
+            "NC", [_Raises(NotYetPublished("not open")), _Answers(total=total)],
+            2026, date(2026, 9, 20))
+        assert outcome.status == STATUS_PENDING
+        assert outcome.tier is None
+        assert result.state_rows == []
+        assert outcome.message == "not open"
+        assert outcome.attempts[-1]["result"] == "passed_over"
+
+
+def test_not_yet_published_does_not_hide_real_ballots_below_it():
+    """⚠️ 2026-09-23: Virginia's own site had not stood up the general while the
+    UF tracker carried 94,283 real Virginia ballots. The old hard stop published
+    nothing; a real, non-zero count below a "not yet" now answers."""
+    result, outcome = run_state(
+        "VA", [_Raises(NotYetPublished("ELECT has not stood up the general")),
+               _Raises(SourceError("no capabilities document"), TIER_CIVIC, "civicapi"),
+               _Answers(total=94_283)],
+        2026, date(2026, 9, 23))
+    assert outcome.status == STATUS_OK and outcome.tier == TIER_AGGREGATOR
+    assert result.state_rows[0].ballots_total == 94_283
+    assert result.state_rows[0].provenance.tier == TIER_AGGREGATOR
+    assert outcome.attempts[0]["result"] == "not_yet_published"
+
+
+def test_not_yet_published_then_the_floor_declining_is_pending_not_failed(tmp_path):
+    """The walk now REACHES the floor after a "not yet"; the floor's own "nobody
+    typed a number" must not turn that into an alarm."""
+    rungs = [
+        _Raises(NotYetPublished("not open"), TIER_SCRAPER, "nc-sbe"),
+        _Raises(SourceError("no capabilities document"), TIER_CIVIC, "civicapi"),
+        _Raises(NotYetPublished("UF reports no ballots"), TIER_AGGREGATOR, "uf"),
+        _manual(tmp_path),
+    ]
+    _, outcome = run_state("NC", rungs, 2026, date(2026, 9, 20))
     assert outcome.status == STATUS_PENDING
-    assert outcome.tier is None
-    assert result.state_rows == []
+    assert outcome.message == "not open"
 
 
 def test_source_error_falls_through():
