@@ -1,6 +1,20 @@
 cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_new,mail_returned,inperson,party_dem,party_rep,party_oth,party_npa,source_tier,source_name,retrieved_at
+2026,NE,31019,Buffalo County,2026-09-30,34,1,,1,,,,1,,2,civicapi,2026-09-30T20:35:26+00:00
+2026,NE,31021,Burt County,2026-09-30,34,1,,1,,1,,,,2,civicapi,2026-09-30T20:35:26+00:00
 2026,NE,31033,Cheyenne County,2026-09-29,35,1,,1,,1,,,,2,civicapi,2026-09-29T20:30:43+00:00
+2026,NE,31033,Cheyenne County,2026-09-30,34,1,,1,,1,,,,2,civicapi,2026-09-30T20:35:26+00:00
+2026,NE,31039,Cuming County,2026-09-30,34,3,,3,,,3,,,2,civicapi,2026-09-30T20:35:26+00:00
 2026,NE,31055,Douglas County,2026-09-29,35,4,,4,,2,1,1,,2,civicapi,2026-09-29T20:30:43+00:00
+2026,NE,31055,Douglas County,2026-09-30,34,16,,16,,9,4,3,,2,civicapi,2026-09-30T20:35:26+00:00
+2026,NE,31067,Gage County,2026-09-30,34,25,,25,,8,13,4,,2,civicapi,2026-09-30T20:35:26+00:00
+2026,NE,31073,Gosper County,2026-09-30,34,1,,1,,,1,,,2,civicapi,2026-09-30T20:35:26+00:00
+2026,NE,31089,Holt County,2026-09-30,34,2,,2,,1,1,,,2,civicapi,2026-09-30T20:35:26+00:00
+2026,NE,31095,Jefferson County,2026-09-30,34,2,,2,,1,,1,,2,civicapi,2026-09-30T20:35:26+00:00
+2026,NE,31097,Johnson County,2026-09-30,34,2,,2,,2,,,,2,civicapi,2026-09-30T20:35:26+00:00
 2026,NE,31109,Lancaster County,2026-09-29,35,11,,11,,7,1,3,,2,civicapi,2026-09-29T20:30:43+00:00
+2026,NE,31109,Lancaster County,2026-09-30,34,18,,18,,11,3,4,,2,civicapi,2026-09-30T20:35:26+00:00
 2026,NE,31139,Pierce County,2026-09-29,35,1,,1,,,1,,,2,civicapi,2026-09-29T20:30:43+00:00
+2026,NE,31139,Pierce County,2026-09-30,34,2,,2,,1,1,,,2,civicapi,2026-09-30T20:35:26+00:00
 2026,NE,31141,Platte County,2026-09-29,35,24,,24,,2,17,5,,2,civicapi,2026-09-29T20:30:43+00:00
+2026,NE,31141,Platte County,2026-09-30,34,45,,45,,5,33,7,,2,civicapi,2026-09-30T20:35:26+00:00
+2026,NE,31153,Sarpy County,2026-09-30,34,5,,5,,2,2,1,,2,civicapi,2026-09-30T20:35:26+00:00
