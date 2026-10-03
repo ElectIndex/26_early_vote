@@ -1,8 +1,8 @@
 {
- "as_of": "2026-10-02",
+ "as_of": "2026-10-03",
  "cycle": 2026,
- "days_to_election": 32,
- "generated_at": "2026-10-02T21:52:18+00:00",
+ "days_to_election": 31,
+ "generated_at": "2026-10-03T00:58:57+00:00",
  "states": {
   "AK": {
    "attempts": [
@@ -32,7 +32,7 @@
     }
    ],
    "message": "AK: the results page carries no Election Statistics block yet",
-   "retrieved_at": "2026-10-02T21:52:18+00:00",
+   "retrieved_at": "2026-10-03T00:58:57+00:00",
    "rows": 0,
    "source": null,
    "status": "pending",
@@ -60,7 +60,7 @@
     }
    ],
    "message": "UF tracker reports no ballots cast in AR as of 2026-08-12",
-   "retrieved_at": "2026-10-02T21:52:18+00:00",
+   "retrieved_at": "2026-10-03T00:58:57+00:00",
    "rows": 0,
    "source": null,
    "status": "pending",
@@ -94,7 +94,7 @@
     }
    ],
    "message": "AZ: 2026 election-information page carries no Sent/Accepted table yet",
-   "retrieved_at": "2026-10-02T21:52:18+00:00",
+   "retrieved_at": "2026-10-03T00:58:57+00:00",
    "rows": 0,
    "source": null,
    "status": "pending",
@@ -128,7 +128,7 @@
     }
    ],
    "message": "CA: no readable VBM workbook for 2026 (CA: https://elections.cdn.sos.ca.gov/statewide-elections/2026-general/vbm-statistics.xlsx is not posted (HTTP 403); CA: https://elections.cdn.sos.ca.gov/statewide-elections/2026-general/vbm-statistics.xlsm is not posted (HTTP 403); CA: https://elections.cdn.sos.ca.gov/statewide-elections/2026-general/vbm-statistics.xls is not posted (HTTP 403); CA: https://elections.cdn.sos.ca.gov/statewide-elections/2026-general/vbm-statistics.pdf is not posted (HTTP 403))",
-   "retrieved_at": "2026-10-02T21:52:18+00:00",
+   "retrieved_at": "2026-10-03T00:58:57+00:00",
    "rows": 0,
    "source": null,
    "status": "pending",
@@ -137,7 +137,7 @@
   "CO": {
    "attempts": [
     {
-     "detail": "CO: no election activity workbook posted for 2026-10-02",
+     "detail": "CO: no election activity workbook posted for 2026-10-03",
      "name": "co-sos",
      "result": "not_yet_published",
      "tier": 1
@@ -149,8 +149,8 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-10-02T21:52:18+00:00",
-   "rows": 40,
+   "retrieved_at": "2026-10-03T00:58:57+00:00",
+   "rows": 41,
    "source": "civicapi",
    "status": "ok",
    "tier": 2
@@ -170,7 +170,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-10-02T21:52:18+00:00",
+   "retrieved_at": "2026-10-03T00:58:57+00:00",
    "rows": 1,
    "source": "civicapi",
    "status": "ok",
@@ -198,7 +198,7 @@
     }
    ],
    "message": "UF tracker reports no ballots cast in DC as of 2026-08-12",
-   "retrieved_at": "2026-10-02T21:52:18+00:00",
+   "retrieved_at": "2026-10-03T00:58:57+00:00",
    "rows": 0,
    "source": null,
    "status": "pending",
@@ -219,24 +219,17 @@
      "tier": 2
     },
     {
-     "detail": "UF tracker reports no ballots cast in DE as of 2026-08-12",
      "name": "uf-election-lab",
-     "result": "not_yet_published",
+     "result": "ok",
      "tier": 4
-    },
-    {
-     "detail": "no manual rows for DE in 2026",
-     "name": "manual",
-     "result": "not_yet_published",
-     "tier": 5
     }
    ],
-   "message": "DE: no 2026 general voting-method report posted yet (DE: https://elections.delaware.gov/voter/registrationtotals/reports/pdfs/GE2026_GeneralElectionVoterCountsByVotingMethod.pdf returned 404)",
-   "retrieved_at": "2026-10-02T21:52:18+00:00",
-   "rows": 0,
-   "source": null,
-   "status": "pending",
-   "tier": null
+   "message": "",
+   "retrieved_at": "2026-10-03T00:58:57+00:00",
+   "rows": 1,
+   "source": "uf-election-lab",
+   "status": "ok",
+   "tier": 4
   },
   "FL": {
    "attempts": [
@@ -247,7 +240,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-10-02T21:52:18+00:00",
+   "retrieved_at": "2026-10-03T00:58:57+00:00",
    "rows": 202,
    "source": "fl-doe",
    "status": "ok",
@@ -268,7 +261,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-10-02T21:52:18+00:00",
+   "retrieved_at": "2026-10-03T00:58:57+00:00",
    "rows": 66,
    "source": "civicapi",
    "status": "ok",
@@ -283,7 +276,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-10-02T21:52:18+00:00",
+   "retrieved_at": "2026-10-03T00:58:57+00:00",
    "rows": 5,
    "source": "hi-oe",
    "status": "ok",
@@ -317,7 +310,7 @@
     }
    ],
    "message": "IA: no 2026 general-election absentee report posted yet (https://sos.iowa.gov/elections/pdf/2026/general/AbsenteeCounty2026.pdf came back as HTML, not a PDF; IA: https://sos.iowa.gov/sites/default/files/2026-11/ABS%20Counties%202026.pdf returned 404; IA: https://sos.iowa.gov/sites/default/files/2026-10/ABS%20Counties%202026.pdf returned 404; IA: https://sos.iowa.gov/sites/default/files/2026-09/ABS%20Counties%202026.pdf returned 404)",
-   "retrieved_at": "2026-10-02T21:52:18+00:00",
+   "retrieved_at": "2026-10-03T00:58:57+00:00",
    "rows": 0,
    "source": null,
    "status": "pending",
@@ -332,7 +325,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-10-02T21:52:18+00:00",
+   "retrieved_at": "2026-10-03T00:58:57+00:00",
    "rows": 45,
    "source": "id-sos",
    "status": "ok",
@@ -347,7 +340,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-10-02T21:52:18+00:00",
+   "retrieved_at": "2026-10-03T00:58:57+00:00",
    "rows": 103,
    "source": "il-sbe",
    "status": "ok",
@@ -362,7 +355,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-10-02T21:52:18+00:00",
+   "retrieved_at": "2026-10-03T00:58:57+00:00",
    "rows": 86,
    "source": "civicapi",
    "status": "ok",
@@ -396,7 +389,7 @@
     }
    ],
    "message": "KS: the advance-voting dashboard carries no rows inside the 2026 general's window (2026-10-12..2026-11-03); it carries 2026-07-15..2026-08-04",
-   "retrieved_at": "2026-10-02T21:52:18+00:00",
+   "retrieved_at": "2026-10-03T00:58:57+00:00",
    "rows": 0,
    "source": null,
    "status": "pending",
@@ -411,7 +404,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-10-02T21:52:18+00:00",
+   "retrieved_at": "2026-10-03T00:58:57+00:00",
    "rows": 241,
    "source": "ky-sbe",
    "status": "ok",
@@ -420,7 +413,7 @@
   "LA": {
    "attempts": [
     {
-     "detail": "LA: no absentee/early voter roster posted for the 2026 general as of 2026-10-02",
+     "detail": "LA: no absentee/early voter roster posted for the 2026 general as of 2026-10-03",
      "name": "la-sos",
      "result": "not_yet_published",
      "tier": 1
@@ -444,8 +437,8 @@
      "tier": 5
     }
    ],
-   "message": "LA: no absentee/early voter roster posted for the 2026 general as of 2026-10-02",
-   "retrieved_at": "2026-10-02T21:52:18+00:00",
+   "message": "LA: no absentee/early voter roster posted for the 2026 general as of 2026-10-03",
+   "retrieved_at": "2026-10-03T00:58:57+00:00",
    "rows": 0,
    "source": null,
    "status": "pending",
@@ -473,7 +466,7 @@
     }
    ],
    "message": "UF tracker reports no ballots cast in MA as of 2026-08-12",
-   "retrieved_at": "2026-10-02T21:52:18+00:00",
+   "retrieved_at": "2026-10-03T00:58:57+00:00",
    "rows": 0,
    "source": null,
    "status": "pending",
@@ -500,7 +493,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-10-02T21:52:18+00:00",
+   "retrieved_at": "2026-10-03T00:58:57+00:00",
    "rows": 1,
    "source": "uf-election-lab",
    "status": "ok",
@@ -515,8 +508,8 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-10-02T21:52:18+00:00",
-   "rows": 907,
+   "retrieved_at": "2026-10-03T00:58:57+00:00",
+   "rows": 1011,
    "source": "me-sos",
    "status": "ok",
    "tier": 1
@@ -536,7 +529,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-10-02T21:52:18+00:00",
+   "retrieved_at": "2026-10-03T00:58:57+00:00",
    "rows": 83,
    "source": "civicapi",
    "status": "ok",
@@ -557,7 +550,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-10-02T21:52:18+00:00",
+   "retrieved_at": "2026-10-03T00:58:57+00:00",
    "rows": 85,
    "source": "civicapi",
    "status": "ok",
@@ -585,7 +578,7 @@
     }
    ],
    "message": "UF tracker reports no ballots cast in MO as of 2026-08-12",
-   "retrieved_at": "2026-10-02T21:52:18+00:00",
+   "retrieved_at": "2026-10-03T00:58:57+00:00",
    "rows": 0,
    "source": null,
    "status": "pending",
@@ -600,7 +593,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-10-02T21:52:18+00:00",
+   "retrieved_at": "2026-10-03T00:58:57+00:00",
    "rows": 80,
    "source": "civicapi",
    "status": "ok",
@@ -621,7 +614,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-10-02T21:52:18+00:00",
+   "retrieved_at": "2026-10-03T00:58:57+00:00",
    "rows": 55,
    "source": "mt-sos",
    "status": "ok",
@@ -636,8 +629,8 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-10-02T21:52:18+00:00",
-   "rows": 4993,
+   "retrieved_at": "2026-10-03T00:58:57+00:00",
+   "rows": 5207,
    "source": "nc-sbe",
    "status": "ok",
    "tier": 1
@@ -651,7 +644,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-10-02T21:52:18+00:00",
+   "retrieved_at": "2026-10-03T00:58:57+00:00",
    "rows": 54,
    "source": "nd-sos",
    "status": "ok",
@@ -666,7 +659,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-10-02T21:52:18+00:00",
+   "retrieved_at": "2026-10-03T00:58:57+00:00",
    "rows": 42,
    "source": "civicapi",
    "status": "ok",
@@ -681,7 +674,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-10-02T21:52:18+00:00",
+   "retrieved_at": "2026-10-03T00:58:57+00:00",
    "rows": 22,
    "source": "civicapi",
    "status": "ok",
@@ -709,7 +702,7 @@
     }
    ],
    "message": "UF tracker reports no ballots cast in NM as of 2026-08-12",
-   "retrieved_at": "2026-10-02T21:52:18+00:00",
+   "retrieved_at": "2026-10-03T00:58:57+00:00",
    "rows": 0,
    "source": null,
    "status": "pending",
@@ -730,7 +723,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-10-02T21:52:18+00:00",
+   "retrieved_at": "2026-10-03T00:58:57+00:00",
    "rows": 14,
    "source": "civicapi",
    "status": "ok",
@@ -764,7 +757,7 @@
     }
    ],
    "message": "NY: the New York City Board's check-in page has not opened its 2026 general-election section yet",
-   "retrieved_at": "2026-10-02T21:52:18+00:00",
+   "retrieved_at": "2026-10-03T00:58:57+00:00",
    "rows": 0,
    "source": null,
    "status": "pending",
@@ -779,7 +772,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-10-02T21:52:18+00:00",
+   "retrieved_at": "2026-10-03T00:58:57+00:00",
    "rows": 89,
    "source": "oh-sos",
    "status": "ok",
@@ -794,7 +787,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-10-02T21:52:18+00:00",
+   "retrieved_at": "2026-10-03T00:58:57+00:00",
    "rows": 78,
    "source": "ok-seb",
    "status": "ok",
@@ -828,7 +821,7 @@
     }
    ],
    "message": "OR: the SoS has not posted a 2026 Daily Ballot Returns report yet",
-   "retrieved_at": "2026-10-02T21:52:18+00:00",
+   "retrieved_at": "2026-10-03T00:58:57+00:00",
    "rows": 0,
    "source": null,
    "status": "pending",
@@ -843,8 +836,8 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-10-02T21:52:18+00:00",
-   "rows": 1415,
+   "retrieved_at": "2026-10-03T00:58:57+00:00",
+   "rows": 1475,
    "source": "pa-dos",
    "status": "ok",
    "tier": 1
@@ -858,7 +851,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-10-02T21:52:18+00:00",
+   "retrieved_at": "2026-10-03T00:58:57+00:00",
    "rows": 1,
    "source": "civicapi",
    "status": "ok",
@@ -867,7 +860,7 @@
   "SC": {
    "attempts": [
     {
-     "detail": "SC: no 2026 general-election absentee workbook posted by 2026-10-02 (SC: 'RP00010 Absentee Statistics by Race for Primary 08/11/2026  22760  US Senate Special Repub' is a primary, not the general)",
+     "detail": "SC: no 2026 general-election absentee workbook posted by 2026-10-03 (SC: 'RP00010 Absentee Statistics by Race for Primary 08/11/2026  22760  US Senate Special Repub' is a primary, not the general)",
      "name": "sc-sec",
      "result": "not_yet_published",
      "tier": 1
@@ -891,8 +884,8 @@
      "tier": 5
     }
    ],
-   "message": "SC: no 2026 general-election absentee workbook posted by 2026-10-02 (SC: 'RP00010 Absentee Statistics by Race for Primary 08/11/2026  22760  US Senate Special Repub' is a primary, not the general)",
-   "retrieved_at": "2026-10-02T21:52:18+00:00",
+   "message": "SC: no 2026 general-election absentee workbook posted by 2026-10-03 (SC: 'RP00010 Absentee Statistics by Race for Primary 08/11/2026  22760  US Senate Special Repub' is a primary, not the general)",
+   "retrieved_at": "2026-10-03T00:58:57+00:00",
    "rows": 0,
    "source": null,
    "status": "pending",
@@ -907,7 +900,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-10-02T21:52:18+00:00",
+   "retrieved_at": "2026-10-03T00:58:57+00:00",
    "rows": 2,
    "source": "sd-sos",
    "status": "ok",
@@ -916,7 +909,7 @@
   "TN": {
    "attempts": [
     {
-     "detail": "TN: no early-voting workbook posted for 2026 in the 10 days to 2026-10-02",
+     "detail": "TN: no early-voting workbook posted for 2026 in the 10 days to 2026-10-03",
      "name": "tn-sos",
      "result": "not_yet_published",
      "tier": 1
@@ -940,8 +933,8 @@
      "tier": 5
     }
    ],
-   "message": "TN: no early-voting workbook posted for 2026 in the 10 days to 2026-10-02",
-   "retrieved_at": "2026-10-02T21:52:18+00:00",
+   "message": "TN: no early-voting workbook posted for 2026 in the 10 days to 2026-10-03",
+   "retrieved_at": "2026-10-03T00:58:57+00:00",
    "rows": 0,
    "source": null,
    "status": "pending",
@@ -975,7 +968,7 @@
     }
    ],
    "message": "TX: the SoS has not listed a 2026 November general yet",
-   "retrieved_at": "2026-10-02T21:52:18+00:00",
+   "retrieved_at": "2026-10-03T00:58:57+00:00",
    "rows": 0,
    "source": null,
    "status": "pending",
@@ -1003,7 +996,7 @@
     }
    ],
    "message": "UF tracker reports no ballots cast in UT as of 2026-08-12",
-   "retrieved_at": "2026-10-02T21:52:18+00:00",
+   "retrieved_at": "2026-10-03T00:58:57+00:00",
    "rows": 0,
    "source": null,
    "status": "pending",
@@ -1024,7 +1017,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-10-02T21:52:18+00:00",
+   "retrieved_at": "2026-10-03T00:58:57+00:00",
    "rows": 1,
    "source": "civicapi",
    "status": "ok",
@@ -1039,7 +1032,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-10-02T21:52:18+00:00",
+   "retrieved_at": "2026-10-03T00:58:57+00:00",
    "rows": 1,
    "source": "civicapi",
    "status": "ok",
@@ -1048,7 +1041,7 @@
   "WA": {
    "attempts": [
     {
-     "detail": "WA: no daily ballot status report posted in the 7 days to 2026-10-02 (WA: https://www.sos.wa.gov/sites/default/files/current_election/Statewide2026-10-02.zip returned 404)",
+     "detail": "WA: no daily ballot status report posted in the 7 days to 2026-10-03 (WA: https://www.sos.wa.gov/sites/default/files/current_election/Statewide2026-10-03.zip returned 404)",
      "name": "wa-sos",
      "result": "not_yet_published",
      "tier": 1
@@ -1072,8 +1065,8 @@
      "tier": 5
     }
    ],
-   "message": "WA: no daily ballot status report posted in the 7 days to 2026-10-02 (WA: https://www.sos.wa.gov/sites/default/files/current_election/Statewide2026-10-02.zip returned 404)",
-   "retrieved_at": "2026-10-02T21:52:18+00:00",
+   "message": "WA: no daily ballot status report posted in the 7 days to 2026-10-03 (WA: https://www.sos.wa.gov/sites/default/files/current_election/Statewide2026-10-03.zip returned 404)",
+   "retrieved_at": "2026-10-03T00:58:57+00:00",
    "rows": 0,
    "source": null,
    "status": "pending",
@@ -1082,7 +1075,7 @@
   "WI": {
    "attempts": [
     {
-     "detail": "WI: no absentee export posted for the 2026 general as of 2026-10-02",
+     "detail": "WI: no absentee export posted for the 2026 general as of 2026-10-03",
      "name": "wi-wec",
      "result": "not_yet_published",
      "tier": 1
@@ -1094,7 +1087,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-10-02T21:52:18+00:00",
+   "retrieved_at": "2026-10-03T00:58:57+00:00",
    "rows": 73,
    "source": "civicapi",
    "status": "ok",
@@ -1122,7 +1115,7 @@
     }
    ],
    "message": "UF tracker reports no ballots cast in WV as of 2026-08-12",
-   "retrieved_at": "2026-10-02T21:52:18+00:00",
+   "retrieved_at": "2026-10-03T00:58:57+00:00",
    "rows": 0,
    "source": null,
    "status": "pending",
@@ -1137,7 +1130,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-10-02T21:52:18+00:00",
+   "retrieved_at": "2026-10-03T00:58:57+00:00",
    "rows": 5,
    "source": "civicapi",
    "status": "ok",
@@ -1148,20 +1141,20 @@
   "failed": 0,
   "files": [
    {
-    "added": 1,
+    "added": 10,
     "file": "ev_state_daily.csv",
     "kept_better_tier": 0,
     "kept_richer": 1,
-    "replaced": 94,
-    "rows": 1774
+    "replaced": 0,
+    "rows": 1784
    },
    {
-    "added": 0,
+    "added": 37,
     "file": "co.csv",
     "kept_better_tier": 0,
     "kept_richer": 0,
     "replaced": 0,
-    "rows": 1129
+    "rows": 1166
    },
    {
     "added": 0,
@@ -1172,7 +1165,7 @@
     "rows": 4688
    },
    {
-    "added": 62,
+    "added": 0,
     "file": "ga.csv",
     "kept_better_tier": 0,
     "kept_richer": 0,
@@ -1188,20 +1181,20 @@
     "rows": 36
    },
    {
-    "added": 0,
+    "added": 44,
     "file": "id.csv",
     "kept_better_tier": 0,
     "kept_richer": 0,
     "replaced": 0,
-    "rows": 564
+    "rows": 608
    },
    {
-    "added": 0,
+    "added": 102,
     "file": "il.csv",
     "kept_better_tier": 0,
     "kept_richer": 0,
     "replaced": 0,
-    "rows": 2754
+    "rows": 2856
    },
    {
     "added": 0,
@@ -1220,12 +1213,12 @@
     "rows": 3360
    },
    {
-    "added": 45,
+    "added": 16,
     "file": "me.csv",
     "kept_better_tier": 0,
     "kept_richer": 0,
-    "replaced": 160,
-    "rows": 2403
+    "replaced": 0,
+    "rows": 2419
    },
    {
     "added": 0,
@@ -1260,20 +1253,20 @@
     "rows": 740
    },
    {
-    "added": 0,
+    "added": 99,
     "file": "nc.csv",
     "kept_better_tier": 0,
     "kept_richer": 0,
     "replaced": 0,
-    "rows": 12076
+    "rows": 12175
    },
    {
-    "added": 0,
+    "added": 53,
     "file": "nd.csv",
     "kept_better_tier": 0,
     "kept_richer": 0,
-    "replaced": 30,
-    "rows": 1537
+    "replaced": 0,
+    "rows": 1590
    },
    {
     "added": 0,
@@ -1308,20 +1301,20 @@
     "rows": 880
    },
    {
-    "added": 0,
+    "added": 77,
     "file": "ok.csv",
     "kept_better_tier": 0,
     "kept_richer": 0,
     "replaced": 0,
-    "rows": 1829
+    "rows": 1906
    },
    {
-    "added": 0,
+    "added": 59,
     "file": "pa.csv",
     "kept_better_tier": 0,
     "kept_richer": 0,
     "replaced": 0,
-    "rows": 10037
+    "rows": 10096
    },
    {
     "added": 0,
@@ -1340,12 +1333,12 @@
     "rows": 63
    },
    {
-    "added": 112,
+    "added": 62,
     "file": "me.csv",
     "kept_better_tier": 0,
     "kept_richer": 0,
-    "replaced": 241,
-    "rows": 36219
+    "replaced": 0,
+    "rows": 36281
    },
    {
     "added": 0,
@@ -1364,51 +1357,51 @@
     "rows": 4560
    },
    {
-    "added": 65,
+    "added": 25,
     "file": "me.csv",
     "kept_better_tier": 0,
     "kept_richer": 0,
-    "replaced": 195,
-    "rows": 3920
+    "replaced": 0,
+    "rows": 3945
    },
    {
-    "added": 0,
+    "added": 99,
     "file": "nc.csv",
     "kept_better_tier": 0,
     "kept_richer": 0,
     "replaced": 0,
-    "rows": 16040
+    "rows": 16139
    },
    {
-    "added": 0,
+    "added": 3,
     "file": "co.csv",
     "kept_better_tier": 0,
     "kept_richer": 0,
     "replaced": 0,
-    "rows": 24
+    "rows": 27
    },
    {
     "added": 0,
     "file": "ga.csv",
     "kept_better_tier": 0,
     "kept_richer": 0,
-    "replaced": 3,
+    "replaced": 0,
     "rows": 90
    },
    {
-    "added": 0,
+    "added": 15,
     "file": "nc.csv",
     "kept_better_tier": 0,
     "kept_richer": 0,
     "replaced": 0,
-    "rows": 2046
+    "rows": 2061
    },
    {
     "file": "ev_state_meta.csv",
     "rows": 50
    }
   ],
-  "ok": 29,
-  "pending": 20
+  "ok": 30,
+  "pending": 19
  }
 }
