@@ -1,7 +1,12 @@
 cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_new,mail_returned,inperson,party_dem,party_rep,party_oth,party_npa,source_tier,source_name,retrieved_at
 2026,AZ,04005,Coconino County,2026-10-05,29,110,,110,,73,13,24,,2,civicapi,2026-10-05T19:03:36+00:00
 2026,AZ,04005,Coconino County,2026-10-06,28,110,,110,,73,13,24,,2,civicapi,2026-10-07T04:18:15+00:00
+2026,AZ,04005,Coconino County,2026-10-07,27,110,,110,,73,13,24,,2,civicapi,2026-10-07T19:43:47+00:00
+2026,AZ,04012,La Paz County,2026-10-07,27,5,,5,,2,3,,,2,civicapi,2026-10-07T19:43:47+00:00
+2026,AZ,04019,Pima County,2026-10-07,27,897,,897,,684,57,156,,2,civicapi,2026-10-07T19:43:47+00:00
 2026,AZ,04021,Pinal County,2026-10-05,29,112,,112,,64,16,32,,2,civicapi,2026-10-05T19:03:36+00:00
 2026,AZ,04021,Pinal County,2026-10-06,28,112,,112,,64,16,32,,2,civicapi,2026-10-07T04:18:15+00:00
+2026,AZ,04021,Pinal County,2026-10-07,27,112,,112,,64,16,32,,2,civicapi,2026-10-07T19:43:47+00:00
 2026,AZ,04027,Yuma County,2026-10-05,29,54,,54,,30,17,7,,2,civicapi,2026-10-05T19:03:36+00:00
 2026,AZ,04027,Yuma County,2026-10-06,28,65,,65,,34,22,9,,2,civicapi,2026-10-07T04:18:15+00:00
+2026,AZ,04027,Yuma County,2026-10-07,27,65,,65,,34,22,9,,2,civicapi,2026-10-07T19:43:47+00:00
