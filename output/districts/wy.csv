@@ -1,0 +1,15 @@
+cycle,state,cd_code,date,days_to_election,ballots_total,ballots_new,mail_returned,inperson,party_dem,party_rep,party_oth,party_npa,basis,source_tier,source_name,retrieved_at
+2022,WY,WY-01,2022-11-08,0,,,38336,,,,,,apportioned,3,eac-eavs,2026-09-09T20:25:18+00:00
+2024,WY,WY-01,2024-11-05,0,115364,,38421,76943,,,,,apportioned,3,eac-eavs,2026-09-09T20:22:22+00:00
+2026,WY,WY-01,2026-09-24,40,2,,2,,,2,,,apportioned,2,civicapi,2026-09-24T23:06:08+00:00
+2026,WY,WY-01,2026-09-25,39,3,,3,,,3,,,apportioned,2,civicapi,2026-09-25T23:07:28+00:00
+2026,WY,WY-01,2026-09-28,36,3,,3,,,3,,,apportioned,2,civicapi,2026-09-28T17:46:15+00:00
+2026,WY,WY-01,2026-09-29,35,6,,6,,,,,,apportioned,2,civicapi,2026-09-30T01:07:25+00:00
+2026,WY,WY-01,2026-09-30,34,11,,11,,,,,,apportioned,2,civicapi,2026-09-30T20:35:33+00:00
+2026,WY,WY-01,2026-10-01,33,11,,11,,,,,,apportioned,2,civicapi,2026-10-02T04:06:55+00:00
+2026,WY,WY-01,2026-10-02,32,13,,13,,,,,,apportioned,2,civicapi,2026-10-02T17:30:46+00:00
+2026,WY,WY-01,2026-10-05,29,21,,21,,,,,,apportioned,2,civicapi,2026-10-05T19:07:18+00:00
+2026,WY,WY-01,2026-10-06,28,27,,27,,,,,,apportioned,2,civicapi,2026-10-06T16:33:28+00:00
+2026,WY,WY-01,2026-10-07,27,1381,,1381,,,968,,,apportioned,2,civicapi,2026-10-07T19:47:08+00:00
+2026,WY,WY-01,2026-10-08,26,2568,,2568,,,1826,,,apportioned,2,civicapi,2026-10-08T22:56:34+00:00
+2026,WY,WY-01,2026-10-09,25,3853,,3853,,,2746,,,apportioned,2,civicapi,2026-10-09T19:18:28+00:00

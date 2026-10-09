@@ -52,10 +52,10 @@ from datetime import date, datetime
 from ..calendar import election_date
 from ..normalize import (
     METHOD_INPERSON, METHOD_MAIL, PARTY_DEM, PARTY_NPA, PARTY_OTH, PARTY_REP,
-    age_band, county_fips, method as normalize_method, race, sex,
+    age_band, cd_code, county_fips, method as normalize_method, race, sex,
 )
-from ..schema import TIER_SCRAPER, CountyDay, DemoDay, MethodDay, StateDay
-from . import _fips, _methods, _net
+from ..schema import TIER_SCRAPER, CountyDay, DemoDay, DistrictDay, MethodDay, StateDay
+from . import _districts, _fips, _methods, _net
 from .base import Adapter, FetchResult, NotYetPublished, SchemaDrift
 
 log = logging.getLogger(__name__)
@@ -238,8 +238,13 @@ class NCScraper(Adapter):
         #: (fips, method, day) -> the crosstab cell. See schema.MethodDay.
         by_cell: dict[tuple[str, str, date], _Cell] = defaultdict(_Cell)
         by_demo: dict[tuple[date, str, str], int] = defaultdict(int)
+        #: (cd_code, day) -> the district's bucket. NC labels every ballot with
+        #: its congressional district (`cong_dist_desc`), so the district rows
+        #: are a COUNT here, not a split -- see schema.DistrictDay.
+        by_cd: dict[tuple[str, date], _Bucket] = defaultdict(_Bucket)
         county_names: dict[str, str] = {}
         unknown_counties: set[str] = set()
+        unknown_districts: set[str] = set()
 
         counted = unreadable = 0
         unknown_statuses: set[str] = set()
@@ -278,7 +283,18 @@ class NCScraper(Adapter):
                 )
             party = self._party(row.get("voter_party_code"))
 
-            for bucket in (by_state[day], by_county[(fips, day)]):
+            # A blank district is a ballot with no district on file (not
+            # drift); a district we cannot read IS drift. Either way the
+            # ballot still counts statewide and in its county.
+            raw_cd = row.get("cong_dist_desc")
+            cd = cd_code("NC", raw_cd) if raw_cd is not None else None
+            if raw_cd is not None and raw_cd.strip() and cd is None:
+                unknown_districts.add(raw_cd.strip())
+
+            buckets = [by_state[day], by_county[(fips, day)]]
+            if cd:
+                buckets.append(by_cd[(cd, day)])
+            for bucket in buckets:
                 bucket.total += 1
                 if method == METHOD_MAIL:
                     bucket.mail += 1
@@ -319,8 +335,10 @@ class NCScraper(Adapter):
             # A name we cannot map is drift, not a row to silently drop -- NC has
             # exactly 100 counties and they do not change.
             raise SchemaDrift(f"NC: unrecognised county names {sorted(unknown_counties)[:5]}")
+        if unknown_districts:
+            raise SchemaDrift(f"NC: unrecognised cong_dist_desc {sorted(unknown_districts)[:5]}")
 
-        return self._emit(by_state, by_county, by_cell, by_demo, county_names,
+        return self._emit(by_state, by_county, by_cell, by_demo, by_cd, county_names,
                           cycle, as_of)
 
     def _party(self, raw: str | None) -> str | None:
@@ -352,10 +370,11 @@ class NCScraper(Adapter):
             yield "sex", gender
 
     # ------------------------------------------------------------------
-    def _emit(self, by_state, by_county, by_cell, by_demo, county_names,
+    def _emit(self, by_state, by_county, by_cell, by_demo, by_cd, county_names,
               cycle, as_of) -> FetchResult:
         result = FetchResult()
         _methods.attach(result, [])
+        _districts.attach(result, [])
         if not by_state:
             return result
 
@@ -413,6 +432,31 @@ class NCScraper(Adapter):
                     inperson=running.inperson,
                     **{field: running.party.get(key, 0) for key, field in _PARTY_FIELD.items()},
                 ))
+
+        # One row per district per day, cumulative, exactly as the counties are.
+        # Reported, not split: the file says which district each ballot is in.
+        district_rows: list[DistrictDay] = []
+        for cd in sorted({c for c, _ in by_cd}):
+            running = _Bucket()
+            for day in span:
+                today = by_cd.get((cd, day))
+                if today:
+                    running.total += today.total
+                    running.mail += today.mail
+                    running.inperson += today.inperson
+                    for key, count in today.party.items():
+                        running.party[key] += count
+                if running.total == 0:
+                    continue
+                district_rows.append(DistrictDay(
+                    cycle=cycle, state="NC", cd_code=cd, day=day,
+                    ballots_total=running.total,
+                    ballots_new=today.total if today else 0,
+                    mail_returned=running.mail,
+                    inperson=running.inperson,
+                    **{field: running.party.get(key, 0) for key, field in _PARTY_FIELD.items()},
+                ))
+        _districts.attach(result, district_rows)
 
         # The crosstab, cumulative per county per band. A band a county has not
         # used yet is simply ABSENT until its first ballot -- never a zero row,

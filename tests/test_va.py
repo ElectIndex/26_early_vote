@@ -292,3 +292,31 @@ def test_published_date_reads_the_election_metadata():
 def test_adapter_identity():
     scraper = va.VAScraper()
     assert (scraper.state, scraper.name, scraper.tier) == ("VA", "va-elect", 1)
+
+
+# --------------------------------------------------------------------------
+# Congressional districts: ELECT labels every row with one
+# --------------------------------------------------------------------------
+
+def test_district_rows_are_reported_and_sum_to_the_state(gen2024):
+    from ev.adapters import _districts
+    rows = _districts.rows_of(gen2024)
+    assert {r.cd_code for r in rows} == {f"VA-{n:02d}" for n in range(1, 12)}
+    assert all(r.basis == "reported" for r in rows)
+    (state,) = gen2024.state_rows
+    assert sum(r.ballots_total for r in rows) == state.ballots_total
+    assert sum(r.inperson for r in rows) == state.inperson
+    assert sum(r.mail_returned for r in rows) == state.mail_returned
+    assert all(r.party_dem is None for r in rows), "Virginia has no party registration"
+
+
+def test_a_partial_export_publishes_no_district_rows_either(gen2022_partial):
+    from ev.adapters import _districts
+    assert gen2022_partial.state_rows == []
+    assert _districts.rows_of(gen2022_partial) == []
+
+
+def test_an_unreadable_district_is_drift():
+    text = FULL.read_text(encoding="utf-8-sig").replace('"ACCOMACK COUNTY","2"', '"ACCOMACK COUNTY","99"', 1)
+    with pytest.raises(SchemaDrift):
+        va.parse(text.encode("utf-8"), 2024, date(2024, 11, 5))

@@ -23,10 +23,10 @@ from pathlib import Path
 from typing import Callable, Iterable, Sequence
 
 from .schema import (
-    COUNTY_DAILY_COLUMNS, COUNTY_KEY, DEMO_DAILY_COLUMNS, DEMO_KEY,
+    COUNTY_DAILY_COLUMNS, DISTRICT_DAILY_COLUMNS, DISTRICT_KEY, COUNTY_KEY, DEMO_DAILY_COLUMNS, DEMO_KEY,
     METHOD_DAILY_COLUMNS, METHOD_KEY,
     STATE_DAILY_COLUMNS, STATE_KEY, TOWN_DAILY_COLUMNS, TOWN_KEY,
-    county_row_to_dict, demo_row_to_dict, method_row_to_dict, state_row_to_dict,
+    county_row_to_dict, district_row_to_dict, demo_row_to_dict, method_row_to_dict, state_row_to_dict,
     town_row_to_dict,
 )
 
@@ -40,6 +40,10 @@ CURRENT_CYCLE_HINT = 2026
 _NON_DATA_COLUMNS = frozenset({
     "cycle", "state", "county_fips", "county_name", "date", "days_to_election",
     "dimension", "bucket", "restated", "source_tier", "source_name", "retrieved_at",
+    # A district row's identity and its basis. `basis` says how the row was
+    # made, not what it counts, so a reported row and an apportioned row with
+    # the same numbers are equally "populated".
+    "cd_code", "basis",
     # A town row's identity columns. `county_fips` is already listed and is
     # identity here too -- it is a slice of `town_geoid`, not reported data.
     "town_geoid", "town_name",
@@ -118,6 +122,8 @@ def _sort_key(columns: Sequence[str]) -> Callable[[dict[str, str]], tuple]:
             # Towns sort within their county. Constant "" on every other table,
             # so the existing files' order is unchanged.
             row.get("town_geoid", ""),
+            # Districts sort within their state-cycle. Constant "" elsewhere.
+            row.get("cd_code", ""),
             row.get("date", ""), row.get("dimension", ""), row.get("bucket", ""),
             # Methods sort within their county-day. Constant "" on every other
             # table, so the existing files' order is unchanged.
@@ -357,6 +363,23 @@ def publish_method_daily(out_dir: Path, state: str, rows, **kw) -> dict:
         out_dir / "methods" / f"{state.lower()}.csv",
         METHOD_DAILY_COLUMNS, METHOD_KEY,
         [method_row_to_dict(r) for r in rows], **kw,
+    )
+
+
+def publish_district_daily(out_dir: Path, state: str, rows, *, replace: bool = True, **kw) -> dict:
+    """Congressional-district rows, written per state like the county files.
+
+    ⚠️ `replace=True` BY DEFAULT, unlike every other publisher here, because
+    this table is DERIVED: `ev.districts.rebuild` recomputes the whole file
+    from the county file on disk plus the reported rows it keeps, so what it
+    hands over is the complete answer and a merge would let a stale split
+    outlive the county rows that produced it. Nothing but `rebuild` should
+    call this.
+    """
+    return publish_table(
+        out_dir / "districts" / f"{state.lower()}.csv",
+        DISTRICT_DAILY_COLUMNS, DISTRICT_KEY,
+        [district_row_to_dict(r) for r in rows], replace=replace, **kw,
     )
 
 

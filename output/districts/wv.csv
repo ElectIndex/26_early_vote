@@ -1,0 +1,5 @@
+cycle,state,cd_code,date,days_to_election,ballots_total,ballots_new,mail_returned,inperson,party_dem,party_rep,party_oth,party_npa,basis,source_tier,source_name,retrieved_at
+2022,WV,WV-01,2022-11-08,0,,,,,,,,,apportioned,3,eac-eavs,2026-09-09T20:24:44+00:00
+2022,WV,WV-02,2022-11-08,0,,,,68343,,,,,apportioned,3,eac-eavs,2026-09-09T20:24:44+00:00
+2024,WV,WV-01,2024-11-05,0,152348,,10936,141412,,,,,apportioned,3,eac-eavs,2026-09-09T20:22:00+00:00
+2024,WV,WV-02,2024-11-05,0,180581,,11688,168893,,,,,apportioned,3,eac-eavs,2026-09-09T20:22:00+00:00

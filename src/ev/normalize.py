@@ -209,6 +209,64 @@ def sex(raw: str | None) -> str | None:
 
 
 # --------------------------------------------------------------------------
+# Congressional districts
+# --------------------------------------------------------------------------
+#: House seats per state under the 2020 apportionment. The upper bound a
+#: district number may take; an at-large state has one seat and its district is
+#: written "-01", which is how the site's geometry keys it.
+HOUSE_SEATS = {
+    "AL": 7, "AK": 1, "AZ": 9, "AR": 4, "CA": 52, "CO": 8, "CT": 5, "DE": 1,
+    "FL": 28, "GA": 14, "HI": 2, "ID": 2, "IL": 17, "IN": 9, "IA": 4, "KS": 4,
+    "KY": 6, "LA": 6, "ME": 2, "MD": 8, "MA": 9, "MI": 13, "MN": 8, "MS": 4,
+    "MO": 8, "MT": 2, "NE": 3, "NV": 4, "NH": 2, "NJ": 12, "NM": 3, "NY": 26,
+    "NC": 14, "ND": 1, "OH": 15, "OK": 5, "OR": 6, "PA": 17, "RI": 2, "SC": 7,
+    "SD": 1, "TN": 9, "TX": 38, "UT": 4, "VT": 1, "VA": 11, "WA": 10, "WV": 2,
+    "WI": 8, "WY": 1,
+}
+
+_AT_LARGE_WORDS = frozenset({"at large", "at-large", "atlarge", "al"})
+
+
+def cd_code(state: str, raw) -> str | None:
+    """"CONGRESSIONAL DISTRICT 1" / "2" / "06" / "PA-12" / "At Large" -> "NC-01".
+
+    The one spelling of a House district this project writes: the two-letter
+    state, a hyphen, and the district number zero-padded to two digits, which
+    is the `district_code` the site's district geometry is keyed by. An
+    at-large seat is "-01", because that is how the geometry keys it too.
+
+    Returns None -- never a guess -- for anything that is not plainly a House
+    district of THIS state: another chamber's district, another state's code,
+    a number past the state's seat count, or a zero in a state that has more
+    than one seat. Callers treat None as drift, exactly as they do for party().
+    """
+    st = str(state or "").strip().upper()
+    seats = HOUSE_SEATS.get(st)
+    if not seats or raw is None:
+        return None
+    text = " ".join(str(raw).strip().lower().replace("_", " ").split())
+    if not text:
+        return None
+    if text in _AT_LARGE_WORDS:
+        return f"{st}-01" if seats == 1 else None
+    m = re.fullmatch(r"([a-z]{2})-(\d{1,2})", text)
+    if m:
+        if m.group(1).upper() != st:
+            return None
+        number = int(m.group(2))
+    else:
+        m = re.fullmatch(r"(?:(?:u\.?s\.? )?(?:congressional|congress|cong\.?|house)? ?(?:district|dist\.?)? ?)(\d{1,2})", text)
+        if not m:
+            return None
+        number = int(m.group(1))
+    if number == 0:
+        return f"{st}-01" if seats == 1 else None
+    if number > seats:
+        return None
+    return f"{st}-{number:02d}"
+
+
+# --------------------------------------------------------------------------
 # Geography
 # --------------------------------------------------------------------------
 STATE_FIPS = {

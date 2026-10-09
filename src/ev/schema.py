@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import csv
 import dataclasses
+import re
 from dataclasses import dataclass, field
 from datetime import date, datetime, timezone
 from pathlib import Path
@@ -273,6 +274,75 @@ class MethodDay:
                 self.method, self.day.isoformat())
 
 
+BASIS_REPORTED = "reported"        # the state's own file carries a district column
+BASIS_APPORTIONED = "apportioned"  # split from county rows by ev.districts
+BASES = (BASIS_REPORTED, BASIS_APPORTIONED)
+
+_CD_CODE = re.compile(r"^[A-Z]{2}-\d{2}$")
+
+
+@dataclass
+class DistrictDay:
+    """One congressional district's cumulative position on one day.
+
+    The sixth table, and the only one that is mostly DERIVED. Three states'
+    files carry a district column -- North Carolina's absentee file, Virginia's
+    ELECT export, Maryland's early-voting RAW file -- and their adapters emit
+    these rows with `basis="reported"`. Everywhere else `ev.districts.rebuild`
+    splits each county's published daily figures across the districts the
+    county touches, weighted by that county's 2024 vote in each
+    (`data/crosswalk/county_cd_weights.csv`), and the rows say so with
+    `basis="apportioned"`. The page prints the basis beside every district
+    figure; a reader must be able to tell a count from a split.
+
+    `cd_code` is the site's own spelling -- "NC-01", at-large "-01" -- and is
+    produced ONLY by `normalize.cd_code()`, for the reason county rows are keyed
+    by FIPS: the geometry is keyed by this string, and "District 1", "1", "01"
+    and "CONGRESSIONAL DISTRICT 1" are four spellings of one shape.
+
+    ⚠️ PAST CYCLES ARE ALWAYS APPORTIONED, EVEN IN THE THREE REPORTING STATES.
+    North Carolina's 2024 file labels each ballot with its 2024 district, and
+    NC-01 was redrawn for 2026. A "vs 2024" comparison between a reported 2026
+    NC-01 and a reported 2024 NC-01 would compare two different places with one
+    name. Splitting 2024's county rows onto today's map keeps every comparison
+    on one geography, at the cost of the reference being an estimate -- which
+    its basis column says.
+
+    THE BLANK RULE holds through the split: a county field the state did not
+    report splits to a blank district field, never to 0 and never to a partial
+    sum over the counties that did report it.
+    """
+
+    cycle: int
+    state: str
+    cd_code: str
+    day: date
+    ballots_total: int | None = None
+    ballots_new: int | None = None
+    mail_returned: int | None = None
+    inperson: int | None = None
+    party_dem: int | None = None
+    party_rep: int | None = None
+    party_oth: int | None = None
+    party_npa: int | None = None
+    basis: str = BASIS_REPORTED
+    provenance: Provenance | None = None
+
+    def __post_init__(self) -> None:
+        code = str(self.cd_code).strip().upper()
+        if not _CD_CODE.match(code):
+            raise ValueError(
+                f"DistrictDay needs a code like 'NC-01', got {self.cd_code!r} "
+                f"-- route the source's label through normalize.cd_code()"
+            )
+        self.cd_code = code
+        if self.basis not in BASES:
+            raise ValueError(f"unknown basis {self.basis!r}; expected one of {BASES}")
+
+    def key(self) -> tuple:
+        return (int(self.cycle), self.state.upper(), self.cd_code, self.day.isoformat())
+
+
 DEMO_DIMENSIONS = ("age", "race", "sex")
 
 
@@ -351,6 +421,13 @@ METHOD_DAILY_COLUMNS = [
     "source_tier", "source_name", "retrieved_at",
 ]
 
+DISTRICT_DAILY_COLUMNS = [
+    "cycle", "state", "cd_code", "date", "days_to_election",
+    "ballots_total", "ballots_new", "mail_returned", "inperson",
+    "party_dem", "party_rep", "party_oth", "party_npa",
+    "basis", "source_tier", "source_name", "retrieved_at",
+]
+
 DEMO_DAILY_COLUMNS = [
     "cycle", "state", "date", "days_to_election",
     "dimension", "bucket", "ballots_total",
@@ -362,6 +439,7 @@ STATE_KEY = ("cycle", "state", "date")
 COUNTY_KEY = ("cycle", "state", "county_fips", "date")
 TOWN_KEY = ("cycle", "state", "town_geoid", "date")
 METHOD_KEY = ("cycle", "state", "county_fips", "method", "date")
+DISTRICT_KEY = ("cycle", "state", "cd_code", "date")
 DEMO_KEY = ("cycle", "state", "date", "dimension", "bucket")
 
 
@@ -465,6 +543,31 @@ def method_row_to_dict(row: MethodDay) -> dict[str, str]:
         "party_rep": _cell(row.party_rep),
         "party_oth": _cell(row.party_oth),
         "party_npa": _cell(row.party_npa),
+        "source_tier": str(p.tier),
+        "source_name": p.name,
+        "retrieved_at": p.retrieved_at,
+    }
+
+
+def district_row_to_dict(row: DistrictDay) -> dict[str, str]:
+    p = _prov(row)
+    if row.basis not in BASES:
+        raise ValueError(f"unknown basis {row.basis!r}")
+    return {
+        "cycle": str(int(row.cycle)),
+        "state": row.state.upper(),
+        "cd_code": row.cd_code,
+        "date": row.day.isoformat(),
+        "days_to_election": str(days_to_election(row.cycle, row.day)),
+        "ballots_total": _cell(row.ballots_total),
+        "ballots_new": _cell(row.ballots_new),
+        "mail_returned": _cell(row.mail_returned),
+        "inperson": _cell(row.inperson),
+        "party_dem": _cell(row.party_dem),
+        "party_rep": _cell(row.party_rep),
+        "party_oth": _cell(row.party_oth),
+        "party_npa": _cell(row.party_npa),
+        "basis": row.basis,
         "source_tier": str(p.tier),
         "source_name": p.name,
         "retrieved_at": p.retrieved_at,

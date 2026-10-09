@@ -21,8 +21,8 @@ import sys
 from datetime import date, datetime, timezone
 from pathlib import Path
 
-from . import publish, results
-from .adapters import _methods, _towns
+from . import districts, publish, results
+from .adapters import _districts, _methods, _towns
 from .adapters.base import FetchResult, NotYetPublished
 from .calendar import CURRENT_CYCLE, CYCLES, days_to_election
 from .ladder import STATUS_OK, STATUS_PENDING, run_state
@@ -73,6 +73,7 @@ def cmd_ingest(args) -> int:
     per_state_town: dict[str, list] = {}
     per_state_method: dict[str, list] = {}
     per_state_demo: dict[str, list] = {}
+    per_state_district: dict[str, list] = {}
 
     for state in states:
         result, outcome = run_state(
@@ -99,6 +100,12 @@ def cmd_ingest(args) -> int:
             per_state_method.setdefault(state, []).extend(method_rows)
         if result.demo_rows:
             per_state_demo.setdefault(state, []).extend(result.demo_rows)
+        # REPORTED district rows, from the three states whose files carry a
+        # district column. Every other state's district file is derived from
+        # its county file after that file is written; see districts.rebuild.
+        district_rows = _districts.rows_of(result)
+        if district_rows:
+            per_state_district.setdefault(state, []).extend(district_rows)
 
     ok = [o for o in outcomes if o.ok]
     pending = [o for o in outcomes if o.status == STATUS_PENDING]
@@ -114,6 +121,10 @@ def cmd_ingest(args) -> int:
             print(f"  would write methods/{state.lower()}.csv   {len(rows)} rows")
         for state, rows in sorted(per_state_demo.items()):
             print(f"  would write demo/{state.lower()}.csv      {len(rows)} rows")
+        for state in sorted(set(per_state_county) | set(per_state_district)):
+            n = len(per_state_district.get(state, []))
+            print(f"  would rebuild districts/{state.lower()}.csv "
+                  f"({n} reported rows, the rest apportioned)")
     else:
         if combined.state_rows:
             files.append(publish.publish_state_daily(out_dir, combined.state_rows))
@@ -125,6 +136,11 @@ def cmd_ingest(args) -> int:
             files.append(publish.publish_method_daily(out_dir, state, rows))
         for state, rows in sorted(per_state_demo.items()):
             files.append(publish.publish_demo_daily(out_dir, state, rows))
+        # AFTER the county files, which the rebuild reads back off disk.
+        for state in sorted(set(per_state_county) | set(per_state_district)):
+            summary = districts.rebuild(out_dir, state, per_state_district.get(state, []))
+            if summary:
+                files.append(summary)
 
         meta = publish.publish_state_meta(
             out_dir, STATE_META, publish.derive_prior_finals(out_dir)
@@ -176,7 +192,8 @@ def cmd_ingest(args) -> int:
           f"state_rows={len(combined.state_rows)} "
           f"county_rows={sum(len(r) for r in per_state_county.values())} "
           f"town_rows={sum(len(r) for r in per_state_town.values())} "
-          f"method_rows={sum(len(r) for r in per_state_method.values())}")
+          f"method_rows={sum(len(r) for r in per_state_method.values())} "
+          f"district_rows={sum(len(r) for r in per_state_district.values())}")
     for o in failed:
         print(f"  FAILED {o.state}: {o.message}", file=sys.stderr)
 
@@ -219,6 +236,7 @@ def cmd_backfill(args) -> int:
             # minutes of Wayback downloads -- and then die at WRITE time.
             _towns.stamp(result, provenance)
             _methods.stamp(result, provenance)
+            _districts.stamp(result, provenance)
             combined.state_rows.extend(result.state_rows)
             if result.county_rows:
                 per_state_county.setdefault(state, []).extend(result.county_rows)
@@ -230,6 +248,9 @@ def cmd_backfill(args) -> int:
                 per_state_method.setdefault(state, []).extend(method_rows)
             if result.demo_rows:
                 per_state_demo.setdefault(state, []).extend(result.demo_rows)
+            # A past cycle's reported district rows are set aside by
+            # districts.rebuild (past cycles are apportioned onto today's
+            # map), so backfill hands over none and only triggers the rebuild.
             found.append(f"{state}:{adapter.name}")
             break
         else:
@@ -246,6 +267,8 @@ def cmd_backfill(args) -> int:
             publish.publish_method_daily(out_dir, state, rows)
         for state, rows in sorted(per_state_demo.items()):
             publish.publish_demo_daily(out_dir, state, rows)
+        for state in sorted(per_state_county):
+            districts.rebuild(out_dir, state)
 
     print(f"backfill {args.cycle}: {len(found)} with history, {len(absent)} without")
     if absent:
@@ -269,6 +292,27 @@ def _one_line(text: str | None) -> str:
     """
     flat = " ".join(str(text or "").split())
     return flat if len(flat) <= PROBE_DETAIL_CHARS else flat[:PROBE_DETAIL_CHARS - 1] + "…"
+
+
+def cmd_districts(args) -> int:
+    """Rebuild output/districts/<st>.csv from the county files on disk.
+
+    A pure function of output/ -- the same shape as `estimate` -- so it runs
+    whenever the crosswalk changes or a county file is backfilled without the
+    ingest having touched that state. Reported rows already on disk are kept;
+    every other (cycle, day) is apportioned. See docs/districts.md.
+    """
+    out_dir = Path(args.output or OUTPUT_DIR)
+    if args.dry_run:
+        for state in (args.state or sorted(
+                p.stem.upper() for p in (out_dir / "counties").glob("*.csv"))):
+            print(f"  would rebuild districts/{state.lower()}.csv")
+        return 0
+    summaries = districts.rebuild_all(out_dir, args.state)
+    for s in summaries:
+        print(f"  {s['file']:<8} {s['rows']:>7} rows")
+    print(f"districts: {len(summaries)} state file(s) rebuilt")
+    return 0
 
 
 def cmd_probe(args) -> int:
@@ -403,6 +447,15 @@ def build_parser() -> argparse.ArgumentParser:
     res.add_argument("--refresh", action="store_true",
                      help="re-download instead of reading the cached copy")
     res.set_defaults(func=results.cmd_results)
+
+    dis = sub.add_parser(
+        "districts",
+        help="rebuild output/districts/<st>.csv from the county files: reported "
+             "rows kept, everything else apportioned by 2024 vote (see docs/districts.md)",
+    )
+    dis.add_argument("--state", nargs="+", help="limit to these states")
+    dis.add_argument("--dry-run", action="store_true")
+    dis.set_defaults(func=cmd_districts)
 
     pr = common(sub.add_parser("probe", help="report which adapters answer"))
     pr.add_argument("--as-of", help="YYYY-MM-DD (default today)")

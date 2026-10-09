@@ -36,12 +36,12 @@ from pathlib import Path
 import pytest
 
 from ev import cli
-from ev.adapters import _methods, _towns
+from ev.adapters import _districts, _methods, _towns
 from ev.adapters.base import Adapter, FetchResult, NotYetPublished, SourceError
 from ev.adapters.manual import ManualAdapter
 from ev.schema import (
-    CountyDay, DemoDay, MethodDay, Provenance, StateDay, TownDay, TIER_CIVIC,
-    TIER_SCRAPER,
+    CountyDay, DemoDay, DistrictDay, MethodDay, Provenance, StateDay, TownDay,
+    TIER_CIVIC, TIER_SCRAPER,
 )
 
 AS_OF = date(2026, 10, 20)
@@ -100,6 +100,15 @@ class StubScraper(Adapter):
                       method="inperson", ballots_total=200, party_dem=90,
                       party_rep=110),
         ])
+        # ...and the sixth: REPORTED district rows, which only three states'
+        # files carry. Their presence is what stops the rebuild apportioning
+        # this day from the counties.
+        _districts.attach(result, [
+            DistrictDay(cycle=cycle, state=state, cd_code="NC-12", day=as_of,
+                        ballots_total=800),
+            DistrictDay(cycle=cycle, state=state, cd_code="NC-02", day=as_of,
+                        ballots_total=400),
+        ])
         return result
 
 
@@ -152,7 +161,8 @@ def test_ingest_runs_and_writes_every_file_it_promises(tmp_path, stub_ladder):
 
     out = tmp_path / "output"
     for relative in ("ev_state_daily.csv", "counties/nc.csv",
-                     "towns/nc.csv", "demo/nc.csv", "ev_status.json"):
+                     "towns/nc.csv", "demo/nc.csv", "districts/nc.csv",
+                     "ev_status.json"):
         assert (out / relative).exists(), f"{relative} was not written"
 
 
@@ -177,6 +187,56 @@ def test_the_published_rows_are_the_ones_the_adapter_returned(tmp_path, stub_lad
 
     demo = list(csv.DictReader((out / "demo" / "nc.csv").open()))
     assert {r["bucket"] for r in demo} == {"female", "male"}
+
+    # The reported district rows won; the counties were not split for that day.
+    cds = list(csv.DictReader((out / "districts" / "nc.csv").open()))
+    assert {(r["cd_code"], r["ballots_total"], r["basis"]) for r in cds} == {
+        ("NC-12", "800", "reported"), ("NC-02", "400", "reported")}
+
+
+class CountiesOnlyScraper(Adapter):
+    """Most states: counties, no district column. The rebuild splits them."""
+
+    name = "stub-counties"
+    tier = TIER_SCRAPER
+
+    def fetch(self, cycle: int, as_of: date) -> FetchResult:
+        return FetchResult(
+            state_rows=[StateDay(cycle=cycle, state=self.state, day=as_of, ballots_total=1_200)],
+            county_rows=[
+                # Both counties are split three ways on the 2026 map. The real
+                # crosswalk is used, so this is also a check that the vendored
+                # weights are loadable from the CLI path.
+                CountyDay(cycle=cycle, state=self.state, county_fips=MECKLENBURG,
+                          day=as_of, county_name="Mecklenburg County", ballots_total=800),
+                CountyDay(cycle=cycle, state=self.state, county_fips=WAKE,
+                          day=as_of, county_name="Wake County", ballots_total=400),
+            ],
+        )
+
+
+def test_a_state_without_a_district_column_gets_an_apportioned_file(tmp_path, stub_ladder):
+    stub_ladder(CountiesOnlyScraper)
+    assert cli.cmd_ingest(args(tmp_path)) == 0
+    cds = list(csv.DictReader((tmp_path / "output" / "districts" / "nc.csv").open()))
+    assert cds, "districts/nc.csv was not written"
+    assert {r["basis"] for r in cds} == {"apportioned"}
+    assert sum(int(r["ballots_total"]) for r in cds) == 1_200
+    by = {r["cd_code"]: int(r["ballots_total"]) for r in cds}
+    assert set(by) == {"NC-08", "NC-12", "NC-14",    # Mecklenburg
+                       "NC-02", "NC-04", "NC-13"}    # Wake
+    assert by["NC-12"] > by["NC-08"] and by["NC-02"] > by["NC-13"], "the big piece wins"
+    assert cds[0]["source_name"] == "stub-counties"
+
+
+def test_districts_subcommand_rebuilds_from_the_county_files(tmp_path, stub_ladder):
+    stub_ladder(CountiesOnlyScraper)
+    cli.cmd_ingest(args(tmp_path))
+    path = tmp_path / "output" / "districts" / "nc.csv"
+    path.unlink()
+    parsed = cli.build_parser().parse_args(["--output", str(tmp_path / "output"), "districts"])
+    assert parsed.func(parsed) == 0
+    assert path.exists()
 
 
 def test_the_status_file_records_the_run(tmp_path, stub_ladder):
@@ -471,6 +531,8 @@ def test_every_subcommand_parses(tmp_path):
         ["counterfactual"],
         ["counterfactual", "--validate"],
         ["backfill", "--cycle", "2022"],
+        ["districts"],
+        ["districts", "--state", "NC", "--dry-run"],
         ["probe"],
         ["turnout"],
         ["regress"],

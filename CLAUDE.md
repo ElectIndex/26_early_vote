@@ -15,6 +15,7 @@ python -m ev probe                    # which adapters exist and answer today
 python -m ev ingest --state NC --dry-run
 python -m ev ingest                   # all tracked states -> output/
 python -m ev backfill --cycle 2022
+python -m ev districts                # rebuild districts/<st>.csv from the county files
 pytest
 ```
 
@@ -111,6 +112,14 @@ output/         published; the website reads these
   methods/<st>.csv          per state; party CROSSED with mail/in-person, where
                             a state publishes the crosstab rather than the
                             margins separately
+  districts/<st>.csv        per state; by congressional district. `basis` says
+                            whether the state labelled the ballots (NC, VA, MD)
+                            or the county rows were split by 2024 vote share
+                            (everyone else, and every past cycle). DERIVED:
+                            rebuilt whole after each county file; docs/districts.md
+  counterfactual_districts.csv  the 2024 thought experiment per district, a
+                            companion to counterfactual.csv written by the same
+                            command; the band is the state's
   ev_state_meta.csv         EV windows, party-reg flag, 2022/24 finals
   ev_status.json            per-state freshness; drives the page's stale badge
 ```

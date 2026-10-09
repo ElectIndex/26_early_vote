@@ -54,8 +54,9 @@ from collections import defaultdict
 from datetime import date, datetime, timezone
 
 from ..calendar import election_date
-from ..schema import TIER_SCRAPER, CountyDay, StateDay
-from . import _fips
+from ..normalize import cd_code
+from ..schema import TIER_SCRAPER, CountyDay, DistrictDay, StateDay
+from . import _districts, _fips
 from ._net import Missing, get, looks_like_html
 from .base import Adapter, FetchResult, NotYetPublished, SchemaDrift, SourceError
 
@@ -101,6 +102,10 @@ RECEIPT = "receipttype"
 COUNT = "thecount"
 
 REQUIRED = (LOCALITY, APPLICATION, RECEIPT, COUNT)
+
+#: Present in every ELECT export since 2022 but not REQUIRED: without it the
+#: file still yields its localities, and only the district rows are lost.
+DISTRICT = "congressionaldistrict"
 
 #: ApplicationType for a voter who applied and voted at the registrar's office.
 INPERSON_APPLICATION = "in person"
@@ -200,8 +205,12 @@ def parse(body: bytes, cycle: int, day: date) -> FetchResult:
         raise SchemaDrift(f"VA: absentee export is missing columns {missing}")
 
     tallies: dict[str, _Tally] = defaultdict(_Tally)
+    #: Per congressional district, the same three running totals. ELECT labels
+    #: every row with its district, so these are a COUNT, not a split.
+    by_district: dict[str, _Tally] = defaultdict(_Tally)
     names: dict[str, str] = {}
     unknown_locality: set[str] = set()
+    unknown_district: set[str] = set()
     unknown_application: set[str] = set()
     unknown_receipt: set[str] = set()
 
@@ -230,14 +239,22 @@ def parse(body: bytes, cycle: int, day: date) -> FetchResult:
 
         fips, canonical = hit
         names[fips] = canonical
-        tally = tallies[fips]
         n = _count(row[index[COUNT]])
-        if application == INPERSON_APPLICATION:
-            tally.add("inperson", n)
-        else:
-            tally.add("mail_sent", n)
-            if receipt:
-                tally.add("mail_returned", n)
+        targets = [tallies[fips]]
+        if DISTRICT in index:
+            raw_cd = str(row[index[DISTRICT]] or "").strip()
+            cd = cd_code("VA", raw_cd) if raw_cd else None
+            if raw_cd and cd is None:
+                unknown_district.add(raw_cd)
+            elif cd:
+                targets.append(by_district[cd])
+        for tally in targets:
+            if application == INPERSON_APPLICATION:
+                tally.add("inperson", n)
+            else:
+                tally.add("mail_sent", n)
+                if receipt:
+                    tally.add("mail_returned", n)
 
     if unknown_locality:
         raise SchemaDrift(f"VA: unresolved localities {sorted(unknown_locality)[:5]}")
@@ -245,6 +262,8 @@ def parse(body: bytes, cycle: int, day: date) -> FetchResult:
         raise SchemaDrift(f"VA: unknown application types {sorted(unknown_application)[:5]}")
     if unknown_receipt:
         raise SchemaDrift(f"VA: unknown receipt types {sorted(unknown_receipt)[:5]}")
+    if unknown_district:
+        raise SchemaDrift(f"VA: unknown congressional districts {sorted(unknown_district)[:5]}")
     if not tallies:
         raise SchemaDrift("VA: absentee export produced no locality rows")
 
@@ -262,7 +281,21 @@ def parse(body: bytes, cycle: int, day: date) -> FetchResult:
     ]
 
     state_rows: list[StateDay] = []
+    district_rows: list[DistrictDay] = []
     if len(county_rows) == EXPECTED_LOCALITIES:
+        # District rows are gated with the statewide row, for the same reason:
+        # a district summed from a partial export is a number that looks like
+        # the district and is not.
+        district_rows = [
+            DistrictDay(
+                cycle=cycle, state="VA", cd_code=cd, day=day,
+                ballots_total=_add(tally.inperson, tally.mail_returned),
+                mail_returned=tally.mail_returned,
+                inperson=tally.inperson,
+                party_dem=None, party_rep=None, party_oth=None, party_npa=None,
+            )
+            for cd, tally in sorted(by_district.items())
+        ]
         # ELECT publishes no statewide row, so the state total can only be our
         # sum -- which is a Virginia total ONLY when all 133 localities are in
         # the file. A partial export sums to a number that looks like Virginia
@@ -281,7 +314,9 @@ def parse(body: bytes, cycle: int, day: date) -> FetchResult:
             len(county_rows), EXPECTED_LOCALITIES,
         )
 
-    return FetchResult(state_rows=state_rows, county_rows=county_rows)
+    result = FetchResult(state_rows=state_rows, county_rows=county_rows)
+    _districts.attach(result, district_rows)
+    return result
 
 
 def published_date(election: dict) -> date | None:

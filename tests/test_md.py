@@ -314,3 +314,30 @@ def test_discovery_survives_an_index_it_cannot_parse():
 def test_adapter_identity():
     scraper = md.MDScraper()
     assert (scraper.state, scraper.name, scraper.tier) == ("MD", "md-sbe", 1)
+
+
+# --------------------------------------------------------------------------
+# Congressional districts: the RAW file labels every cell with one
+# --------------------------------------------------------------------------
+
+def test_district_rows_are_reported_and_sum_to_the_state(gen2024):
+    from ev.adapters import _districts
+    rows = _districts.rows_of(gen2024)
+    assert rows
+    assert all(r.basis == "reported" for r in rows)
+    assert all(r.cd_code.startswith("MD-") for r in rows)
+    last = gen2024.state_rows[-1]
+    by_cd = [r for r in rows if r.day == last.day]
+    assert sum(r.ballots_total for r in by_cd) == last.ballots_total
+    assert sum(r.party_dem for r in by_cd) == last.party_dem
+    assert all(r.mail_returned is None and r.inperson == r.ballots_total for r in by_cd)
+
+
+def test_an_unreadable_district_code_is_drift():
+    text = PG24.read_text(encoding="utf-8-sig")
+    header, rest = text.split("\n", 1)
+    first, rest = rest.split("\n", 1)
+    cols = first.split(",")
+    cols[2] = "42"
+    with pytest.raises(SchemaDrift):
+        md.parse(("\n".join([header, ",".join(cols), rest])).encode("utf-8"), 2024, PG24_LAST)

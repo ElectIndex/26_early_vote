@@ -259,3 +259,39 @@ def test_the_ballot_row_is_a_party_by_method_crosstab(parsed):
     for county in parsed.county_rows:
         assert by_key[(county.county_fips, county.day)] == [
             county.ballots_total, county.party_dem, county.party_rep]
+
+
+# --------------------------------------------------------------------------
+# Congressional districts: a COUNT here, because the file labels every ballot
+# --------------------------------------------------------------------------
+
+def test_district_rows_are_reported_and_sum_to_the_state(parsed):
+    from ev.adapters import _districts
+    rows = _districts.rows_of(parsed)
+    assert rows, "the fixture carries cong_dist_desc on every row"
+    assert all(r.basis == "reported" for r in rows)
+    assert all(r.cd_code.startswith("NC-") and len(r.cd_code) == 5 for r in rows)
+    last = parsed.state_rows[-1]
+    by_cd = {r.cd_code: r for r in rows if r.day == last.day}
+    assert sum(r.ballots_total for r in by_cd.values()) == last.ballots_total
+    assert sum(r.party_dem for r in by_cd.values()) == last.party_dem
+    assert sum(r.mail_returned for r in by_cd.values()) == last.mail_returned
+
+
+def test_a_district_label_we_cannot_read_is_drift(monkeypatch):
+    fieldnames, rows = _rows()
+    rows[0]["cong_dist_desc"] = "NC HOUSE DISTRICT 1"
+    monkeypatch.setattr(nc._net, "get", lambda *a, **k: _zip_bytes(_csv(fieldnames, rows)))
+    with pytest.raises(SchemaDrift):
+        nc.NCScraper().fetch(2026, date(2026, 9, 5))
+
+
+def test_a_blank_district_still_counts_statewide(monkeypatch):
+    fieldnames, rows = _rows()
+    rows[0]["cong_dist_desc"] = ""
+    monkeypatch.setattr(nc._net, "get", lambda *a, **k: _zip_bytes(_csv(fieldnames, rows)))
+    result = nc.NCScraper().fetch(2026, date(2026, 9, 5))
+    from ev.adapters import _districts
+    last = result.state_rows[-1]
+    in_districts = sum(r.ballots_total for r in _districts.rows_of(result) if r.day == last.day)
+    assert in_districts == last.ballots_total - 1

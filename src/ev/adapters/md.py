@@ -59,8 +59,9 @@ from ..calendar import election_date
 from ..normalize import (
     PARTY_DEM, PARTY_NPA, PARTY_OTH, PARTY_REP, party as _party, sex as _sex,
 )
-from ..schema import TIER_SCRAPER, CountyDay, DemoDay, StateDay
-from . import _fips
+from ..normalize import cd_code
+from ..schema import TIER_SCRAPER, CountyDay, DemoDay, DistrictDay, StateDay
+from . import _districts, _fips
 from ._net import Missing, get, looks_like_html
 from .base import Adapter, FetchResult, NotYetPublished, SchemaDrift
 
@@ -93,6 +94,10 @@ DAY_COUNT = 8
 DAY_COLUMNS = tuple(f"Day{n}" for n in range(1, DAY_COUNT + 1))
 
 REQUIRED = ("COUNTY_NAME", "GENDER_CODE", "PARTY_CODE") + DAY_COLUMNS
+
+#: On every row of the 2022 and 2024 files ("06", "01"...), but not REQUIRED:
+#: without it Maryland still publishes its counties and loses only districts.
+DISTRICT_COLUMN = "congressional_district_code"
 
 _PARTY_FIELD = {
     PARTY_DEM: "party_dem", PARTY_REP: "party_rep",
@@ -225,8 +230,13 @@ def parse(body: bytes, cycle: int, as_of: date) -> FetchResult:
     by_state: dict[date, _Bucket] = defaultdict(_Bucket)
     by_county: dict[tuple[str, date], _Bucket] = defaultdict(_Bucket)
     by_demo: dict[tuple[date, str, str], int] = defaultdict(int)
+    #: (cd_code, day) -> bucket. The RAW file labels every cell with its
+    #: congressional district, so these are a count, not a split.
+    by_cd: dict[tuple[str, date], _Bucket] = defaultdict(_Bucket)
     county_names: dict[str, str] = {}
     unknown: set[str] = set()
+    unknown_districts: set[str] = set()
+    has_district = DISTRICT_COLUMN in (reader.fieldnames or [])
 
     for row in reader:
         name = " ".join((row.get("COUNTY_NAME") or "").split())
@@ -241,12 +251,21 @@ def parse(body: bytes, cycle: int, as_of: date) -> FetchResult:
 
         bucket = party_bucket(row.get("PARTY_CODE"))
         gender = _sex(row.get("GENDER_CODE"))
+        cd = None
+        if has_district:
+            raw_cd = (row.get(DISTRICT_COLUMN) or "").strip()
+            cd = cd_code("MD", raw_cd) if raw_cd else None
+            if raw_cd and cd is None:
+                unknown_districts.add(raw_cd)
 
         for column, day in zip(DAY_COLUMNS, dates):
             count = _count(row.get(column))
             if not count or day > as_of:
                 continue
-            for target in (by_state[day], by_county[(fips, day)]):
+            targets = [by_state[day], by_county[(fips, day)]]
+            if cd:
+                targets.append(by_cd[(cd, day)])
+            for target in targets:
                 target.total += count
                 if bucket:
                     target.party[bucket] += count
@@ -257,14 +276,17 @@ def parse(body: bytes, cycle: int, as_of: date) -> FetchResult:
         # Maryland has exactly 24 localities and they do not change; a name we
         # cannot place is a county that would vanish off the map.
         raise SchemaDrift(f"MD: unrecognised county names {sorted(unknown)[:5]}")
+    if unknown_districts:
+        raise SchemaDrift(f"MD: unrecognised {DISTRICT_COLUMN} {sorted(unknown_districts)[:5]}")
     if not county_names:
         raise SchemaDrift("MD: early-voting file produced no county rows")
 
-    return _emit(by_state, by_county, by_demo, county_names, cycle, span)
+    return _emit(by_state, by_county, by_demo, by_cd, county_names, cycle, span)
 
 
-def _emit(by_state, by_county, by_demo, county_names, cycle, span) -> FetchResult:
+def _emit(by_state, by_county, by_demo, by_cd, county_names, cycle, span) -> FetchResult:
     result = FetchResult()
+    _districts.attach(result, [])
 
     running = _Bucket()
     for day in span:
@@ -304,6 +326,27 @@ def _emit(by_state, by_county, by_demo, county_names, cycle, span) -> FetchResul
                 **{field: running.party.get(key, 0)
                    for key, field in _PARTY_FIELD.items()},
             ))
+
+    district_rows: list[DistrictDay] = []
+    for cd in sorted({c for c, _ in by_cd}):
+        running = _Bucket()
+        for day in span:
+            today = by_cd.get((cd, day))
+            if today:
+                running.add(today)
+            if running.total == 0:
+                continue
+            district_rows.append(DistrictDay(
+                cycle=cycle, state="MD", cd_code=cd, day=day,
+                ballots_total=running.total,
+                ballots_new=today.total if today else 0,
+                # The early-voting centers only; mail is a separate report.
+                mail_returned=None,
+                inperson=running.total,
+                **{field: running.party.get(key, 0)
+                   for key, field in _PARTY_FIELD.items()},
+            ))
+    _districts.attach(result, district_rows)
 
     cumulative: dict[tuple[str, str], int] = defaultdict(int)
     for day in span:

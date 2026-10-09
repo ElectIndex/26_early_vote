@@ -2917,6 +2917,12 @@ def format_validation(results: Sequence[Validation]) -> Iterator[str]:
            "the last matched day, whatever the counties had done.")
 
 
+def stamp_of(rows: Sequence[Counterfactual]) -> str | None:
+    """The one `retrieved_at` a build stamped on every row, or None."""
+    stamps = {r.retrieved_at for r in rows if r.retrieved_at}
+    return next(iter(stamps)) if len(stamps) == 1 else None
+
+
 def cmd_counterfactual(args) -> int:
     """`python -m ev counterfactual`. Never part of the scheduled ingest."""
     out_dir = Path(args.output) if args.output else ROOT / "output"
@@ -2955,10 +2961,20 @@ def cmd_counterfactual(args) -> int:
         return 0
 
     # A filtered run knows only part of the table and may only merge into it.
-    info = write(out_dir, rows, rebuild=not args.state and not args.cycle)
+    rebuild = not args.state and not args.cycle
+    info = write(out_dir, rows, rebuild=rebuild)
     print(f"counterfactual.csv: {info['rows']} rows "
           f"({len(rows)} computed this run: "
           + ", ".join(f"{c} {n}" for c, n in sorted(by_cycle.items())) + ")")
+
+    # THE DISTRICT COMPANION, built from exactly the rows just written so the
+    # two tables can never describe different state-days. Same rebuild rule.
+    from . import counterfactual_districts as cfd
+
+    district_rows = cfd.build(out_dir, [r.to_dict() for r in rows], retrieved_at=stamp_of(rows))
+    if district_rows:
+        dinfo = cfd.write(out_dir, district_rows, rebuild=rebuild)
+        print(f"{cfd.FILENAME}: {dinfo['rows']} rows ({len(district_rows)} computed this run)")
     current = max(CYCLES)
     if not by_cycle.get(current):
         print(f"  NOTE: zero {current} rows. A {current} state-day gets a row only "
