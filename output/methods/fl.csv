@@ -7102,7 +7102,7 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,FL,12013,Calhoun County,2026-10-08,26,inperson,0,,0,0,0,0,1,fl-doe,2026-10-08T17:11:30+00:00
 2026,FL,12013,Calhoun County,2026-10-08,26,mail,123,,49,71,0,3,1,fl-doe,2026-10-08T17:11:30+00:00
 2026,FL,12013,Calhoun County,2026-10-09,25,inperson,0,,0,0,0,0,1,fl-doe,2026-10-09T12:34:07+00:00
-2026,FL,12013,Calhoun County,2026-10-09,25,mail,123,,49,71,0,3,1,fl-doe,2026-10-09T12:34:07+00:00
+2026,FL,12013,Calhoun County,2026-10-09,25,mail,154,,61,89,0,4,1,fl-doe,2026-10-09T19:15:05+00:00
 2026,FL,12015,Charlotte County,2026-09-19,45,inperson,0,,0,0,0,0,1,fl-doe,2026-09-19T13:41:22+00:00
 2026,FL,12015,Charlotte County,2026-09-19,45,mail,2,,2,0,0,0,1,fl-doe,2026-09-19T13:41:22+00:00
 2026,FL,12015,Charlotte County,2026-09-20,44,inperson,0,,0,0,0,0,1,fl-doe,2026-09-20T13:56:34+00:00
@@ -8788,7 +8788,7 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,FL,12087,Monroe County,2026-10-08,26,inperson,0,,0,0,0,0,1,fl-doe,2026-10-08T17:11:30+00:00
 2026,FL,12087,Monroe County,2026-10-08,26,mail,1861,,799,784,27,251,1,fl-doe,2026-10-08T17:11:30+00:00
 2026,FL,12087,Monroe County,2026-10-09,25,inperson,0,,0,0,0,0,1,fl-doe,2026-10-09T12:34:07+00:00
-2026,FL,12087,Monroe County,2026-10-09,25,mail,1861,,799,784,27,251,1,fl-doe,2026-10-09T12:34:07+00:00
+2026,FL,12087,Monroe County,2026-10-09,25,mail,2106,,902,891,31,282,1,fl-doe,2026-10-09T19:15:05+00:00
 2026,FL,12089,Nassau County,2026-09-15,49,inperson,0,,0,0,0,0,1,fl-doe,2026-09-15T13:08:04+00:00
 2026,FL,12089,Nassau County,2026-09-15,49,mail,0,,0,0,0,0,1,fl-doe,2026-09-15T13:08:04+00:00
 2026,FL,12089,Nassau County,2026-09-16,48,inperson,0,,0,0,0,0,1,fl-doe,2026-09-16T16:07:18+00:00
