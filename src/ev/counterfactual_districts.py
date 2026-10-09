@@ -68,6 +68,11 @@ from .districts import WEIGHTS_PATH
 log = logging.getLogger(__name__)
 
 FILENAME = "counterfactual_districts.csv"
+#: The newest row per (cycle, state, district) and nothing else -- what a map
+#: of 435 districts needs, at a few hundred KB instead of the full daily
+#: history. Derived from FILENAME on every write, never written separately.
+LATEST_FILENAME = "counterfactual_districts_latest.csv"
+LATEST_KEY = ("cycle", "state", "cd_code")
 METHOD = "pres2024-cd-segment-composition-diff"
 SOURCE_NAME = "electindex-counterfactual/pres2024-cd-segments"
 
@@ -272,13 +277,36 @@ def build(
     return out
 
 
+def latest_rows(rows: Iterable[dict[str, str]]) -> list[dict[str, str]]:
+    """One row per (cycle, state, district): the smallest non-negative
+    days_to_election, which is the rule the page's `latestDistrictShifts` uses."""
+    best: dict[tuple, dict[str, str]] = {}
+    for r in rows:
+        dte = _num(r.get("days_to_election"))
+        if dte is None or dte < 0:
+            continue
+        key = (r.get("cycle", ""), (r.get("state") or "").upper(), (r.get("cd_code") or "").upper())
+        have = best.get(key)
+        if have is None or dte < int(have["days_to_election"]):
+            best[key] = r
+    return [best[k] for k in sorted(best)]
+
+
 def write(out_dir: Path, rows: Sequence[dict[str, str]], *, rebuild: bool = False) -> dict:
-    """Publish to output/counterfactual_districts.csv and nowhere else."""
+    """Publish to output/counterfactual_districts.csv, then derive the
+    `_latest` companion from the full file on disk -- so the two can never
+    disagree, whether this run rebuilt everything or merged one state."""
     forbidden = FORBIDDEN_COLUMNS & set(COLUMNS)
     if forbidden:
         raise CounterfactualError(
             f"{FILENAME} must never carry reported-party columns: {sorted(forbidden)}")
-    return publish.publish_table(
-        Path(out_dir) / FILENAME, COLUMNS, KEY, list(rows),
+    out_dir = Path(out_dir)
+    info = publish.publish_table(
+        out_dir / FILENAME, COLUMNS, KEY, list(rows),
         guard=False, replace=rebuild,
     )
+    publish.publish_table(
+        out_dir / LATEST_FILENAME, COLUMNS, LATEST_KEY,
+        latest_rows(_read_csv(out_dir / FILENAME)), guard=False, replace=True,
+    )
+    return info

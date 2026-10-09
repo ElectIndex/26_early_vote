@@ -174,7 +174,7 @@ def test_build_follows_the_published_state_rows_and_write_touches_one_file(tmp_p
     before = sorted(p.name for p in out.rglob("*") if p.is_file())
     cfd.write(out, rows, rebuild=True)
     after = sorted(p.name for p in out.rglob("*") if p.is_file())
-    assert set(after) - set(before) == {cfd.FILENAME}
+    assert set(after) - set(before) == {cfd.FILENAME, cfd.LATEST_FILENAME}
     with (out / cfd.FILENAME).open(newline="") as fh:
         published = list(csv.DictReader(fh))
     assert [r["cd_code"] for r in published] == ["NC-01", "NC-02"]
@@ -188,3 +188,29 @@ def test_the_real_crosswalk_covers_every_district_the_state_table_can_name():
         for cd, segs in cds.items():
             assert cfd.district_actual(segs) is not None, cd
             assert all(s.two_party > 0 for s in segs), cd
+
+
+def test_the_latest_file_holds_one_row_per_district_the_newest(tmp_path):
+    rows = [
+        {"cycle": "2026", "state": "NC", "cd_code": "NC-01", "date": "2026-10-20", "days_to_election": "14"},
+        {"cycle": "2026", "state": "NC", "cd_code": "NC-01", "date": "2026-10-22", "days_to_election": "12"},
+        {"cycle": "2026", "state": "NC", "cd_code": "NC-01", "date": "2026-11-05", "days_to_election": "-2"},
+        {"cycle": "2024", "state": "NC", "cd_code": "NC-01", "date": "2024-11-05", "days_to_election": "0"},
+        {"cycle": "2026", "state": "VA", "cd_code": "VA-02", "date": "2026-10-20", "days_to_election": "14"},
+    ]
+    latest = cfd.latest_rows(rows)
+    assert [(r["cycle"], r["cd_code"], r["days_to_election"]) for r in latest] == [
+        ("2024", "NC-01", "0"), ("2026", "NC-01", "12"), ("2026", "VA-02", "14")]
+    out = tmp_path / "output"
+    out.mkdir()
+    full = [dict(_state_row(), cd_code=r["cd_code"], days_to_election=r["days_to_election"],
+                 date=r["date"], cycle=r["cycle"], implied_margin_2024="1", actual_margin_2024="1",
+                 reference_days_to_election="1", counties_used="1", counties_total="1",
+                 reference_counties_used="1", ballots="1", reference_ballots="1",
+                 composition_margin="1", reference_composition_margin="1",
+                 method=cfd.METHOD, source_name=cfd.SOURCE_NAME, state=r["state"]) for r in rows]
+    cfd.write(out, full, rebuild=True)
+    with (out / cfd.LATEST_FILENAME).open(newline="") as fh:
+        published = list(csv.DictReader(fh))
+    assert len(published) == 3
+    assert {r["cd_code"] for r in published} == {"NC-01", "VA-02"}

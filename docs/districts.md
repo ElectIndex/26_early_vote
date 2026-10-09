@@ -101,3 +101,9 @@ Two limits a reader should know:
 `counties_used` / `counties_total` say how many of a district's counties are
 in; `ballots` and `reference_ballots` are the district's apportioned share of
 the state's ballots on each side.
+
+`output/counterfactual_districts_latest.csv` is the same table reduced to the
+newest row per (cycle, state, district) — a few hundred KB where the full file
+is the whole daily history — derived from the full file on every write so the
+two cannot disagree. The page's district maps read it and fall back to the
+full file.
