@@ -278,6 +278,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MN,27001,Aitkin County,2026-10-09,25,1474,,1299,175,,,,,2,civicapi,2026-10-09T19:17:03+00:00
 2026,MN,27001,Aitkin County,2026-10-10,24,1474,,1299,175,,,,,2,civicapi,2026-10-10T04:21:29+00:00
 2026,MN,27001,Aitkin County,2026-10-11,23,1474,,1299,175,,,,,2,civicapi,2026-10-11T08:19:28+00:00
+2026,MN,27001,Aitkin County,2026-10-12,22,1474,,1299,175,,,,,2,civicapi,2026-10-12T08:38:18+00:00
 2026,MN,27003,Anoka County,2026-09-24,40,684,,9,675,,,,,2,civicapi,2026-09-24T23:04:52+00:00
 2026,MN,27003,Anoka County,2026-09-25,39,684,,9,675,,,,,2,civicapi,2026-09-25T09:24:14+00:00
 2026,MN,27003,Anoka County,2026-09-26,38,684,,9,675,,,,,2,civicapi,2026-09-26T09:07:44+00:00
@@ -296,6 +297,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MN,27003,Anoka County,2026-10-09,25,6900,,3663,3237,,,,,2,civicapi,2026-10-09T19:17:03+00:00
 2026,MN,27003,Anoka County,2026-10-10,24,6900,,3663,3237,,,,,2,civicapi,2026-10-10T04:21:29+00:00
 2026,MN,27003,Anoka County,2026-10-11,23,6900,,3663,3237,,,,,2,civicapi,2026-10-11T08:19:28+00:00
+2026,MN,27003,Anoka County,2026-10-12,22,6900,,3663,3237,,,,,2,civicapi,2026-10-12T08:38:18+00:00
 2026,MN,27005,Becker County,2026-09-24,40,79,,10,69,,,,,2,civicapi,2026-09-24T23:04:52+00:00
 2026,MN,27005,Becker County,2026-09-25,39,79,,10,69,,,,,2,civicapi,2026-09-25T09:24:14+00:00
 2026,MN,27005,Becker County,2026-09-26,38,79,,10,69,,,,,2,civicapi,2026-09-26T09:07:44+00:00
@@ -314,6 +316,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MN,27005,Becker County,2026-10-09,25,575,,308,267,,,,,2,civicapi,2026-10-09T19:17:03+00:00
 2026,MN,27005,Becker County,2026-10-10,24,575,,308,267,,,,,2,civicapi,2026-10-10T04:21:29+00:00
 2026,MN,27005,Becker County,2026-10-11,23,575,,308,267,,,,,2,civicapi,2026-10-11T08:19:28+00:00
+2026,MN,27005,Becker County,2026-10-12,22,575,,308,267,,,,,2,civicapi,2026-10-12T08:38:18+00:00
 2026,MN,27007,Beltrami County,2026-10-02,32,141,,6,135,,,,,2,civicapi,2026-10-02T17:29:25+00:00
 2026,MN,27007,Beltrami County,2026-10-03,31,141,,6,135,,,,,2,civicapi,2026-10-03T07:36:37+00:00
 2026,MN,27007,Beltrami County,2026-10-04,30,141,,6,135,,,,,2,civicapi,2026-10-04T18:00:38+00:00
@@ -324,6 +327,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MN,27007,Beltrami County,2026-10-09,25,902,,520,382,,,,,2,civicapi,2026-10-09T19:17:03+00:00
 2026,MN,27007,Beltrami County,2026-10-10,24,902,,520,382,,,,,2,civicapi,2026-10-10T04:21:29+00:00
 2026,MN,27007,Beltrami County,2026-10-11,23,902,,520,382,,,,,2,civicapi,2026-10-11T08:19:28+00:00
+2026,MN,27007,Beltrami County,2026-10-12,22,902,,520,382,,,,,2,civicapi,2026-10-12T08:38:18+00:00
 2026,MN,27009,Benton County,2026-09-24,40,34,,1,33,,,,,2,civicapi,2026-09-24T23:04:52+00:00
 2026,MN,27009,Benton County,2026-09-25,39,34,,1,33,,,,,2,civicapi,2026-09-25T09:24:14+00:00
 2026,MN,27009,Benton County,2026-09-26,38,34,,1,33,,,,,2,civicapi,2026-09-26T09:07:44+00:00
@@ -342,9 +346,11 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MN,27009,Benton County,2026-10-09,25,367,,252,115,,,,,2,civicapi,2026-10-09T19:17:03+00:00
 2026,MN,27009,Benton County,2026-10-10,24,367,,252,115,,,,,2,civicapi,2026-10-10T04:21:29+00:00
 2026,MN,27009,Benton County,2026-10-11,23,367,,252,115,,,,,2,civicapi,2026-10-11T08:19:28+00:00
+2026,MN,27009,Benton County,2026-10-12,22,367,,252,115,,,,,2,civicapi,2026-10-12T08:38:18+00:00
 2026,MN,27011,Big Stone County,2026-10-09,25,398,,381,17,,,,,2,civicapi,2026-10-09T19:17:03+00:00
 2026,MN,27011,Big Stone County,2026-10-10,24,398,,381,17,,,,,2,civicapi,2026-10-10T04:21:29+00:00
 2026,MN,27011,Big Stone County,2026-10-11,23,398,,381,17,,,,,2,civicapi,2026-10-11T08:19:28+00:00
+2026,MN,27011,Big Stone County,2026-10-12,22,398,,381,17,,,,,2,civicapi,2026-10-12T08:38:18+00:00
 2026,MN,27013,Blue Earth County,2026-09-24,40,130,,,130,,,,,2,civicapi,2026-09-24T23:04:52+00:00
 2026,MN,27013,Blue Earth County,2026-09-25,39,130,,,130,,,,,2,civicapi,2026-09-25T09:24:14+00:00
 2026,MN,27013,Blue Earth County,2026-09-26,38,130,,,130,,,,,2,civicapi,2026-09-26T09:07:44+00:00
@@ -363,6 +369,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MN,27013,Blue Earth County,2026-10-09,25,1912,,1320,592,,,,,2,civicapi,2026-10-09T19:17:03+00:00
 2026,MN,27013,Blue Earth County,2026-10-10,24,1912,,1320,592,,,,,2,civicapi,2026-10-10T04:21:29+00:00
 2026,MN,27013,Blue Earth County,2026-10-11,23,1912,,1320,592,,,,,2,civicapi,2026-10-11T08:19:28+00:00
+2026,MN,27013,Blue Earth County,2026-10-12,22,1912,,1320,592,,,,,2,civicapi,2026-10-12T08:38:18+00:00
 2026,MN,27015,Brown County,2026-09-24,40,30,,3,27,,,,,2,civicapi,2026-09-24T23:04:52+00:00
 2026,MN,27015,Brown County,2026-09-25,39,30,,3,27,,,,,2,civicapi,2026-09-25T09:24:14+00:00
 2026,MN,27015,Brown County,2026-09-26,38,30,,3,27,,,,,2,civicapi,2026-09-26T09:07:44+00:00
@@ -381,6 +388,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MN,27015,Brown County,2026-10-09,25,470,,358,112,,,,,2,civicapi,2026-10-09T19:17:03+00:00
 2026,MN,27015,Brown County,2026-10-10,24,470,,358,112,,,,,2,civicapi,2026-10-10T04:21:29+00:00
 2026,MN,27015,Brown County,2026-10-11,23,470,,358,112,,,,,2,civicapi,2026-10-11T08:19:28+00:00
+2026,MN,27015,Brown County,2026-10-12,22,470,,358,112,,,,,2,civicapi,2026-10-12T08:38:18+00:00
 2026,MN,27017,Carlton County,2026-09-24,40,45,,20,25,,,,,2,civicapi,2026-09-24T23:04:52+00:00
 2026,MN,27017,Carlton County,2026-09-25,39,45,,20,25,,,,,2,civicapi,2026-09-25T09:24:14+00:00
 2026,MN,27017,Carlton County,2026-09-26,38,45,,20,25,,,,,2,civicapi,2026-09-26T09:07:44+00:00
@@ -399,6 +407,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MN,27017,Carlton County,2026-10-09,25,911,,712,199,,,,,2,civicapi,2026-10-09T19:17:03+00:00
 2026,MN,27017,Carlton County,2026-10-10,24,911,,712,199,,,,,2,civicapi,2026-10-10T04:21:29+00:00
 2026,MN,27017,Carlton County,2026-10-11,23,911,,712,199,,,,,2,civicapi,2026-10-11T08:19:28+00:00
+2026,MN,27017,Carlton County,2026-10-12,22,911,,712,199,,,,,2,civicapi,2026-10-12T08:38:18+00:00
 2026,MN,27019,Carver County,2026-09-24,40,367,,52,315,,,,,2,civicapi,2026-09-24T23:04:52+00:00
 2026,MN,27019,Carver County,2026-09-25,39,367,,52,315,,,,,2,civicapi,2026-09-25T09:24:14+00:00
 2026,MN,27019,Carver County,2026-09-26,38,367,,52,315,,,,,2,civicapi,2026-09-26T09:07:44+00:00
@@ -417,6 +426,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MN,27019,Carver County,2026-10-09,25,2834,,1518,1316,,,,,2,civicapi,2026-10-09T19:17:03+00:00
 2026,MN,27019,Carver County,2026-10-10,24,2834,,1518,1316,,,,,2,civicapi,2026-10-10T04:21:29+00:00
 2026,MN,27019,Carver County,2026-10-11,23,2834,,1518,1316,,,,,2,civicapi,2026-10-11T08:19:28+00:00
+2026,MN,27019,Carver County,2026-10-12,22,2834,,1518,1316,,,,,2,civicapi,2026-10-12T08:38:18+00:00
 2026,MN,27021,Cass County,2026-09-24,40,37,,2,35,,,,,2,civicapi,2026-09-24T23:04:52+00:00
 2026,MN,27021,Cass County,2026-09-25,39,37,,2,35,,,,,2,civicapi,2026-09-25T09:24:14+00:00
 2026,MN,27021,Cass County,2026-09-26,38,37,,2,35,,,,,2,civicapi,2026-09-26T09:07:44+00:00
@@ -435,6 +445,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MN,27021,Cass County,2026-10-09,25,1576,,1327,249,,,,,2,civicapi,2026-10-09T19:17:03+00:00
 2026,MN,27021,Cass County,2026-10-10,24,1576,,1327,249,,,,,2,civicapi,2026-10-10T04:21:29+00:00
 2026,MN,27021,Cass County,2026-10-11,23,1576,,1327,249,,,,,2,civicapi,2026-10-11T08:19:28+00:00
+2026,MN,27021,Cass County,2026-10-12,22,1576,,1327,249,,,,,2,civicapi,2026-10-12T08:38:18+00:00
 2026,MN,27023,Chippewa County,2026-10-02,32,53,,24,29,,,,,2,civicapi,2026-10-02T17:29:25+00:00
 2026,MN,27023,Chippewa County,2026-10-03,31,53,,24,29,,,,,2,civicapi,2026-10-03T07:36:37+00:00
 2026,MN,27023,Chippewa County,2026-10-04,30,53,,24,29,,,,,2,civicapi,2026-10-04T18:00:38+00:00
@@ -445,6 +456,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MN,27023,Chippewa County,2026-10-09,25,170,,124,46,,,,,2,civicapi,2026-10-09T19:17:03+00:00
 2026,MN,27023,Chippewa County,2026-10-10,24,170,,124,46,,,,,2,civicapi,2026-10-10T04:21:29+00:00
 2026,MN,27023,Chippewa County,2026-10-11,23,170,,124,46,,,,,2,civicapi,2026-10-11T08:19:28+00:00
+2026,MN,27023,Chippewa County,2026-10-12,22,170,,124,46,,,,,2,civicapi,2026-10-12T08:38:18+00:00
 2026,MN,27025,Chisago County,2026-10-02,32,665,,383,282,,,,,2,civicapi,2026-10-02T17:29:25+00:00
 2026,MN,27025,Chisago County,2026-10-03,31,665,,383,282,,,,,2,civicapi,2026-10-03T07:36:37+00:00
 2026,MN,27025,Chisago County,2026-10-04,30,665,,383,282,,,,,2,civicapi,2026-10-04T18:00:38+00:00
@@ -455,6 +467,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MN,27025,Chisago County,2026-10-09,25,1225,,633,592,,,,,2,civicapi,2026-10-09T19:17:03+00:00
 2026,MN,27025,Chisago County,2026-10-10,24,1225,,633,592,,,,,2,civicapi,2026-10-10T04:21:29+00:00
 2026,MN,27025,Chisago County,2026-10-11,23,1225,,633,592,,,,,2,civicapi,2026-10-11T08:19:28+00:00
+2026,MN,27025,Chisago County,2026-10-12,22,1225,,633,592,,,,,2,civicapi,2026-10-12T08:38:18+00:00
 2026,MN,27027,Clay County,2026-09-24,40,117,,54,63,,,,,2,civicapi,2026-09-24T23:04:52+00:00
 2026,MN,27027,Clay County,2026-09-25,39,117,,54,63,,,,,2,civicapi,2026-09-25T09:24:14+00:00
 2026,MN,27027,Clay County,2026-09-26,38,117,,54,63,,,,,2,civicapi,2026-09-26T09:07:44+00:00
@@ -473,6 +486,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MN,27027,Clay County,2026-10-09,25,1553,,1180,373,,,,,2,civicapi,2026-10-09T19:17:03+00:00
 2026,MN,27027,Clay County,2026-10-10,24,1553,,1180,373,,,,,2,civicapi,2026-10-10T04:21:29+00:00
 2026,MN,27027,Clay County,2026-10-11,23,1553,,1180,373,,,,,2,civicapi,2026-10-11T08:19:28+00:00
+2026,MN,27027,Clay County,2026-10-12,22,1553,,1180,373,,,,,2,civicapi,2026-10-12T08:38:18+00:00
 2026,MN,27029,Clearwater County,2026-10-02,32,97,,67,30,,,,,2,civicapi,2026-10-02T17:29:25+00:00
 2026,MN,27029,Clearwater County,2026-10-03,31,97,,67,30,,,,,2,civicapi,2026-10-03T07:36:37+00:00
 2026,MN,27029,Clearwater County,2026-10-04,30,97,,67,30,,,,,2,civicapi,2026-10-04T18:00:38+00:00
@@ -483,6 +497,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MN,27029,Clearwater County,2026-10-09,25,140,,102,38,,,,,2,civicapi,2026-10-09T19:17:03+00:00
 2026,MN,27029,Clearwater County,2026-10-10,24,140,,102,38,,,,,2,civicapi,2026-10-10T04:21:29+00:00
 2026,MN,27029,Clearwater County,2026-10-11,23,140,,102,38,,,,,2,civicapi,2026-10-11T08:19:28+00:00
+2026,MN,27029,Clearwater County,2026-10-12,22,140,,102,38,,,,,2,civicapi,2026-10-12T08:38:18+00:00
 2026,MN,27031,Cook County,2026-09-24,40,21,,4,17,,,,,2,civicapi,2026-09-24T23:04:52+00:00
 2026,MN,27031,Cook County,2026-09-25,39,21,,4,17,,,,,2,civicapi,2026-09-25T09:24:14+00:00
 2026,MN,27031,Cook County,2026-09-26,38,21,,4,17,,,,,2,civicapi,2026-09-26T09:07:44+00:00
@@ -501,6 +516,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MN,27031,Cook County,2026-10-09,25,541,,497,44,,,,,2,civicapi,2026-10-09T19:17:03+00:00
 2026,MN,27031,Cook County,2026-10-10,24,541,,497,44,,,,,2,civicapi,2026-10-10T04:21:29+00:00
 2026,MN,27031,Cook County,2026-10-11,23,541,,497,44,,,,,2,civicapi,2026-10-11T08:19:28+00:00
+2026,MN,27031,Cook County,2026-10-12,22,541,,497,44,,,,,2,civicapi,2026-10-12T08:38:18+00:00
 2026,MN,27033,Cottonwood County,2026-09-24,40,16,,1,15,,,,,2,civicapi,2026-09-24T23:04:52+00:00
 2026,MN,27033,Cottonwood County,2026-09-25,39,16,,1,15,,,,,2,civicapi,2026-09-25T09:24:14+00:00
 2026,MN,27033,Cottonwood County,2026-09-26,38,16,,1,15,,,,,2,civicapi,2026-09-26T09:07:44+00:00
@@ -519,6 +535,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MN,27033,Cottonwood County,2026-10-09,25,136,,69,67,,,,,2,civicapi,2026-10-09T19:17:03+00:00
 2026,MN,27033,Cottonwood County,2026-10-10,24,136,,69,67,,,,,2,civicapi,2026-10-10T04:21:29+00:00
 2026,MN,27033,Cottonwood County,2026-10-11,23,136,,69,67,,,,,2,civicapi,2026-10-11T08:19:28+00:00
+2026,MN,27033,Cottonwood County,2026-10-12,22,136,,69,67,,,,,2,civicapi,2026-10-12T08:38:18+00:00
 2026,MN,27035,Crow Wing County,2026-09-24,40,194,,12,182,,,,,2,civicapi,2026-09-24T23:04:52+00:00
 2026,MN,27035,Crow Wing County,2026-09-25,39,194,,12,182,,,,,2,civicapi,2026-09-25T09:24:14+00:00
 2026,MN,27035,Crow Wing County,2026-09-26,38,194,,12,182,,,,,2,civicapi,2026-09-26T09:07:44+00:00
@@ -537,6 +554,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MN,27035,Crow Wing County,2026-10-09,25,1859,,1179,680,,,,,2,civicapi,2026-10-09T19:17:03+00:00
 2026,MN,27035,Crow Wing County,2026-10-10,24,1859,,1179,680,,,,,2,civicapi,2026-10-10T04:21:29+00:00
 2026,MN,27035,Crow Wing County,2026-10-11,23,1859,,1179,680,,,,,2,civicapi,2026-10-11T08:19:28+00:00
+2026,MN,27035,Crow Wing County,2026-10-12,22,1859,,1179,680,,,,,2,civicapi,2026-10-12T08:38:18+00:00
 2026,MN,27037,Dakota County,2026-09-24,40,733,,32,701,,,,,2,civicapi,2026-09-24T23:04:52+00:00
 2026,MN,27037,Dakota County,2026-09-25,39,733,,32,701,,,,,2,civicapi,2026-09-25T09:24:14+00:00
 2026,MN,27037,Dakota County,2026-09-26,38,733,,32,701,,,,,2,civicapi,2026-09-26T09:07:44+00:00
@@ -555,6 +573,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MN,27037,Dakota County,2026-10-09,25,9967,,6123,3844,,,,,2,civicapi,2026-10-09T19:17:03+00:00
 2026,MN,27037,Dakota County,2026-10-10,24,9967,,6123,3844,,,,,2,civicapi,2026-10-10T04:21:29+00:00
 2026,MN,27037,Dakota County,2026-10-11,23,9967,,6123,3844,,,,,2,civicapi,2026-10-11T08:19:28+00:00
+2026,MN,27037,Dakota County,2026-10-12,22,9967,,6123,3844,,,,,2,civicapi,2026-10-12T08:38:18+00:00
 2026,MN,27039,Dodge County,2026-10-02,32,84,,33,51,,,,,2,civicapi,2026-10-02T17:29:25+00:00
 2026,MN,27039,Dodge County,2026-10-03,31,84,,33,51,,,,,2,civicapi,2026-10-03T07:36:37+00:00
 2026,MN,27039,Dodge County,2026-10-04,30,84,,33,51,,,,,2,civicapi,2026-10-04T18:00:38+00:00
@@ -565,6 +584,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MN,27039,Dodge County,2026-10-09,25,152,,77,75,,,,,2,civicapi,2026-10-09T19:17:03+00:00
 2026,MN,27039,Dodge County,2026-10-10,24,152,,77,75,,,,,2,civicapi,2026-10-10T04:21:29+00:00
 2026,MN,27039,Dodge County,2026-10-11,23,152,,77,75,,,,,2,civicapi,2026-10-11T08:19:28+00:00
+2026,MN,27039,Dodge County,2026-10-12,22,152,,77,75,,,,,2,civicapi,2026-10-12T08:38:18+00:00
 2026,MN,27041,Douglas County,2026-09-24,40,161,,20,141,,,,,2,civicapi,2026-09-24T23:04:52+00:00
 2026,MN,27041,Douglas County,2026-09-25,39,161,,20,141,,,,,2,civicapi,2026-09-25T09:24:14+00:00
 2026,MN,27041,Douglas County,2026-09-26,38,161,,20,141,,,,,2,civicapi,2026-09-26T09:07:44+00:00
@@ -583,9 +603,11 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MN,27041,Douglas County,2026-10-09,25,1073,,346,727,,,,,2,civicapi,2026-10-09T19:17:03+00:00
 2026,MN,27041,Douglas County,2026-10-10,24,1073,,346,727,,,,,2,civicapi,2026-10-10T04:21:29+00:00
 2026,MN,27041,Douglas County,2026-10-11,23,1073,,346,727,,,,,2,civicapi,2026-10-11T08:19:28+00:00
+2026,MN,27041,Douglas County,2026-10-12,22,1073,,346,727,,,,,2,civicapi,2026-10-12T08:38:18+00:00
 2026,MN,27043,Faribault County,2026-10-09,25,205,,161,44,,,,,2,civicapi,2026-10-09T19:17:03+00:00
 2026,MN,27043,Faribault County,2026-10-10,24,205,,161,44,,,,,2,civicapi,2026-10-10T04:21:29+00:00
 2026,MN,27043,Faribault County,2026-10-11,23,205,,161,44,,,,,2,civicapi,2026-10-11T08:19:28+00:00
+2026,MN,27043,Faribault County,2026-10-12,22,205,,161,44,,,,,2,civicapi,2026-10-12T08:38:18+00:00
 2026,MN,27045,Fillmore County,2026-10-02,32,276,,248,28,,,,,2,civicapi,2026-10-02T17:29:25+00:00
 2026,MN,27045,Fillmore County,2026-10-03,31,276,,248,28,,,,,2,civicapi,2026-10-03T07:36:37+00:00
 2026,MN,27045,Fillmore County,2026-10-04,30,276,,248,28,,,,,2,civicapi,2026-10-04T18:00:38+00:00
@@ -596,6 +618,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MN,27045,Fillmore County,2026-10-09,25,477,,431,46,,,,,2,civicapi,2026-10-09T19:17:03+00:00
 2026,MN,27045,Fillmore County,2026-10-10,24,477,,431,46,,,,,2,civicapi,2026-10-10T04:21:29+00:00
 2026,MN,27045,Fillmore County,2026-10-11,23,477,,431,46,,,,,2,civicapi,2026-10-11T08:19:28+00:00
+2026,MN,27045,Fillmore County,2026-10-12,22,477,,431,46,,,,,2,civicapi,2026-10-12T08:38:18+00:00
 2026,MN,27047,Freeborn County,2026-09-24,40,43,,2,41,,,,,2,civicapi,2026-09-24T23:04:52+00:00
 2026,MN,27047,Freeborn County,2026-09-25,39,43,,2,41,,,,,2,civicapi,2026-09-25T09:24:14+00:00
 2026,MN,27047,Freeborn County,2026-09-26,38,43,,2,41,,,,,2,civicapi,2026-09-26T09:07:44+00:00
@@ -614,6 +637,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MN,27047,Freeborn County,2026-10-09,25,753,,444,309,,,,,2,civicapi,2026-10-09T19:17:03+00:00
 2026,MN,27047,Freeborn County,2026-10-10,24,753,,444,309,,,,,2,civicapi,2026-10-10T04:21:29+00:00
 2026,MN,27047,Freeborn County,2026-10-11,23,753,,444,309,,,,,2,civicapi,2026-10-11T08:19:28+00:00
+2026,MN,27047,Freeborn County,2026-10-12,22,753,,444,309,,,,,2,civicapi,2026-10-12T08:38:18+00:00
 2026,MN,27049,Goodhue County,2026-09-24,40,51,,2,49,,,,,2,civicapi,2026-09-24T23:04:52+00:00
 2026,MN,27049,Goodhue County,2026-09-25,39,51,,2,49,,,,,2,civicapi,2026-09-25T09:24:14+00:00
 2026,MN,27049,Goodhue County,2026-09-26,38,51,,2,49,,,,,2,civicapi,2026-09-26T09:07:44+00:00
@@ -632,6 +656,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MN,27049,Goodhue County,2026-10-09,25,975,,608,367,,,,,2,civicapi,2026-10-09T19:17:03+00:00
 2026,MN,27049,Goodhue County,2026-10-10,24,975,,608,367,,,,,2,civicapi,2026-10-10T04:21:29+00:00
 2026,MN,27049,Goodhue County,2026-10-11,23,975,,608,367,,,,,2,civicapi,2026-10-11T08:19:28+00:00
+2026,MN,27049,Goodhue County,2026-10-12,22,975,,608,367,,,,,2,civicapi,2026-10-12T08:38:18+00:00
 2026,MN,27051,Grant County,2026-10-02,32,9,,7,2,,,,,2,civicapi,2026-10-02T17:29:25+00:00
 2026,MN,27051,Grant County,2026-10-03,31,9,,7,2,,,,,2,civicapi,2026-10-03T07:36:37+00:00
 2026,MN,27051,Grant County,2026-10-04,30,9,,7,2,,,,,2,civicapi,2026-10-04T18:00:38+00:00
@@ -642,6 +667,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MN,27051,Grant County,2026-10-09,25,229,,217,12,,,,,2,civicapi,2026-10-09T19:17:03+00:00
 2026,MN,27051,Grant County,2026-10-10,24,229,,217,12,,,,,2,civicapi,2026-10-10T04:21:29+00:00
 2026,MN,27051,Grant County,2026-10-11,23,229,,217,12,,,,,2,civicapi,2026-10-11T08:19:28+00:00
+2026,MN,27051,Grant County,2026-10-12,22,229,,217,12,,,,,2,civicapi,2026-10-12T08:38:18+00:00
 2026,MN,27053,Hennepin County,2026-09-24,40,6215,,3313,2902,,,,,2,civicapi,2026-09-24T23:04:52+00:00
 2026,MN,27053,Hennepin County,2026-09-25,39,6215,,3313,2902,,,,,2,civicapi,2026-09-25T09:24:14+00:00
 2026,MN,27053,Hennepin County,2026-09-26,38,6215,,3313,2902,,,,,2,civicapi,2026-09-26T09:07:44+00:00
@@ -660,6 +686,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MN,27053,Hennepin County,2026-10-09,25,33959,,21055,12904,,,,,2,civicapi,2026-10-09T19:17:03+00:00
 2026,MN,27053,Hennepin County,2026-10-10,24,33959,,21055,12904,,,,,2,civicapi,2026-10-10T04:21:29+00:00
 2026,MN,27053,Hennepin County,2026-10-11,23,33959,,21055,12904,,,,,2,civicapi,2026-10-11T08:19:28+00:00
+2026,MN,27053,Hennepin County,2026-10-12,22,33959,,21055,12904,,,,,2,civicapi,2026-10-12T08:38:18+00:00
 2026,MN,27055,Houston County,2026-09-24,40,18,,3,15,,,,,2,civicapi,2026-09-24T23:04:52+00:00
 2026,MN,27055,Houston County,2026-09-25,39,18,,3,15,,,,,2,civicapi,2026-09-25T09:24:14+00:00
 2026,MN,27055,Houston County,2026-09-26,38,18,,3,15,,,,,2,civicapi,2026-09-26T09:07:44+00:00
@@ -678,6 +705,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MN,27055,Houston County,2026-10-09,25,206,,139,67,,,,,2,civicapi,2026-10-09T19:17:03+00:00
 2026,MN,27055,Houston County,2026-10-10,24,206,,139,67,,,,,2,civicapi,2026-10-10T04:21:29+00:00
 2026,MN,27055,Houston County,2026-10-11,23,206,,139,67,,,,,2,civicapi,2026-10-11T08:19:28+00:00
+2026,MN,27055,Houston County,2026-10-12,22,206,,139,67,,,,,2,civicapi,2026-10-12T08:38:18+00:00
 2026,MN,27057,Hubbard County,2026-09-24,40,107,,12,95,,,,,2,civicapi,2026-09-24T23:04:52+00:00
 2026,MN,27057,Hubbard County,2026-09-25,39,107,,12,95,,,,,2,civicapi,2026-09-25T09:24:14+00:00
 2026,MN,27057,Hubbard County,2026-09-26,38,107,,12,95,,,,,2,civicapi,2026-09-26T09:07:44+00:00
@@ -696,6 +724,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MN,27057,Hubbard County,2026-10-09,25,800,,443,357,,,,,2,civicapi,2026-10-09T19:17:03+00:00
 2026,MN,27057,Hubbard County,2026-10-10,24,800,,443,357,,,,,2,civicapi,2026-10-10T04:21:29+00:00
 2026,MN,27057,Hubbard County,2026-10-11,23,800,,443,357,,,,,2,civicapi,2026-10-11T08:19:28+00:00
+2026,MN,27057,Hubbard County,2026-10-12,22,800,,443,357,,,,,2,civicapi,2026-10-12T08:38:18+00:00
 2026,MN,27059,Isanti County,2026-09-24,40,67,,4,63,,,,,2,civicapi,2026-09-24T23:04:52+00:00
 2026,MN,27059,Isanti County,2026-09-25,39,67,,4,63,,,,,2,civicapi,2026-09-25T09:24:14+00:00
 2026,MN,27059,Isanti County,2026-09-26,38,67,,4,63,,,,,2,civicapi,2026-09-26T09:07:44+00:00
@@ -714,6 +743,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MN,27059,Isanti County,2026-10-09,25,552,,310,242,,,,,2,civicapi,2026-10-09T19:17:03+00:00
 2026,MN,27059,Isanti County,2026-10-10,24,552,,310,242,,,,,2,civicapi,2026-10-10T04:21:29+00:00
 2026,MN,27059,Isanti County,2026-10-11,23,552,,310,242,,,,,2,civicapi,2026-10-11T08:19:28+00:00
+2026,MN,27059,Isanti County,2026-10-12,22,552,,310,242,,,,,2,civicapi,2026-10-12T08:38:18+00:00
 2026,MN,27061,Itasca County,2026-09-24,40,107,,10,97,,,,,2,civicapi,2026-09-24T23:04:52+00:00
 2026,MN,27061,Itasca County,2026-09-25,39,107,,10,97,,,,,2,civicapi,2026-09-25T09:24:14+00:00
 2026,MN,27061,Itasca County,2026-09-26,38,107,,10,97,,,,,2,civicapi,2026-09-26T09:07:44+00:00
@@ -732,6 +762,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MN,27061,Itasca County,2026-10-09,25,2179,,1745,434,,,,,2,civicapi,2026-10-09T19:17:03+00:00
 2026,MN,27061,Itasca County,2026-10-10,24,2179,,1745,434,,,,,2,civicapi,2026-10-10T04:21:29+00:00
 2026,MN,27061,Itasca County,2026-10-11,23,2179,,1745,434,,,,,2,civicapi,2026-10-11T08:19:28+00:00
+2026,MN,27061,Itasca County,2026-10-12,22,2179,,1745,434,,,,,2,civicapi,2026-10-12T08:38:18+00:00
 2026,MN,27063,Jackson County,2026-10-02,32,216,,187,29,,,,,2,civicapi,2026-10-02T17:29:25+00:00
 2026,MN,27063,Jackson County,2026-10-03,31,216,,187,29,,,,,2,civicapi,2026-10-03T07:36:37+00:00
 2026,MN,27063,Jackson County,2026-10-04,30,216,,187,29,,,,,2,civicapi,2026-10-04T18:00:38+00:00
@@ -742,6 +773,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MN,27063,Jackson County,2026-10-09,25,346,,303,43,,,,,2,civicapi,2026-10-09T19:17:03+00:00
 2026,MN,27063,Jackson County,2026-10-10,24,346,,303,43,,,,,2,civicapi,2026-10-10T04:21:29+00:00
 2026,MN,27063,Jackson County,2026-10-11,23,346,,303,43,,,,,2,civicapi,2026-10-11T08:19:28+00:00
+2026,MN,27063,Jackson County,2026-10-12,22,346,,303,43,,,,,2,civicapi,2026-10-12T08:38:18+00:00
 2026,MN,27065,Kanabec County,2026-10-02,32,88,,25,63,,,,,2,civicapi,2026-10-02T17:29:25+00:00
 2026,MN,27065,Kanabec County,2026-10-03,31,88,,25,63,,,,,2,civicapi,2026-10-03T07:36:37+00:00
 2026,MN,27065,Kanabec County,2026-10-04,30,88,,25,63,,,,,2,civicapi,2026-10-04T18:00:38+00:00
@@ -752,6 +784,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MN,27065,Kanabec County,2026-10-09,25,146,,85,61,,,,,2,civicapi,2026-10-09T19:17:03+00:00
 2026,MN,27065,Kanabec County,2026-10-10,24,146,,85,61,,,,,2,civicapi,2026-10-10T04:21:29+00:00
 2026,MN,27065,Kanabec County,2026-10-11,23,146,,85,61,,,,,2,civicapi,2026-10-11T08:19:28+00:00
+2026,MN,27065,Kanabec County,2026-10-12,22,146,,85,61,,,,,2,civicapi,2026-10-12T08:38:18+00:00
 2026,MN,27067,Kandiyohi County,2026-09-24,40,60,,4,56,,,,,2,civicapi,2026-09-24T23:04:52+00:00
 2026,MN,27067,Kandiyohi County,2026-09-25,39,60,,4,56,,,,,2,civicapi,2026-09-25T09:24:14+00:00
 2026,MN,27067,Kandiyohi County,2026-09-26,38,60,,4,56,,,,,2,civicapi,2026-09-26T09:07:44+00:00
@@ -770,6 +803,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MN,27067,Kandiyohi County,2026-10-09,25,588,,309,279,,,,,2,civicapi,2026-10-09T19:17:03+00:00
 2026,MN,27067,Kandiyohi County,2026-10-10,24,588,,309,279,,,,,2,civicapi,2026-10-10T04:21:29+00:00
 2026,MN,27067,Kandiyohi County,2026-10-11,23,588,,309,279,,,,,2,civicapi,2026-10-11T08:19:28+00:00
+2026,MN,27067,Kandiyohi County,2026-10-12,22,588,,309,279,,,,,2,civicapi,2026-10-12T08:38:18+00:00
 2026,MN,27069,Kittson County,2026-09-24,40,15,,12,3,,,,,2,civicapi,2026-09-24T23:04:52+00:00
 2026,MN,27069,Kittson County,2026-09-25,39,15,,12,3,,,,,2,civicapi,2026-09-25T09:24:14+00:00
 2026,MN,27069,Kittson County,2026-09-26,38,15,,12,3,,,,,2,civicapi,2026-09-26T09:07:44+00:00
@@ -788,6 +822,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MN,27069,Kittson County,2026-10-09,25,409,,406,3,,,,,2,civicapi,2026-10-09T19:17:03+00:00
 2026,MN,27069,Kittson County,2026-10-10,24,409,,406,3,,,,,2,civicapi,2026-10-10T04:21:29+00:00
 2026,MN,27069,Kittson County,2026-10-11,23,409,,406,3,,,,,2,civicapi,2026-10-11T08:19:28+00:00
+2026,MN,27069,Kittson County,2026-10-12,22,409,,406,3,,,,,2,civicapi,2026-10-12T08:38:18+00:00
 2026,MN,27071,Koochiching County,2026-09-24,40,21,,12,9,,,,,2,civicapi,2026-09-24T23:04:52+00:00
 2026,MN,27071,Koochiching County,2026-09-25,39,21,,12,9,,,,,2,civicapi,2026-09-25T09:24:14+00:00
 2026,MN,27071,Koochiching County,2026-09-26,38,21,,12,9,,,,,2,civicapi,2026-09-26T09:07:44+00:00
@@ -806,9 +841,11 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MN,27071,Koochiching County,2026-10-09,25,641,,581,60,,,,,2,civicapi,2026-10-09T19:17:03+00:00
 2026,MN,27071,Koochiching County,2026-10-10,24,641,,581,60,,,,,2,civicapi,2026-10-10T04:21:29+00:00
 2026,MN,27071,Koochiching County,2026-10-11,23,641,,581,60,,,,,2,civicapi,2026-10-11T08:19:28+00:00
+2026,MN,27071,Koochiching County,2026-10-12,22,641,,581,60,,,,,2,civicapi,2026-10-12T08:38:18+00:00
 2026,MN,27073,Lac qui Parle County,2026-10-09,25,48,,30,18,,,,,2,civicapi,2026-10-09T19:17:03+00:00
 2026,MN,27073,Lac qui Parle County,2026-10-10,24,48,,30,18,,,,,2,civicapi,2026-10-10T04:21:29+00:00
 2026,MN,27073,Lac qui Parle County,2026-10-11,23,48,,30,18,,,,,2,civicapi,2026-10-11T08:19:28+00:00
+2026,MN,27073,Lac qui Parle County,2026-10-12,22,48,,30,18,,,,,2,civicapi,2026-10-12T08:38:18+00:00
 2026,MN,27075,Lake County,2026-10-02,32,85,,26,59,,,,,2,civicapi,2026-10-02T17:29:25+00:00
 2026,MN,27075,Lake County,2026-10-03,31,85,,26,59,,,,,2,civicapi,2026-10-03T07:36:37+00:00
 2026,MN,27075,Lake County,2026-10-04,30,85,,26,59,,,,,2,civicapi,2026-10-04T18:00:38+00:00
@@ -819,6 +856,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MN,27075,Lake County,2026-10-09,25,311,,183,128,,,,,2,civicapi,2026-10-09T19:17:03+00:00
 2026,MN,27075,Lake County,2026-10-10,24,311,,183,128,,,,,2,civicapi,2026-10-10T04:21:29+00:00
 2026,MN,27075,Lake County,2026-10-11,23,311,,183,128,,,,,2,civicapi,2026-10-11T08:19:28+00:00
+2026,MN,27075,Lake County,2026-10-12,22,311,,183,128,,,,,2,civicapi,2026-10-12T08:38:18+00:00
 2026,MN,27077,Lake of the Woods County,2026-09-24,40,8,,3,5,,,,,2,civicapi,2026-09-24T23:04:52+00:00
 2026,MN,27077,Lake of the Woods County,2026-09-25,39,8,,3,5,,,,,2,civicapi,2026-09-25T09:24:14+00:00
 2026,MN,27077,Lake of the Woods County,2026-09-26,38,8,,3,5,,,,,2,civicapi,2026-09-26T09:07:44+00:00
@@ -837,6 +875,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MN,27077,Lake of the Woods County,2026-10-09,25,254,,242,12,,,,,2,civicapi,2026-10-09T19:17:03+00:00
 2026,MN,27077,Lake of the Woods County,2026-10-10,24,254,,242,12,,,,,2,civicapi,2026-10-10T04:21:29+00:00
 2026,MN,27077,Lake of the Woods County,2026-10-11,23,254,,242,12,,,,,2,civicapi,2026-10-11T08:19:28+00:00
+2026,MN,27077,Lake of the Woods County,2026-10-12,22,254,,242,12,,,,,2,civicapi,2026-10-12T08:38:18+00:00
 2026,MN,27079,Le Sueur County,2026-09-24,40,17,,4,13,,,,,2,civicapi,2026-09-24T23:04:52+00:00
 2026,MN,27079,Le Sueur County,2026-09-25,39,17,,4,13,,,,,2,civicapi,2026-09-25T09:24:14+00:00
 2026,MN,27079,Le Sueur County,2026-09-26,38,17,,4,13,,,,,2,civicapi,2026-09-26T09:07:44+00:00
@@ -855,6 +894,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MN,27079,Le Sueur County,2026-10-09,25,814,,725,89,,,,,2,civicapi,2026-10-09T19:17:03+00:00
 2026,MN,27079,Le Sueur County,2026-10-10,24,814,,725,89,,,,,2,civicapi,2026-10-10T04:21:29+00:00
 2026,MN,27079,Le Sueur County,2026-10-11,23,814,,725,89,,,,,2,civicapi,2026-10-11T08:19:28+00:00
+2026,MN,27079,Le Sueur County,2026-10-12,22,814,,725,89,,,,,2,civicapi,2026-10-12T08:38:18+00:00
 2026,MN,27081,Lincoln County,2026-09-24,40,8,,,8,,,,,2,civicapi,2026-09-24T23:04:52+00:00
 2026,MN,27081,Lincoln County,2026-09-25,39,8,,,8,,,,,2,civicapi,2026-09-25T09:24:14+00:00
 2026,MN,27081,Lincoln County,2026-09-26,38,8,,,8,,,,,2,civicapi,2026-09-26T09:07:44+00:00
@@ -873,6 +913,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MN,27081,Lincoln County,2026-10-09,25,75,,54,21,,,,,2,civicapi,2026-10-09T19:17:03+00:00
 2026,MN,27081,Lincoln County,2026-10-10,24,75,,54,21,,,,,2,civicapi,2026-10-10T04:21:29+00:00
 2026,MN,27081,Lincoln County,2026-10-11,23,75,,54,21,,,,,2,civicapi,2026-10-11T08:19:28+00:00
+2026,MN,27081,Lincoln County,2026-10-12,22,75,,54,21,,,,,2,civicapi,2026-10-12T08:38:18+00:00
 2026,MN,27083,Lyon County,2026-09-24,40,57,,11,46,,,,,2,civicapi,2026-09-24T23:04:52+00:00
 2026,MN,27083,Lyon County,2026-09-25,39,57,,11,46,,,,,2,civicapi,2026-09-25T09:24:14+00:00
 2026,MN,27083,Lyon County,2026-09-26,38,57,,11,46,,,,,2,civicapi,2026-09-26T09:07:44+00:00
@@ -891,6 +932,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MN,27083,Lyon County,2026-10-09,25,754,,604,150,,,,,2,civicapi,2026-10-09T19:17:03+00:00
 2026,MN,27083,Lyon County,2026-10-10,24,754,,604,150,,,,,2,civicapi,2026-10-10T04:21:29+00:00
 2026,MN,27083,Lyon County,2026-10-11,23,754,,604,150,,,,,2,civicapi,2026-10-11T08:19:28+00:00
+2026,MN,27083,Lyon County,2026-10-12,22,754,,604,150,,,,,2,civicapi,2026-10-12T08:38:18+00:00
 2026,MN,27085,McLeod County,2026-09-24,40,42,,2,40,,,,,2,civicapi,2026-09-24T23:04:52+00:00
 2026,MN,27085,McLeod County,2026-09-25,39,42,,2,40,,,,,2,civicapi,2026-09-25T09:24:14+00:00
 2026,MN,27085,McLeod County,2026-09-26,38,42,,2,40,,,,,2,civicapi,2026-09-26T09:07:44+00:00
@@ -909,6 +951,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MN,27085,McLeod County,2026-10-09,25,594,,308,286,,,,,2,civicapi,2026-10-09T19:17:03+00:00
 2026,MN,27085,McLeod County,2026-10-10,24,594,,308,286,,,,,2,civicapi,2026-10-10T04:21:29+00:00
 2026,MN,27085,McLeod County,2026-10-11,23,594,,308,286,,,,,2,civicapi,2026-10-11T08:19:28+00:00
+2026,MN,27085,McLeod County,2026-10-12,22,594,,308,286,,,,,2,civicapi,2026-10-12T08:38:18+00:00
 2026,MN,27087,Mahnomen County,2026-10-02,32,4,,4,,,,,,2,civicapi,2026-10-02T17:29:25+00:00
 2026,MN,27087,Mahnomen County,2026-10-03,31,4,,4,,,,,,2,civicapi,2026-10-03T07:36:37+00:00
 2026,MN,27087,Mahnomen County,2026-10-04,30,4,,4,,,,,,2,civicapi,2026-10-04T18:00:38+00:00
@@ -919,6 +962,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MN,27087,Mahnomen County,2026-10-09,25,81,,80,1,,,,,2,civicapi,2026-10-09T19:17:03+00:00
 2026,MN,27087,Mahnomen County,2026-10-10,24,81,,80,1,,,,,2,civicapi,2026-10-10T04:21:29+00:00
 2026,MN,27087,Mahnomen County,2026-10-11,23,81,,80,1,,,,,2,civicapi,2026-10-11T08:19:28+00:00
+2026,MN,27087,Mahnomen County,2026-10-12,22,81,,80,1,,,,,2,civicapi,2026-10-12T08:38:18+00:00
 2026,MN,27089,Marshall County,2026-10-02,32,160,,153,7,,,,,2,civicapi,2026-10-02T17:29:25+00:00
 2026,MN,27089,Marshall County,2026-10-03,31,160,,153,7,,,,,2,civicapi,2026-10-03T07:36:37+00:00
 2026,MN,27089,Marshall County,2026-10-04,30,160,,153,7,,,,,2,civicapi,2026-10-04T18:00:38+00:00
@@ -929,6 +973,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MN,27089,Marshall County,2026-10-09,25,621,,614,7,,,,,2,civicapi,2026-10-09T19:17:03+00:00
 2026,MN,27089,Marshall County,2026-10-10,24,621,,614,7,,,,,2,civicapi,2026-10-10T04:21:29+00:00
 2026,MN,27089,Marshall County,2026-10-11,23,621,,614,7,,,,,2,civicapi,2026-10-11T08:19:28+00:00
+2026,MN,27089,Marshall County,2026-10-12,22,621,,614,7,,,,,2,civicapi,2026-10-12T08:38:18+00:00
 2026,MN,27091,Martin County,2026-09-24,40,29,,9,20,,,,,2,civicapi,2026-09-24T23:04:52+00:00
 2026,MN,27091,Martin County,2026-09-25,39,29,,9,20,,,,,2,civicapi,2026-09-25T09:24:14+00:00
 2026,MN,27091,Martin County,2026-09-26,38,29,,9,20,,,,,2,civicapi,2026-09-26T09:07:44+00:00
@@ -947,6 +992,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MN,27091,Martin County,2026-10-09,25,399,,273,126,,,,,2,civicapi,2026-10-09T19:17:03+00:00
 2026,MN,27091,Martin County,2026-10-10,24,399,,273,126,,,,,2,civicapi,2026-10-10T04:21:29+00:00
 2026,MN,27091,Martin County,2026-10-11,23,399,,273,126,,,,,2,civicapi,2026-10-11T08:19:28+00:00
+2026,MN,27091,Martin County,2026-10-12,22,399,,273,126,,,,,2,civicapi,2026-10-12T08:38:18+00:00
 2026,MN,27093,Meeker County,2026-09-24,40,13,,1,12,,,,,2,civicapi,2026-09-24T23:04:52+00:00
 2026,MN,27093,Meeker County,2026-09-25,39,13,,1,12,,,,,2,civicapi,2026-09-25T09:24:14+00:00
 2026,MN,27093,Meeker County,2026-09-26,38,13,,1,12,,,,,2,civicapi,2026-09-26T09:07:44+00:00
@@ -965,6 +1011,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MN,27093,Meeker County,2026-10-09,25,236,,123,113,,,,,2,civicapi,2026-10-09T19:17:03+00:00
 2026,MN,27093,Meeker County,2026-10-10,24,236,,123,113,,,,,2,civicapi,2026-10-10T04:21:29+00:00
 2026,MN,27093,Meeker County,2026-10-11,23,236,,123,113,,,,,2,civicapi,2026-10-11T08:19:28+00:00
+2026,MN,27093,Meeker County,2026-10-12,22,236,,123,113,,,,,2,civicapi,2026-10-12T08:38:18+00:00
 2026,MN,27095,Mille Lacs County,2026-09-24,40,43,,5,38,,,,,2,civicapi,2026-09-24T23:04:52+00:00
 2026,MN,27095,Mille Lacs County,2026-09-25,39,43,,5,38,,,,,2,civicapi,2026-09-25T09:24:14+00:00
 2026,MN,27095,Mille Lacs County,2026-09-26,38,43,,5,38,,,,,2,civicapi,2026-09-26T09:07:44+00:00
@@ -983,6 +1030,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MN,27095,Mille Lacs County,2026-10-09,25,394,,235,159,,,,,2,civicapi,2026-10-09T19:17:03+00:00
 2026,MN,27095,Mille Lacs County,2026-10-10,24,394,,235,159,,,,,2,civicapi,2026-10-10T04:21:29+00:00
 2026,MN,27095,Mille Lacs County,2026-10-11,23,394,,235,159,,,,,2,civicapi,2026-10-11T08:19:28+00:00
+2026,MN,27095,Mille Lacs County,2026-10-12,22,394,,235,159,,,,,2,civicapi,2026-10-12T08:38:18+00:00
 2026,MN,27097,Morrison County,2026-09-24,40,45,,3,42,,,,,2,civicapi,2026-09-24T23:04:52+00:00
 2026,MN,27097,Morrison County,2026-09-25,39,45,,3,42,,,,,2,civicapi,2026-09-25T09:24:14+00:00
 2026,MN,27097,Morrison County,2026-09-26,38,45,,3,42,,,,,2,civicapi,2026-09-26T09:07:44+00:00
@@ -1001,6 +1049,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MN,27097,Morrison County,2026-10-09,25,1078,,824,254,,,,,2,civicapi,2026-10-09T19:17:03+00:00
 2026,MN,27097,Morrison County,2026-10-10,24,1078,,824,254,,,,,2,civicapi,2026-10-10T04:21:29+00:00
 2026,MN,27097,Morrison County,2026-10-11,23,1078,,824,254,,,,,2,civicapi,2026-10-11T08:19:28+00:00
+2026,MN,27097,Morrison County,2026-10-12,22,1078,,824,254,,,,,2,civicapi,2026-10-12T08:38:18+00:00
 2026,MN,27099,Mower County,2026-09-24,40,42,,1,41,,,,,2,civicapi,2026-09-24T23:04:52+00:00
 2026,MN,27099,Mower County,2026-09-25,39,42,,1,41,,,,,2,civicapi,2026-09-25T09:24:14+00:00
 2026,MN,27099,Mower County,2026-09-26,38,42,,1,41,,,,,2,civicapi,2026-09-26T09:07:44+00:00
@@ -1019,6 +1068,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MN,27099,Mower County,2026-10-09,25,706,,492,214,,,,,2,civicapi,2026-10-09T19:17:03+00:00
 2026,MN,27099,Mower County,2026-10-10,24,706,,492,214,,,,,2,civicapi,2026-10-10T04:21:29+00:00
 2026,MN,27099,Mower County,2026-10-11,23,706,,492,214,,,,,2,civicapi,2026-10-11T08:19:28+00:00
+2026,MN,27099,Mower County,2026-10-12,22,706,,492,214,,,,,2,civicapi,2026-10-12T08:38:18+00:00
 2026,MN,27101,Murray County,2026-09-24,40,4,,,4,,,,,2,civicapi,2026-09-24T23:04:52+00:00
 2026,MN,27101,Murray County,2026-09-25,39,4,,,4,,,,,2,civicapi,2026-09-25T09:24:14+00:00
 2026,MN,27101,Murray County,2026-09-26,38,4,,,4,,,,,2,civicapi,2026-09-26T09:07:44+00:00
@@ -1037,6 +1087,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MN,27101,Murray County,2026-10-09,25,161,,144,17,,,,,2,civicapi,2026-10-09T19:17:03+00:00
 2026,MN,27101,Murray County,2026-10-10,24,161,,144,17,,,,,2,civicapi,2026-10-10T04:21:29+00:00
 2026,MN,27101,Murray County,2026-10-11,23,161,,144,17,,,,,2,civicapi,2026-10-11T08:19:28+00:00
+2026,MN,27101,Murray County,2026-10-12,22,161,,144,17,,,,,2,civicapi,2026-10-12T08:38:18+00:00
 2026,MN,27103,Nicollet County,2026-09-24,40,93,,18,75,,,,,2,civicapi,2026-09-24T23:04:52+00:00
 2026,MN,27103,Nicollet County,2026-09-25,39,93,,18,75,,,,,2,civicapi,2026-09-25T09:24:14+00:00
 2026,MN,27103,Nicollet County,2026-09-26,38,93,,18,75,,,,,2,civicapi,2026-09-26T09:07:44+00:00
@@ -1055,6 +1106,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MN,27103,Nicollet County,2026-10-09,25,1144,,806,338,,,,,2,civicapi,2026-10-09T19:17:03+00:00
 2026,MN,27103,Nicollet County,2026-10-10,24,1144,,806,338,,,,,2,civicapi,2026-10-10T04:21:29+00:00
 2026,MN,27103,Nicollet County,2026-10-11,23,1144,,806,338,,,,,2,civicapi,2026-10-11T08:19:28+00:00
+2026,MN,27103,Nicollet County,2026-10-12,22,1144,,806,338,,,,,2,civicapi,2026-10-12T08:38:18+00:00
 2026,MN,27105,Nobles County,2026-09-24,40,17,,4,13,,,,,2,civicapi,2026-09-24T23:04:52+00:00
 2026,MN,27105,Nobles County,2026-09-25,39,17,,4,13,,,,,2,civicapi,2026-09-25T09:24:14+00:00
 2026,MN,27105,Nobles County,2026-09-26,38,17,,4,13,,,,,2,civicapi,2026-09-26T09:07:44+00:00
@@ -1073,6 +1125,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MN,27105,Nobles County,2026-10-09,25,198,,111,87,,,,,2,civicapi,2026-10-09T19:17:03+00:00
 2026,MN,27105,Nobles County,2026-10-10,24,198,,111,87,,,,,2,civicapi,2026-10-10T04:21:29+00:00
 2026,MN,27105,Nobles County,2026-10-11,23,198,,111,87,,,,,2,civicapi,2026-10-11T08:19:28+00:00
+2026,MN,27105,Nobles County,2026-10-12,22,198,,111,87,,,,,2,civicapi,2026-10-12T08:38:18+00:00
 2026,MN,27107,Norman County,2026-09-24,40,14,,10,4,,,,,2,civicapi,2026-09-24T23:04:52+00:00
 2026,MN,27107,Norman County,2026-09-25,39,14,,10,4,,,,,2,civicapi,2026-09-25T09:24:14+00:00
 2026,MN,27107,Norman County,2026-09-26,38,14,,10,4,,,,,2,civicapi,2026-09-26T09:07:44+00:00
@@ -1091,6 +1144,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MN,27107,Norman County,2026-10-09,25,416,,409,7,,,,,2,civicapi,2026-10-09T19:17:03+00:00
 2026,MN,27107,Norman County,2026-10-10,24,416,,409,7,,,,,2,civicapi,2026-10-10T04:21:29+00:00
 2026,MN,27107,Norman County,2026-10-11,23,416,,409,7,,,,,2,civicapi,2026-10-11T08:19:28+00:00
+2026,MN,27107,Norman County,2026-10-12,22,416,,409,7,,,,,2,civicapi,2026-10-12T08:38:18+00:00
 2026,MN,27109,Olmsted County,2026-09-24,40,155,,1,154,,,,,2,civicapi,2026-09-24T23:04:52+00:00
 2026,MN,27109,Olmsted County,2026-09-25,39,155,,1,154,,,,,2,civicapi,2026-09-25T09:24:14+00:00
 2026,MN,27109,Olmsted County,2026-09-26,38,155,,1,154,,,,,2,civicapi,2026-09-26T09:07:44+00:00
@@ -1109,6 +1163,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MN,27109,Olmsted County,2026-10-09,25,3873,,2124,1749,,,,,2,civicapi,2026-10-09T19:17:03+00:00
 2026,MN,27109,Olmsted County,2026-10-10,24,3873,,2124,1749,,,,,2,civicapi,2026-10-10T04:21:29+00:00
 2026,MN,27109,Olmsted County,2026-10-11,23,3873,,2124,1749,,,,,2,civicapi,2026-10-11T08:19:28+00:00
+2026,MN,27109,Olmsted County,2026-10-12,22,3873,,2124,1749,,,,,2,civicapi,2026-10-12T08:38:18+00:00
 2026,MN,27111,Otter Tail County,2026-09-24,40,109,,7,102,,,,,2,civicapi,2026-09-24T23:04:52+00:00
 2026,MN,27111,Otter Tail County,2026-09-25,39,109,,7,102,,,,,2,civicapi,2026-09-25T09:24:14+00:00
 2026,MN,27111,Otter Tail County,2026-09-26,38,109,,7,102,,,,,2,civicapi,2026-09-26T09:07:44+00:00
@@ -1127,6 +1182,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MN,27111,Otter Tail County,2026-10-09,25,1107,,561,546,,,,,2,civicapi,2026-10-09T19:17:03+00:00
 2026,MN,27111,Otter Tail County,2026-10-10,24,1107,,561,546,,,,,2,civicapi,2026-10-10T04:21:29+00:00
 2026,MN,27111,Otter Tail County,2026-10-11,23,1107,,561,546,,,,,2,civicapi,2026-10-11T08:19:28+00:00
+2026,MN,27111,Otter Tail County,2026-10-12,22,1107,,561,546,,,,,2,civicapi,2026-10-12T08:38:18+00:00
 2026,MN,27113,Pennington County,2026-09-24,40,35,,18,17,,,,,2,civicapi,2026-09-24T23:04:52+00:00
 2026,MN,27113,Pennington County,2026-09-25,39,35,,18,17,,,,,2,civicapi,2026-09-25T09:24:14+00:00
 2026,MN,27113,Pennington County,2026-09-26,38,35,,18,17,,,,,2,civicapi,2026-09-26T09:07:44+00:00
@@ -1145,6 +1201,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MN,27113,Pennington County,2026-10-09,25,195,,127,68,,,,,2,civicapi,2026-10-09T19:17:03+00:00
 2026,MN,27113,Pennington County,2026-10-10,24,195,,127,68,,,,,2,civicapi,2026-10-10T04:21:29+00:00
 2026,MN,27113,Pennington County,2026-10-11,23,195,,127,68,,,,,2,civicapi,2026-10-11T08:19:28+00:00
+2026,MN,27113,Pennington County,2026-10-12,22,195,,127,68,,,,,2,civicapi,2026-10-12T08:38:18+00:00
 2026,MN,27115,Pine County,2026-10-02,32,120,,29,91,,,,,2,civicapi,2026-10-02T17:29:25+00:00
 2026,MN,27115,Pine County,2026-10-03,31,120,,29,91,,,,,2,civicapi,2026-10-03T07:36:37+00:00
 2026,MN,27115,Pine County,2026-10-04,30,120,,29,91,,,,,2,civicapi,2026-10-04T18:00:38+00:00
@@ -1155,6 +1212,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MN,27115,Pine County,2026-10-09,25,445,,268,177,,,,,2,civicapi,2026-10-09T19:17:03+00:00
 2026,MN,27115,Pine County,2026-10-10,24,445,,268,177,,,,,2,civicapi,2026-10-10T04:21:29+00:00
 2026,MN,27115,Pine County,2026-10-11,23,445,,268,177,,,,,2,civicapi,2026-10-11T08:19:28+00:00
+2026,MN,27115,Pine County,2026-10-12,22,445,,268,177,,,,,2,civicapi,2026-10-12T08:38:18+00:00
 2026,MN,27117,Pipestone County,2026-09-24,40,7,,4,3,,,,,2,civicapi,2026-09-24T23:04:52+00:00
 2026,MN,27117,Pipestone County,2026-09-25,39,7,,4,3,,,,,2,civicapi,2026-09-25T09:24:14+00:00
 2026,MN,27117,Pipestone County,2026-09-26,38,7,,4,3,,,,,2,civicapi,2026-09-26T09:07:44+00:00
@@ -1173,6 +1231,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MN,27117,Pipestone County,2026-10-09,25,211,,197,14,,,,,2,civicapi,2026-10-09T19:17:03+00:00
 2026,MN,27117,Pipestone County,2026-10-10,24,211,,197,14,,,,,2,civicapi,2026-10-10T04:21:29+00:00
 2026,MN,27117,Pipestone County,2026-10-11,23,211,,197,14,,,,,2,civicapi,2026-10-11T08:19:28+00:00
+2026,MN,27117,Pipestone County,2026-10-12,22,211,,197,14,,,,,2,civicapi,2026-10-12T08:38:18+00:00
 2026,MN,27119,Polk County,2026-09-24,40,15,,2,13,,,,,2,civicapi,2026-09-24T23:04:52+00:00
 2026,MN,27119,Polk County,2026-09-25,39,15,,2,13,,,,,2,civicapi,2026-09-25T09:24:14+00:00
 2026,MN,27119,Polk County,2026-09-26,38,15,,2,13,,,,,2,civicapi,2026-09-26T09:07:44+00:00
@@ -1191,6 +1250,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MN,27119,Polk County,2026-10-09,25,921,,862,59,,,,,2,civicapi,2026-10-09T19:17:03+00:00
 2026,MN,27119,Polk County,2026-10-10,24,921,,862,59,,,,,2,civicapi,2026-10-10T04:21:29+00:00
 2026,MN,27119,Polk County,2026-10-11,23,921,,862,59,,,,,2,civicapi,2026-10-11T08:19:28+00:00
+2026,MN,27119,Polk County,2026-10-12,22,921,,862,59,,,,,2,civicapi,2026-10-12T08:38:18+00:00
 2026,MN,27121,Pope County,2026-10-02,32,179,,133,46,,,,,2,civicapi,2026-10-02T17:29:25+00:00
 2026,MN,27121,Pope County,2026-10-03,31,179,,133,46,,,,,2,civicapi,2026-10-03T07:36:37+00:00
 2026,MN,27121,Pope County,2026-10-04,30,179,,133,46,,,,,2,civicapi,2026-10-04T18:00:38+00:00
@@ -1201,6 +1261,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MN,27121,Pope County,2026-10-09,25,473,,366,107,,,,,2,civicapi,2026-10-09T19:17:03+00:00
 2026,MN,27121,Pope County,2026-10-10,24,473,,366,107,,,,,2,civicapi,2026-10-10T04:21:29+00:00
 2026,MN,27121,Pope County,2026-10-11,23,473,,366,107,,,,,2,civicapi,2026-10-11T08:19:28+00:00
+2026,MN,27121,Pope County,2026-10-12,22,473,,366,107,,,,,2,civicapi,2026-10-12T08:38:18+00:00
 2026,MN,27123,Ramsey County,2026-09-24,40,794,,8,786,,,,,2,civicapi,2026-09-24T23:04:52+00:00
 2026,MN,27123,Ramsey County,2026-09-25,39,794,,8,786,,,,,2,civicapi,2026-09-25T09:24:14+00:00
 2026,MN,27123,Ramsey County,2026-09-26,38,794,,8,786,,,,,2,civicapi,2026-09-26T09:07:44+00:00
@@ -1219,6 +1280,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MN,27123,Ramsey County,2026-10-09,25,8377,,4971,3406,,,,,2,civicapi,2026-10-09T19:17:03+00:00
 2026,MN,27123,Ramsey County,2026-10-10,24,8377,,4971,3406,,,,,2,civicapi,2026-10-10T04:21:29+00:00
 2026,MN,27123,Ramsey County,2026-10-11,23,8377,,4971,3406,,,,,2,civicapi,2026-10-11T08:19:28+00:00
+2026,MN,27123,Ramsey County,2026-10-12,22,8377,,4971,3406,,,,,2,civicapi,2026-10-12T08:38:18+00:00
 2026,MN,27125,Red Lake County,2026-09-24,40,5,,3,2,,,,,2,civicapi,2026-09-24T23:04:52+00:00
 2026,MN,27125,Red Lake County,2026-09-25,39,5,,3,2,,,,,2,civicapi,2026-09-25T09:24:14+00:00
 2026,MN,27125,Red Lake County,2026-09-26,38,5,,3,2,,,,,2,civicapi,2026-09-26T09:07:44+00:00
@@ -1237,6 +1299,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MN,27125,Red Lake County,2026-10-09,25,343,,340,3,,,,,2,civicapi,2026-10-09T19:17:03+00:00
 2026,MN,27125,Red Lake County,2026-10-10,24,343,,340,3,,,,,2,civicapi,2026-10-10T04:21:29+00:00
 2026,MN,27125,Red Lake County,2026-10-11,23,343,,340,3,,,,,2,civicapi,2026-10-11T08:19:28+00:00
+2026,MN,27125,Red Lake County,2026-10-12,22,343,,340,3,,,,,2,civicapi,2026-10-12T08:38:18+00:00
 2026,MN,27127,Redwood County,2026-09-24,40,40,,14,26,,,,,2,civicapi,2026-09-24T23:04:52+00:00
 2026,MN,27127,Redwood County,2026-09-25,39,40,,14,26,,,,,2,civicapi,2026-09-25T09:24:14+00:00
 2026,MN,27127,Redwood County,2026-09-26,38,40,,14,26,,,,,2,civicapi,2026-09-26T09:07:44+00:00
@@ -1255,6 +1318,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MN,27127,Redwood County,2026-10-09,25,249,,116,133,,,,,2,civicapi,2026-10-09T19:17:03+00:00
 2026,MN,27127,Redwood County,2026-10-10,24,249,,116,133,,,,,2,civicapi,2026-10-10T04:21:29+00:00
 2026,MN,27127,Redwood County,2026-10-11,23,249,,116,133,,,,,2,civicapi,2026-10-11T08:19:28+00:00
+2026,MN,27127,Redwood County,2026-10-12,22,249,,116,133,,,,,2,civicapi,2026-10-12T08:38:18+00:00
 2026,MN,27129,Renville County,2026-09-24,40,7,,4,3,,,,,2,civicapi,2026-09-24T23:04:52+00:00
 2026,MN,27129,Renville County,2026-09-25,39,7,,4,3,,,,,2,civicapi,2026-09-25T09:24:14+00:00
 2026,MN,27129,Renville County,2026-09-26,38,7,,4,3,,,,,2,civicapi,2026-09-26T09:07:44+00:00
@@ -1273,6 +1337,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MN,27129,Renville County,2026-10-09,25,260,,156,104,,,,,2,civicapi,2026-10-09T19:17:03+00:00
 2026,MN,27129,Renville County,2026-10-10,24,260,,156,104,,,,,2,civicapi,2026-10-10T04:21:29+00:00
 2026,MN,27129,Renville County,2026-10-11,23,260,,156,104,,,,,2,civicapi,2026-10-11T08:19:28+00:00
+2026,MN,27129,Renville County,2026-10-12,22,260,,156,104,,,,,2,civicapi,2026-10-12T08:38:18+00:00
 2026,MN,27131,Rice County,2026-09-24,40,106,,9,97,,,,,2,civicapi,2026-09-24T23:04:52+00:00
 2026,MN,27131,Rice County,2026-09-25,39,106,,9,97,,,,,2,civicapi,2026-09-25T09:24:14+00:00
 2026,MN,27131,Rice County,2026-09-26,38,106,,9,97,,,,,2,civicapi,2026-09-26T09:07:44+00:00
@@ -1291,6 +1356,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MN,27131,Rice County,2026-10-09,25,1371,,759,612,,,,,2,civicapi,2026-10-09T19:17:03+00:00
 2026,MN,27131,Rice County,2026-10-10,24,1371,,759,612,,,,,2,civicapi,2026-10-10T04:21:29+00:00
 2026,MN,27131,Rice County,2026-10-11,23,1371,,759,612,,,,,2,civicapi,2026-10-11T08:19:28+00:00
+2026,MN,27131,Rice County,2026-10-12,22,1371,,759,612,,,,,2,civicapi,2026-10-12T08:38:18+00:00
 2026,MN,27133,Rock County,2026-10-02,32,46,,31,15,,,,,2,civicapi,2026-10-02T17:29:25+00:00
 2026,MN,27133,Rock County,2026-10-03,31,46,,31,15,,,,,2,civicapi,2026-10-03T07:36:37+00:00
 2026,MN,27133,Rock County,2026-10-04,30,46,,31,15,,,,,2,civicapi,2026-10-04T18:00:38+00:00
@@ -1301,6 +1367,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MN,27133,Rock County,2026-10-09,25,185,,156,29,,,,,2,civicapi,2026-10-09T19:17:03+00:00
 2026,MN,27133,Rock County,2026-10-10,24,185,,156,29,,,,,2,civicapi,2026-10-10T04:21:29+00:00
 2026,MN,27133,Rock County,2026-10-11,23,185,,156,29,,,,,2,civicapi,2026-10-11T08:19:28+00:00
+2026,MN,27133,Rock County,2026-10-12,22,185,,156,29,,,,,2,civicapi,2026-10-12T08:38:18+00:00
 2026,MN,27135,Roseau County,2026-09-24,40,8,,5,3,,,,,2,civicapi,2026-09-24T23:04:52+00:00
 2026,MN,27135,Roseau County,2026-09-25,39,8,,5,3,,,,,2,civicapi,2026-09-25T09:24:14+00:00
 2026,MN,27135,Roseau County,2026-09-26,38,8,,5,3,,,,,2,civicapi,2026-09-26T09:07:44+00:00
@@ -1319,6 +1386,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MN,27135,Roseau County,2026-10-09,25,429,,374,55,,,,,2,civicapi,2026-10-09T19:17:03+00:00
 2026,MN,27135,Roseau County,2026-10-10,24,429,,374,55,,,,,2,civicapi,2026-10-10T04:21:29+00:00
 2026,MN,27135,Roseau County,2026-10-11,23,429,,374,55,,,,,2,civicapi,2026-10-11T08:19:28+00:00
+2026,MN,27135,Roseau County,2026-10-12,22,429,,374,55,,,,,2,civicapi,2026-10-12T08:38:18+00:00
 2026,MN,27137,St. Louis County,2026-09-24,40,86,,7,79,,,,,2,civicapi,2026-09-24T23:04:52+00:00
 2026,MN,27137,St. Louis County,2026-09-25,39,86,,7,79,,,,,2,civicapi,2026-09-25T09:24:14+00:00
 2026,MN,27137,St. Louis County,2026-09-26,38,86,,7,79,,,,,2,civicapi,2026-09-26T09:07:44+00:00
@@ -1337,6 +1405,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MN,27137,St. Louis County,2026-10-09,25,4153,,3214,939,,,,,2,civicapi,2026-10-09T19:17:03+00:00
 2026,MN,27137,St. Louis County,2026-10-10,24,4153,,3214,939,,,,,2,civicapi,2026-10-10T04:21:29+00:00
 2026,MN,27137,St. Louis County,2026-10-11,23,4153,,3214,939,,,,,2,civicapi,2026-10-11T08:19:28+00:00
+2026,MN,27137,St. Louis County,2026-10-12,22,4153,,3214,939,,,,,2,civicapi,2026-10-12T08:38:18+00:00
 2026,MN,27139,Scott County,2026-09-24,40,88,,,88,,,,,2,civicapi,2026-09-24T23:04:52+00:00
 2026,MN,27139,Scott County,2026-09-25,39,88,,,88,,,,,2,civicapi,2026-09-25T09:24:14+00:00
 2026,MN,27139,Scott County,2026-09-26,38,88,,,88,,,,,2,civicapi,2026-09-26T09:07:44+00:00
@@ -1355,6 +1424,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MN,27139,Scott County,2026-10-09,25,1552,,1130,422,,,,,2,civicapi,2026-10-09T19:17:03+00:00
 2026,MN,27139,Scott County,2026-10-10,24,1552,,1130,422,,,,,2,civicapi,2026-10-10T04:21:29+00:00
 2026,MN,27139,Scott County,2026-10-11,23,1552,,1130,422,,,,,2,civicapi,2026-10-11T08:19:28+00:00
+2026,MN,27139,Scott County,2026-10-12,22,1552,,1130,422,,,,,2,civicapi,2026-10-12T08:38:18+00:00
 2026,MN,27141,Sherburne County,2026-10-02,32,163,,86,77,,,,,2,civicapi,2026-10-02T17:29:25+00:00
 2026,MN,27141,Sherburne County,2026-10-03,31,163,,86,77,,,,,2,civicapi,2026-10-03T07:36:37+00:00
 2026,MN,27141,Sherburne County,2026-10-04,30,163,,86,77,,,,,2,civicapi,2026-10-04T18:00:38+00:00
@@ -1365,6 +1435,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MN,27141,Sherburne County,2026-10-09,25,1420,,791,629,,,,,2,civicapi,2026-10-09T19:17:03+00:00
 2026,MN,27141,Sherburne County,2026-10-10,24,1420,,791,629,,,,,2,civicapi,2026-10-10T04:21:29+00:00
 2026,MN,27141,Sherburne County,2026-10-11,23,1420,,791,629,,,,,2,civicapi,2026-10-11T08:19:28+00:00
+2026,MN,27141,Sherburne County,2026-10-12,22,1420,,791,629,,,,,2,civicapi,2026-10-12T08:38:18+00:00
 2026,MN,27143,Sibley County,2026-09-24,40,14,,2,12,,,,,2,civicapi,2026-09-24T23:04:52+00:00
 2026,MN,27143,Sibley County,2026-09-25,39,14,,2,12,,,,,2,civicapi,2026-09-25T09:24:14+00:00
 2026,MN,27143,Sibley County,2026-09-26,38,14,,2,12,,,,,2,civicapi,2026-09-26T09:07:44+00:00
@@ -1383,6 +1454,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MN,27143,Sibley County,2026-10-09,25,335,,275,60,,,,,2,civicapi,2026-10-09T19:17:03+00:00
 2026,MN,27143,Sibley County,2026-10-10,24,335,,275,60,,,,,2,civicapi,2026-10-10T04:21:29+00:00
 2026,MN,27143,Sibley County,2026-10-11,23,335,,275,60,,,,,2,civicapi,2026-10-11T08:19:28+00:00
+2026,MN,27143,Sibley County,2026-10-12,22,335,,275,60,,,,,2,civicapi,2026-10-12T08:38:18+00:00
 2026,MN,27145,Stearns County,2026-09-24,40,294,,8,286,,,,,2,civicapi,2026-09-24T23:04:52+00:00
 2026,MN,27145,Stearns County,2026-09-25,39,294,,8,286,,,,,2,civicapi,2026-09-25T09:24:14+00:00
 2026,MN,27145,Stearns County,2026-09-26,38,294,,8,286,,,,,2,civicapi,2026-09-26T09:07:44+00:00
@@ -1401,6 +1473,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MN,27145,Stearns County,2026-10-09,25,3441,,1708,1733,,,,,2,civicapi,2026-10-09T19:17:03+00:00
 2026,MN,27145,Stearns County,2026-10-10,24,3441,,1708,1733,,,,,2,civicapi,2026-10-10T04:21:29+00:00
 2026,MN,27145,Stearns County,2026-10-11,23,3441,,1708,1733,,,,,2,civicapi,2026-10-11T08:19:28+00:00
+2026,MN,27145,Stearns County,2026-10-12,22,3441,,1708,1733,,,,,2,civicapi,2026-10-12T08:38:18+00:00
 2026,MN,27147,Steele County,2026-09-24,40,91,,26,65,,,,,2,civicapi,2026-09-24T23:04:52+00:00
 2026,MN,27147,Steele County,2026-09-25,39,91,,26,65,,,,,2,civicapi,2026-09-25T09:24:14+00:00
 2026,MN,27147,Steele County,2026-09-26,38,91,,26,65,,,,,2,civicapi,2026-09-26T09:07:44+00:00
@@ -1419,6 +1492,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MN,27147,Steele County,2026-10-09,25,687,,260,427,,,,,2,civicapi,2026-10-09T19:17:03+00:00
 2026,MN,27147,Steele County,2026-10-10,24,687,,260,427,,,,,2,civicapi,2026-10-10T04:21:29+00:00
 2026,MN,27147,Steele County,2026-10-11,23,687,,260,427,,,,,2,civicapi,2026-10-11T08:19:28+00:00
+2026,MN,27147,Steele County,2026-10-12,22,687,,260,427,,,,,2,civicapi,2026-10-12T08:38:18+00:00
 2026,MN,27149,Stevens County,2026-09-24,40,1,,1,,,,,,2,civicapi,2026-09-24T23:04:52+00:00
 2026,MN,27149,Stevens County,2026-09-25,39,1,,1,,,,,,2,civicapi,2026-09-25T09:24:14+00:00
 2026,MN,27149,Stevens County,2026-09-26,38,1,,1,,,,,,2,civicapi,2026-09-26T09:07:44+00:00
@@ -1437,6 +1511,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MN,27149,Stevens County,2026-10-09,25,315,,307,8,,,,,2,civicapi,2026-10-09T19:17:03+00:00
 2026,MN,27149,Stevens County,2026-10-10,24,315,,307,8,,,,,2,civicapi,2026-10-10T04:21:29+00:00
 2026,MN,27149,Stevens County,2026-10-11,23,315,,307,8,,,,,2,civicapi,2026-10-11T08:19:28+00:00
+2026,MN,27149,Stevens County,2026-10-12,22,315,,307,8,,,,,2,civicapi,2026-10-12T08:38:18+00:00
 2026,MN,27151,Swift County,2026-09-24,40,21,,14,7,,,,,2,civicapi,2026-09-24T23:04:52+00:00
 2026,MN,27151,Swift County,2026-09-25,39,21,,14,7,,,,,2,civicapi,2026-09-25T09:24:14+00:00
 2026,MN,27151,Swift County,2026-09-26,38,21,,14,7,,,,,2,civicapi,2026-09-26T09:07:44+00:00
@@ -1455,6 +1530,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MN,27151,Swift County,2026-10-09,25,393,,370,23,,,,,2,civicapi,2026-10-09T19:17:03+00:00
 2026,MN,27151,Swift County,2026-10-10,24,393,,370,23,,,,,2,civicapi,2026-10-10T04:21:29+00:00
 2026,MN,27151,Swift County,2026-10-11,23,393,,370,23,,,,,2,civicapi,2026-10-11T08:19:28+00:00
+2026,MN,27151,Swift County,2026-10-12,22,393,,370,23,,,,,2,civicapi,2026-10-12T08:38:18+00:00
 2026,MN,27153,Todd County,2026-09-24,40,17,,,17,,,,,2,civicapi,2026-09-24T23:04:52+00:00
 2026,MN,27153,Todd County,2026-09-25,39,17,,,17,,,,,2,civicapi,2026-09-25T09:24:14+00:00
 2026,MN,27153,Todd County,2026-09-26,38,17,,,17,,,,,2,civicapi,2026-09-26T09:07:44+00:00
@@ -1473,6 +1549,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MN,27153,Todd County,2026-10-09,25,254,,154,100,,,,,2,civicapi,2026-10-09T19:17:03+00:00
 2026,MN,27153,Todd County,2026-10-10,24,254,,154,100,,,,,2,civicapi,2026-10-10T04:21:29+00:00
 2026,MN,27153,Todd County,2026-10-11,23,254,,154,100,,,,,2,civicapi,2026-10-11T08:19:28+00:00
+2026,MN,27153,Todd County,2026-10-12,22,254,,154,100,,,,,2,civicapi,2026-10-12T08:38:18+00:00
 2026,MN,27155,Traverse County,2026-09-24,40,12,,7,5,,,,,2,civicapi,2026-09-24T23:04:52+00:00
 2026,MN,27155,Traverse County,2026-09-25,39,12,,7,5,,,,,2,civicapi,2026-09-25T09:24:14+00:00
 2026,MN,27155,Traverse County,2026-09-26,38,12,,7,5,,,,,2,civicapi,2026-09-26T09:07:44+00:00
@@ -1491,6 +1568,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MN,27155,Traverse County,2026-10-09,25,198,,167,31,,,,,2,civicapi,2026-10-09T19:17:03+00:00
 2026,MN,27155,Traverse County,2026-10-10,24,198,,167,31,,,,,2,civicapi,2026-10-10T04:21:29+00:00
 2026,MN,27155,Traverse County,2026-10-11,23,198,,167,31,,,,,2,civicapi,2026-10-11T08:19:28+00:00
+2026,MN,27155,Traverse County,2026-10-12,22,198,,167,31,,,,,2,civicapi,2026-10-12T08:38:18+00:00
 2026,MN,27157,Wabasha County,2026-10-02,32,92,,34,58,,,,,2,civicapi,2026-10-02T17:29:25+00:00
 2026,MN,27157,Wabasha County,2026-10-03,31,92,,34,58,,,,,2,civicapi,2026-10-03T07:36:37+00:00
 2026,MN,27157,Wabasha County,2026-10-04,30,92,,34,58,,,,,2,civicapi,2026-10-04T18:00:38+00:00
@@ -1501,6 +1579,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MN,27157,Wabasha County,2026-10-09,25,491,,381,110,,,,,2,civicapi,2026-10-09T19:17:03+00:00
 2026,MN,27157,Wabasha County,2026-10-10,24,491,,381,110,,,,,2,civicapi,2026-10-10T04:21:29+00:00
 2026,MN,27157,Wabasha County,2026-10-11,23,491,,381,110,,,,,2,civicapi,2026-10-11T08:19:28+00:00
+2026,MN,27157,Wabasha County,2026-10-12,22,491,,381,110,,,,,2,civicapi,2026-10-12T08:38:18+00:00
 2026,MN,27159,Wadena County,2026-10-02,32,57,,32,25,,,,,2,civicapi,2026-10-02T17:29:25+00:00
 2026,MN,27159,Wadena County,2026-10-03,31,57,,32,25,,,,,2,civicapi,2026-10-03T07:36:37+00:00
 2026,MN,27159,Wadena County,2026-10-04,30,57,,32,25,,,,,2,civicapi,2026-10-04T18:00:38+00:00
@@ -1511,6 +1590,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MN,27159,Wadena County,2026-10-09,25,85,,38,47,,,,,2,civicapi,2026-10-09T19:17:03+00:00
 2026,MN,27159,Wadena County,2026-10-10,24,85,,38,47,,,,,2,civicapi,2026-10-10T04:21:29+00:00
 2026,MN,27159,Wadena County,2026-10-11,23,85,,38,47,,,,,2,civicapi,2026-10-11T08:19:28+00:00
+2026,MN,27159,Wadena County,2026-10-12,22,85,,38,47,,,,,2,civicapi,2026-10-12T08:38:18+00:00
 2026,MN,27161,Waseca County,2026-10-02,32,60,,17,43,,,,,2,civicapi,2026-10-02T17:29:25+00:00
 2026,MN,27161,Waseca County,2026-10-03,31,60,,17,43,,,,,2,civicapi,2026-10-03T07:36:37+00:00
 2026,MN,27161,Waseca County,2026-10-04,30,60,,17,43,,,,,2,civicapi,2026-10-04T18:00:38+00:00
@@ -1521,6 +1601,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MN,27161,Waseca County,2026-10-09,25,148,,90,58,,,,,2,civicapi,2026-10-09T19:17:03+00:00
 2026,MN,27161,Waseca County,2026-10-10,24,148,,90,58,,,,,2,civicapi,2026-10-10T04:21:29+00:00
 2026,MN,27161,Waseca County,2026-10-11,23,148,,90,58,,,,,2,civicapi,2026-10-11T08:19:28+00:00
+2026,MN,27161,Waseca County,2026-10-12,22,148,,90,58,,,,,2,civicapi,2026-10-12T08:38:18+00:00
 2026,MN,27163,Washington County,2026-09-24,40,418,,,418,,,,,2,civicapi,2026-09-24T23:04:52+00:00
 2026,MN,27163,Washington County,2026-09-25,39,418,,,418,,,,,2,civicapi,2026-09-25T09:24:14+00:00
 2026,MN,27163,Washington County,2026-09-26,38,418,,,418,,,,,2,civicapi,2026-09-26T09:07:44+00:00
@@ -1539,6 +1620,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MN,27163,Washington County,2026-10-09,25,6619,,1738,4881,,,,,2,civicapi,2026-10-09T19:17:03+00:00
 2026,MN,27163,Washington County,2026-10-10,24,6619,,1738,4881,,,,,2,civicapi,2026-10-10T04:21:29+00:00
 2026,MN,27163,Washington County,2026-10-11,23,6619,,1738,4881,,,,,2,civicapi,2026-10-11T08:19:28+00:00
+2026,MN,27163,Washington County,2026-10-12,22,6619,,1738,4881,,,,,2,civicapi,2026-10-12T08:38:18+00:00
 2026,MN,27165,Watonwan County,2026-10-02,32,121,,111,10,,,,,2,civicapi,2026-10-02T17:29:25+00:00
 2026,MN,27165,Watonwan County,2026-10-03,31,121,,111,10,,,,,2,civicapi,2026-10-03T07:36:37+00:00
 2026,MN,27165,Watonwan County,2026-10-04,30,121,,111,10,,,,,2,civicapi,2026-10-04T18:00:38+00:00
@@ -1549,6 +1631,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MN,27165,Watonwan County,2026-10-09,25,356,,337,19,,,,,2,civicapi,2026-10-09T19:17:03+00:00
 2026,MN,27165,Watonwan County,2026-10-10,24,356,,337,19,,,,,2,civicapi,2026-10-10T04:21:29+00:00
 2026,MN,27165,Watonwan County,2026-10-11,23,356,,337,19,,,,,2,civicapi,2026-10-11T08:19:28+00:00
+2026,MN,27165,Watonwan County,2026-10-12,22,356,,337,19,,,,,2,civicapi,2026-10-12T08:38:18+00:00
 2026,MN,27167,Wilkin County,2026-10-02,32,169,,168,1,,,,,2,civicapi,2026-10-02T17:29:25+00:00
 2026,MN,27167,Wilkin County,2026-10-03,31,169,,168,1,,,,,2,civicapi,2026-10-03T07:36:37+00:00
 2026,MN,27167,Wilkin County,2026-10-04,30,169,,168,1,,,,,2,civicapi,2026-10-04T18:00:38+00:00
@@ -1559,6 +1642,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MN,27167,Wilkin County,2026-10-09,25,322,,319,3,,,,,2,civicapi,2026-10-09T19:17:03+00:00
 2026,MN,27167,Wilkin County,2026-10-10,24,322,,319,3,,,,,2,civicapi,2026-10-10T04:21:29+00:00
 2026,MN,27167,Wilkin County,2026-10-11,23,322,,319,3,,,,,2,civicapi,2026-10-11T08:19:28+00:00
+2026,MN,27167,Wilkin County,2026-10-12,22,322,,319,3,,,,,2,civicapi,2026-10-12T08:38:18+00:00
 2026,MN,27169,Winona County,2026-10-02,32,280,,149,131,,,,,2,civicapi,2026-10-02T17:29:25+00:00
 2026,MN,27169,Winona County,2026-10-03,31,280,,149,131,,,,,2,civicapi,2026-10-03T07:36:37+00:00
 2026,MN,27169,Winona County,2026-10-04,30,280,,149,131,,,,,2,civicapi,2026-10-04T18:00:38+00:00
@@ -1569,6 +1653,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MN,27169,Winona County,2026-10-09,25,814,,593,221,,,,,2,civicapi,2026-10-09T19:17:03+00:00
 2026,MN,27169,Winona County,2026-10-10,24,814,,593,221,,,,,2,civicapi,2026-10-10T04:21:29+00:00
 2026,MN,27169,Winona County,2026-10-11,23,814,,593,221,,,,,2,civicapi,2026-10-11T08:19:28+00:00
+2026,MN,27169,Winona County,2026-10-12,22,814,,593,221,,,,,2,civicapi,2026-10-12T08:38:18+00:00
 2026,MN,27171,Wright County,2026-09-24,40,75,,18,57,,,,,2,civicapi,2026-09-24T23:04:52+00:00
 2026,MN,27171,Wright County,2026-09-25,39,75,,18,57,,,,,2,civicapi,2026-09-25T09:24:14+00:00
 2026,MN,27171,Wright County,2026-09-26,38,75,,18,57,,,,,2,civicapi,2026-09-26T09:07:44+00:00
@@ -1587,6 +1672,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MN,27171,Wright County,2026-10-09,25,1586,,811,775,,,,,2,civicapi,2026-10-09T19:17:03+00:00
 2026,MN,27171,Wright County,2026-10-10,24,1586,,811,775,,,,,2,civicapi,2026-10-10T04:21:29+00:00
 2026,MN,27171,Wright County,2026-10-11,23,1586,,811,775,,,,,2,civicapi,2026-10-11T08:19:28+00:00
+2026,MN,27171,Wright County,2026-10-12,22,1586,,811,775,,,,,2,civicapi,2026-10-12T08:38:18+00:00
 2026,MN,27173,Yellow Medicine County,2026-09-24,40,11,,6,5,,,,,2,civicapi,2026-09-24T23:04:52+00:00
 2026,MN,27173,Yellow Medicine County,2026-09-25,39,11,,6,5,,,,,2,civicapi,2026-09-25T09:24:14+00:00
 2026,MN,27173,Yellow Medicine County,2026-09-26,38,11,,6,5,,,,,2,civicapi,2026-09-26T09:07:44+00:00
@@ -1605,3 +1691,4 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MN,27173,Yellow Medicine County,2026-10-09,25,190,,172,18,,,,,2,civicapi,2026-10-09T19:17:03+00:00
 2026,MN,27173,Yellow Medicine County,2026-10-10,24,190,,172,18,,,,,2,civicapi,2026-10-10T04:21:29+00:00
 2026,MN,27173,Yellow Medicine County,2026-10-11,23,190,,172,18,,,,,2,civicapi,2026-10-11T08:19:28+00:00
+2026,MN,27173,Yellow Medicine County,2026-10-12,22,190,,172,18,,,,,2,civicapi,2026-10-12T08:38:18+00:00
