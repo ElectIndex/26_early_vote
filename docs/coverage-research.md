@@ -947,10 +947,21 @@ Judgement calls:
   49,210 rather than Cass's 12,358, so it ignores the county selection
   entirely. Rows are therefore stamped with the run's own date, and a backfill
   with Election Day.
-- **`fetch_history` returns a final, not a curve.** An archived `eid` still
-  serves county detail, but it serves the settled numbers. (Wayback does hold
-  dated captures of `abev.aspx` through October 2022 and October 2024 — a real
-  curve for whoever wants to build it.)
+- **`fetch_history` returns the final by county PLUS a statewide curve from the
+  Wayback Machine.** An archived `eid` still serves county detail, but it
+  serves the settled numbers, so the county rows are Election-Day finals. The
+  curve is the Archive's captures of the bare GET — 2024: Oct 7, Oct 8, Nov 3;
+  2022: Oct 3, Oct 18, Nov 7 — statewide only, because the county panel is a
+  POST that no crawler ever captured. The capture instant is the as-of (the
+  page is rendered live and carries no date), filed under its **Central-time
+  calendar date**, last capture of a day wins, post-election captures dropped
+  (they are not the final; the figures moved for weeks). Two traps written up
+  in nd.py: several captures bold values with an inner `<b>` that the live
+  parser read as EMPTY, and the `http://` capture `20241104234455` is a 302 the
+  Archive answers with the Nov 6 page — `statuscode:200` on the CDX query plus
+  a `Memento-Datetime` check on every download. The Archive 429s a dense
+  walk; a rate-limit is a `SourceError` for the whole backfill, never a thin
+  curve.
 - **No party fields, ever.** North Dakota has no voter registration at all.
 - `CountyDay` has no `mail_requested` column, so the county panel's `Ballots
   Sent` is read, range-checked and dropped; only the statewide figure is

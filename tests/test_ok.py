@@ -9,26 +9,52 @@ measures onto the wrong counties, and a new voting-method label quietly
 vanishing out of the total.
 
 Three cycles of the SAME dashboard is not redundancy. `VHCountsByCounty` is the
-only Oklahoma archive there is, `fetch_history` reads a different election out of
-it for each cycle, and the three differ in the one way that matters: 2020 is a
-mail-majority electorate (287,010 absentee against 167,132 early in person) and
-2022 and 2024 are in-person-majority ones, so a bug that swapped the two method
-filters would still look plausible against 2024 alone.
+only CERTIFIED Oklahoma archive there is, `fetch_history` reads a different
+election out of it for each cycle, and the three differ in the one way that
+matters: 2020 is a mail-majority electorate (287,010 absentee against 167,132
+early in person) and 2022 and 2024 are in-person-majority ones, so a bug that
+swapped the two method filters would still look plausible against 2024 alone.
+
+The DAILY curve comes from somewhere else: the Election Board's PDF reports,
+linked from an index page on oklahoma.gov. Three real PDFs and an excerpt of
+that index (saved 2026-10-13) sit beside the JSON fixtures:
+
+  ballot-totals-by-affiliation-20241104-1.pdf   mail final, 11/4/2024 8:34 AM,
+      78 pages -- and it was CROSS-FILED in the in-person folder.
+  absentee-inperson-totals-20241104-1.pdf       in-person final, 8:32 AM, 78
+      pages -- cross-filed in the mail folder.
+  absentee-inperson-totals-20241030-2.pdf       the WIDE ap2680 layout, and a
+      filename that lies: its printed run is 10/31/2024 8:00 AM.
+
+The two 78-page files are ~120 KB each. They are kept whole rather than cut to
+a few pages because the parser's own sum check -- 77 county pages must add up
+to the `99 STATE` page -- is one of the things under test, and a cut file
+cannot pass it.
 """
 
 from __future__ import annotations
 
 import copy
 import json
-from datetime import date
+import re
+from dataclasses import replace
+from datetime import date, datetime
 from pathlib import Path
 
 import pytest
 
-from ev.adapters import ok
+from ev.adapters import _methods, _net, ok
 from ev.adapters.base import NotYetPublished, SchemaDrift
 
 FIXTURES = Path(__file__).parent / "fixtures" / "ok"
+
+#: The archived PDFs, by the basename the index links them under.
+ARCHIVE_PDFS = (
+    "ballot-totals-by-affiliation-20241104-1.pdf",
+    "absentee-inperson-totals-20241104-1.pdf",
+    "absentee-inperson-totals-20241030-2.pdf",
+)
+INDEX_EXCERPT = "absentee-voting-statistics-excerpt.html"
 
 ELECTION_2020 = date(2020, 11, 3)
 ELECTION_2022 = date(2022, 11, 8)
@@ -121,14 +147,35 @@ NO_ELECTIONS = {
 
 
 class Offline(ok.OKScraper):
-    """The real adapter with only its one HTTP seam replaced."""
+    """The real adapter with its three HTTP seams replaced.
 
-    def __init__(self, *, history=True, absentee=True, patch=None):
+    `archive=False` (the default) answers the index page with no elections on
+    it, so the dashboard tests see exactly the certified Election-Day row they
+    always did. `archive=True` serves the saved index excerpt and the three
+    archived PDFs by basename; every other PDF the index links is Missing, which
+    the walk must skip, not die on.
+    """
+
+    def __init__(self, *, history=True, absentee=True, archive=False, patch=None):
         super().__init__()
         self.history_on = history
         self.absentee_on = absentee
+        self.archive_on = archive
         self.patch = patch or {}
         self.calls: list[tuple] = []
+        self.pdf_urls: list[str] = []
+
+    def _index(self):
+        if not self.archive_on:
+            return "<html><body><h2>2024</h2></body></html>"
+        return (FIXTURES / INDEX_EXCERPT).read_text(encoding="utf-8")
+
+    def _pdf(self, url):
+        self.pdf_urls.append(url)
+        name = url.rsplit("/", 1)[-1]
+        if name in ARCHIVE_PDFS:
+            return (FIXTURES / name).read_bytes()
+        raise _net.Missing(f"OK: {url} returned 404 (not a saved fixture)")
 
     def _item(self, dashboard, item, filters=()):
         self.calls.append((dashboard, item))
@@ -371,7 +418,7 @@ def test_the_two_dashboards_are_combined_when_both_carry_the_cycle():
 
 
 # --------------------------------------------------------------------------
-# THE ARCHIVE ROUTE -- `fetch_history`, one Election-Day row per cycle
+# THE CERTIFIED ROW -- `fetch_history` with no PDF archive to walk
 # --------------------------------------------------------------------------
 @pytest.fixture(scope="module")
 def history_2022():
@@ -385,10 +432,11 @@ def history_2020():
 
 def test_the_archive_reaches_2020_2022_and_2024(history_2020, history_2022,
                                                 history_2024):
-    """`VHCountsByCounty` is a permanent voter-history table, so the archive is
-    every past general, not just the last one. Each cycle is ONE row per county
-    dated its own Election Day -- neither dashboard has a within-election date
-    dimension, so there is no daily curve to be had."""
+    """`VHCountsByCounty` is a permanent voter-history table, so the certified
+    row exists for every past general, not just the last one. Each cycle is
+    ONE row per county dated its own Election Day -- neither dashboard has a
+    within-election date dimension; the daily curve comes from the PDF archive
+    (next section), and with no PDFs indexed this is all there is."""
     for result, day in ((history_2020, ELECTION_2020),
                         (history_2022, ELECTION_2022),
                         (history_2024, ELECTION_2024)):
@@ -455,9 +503,10 @@ def test_archived_counties_sum_to_their_statewide_row(history_2020, history_2022
 
 def test_the_archive_never_reports_mail_requested(history_2020, history_2022,
                                                   history_2024):
-    """`AbsStatsByCounty` starts at 2022, so folding it into the archive would
-    give two cycles a column the third could never have. Blank, not zero: the
-    voter-history table does not say how many ballots went out."""
+    """`AbsStatsByCounty` starts at 2022, so folding it into the certified row
+    would give two cycles a column the third could never have -- and the daily
+    PDF rows carry `Sent` for every day the mail report ran anyway. Blank, not
+    zero: the voter-history table does not say how many ballots went out."""
     for result in (history_2020, history_2022, history_2024):
         assert result.state_rows[0].mail_requested is None
 
@@ -513,3 +562,294 @@ def test_a_partial_absentee_dashboard_contributes_no_statewide_total():
     assert (row.ballots_total, row.mail_returned, row.inperson) == (
         401_467, 107_549, 293_918)
     assert len(result.county_rows) == 77
+
+
+# --------------------------------------------------------------------------
+# THE PDF ARCHIVE -- the daily curve
+# --------------------------------------------------------------------------
+def pdf(name: str) -> bytes:
+    return (FIXTURES / name).read_bytes()
+
+
+@pytest.fixture(scope="module")
+def mail_final() -> ok.Report:
+    return ok.parse_report(pdf("ballot-totals-by-affiliation-20241104-1.pdf"))
+
+
+@pytest.fixture(scope="module")
+def inperson_final() -> ok.Report:
+    return ok.parse_report(pdf("absentee-inperson-totals-20241104-1.pdf"))
+
+
+@pytest.fixture(scope="module")
+def inperson_wide() -> ok.Report:
+    return ok.parse_report(pdf("absentee-inperson-totals-20241030-2.pdf"))
+
+
+@pytest.fixture(scope="module")
+def mail_pages() -> list[str]:
+    return ok._pages(pdf("ballot-totals-by-affiliation-20241104-1.pdf"))
+
+
+@pytest.fixture(scope="module")
+def archive_2024():
+    return Offline(archive=True).fetch_history(2024)
+
+
+def _party(reading: dict) -> tuple[int, int, int, int]:
+    """(rep, dem, npa, oth) -- the order the checkpoints are written in."""
+    p = reading["party"]
+    return p["rep"], p["dem"], p["npa"], p["oth"]
+
+
+def test_the_mail_final_reproduces_the_state_page(mail_final):
+    """11/4/2024 8:34 AM: 100,298 received (R 49,867 / D 36,112 / I 13,876 /
+    L 443) of 130,644 sent -- the figures printed on page 78 of 78."""
+    assert (mail_final.kind, mail_final.layout) == (ok.REPORT_MAIL, ok.LAYOUT_STANDARD)
+    assert mail_final.run == datetime(2024, 11, 4, 8, 34)
+    assert mail_final.election == ELECTION_2024
+    assert mail_final.state["total"] == 100_298
+    assert mail_final.state["sent"] == 130_644
+    assert _party(mail_final.state) == (49_867, 36_112, 13_876, 443)
+    assert len(mail_final.counties) == 77
+
+
+def test_the_inperson_final_reproduces_the_state_page(inperson_final):
+    """11/4/2024 8:32 AM: 292,684 (R 182,562 / D 74,183 / I 34,396 / L 1,543)."""
+    assert (inperson_final.kind, inperson_final.layout) == (
+        ok.REPORT_INPERSON, ok.LAYOUT_STANDARD)
+    assert inperson_final.run == datetime(2024, 11, 4, 8, 32)
+    assert inperson_final.state["total"] == 292_684
+    assert inperson_final.state["sent"] is None       # not a mail report
+    assert _party(inperson_final.state) == (182_562, 74_183, 34_396, 1_543)
+    assert len(inperson_final.counties) == 77
+
+
+def test_the_wide_layout_is_read_by_column_position(inperson_wide):
+    """ap2680's three wide pages: a Grand Total row for the state, and a BLANK
+    cell where a county has no Libertarian ballots. Beaver's row reads
+    "161 10 4 175" -- four figures, and only the column positions say the
+    missing one is Libertarian rather than Independent."""
+    assert (inperson_wide.kind, inperson_wide.layout) == (ok.REPORT_INPERSON, ok.LAYOUT_WIDE)
+    assert inperson_wide.state["total"] == 80_237
+    assert _party(inperson_wide.state) == (51_873, 19_839, 8_150, 375)
+    beaver = inperson_wide.counties["40007"]
+    assert beaver["total"] == 175
+    assert _party(beaver) == (161, 10, 4, 0)
+    assert len(inperson_wide.counties) == 77
+
+
+def test_a_report_is_dated_by_its_printed_run_stamp_not_its_filename(inperson_wide):
+    """`absentee-inperson-totals-20241030-2.pdf` is the run of 10/31/2024
+    8:00 AM. Dating it by the filename would put it a day early and, on 10/31,
+    make it lose to the 4:28 PM run anyway -- quietly thinning the curve."""
+    assert inperson_wide.run == datetime(2024, 10, 31, 8, 0)
+    assert inperson_wide.run.date() == date(2024, 10, 31)
+
+
+def test_a_zero_party_row_is_omitted_and_reads_as_zero(mail_final):
+    """Adair's mail page prints Republican, Democrat and Independent and no
+    Libertarian line at all. Oklahoma registers all four, the STATE page lists
+    443 Libertarians, so the omission is a 0 -- the convention `fetch` uses off
+    the absentee dashboard -- never a blank."""
+    adair = mail_final.counties["40001"]
+    assert set(adair["party"]) == set(ok.REGISTRATIONS)
+    assert adair["party"]["oth"] == 0
+    assert adair["total"] == 172 and adair["sent"] == 251
+    assert mail_final.state["party"]["oth"] == 443
+
+
+def test_counties_are_keyed_by_fips_through_the_census_table(mail_final):
+    """LEFLORE, MCCLAIN and ROGER MILLS are printed UPPERCASE and unspaced;
+    the join goes through `_fips.lookup`, never a name key."""
+    assert mail_final.names["40079"] == "Le Flore County"
+    assert mail_final.names["40087"] == "McClain County"
+    assert mail_final.names["40129"] == "Roger Mills County"
+    assert all(f.startswith("40") and len(f) == 5 for f in mail_final.counties)
+
+
+def test_party_rows_must_add_up_to_the_countys_printed_total(mail_pages):
+    """Each county block prints its own total line. A row the regexes failed
+    to match would otherwise shrink the county without a trace."""
+    pages = list(mail_pages)
+    tampered, n = re.subn(r"(\n\s+251\s+0\s+)172\b", r"\g<1>173", pages[0])
+    assert n == 1
+    pages[0] = tampered
+    with pytest.raises(SchemaDrift) as caught:
+        ok.parse_pages(pages)
+    assert "printed total is 173" in str(caught.value)
+
+
+def test_county_pages_must_add_up_to_the_state_page(mail_pages):
+    """The STATE page is what gets published; the 77 county pages are summed
+    anyway and must agree with it."""
+    pages = list(mail_pages)
+    # One more Libertarian ballot on the STATE page, and a total to match, so
+    # the page is consistent with itself and only the county sum disagrees.
+    tampered, n = re.subn(r"(Libertarian\s+709\s+5\s+)443\b", r"\g<1>444", pages[-1])
+    assert n == 1 and "100,298" in tampered
+    pages[-1] = tampered.replace("100,298", "100,299")
+    with pytest.raises(SchemaDrift) as caught:
+        ok.parse_pages(pages)
+    assert "STATE page" in str(caught.value)
+
+
+def test_an_unknown_report_title_is_drift(mail_pages):
+    """The printed title is the only identity a PDF has. A template this module
+    has not been taught must raise, not be read as whichever shape fits."""
+    pages = list(mail_pages)
+    pages[0] = pages[0].replace("Ballot Totals by Affiliation", "Ballot Totals by Precinct")
+    with pytest.raises(SchemaDrift) as caught:
+        ok.parse_pages(pages)
+    assert "unrecognised report title" in str(caught.value)
+
+
+def test_a_page_from_a_different_run_is_drift(mail_pages):
+    pages = list(mail_pages)
+    pages[5] = pages[5].replace("11/4/2024 8:34 AM", "11/4/2024 9:00 AM")
+    with pytest.raises(SchemaDrift) as caught:
+        ok.parse_pages(pages)
+    assert "page 6 is stamped" in str(caught.value)
+
+
+def test_the_last_run_of_a_day_is_the_days_reading(mail_final):
+    """11/1/2024 was run three times (7:54 AM, 4:33 PM, 11:37 PM). The latest
+    run wins, per report type, whatever order the index lists them in."""
+    morning = replace(mail_final, run=datetime(2024, 11, 1, 7, 54))
+    evening = replace(mail_final, run=datetime(2024, 11, 1, 23, 37))
+    afternoon = replace(mail_final, run=datetime(2024, 11, 1, 16, 33))
+    latest = ok.last_run_per_day([evening, morning, afternoon, mail_final])
+    assert latest[(ok.REPORT_MAIL, date(2024, 11, 1))] is evening
+    assert latest[(ok.REPORT_MAIL, date(2024, 11, 4))] is mail_final
+    assert len(latest) == 2
+
+
+def test_a_mail_only_day_leaves_inperson_blank(mail_final):
+    """Mail reports start before in-person voting opens. `inperson` is None --
+    not 0 -- and `ballots_total` is the mail count, exactly what `fetch`
+    publishes off the absentee dashboard while voter history is empty."""
+    result = ok.archive_days([mail_final], 2024)
+    row = result.state_rows[0]
+    assert row.day == date(2024, 11, 4)
+    assert (row.ballots_total, row.mail_returned, row.inperson) == (100_298, 100_298, None)
+    assert row.mail_requested == 130_644
+    assert (row.party_rep, row.party_dem, row.party_npa, row.party_oth) == (
+        49_867, 36_112, 13_876, 443)
+    assert all(r.inperson is None for r in result.county_rows)
+    bands = {r.method for r in _methods.rows_of(result)}
+    assert bands == {"mail"}
+    assert len(_methods.rows_of(result)) == 77
+
+
+def test_both_reports_combine_and_the_crosstab_rides_along(mail_final, inperson_final):
+    """A day with both reports: the CountyDay is the sum, by party, and the
+    MethodDay rows are the two bands it was summed from."""
+    result = ok.archive_days([inperson_final, mail_final], 2024)
+    row = result.state_rows[0]
+    assert (row.ballots_total, row.mail_returned, row.inperson) == (392_982, 100_298, 292_684)
+    assert row.mail_requested == 130_644
+    assert row.party_rep == 49_867 + 182_562
+    assert row.party_oth == 443 + 1_543
+    assert len(result.county_rows) == 77
+    methods = _methods.rows_of(result)
+    assert len(methods) == 154
+    by_county: dict[str, dict[str, int]] = {}
+    for m in methods:
+        by_county.setdefault(m.county_fips, {})[m.method] = m.ballots_total
+    for county in result.county_rows:
+        bands = by_county[county.county_fips]
+        assert bands["mail"] + bands["inperson"] == county.ballots_total
+        assert bands["mail"] == county.mail_returned
+    assert all(m.party_oth is not None for m in methods)
+
+
+def test_the_index_walk_takes_the_cycles_general_election_only():
+    """The index carries 2026 primary and runoff files, three years of special
+    elections and both 2022 and 2024 generals. Only the anchors under the
+    cycle's own "General Election" heading are taken -- so a 2026 PDF is never
+    picked up for 2024, and the still-empty 2026 general yields nothing."""
+    page = (FIXTURES / INDEX_EXCERPT).read_text(encoding="utf-8")
+    urls_2024 = ok.select_general_pdfs(page, 2024)
+    assert len(urls_2024) == 17
+    assert all("2024" in u and "general" in u for u in urls_2024)
+    assert ok.select_general_pdfs(page, 2026) == []
+    assert not any("2026" in u for u in urls_2024)
+    assert len(ok.select_general_pdfs(page, 2022)) == 20
+    assert all(u.startswith("https://oklahoma.gov/content/dam/") for u in urls_2024)
+
+
+def test_the_cross_filed_files_are_read_by_title_not_folder():
+    """The 2024 mail final sits in the in-person folder and the in-person
+    final in the mail folder. Both are walked, both are identified by their
+    printed title, and the day gets both readings."""
+    page = (FIXTURES / INDEX_EXCERPT).read_text(encoding="utf-8")
+    urls = ok.select_general_pdfs(page, 2024)
+    crossed = [u for u in urls if u.endswith("ballot-totals-by-affiliation-20241104-1.pdf")]
+    assert crossed and "absentee-in-person-totals" in crossed[0]
+    crossed = [u for u in urls if u.endswith("absentee-inperson-totals-20241104-1.pdf")]
+    assert crossed and "ballot-totals-by-affiliation/" in crossed[0]
+    reports = Offline(archive=True)._archive_reports(2024)
+    assert sorted((r.kind, r.run) for r in reports) == [
+        (ok.REPORT_INPERSON, datetime(2024, 10, 31, 8, 0)),
+        (ok.REPORT_INPERSON, datetime(2024, 11, 4, 8, 32)),
+        (ok.REPORT_MAIL, datetime(2024, 11, 4, 8, 34)),
+    ]
+
+
+def test_fetch_history_walks_the_archive_and_ends_on_the_certified_row(archive_2024):
+    """Three fixture PDFs give two archived days; voter history adds Election
+    Day. Fourteen other indexed PDFs are Missing offline and are skipped."""
+    days = [r.day for r in archive_2024.state_rows]
+    assert days == [date(2024, 10, 31), date(2024, 11, 4), ELECTION_2024]
+    oct31, nov4, nov5 = archive_2024.state_rows
+    assert (oct31.ballots_total, oct31.mail_returned, oct31.inperson) == (80_237, None, 80_237)
+    assert (nov4.ballots_total, nov4.mail_returned, nov4.inperson) == (392_982, 100_298, 292_684)
+    assert nov4.mail_requested == 130_644
+    assert (nov5.ballots_total, nov5.mail_returned, nov5.inperson) == (401_467, 107_549, 293_918)
+    assert nov5.mail_requested is None
+    assert len(archive_2024.county_rows) == 77 * 3
+    methods = _methods.rows_of(archive_2024)
+    assert len(methods) == 77 + 154
+    assert not any(m.day == ELECTION_2024 for m in methods)
+
+
+def test_a_pdf_reading_dated_election_day_yields_to_the_certified_row(mail_final):
+    """2022's last runs were cut at 1:56 PM on Election Day. Published beside
+    the certified row on the same key, the partial reading would WIN the merge
+    -- it carries `mail_requested` and the certified row does not."""
+    class ElectionDayRun(Offline):
+        def _archive_reports(self, cycle):
+            return [replace(mail_final, run=datetime(2024, 11, 5, 13, 56))]
+
+    result = ElectionDayRun().fetch_history(2024)
+    assert [r.day for r in result.state_rows] == [ELECTION_2024]
+    row = result.state_rows[0]
+    assert row.ballots_total == 401_467 and row.mail_requested is None
+    assert len(result.county_rows) == 77
+    assert _methods.rows_of(result) == []
+
+
+def test_a_pdf_for_another_election_is_skipped_by_name():
+    """A 2024 report filed under the 2022 heading is not drift -- it is
+    mis-filed, and its printed `Election Date` says so."""
+    class Misfiled(Offline):
+        def _pdf(self, url):
+            return pdf("ballot-totals-by-affiliation-20241104-1.pdf")
+
+    scraper = Misfiled(archive=True)
+    assert scraper._archive_reports(2022) == []
+    result = scraper.fetch_history(2022)
+    assert [r.day for r in result.state_rows] == [ELECTION_2022]
+
+
+def test_a_cycle_still_in_progress_is_not_backfilled():
+    with pytest.raises(NotYetPublished):
+        Offline(archive=True).fetch_history(2026)
+
+
+def test_archive_cache_names_are_unique_per_url():
+    """Two folders can hold the same basename, so the cache name carries a
+    digest of the whole URL."""
+    a = ok.archive_filename("https://oklahoma.gov/a/ballot-totals-by-affiliation-20241104-1.pdf")
+    b = ok.archive_filename("https://oklahoma.gov/b/ballot-totals-by-affiliation-20241104-1.pdf")
+    assert a != b and a.endswith("ballot-totals-by-affiliation-20241104-1.pdf")

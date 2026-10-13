@@ -76,6 +76,85 @@ either source -- so every party_* field is None. The dashboard does carry a
 `Voter_Party_Bucketed` column derived from primary participation; it is
 deliberately not read, because publishing it as party registration would invent a
 fact about Ohio that does not exist. See THE BLANK RULE in schema.py.
+
+THE LEDGER BEHIND THE DASHBOARD (2024 daily series, backfill only)
+------------------------------------------------------------------
+The dashboard table `absentee v_detailed_grouped` is not a snapshot: it is a
+per-event LEDGER. Every row is "this many ballots were sent / received in this
+county on this `Data_Date`" (epoch-ms UTC midnight), a column the live route
+never selects because it only wants the cumulative total. Grouping by county x
+`Data_Date` and running a cumulative sum through each day D gives the county's
+position "as of D" -- a whole daily curve from one 130 KB request, which is what
+`fetch_history` now does for 2024. Measures: `BALLOTS_RECEIVED_NO_EIP` is mail
+returned, `BALLOTS_RECEIVED_INCL_EIP - NO_EIP` is early in-person, and
+`BALLOTS_SENT_NO_EIP` is mail requested (an in-person ballot is "sent" and
+"received" in the same act, so the INCL_EIP sent column is not a request count).
+
+Three things about that ledger decide the shape of `parse_ledger`:
+
+* **It is RESTATED, not what the dashboard displayed on the day.** Rows are
+  dated by when the ballot was sent or received, and the counties post their
+  submissions days late and correct them afterwards. So "as of Oct 15" here is
+  what Ohio NOW says had happened by Oct 15 -- a receipt-dated curve -- not the
+  number the dashboard showed on Oct 15, which was smaller. That is the right
+  series to compare a live cycle against (the live tracker's lag is the thing
+  being measured), but it must not be described as "what was published".
+
+* **The report filters it and so must we.** Unfiltered, the table carries rows
+  dated 1984, 2027, 3162 and 9204 -- about 5,000 ballots on dates that cannot
+  exist -- which the published report hides behind two page-level booleans,
+  `Election Ballot Return Date Range` and `VALID_DATE_BOOL_AGG`. The ledger
+  query replicates both as `Where` conditions, which for the 2024 general keeps
+  exactly 2024-09-20 (UOCAVA mailing) through 2024-11-06 and reproduces the
+  report's own totals to the ballot. A second, generous window check in
+  `parse_ledger` is a backstop: anything the server-side filters let through
+  that is nowhere near the cycle is dropped and logged with its ballot count,
+  never summed.
+
+* **Election Day stays the certified workbook's row.** The ledger's final
+  (2,616,339 received through 11-09) and the certified workbook (2,620,750)
+  differ by a few thousand ballots, and the workbook is the official
+  restatement that the comparison lines anchor on. So `parse_ledger` emits only
+  days BEFORE Election Day (`days_to_election >= 1`); the Election-Day row
+  comes from the workbook route exactly as it did before, and the two never
+  collide on a key.
+
+The ledger's earliest election is the 2023 November general, so 2024 is the
+first cycle it can serve (`LEDGER_FIRST_CYCLE`); 2022 is refused before any
+query is sent, and the table's own labels are checked again on the way in.
+
+THE 2022 WEEKLY PRESS-RELEASE FILES (backfill only)
+--------------------------------------------------
+Before the dashboard existed, the SoS press office attached a county workbook
+to its weekly early-vote release. Four survive for the 2022 general -- one on
+Constant Contact (live) and three on `ohiosos.gov` reachable only through the
+Wayback Machine, because that host is behind Cloudflare (see the top of this
+file) and web.archive.org is not. They are pinned by URL in `WEEKLY_RELEASES`
+and dated by the RELEASE date, which each file's origin `Last-Modified` (replayed
+by the Archive as `x-archive-orig-last-modified`) must agree with to within a
+day, or the capture is not the file the release linked and is SchemaDrift.
+
+They come in three column shapes, each matched BY HEADER NAME:
+
+* **requests** (Oct 12): `UOCAVA Valid Applications` + `Non-UOCAVA Valid
+  Applications` -> mail requested. The file's third column is UOCAVA returns
+  only and is NOT read as mail returned. Nothing here fits a county row (the
+  county table has no requested column), so this release is a statewide row.
+* **requests+eip** (Oct 25): `Early Voting and Absentee Ballot Requests` and
+  `Early Voting`. Requests INCLUDE in-person -- Ohio counts an early in-person
+  ballot as an application and a cast in one act -- so mail requested is
+  requests minus EIP, which is also what the certified workbook's "transmitted
+  by mail" column and the 2024 ledger's `SENT_NO_EIP` both mean. Leaving EIP in
+  would have the series fall by half a million on Election Day.
+* **full** (Nov 1, Nov 7): `Total Ballots Requested`, `Ballots Cast Early In
+  Person`, `Ballots Returned and Submitted for Counting`. The sheet carries a
+  second block with the same three headers to the right -- the 2018
+  comparison -- so the FIRST occurrence of each header is the 2022 block, and
+  the county column is the unlabelled first one. Mail returned is returned
+  minus EIP.
+
+Every file has a `TOTAL` row, which is used as the statewide row (Ohio's own
+number, as with the workbook) and checked against the county sum.
 """
 
 from __future__ import annotations
@@ -84,14 +163,21 @@ import io
 import json
 import logging
 import re
+import time
 import uuid
-from datetime import date, datetime, timezone
+from dataclasses import dataclass
+from datetime import date, datetime, timedelta, timezone
+from email.utils import parsedate_to_datetime
 
 import openpyxl
 
+from ..calendar import election_date
 from ..schema import TIER_SCRAPER, CountyDay, StateDay
 from . import _fips
-from ._net import DEFAULT_HEADERS, SESSION, Missing, cache_path, get, looks_like_xlsx
+from ._net import (
+    DEFAULT_HEADERS, DEFAULT_TIMEOUT, SESSION, Missing, _throttle, cache_path, get,
+    impersonated_headers, looks_like_wall, looks_like_xlsx,
+)
 from .base import Adapter, FetchResult, NotYetPublished, SchemaDrift, SourceError
 
 log = logging.getLogger(__name__)
@@ -178,6 +264,156 @@ POWERBI_MEASURES = (
 #: How the dashboard labels a November general: "2024 NOV GENERAL". Anchored at
 #: both ends so "2024 JUNE CD 6 SPECIAL GENERAL" cannot match.
 _DASHBOARD_GENERAL = re.compile(r"^(\d{4})\s+NOV\w*\s+GENERAL$", re.I)
+
+# --------------------------------------------------------------------------
+# Route 3, the ledger behind it (backfill only -- see the module docstring)
+# --------------------------------------------------------------------------
+#: The day a ledger row's ballots were sent or received: epoch milliseconds at
+#: UTC midnight, like REFRESH_DATE. Never selected by the live route.
+COL_DATA_DATE = "Data_Date"
+
+#: The published report's two page-level filters, booleans on the same table.
+#: Replicated as `Where` conditions so the ledger query answers exactly what
+#: the report displays -- verified for the 2024 general: 2024-09-20..2024-11-06
+#: and the report's own four totals to the ballot. Without them the table
+#: carries ~5,000 ballots on dates like 1984-10-21, 3162-10-21 and 9204-01-02.
+FLAG_RETURN_RANGE = "Election Ballot Return Date Range"
+FLAG_VALID_DATE = "VALID_DATE_BOOL_AGG"
+
+LEDGER_COLUMNS = (COL_ELECTION, COL_COUNTY, COL_DATA_DATE)
+
+#: The table's earliest election is the 2023 November general, so this is the
+#: first November general it can give a daily series for. Earlier cycles are
+#: refused before any query is sent.
+LEDGER_FIRST_CYCLE = 2024
+
+#: The backstop window around Election Day a ledger row must fall in. Generous
+#: on purpose -- the report's own filters (above) are the real clamp, at ~46
+#: days before through the day after; this only has to catch the impossible
+#: dates if those filters ever stop being applied server-side.
+LEDGER_WINDOW_BEFORE = 60
+LEDGER_WINDOW_AFTER = 10
+
+# --------------------------------------------------------------------------
+# The 2022 weekly press-release files (backfill only -- see the module docstring)
+# --------------------------------------------------------------------------
+#: `Last-Modified` as an origin sends it, and as the Wayback Machine replays the
+#: ORIGINAL response's copy of it. The same date under two names, which is what
+#: lets an archived capture be dated by the file's own write time rather than by
+#: when the Archive happened to crawl it. (ca.py's `fetch_history` is the
+#: precedent.)
+LIVE_STAMP_HEADER = "Last-Modified"
+ARCHIVE_STAMP_HEADER = "x-archive-orig-last-modified"
+
+#: `id_` asks for the ORIGINAL bytes rather than a rewritten page; essential for
+#: a workbook, which any rewriting destroys.
+WAYBACK_SNAPSHOT = "https://web.archive.org/web/{stamp}id_/{url}"
+
+#: web.archive.org answers a burst of requests with HTTP 429, so archived
+#: files are spaced out and a 429 is waited through rather than reported.
+#: These files never change, so each is fetched once and cached.
+#:
+#: ⚠️ A 429 THAT NEVER CLEARS IS NOT A BURST. Measured 2026-10-13: the Archive
+#: answered the Chrome `User-Agent` in DEFAULT_HEADERS with a 429 "flagged as
+#: suspected abusive bot traffic" for minutes on end -- through waits totalling
+#: 2.5 minutes -- while the same URL with no spoofed UA answered 200 at once.
+#: It is the browser UA on a python-requests TLS handshake that trips it, the
+#: contradiction `_net.impersonated_headers` exists to remove, so archived
+#: requests go out without it. The waits below are for a genuine burst.
+ARCHIVE_MIN_INTERVAL = 2.0
+ARCHIVE_RETRY_WAITS = (15, 45)
+
+#: A release's workbook may be dated this many days off its release date before
+#: the capture is treated as some other file. Oct 25's archived copy was written
+#: Oct 26; Nov 7's "through 2 pm" file was written after midnight UTC on Nov 8.
+RELEASE_DATE_TOLERANCE = timedelta(days=1)
+
+#: The three column shapes, by the header names that identify each. Keys are
+#: whitespace-collapsed and lowercased like the workbook's.
+WEEKLY_REQUESTS = "requests"
+WEEKLY_REQUESTS_EIP = "requests+eip"
+WEEKLY_FULL = "full"
+
+WEEKLY_COUNTY = "county"
+WEEKLY_SHAPES: dict[str, dict[str, str]] = {
+    WEEKLY_REQUESTS: {
+        "uocava": "uocava valid applications",
+        "domestic": "non-uocava valid applications",
+    },
+    WEEKLY_REQUESTS_EIP: {
+        "requests": "early voting and absentee ballot requests",
+        "eip": "early voting",
+    },
+    WEEKLY_FULL: {
+        "requests": "total ballots requested",
+        "eip": "ballots cast early in person",
+        "returned": "ballots returned and submitted for counting",
+    },
+}
+
+#: How far down a sheet the header row may sit. The "full" files open with three
+#: blank rows under a merged title.
+WEEKLY_HEADER_SCAN = 10
+
+
+@dataclass(frozen=True)
+class WeeklyRelease:
+    """One press-release workbook: where it is, what day it reports, its shape."""
+
+    as_of: date
+    url: str
+    filename: str
+    kind: str
+    stamp_header: str = ARCHIVE_STAMP_HEADER
+
+
+def _archived(stamp: str, url: str) -> str:
+    return WAYBACK_SNAPSHOT.format(stamp=stamp, url=url)
+
+
+_SOS_NEWS_2022 = "https://www.ohiosos.gov/globalassets/media-center/news/2022/"
+
+#: The dated county files, per cycle. Each `as_of` is the press-release date;
+#: the file's own write date must agree with it (see `check_release_date`).
+#: VERIFIED 2026-10-13: the Constant Contact file answers live with
+#: `Last-Modified: Wed, 12 Oct 2022 19:48:14 GMT`; the three Wayback captures
+#: replay origin write times of 2022-10-26 11:01, 2022-11-01 21:41 and
+#: 2022-11-08 00:26 UTC.
+WEEKLY_RELEASES: dict[int, tuple[WeeklyRelease, ...]] = {
+    2022: (
+        WeeklyRelease(
+            as_of=date(2022, 10, 12),
+            url=("https://files.constantcontact.com/b01249ec501/"
+                 "cdcfd945-3f2d-41e6-a238-b876909fa767.xlsx?rdr=true"),
+            filename="2022_weekly_2022-10-12_absentee_survey_1.xlsx",
+            kind=WEEKLY_REQUESTS,
+            stamp_header=LIVE_STAMP_HEADER,
+        ),
+        WeeklyRelease(
+            as_of=date(2022, 10, 25),
+            url=_archived("20221026190624", _SOS_NEWS_2022
+                          + "2022-10-25/nov-2022-general-absentee-survey-3.xlsx"),
+            filename="2022_weekly_2022-10-25_nov-2022-general-absentee-survey-3.xlsx",
+            kind=WEEKLY_REQUESTS_EIP,
+        ),
+        WeeklyRelease(
+            as_of=date(2022, 11, 1),
+            url=_archived("20250307224416", _SOS_NEWS_2022
+                          + "2022-11-01/oneweekoutev2022.xlsx"),
+            filename="2022_weekly_2022-11-01_oneweekoutev2022.xlsx",
+            kind=WEEKLY_FULL,
+        ),
+        WeeklyRelease(
+            # Reported "through 2 pm" on the 7th; dated the 7th, not by the
+            # after-midnight-UTC write time.
+            as_of=date(2022, 11, 7),
+            url=_archived("20250306112939", _SOS_NEWS_2022
+                          + "2022-11-07/onedayoutev2022.xlsx"),
+            filename="2022_weekly_2022-11-07_onedayoutev2022.xlsx",
+            kind=WEEKLY_FULL,
+        ),
+    ),
+}
 
 # --------------------------------------------------------------------------
 # Workbook column vocabulary
@@ -318,16 +554,18 @@ def _add(*values: int | None) -> int | None:
     return sum(known) if known else None
 
 
-def _sub(whole: int | None, part: int | None) -> int | None:
+def _sub(whole: int | None, part: int | None, what: str | None = None) -> int | None:
     """`whole - part`, or None if either side is unreported.
 
     A negative answer means the two columns do not mean what this module thinks
-    they mean, which is drift, not a number worth publishing.
+    they mean, which is drift, not a number worth publishing. `what` names the
+    pair for the message; the default is the dashboard's.
     """
     if whole is None or part is None:
         return None
     if whole < part:
         raise SchemaDrift(
+            what.format(whole=whole, part=part) if what else
             f"OH: dashboard reports {part} mail ballots inside {whole} total; "
             "the INCL_EIP / NO_EIP columns no longer nest"
         )
@@ -480,36 +718,33 @@ def _blob_url(blob_path: str) -> str:
 # --------------------------------------------------------------------------
 # Route 3: the Power BI dashboard
 # --------------------------------------------------------------------------
-def build_query() -> dict:
-    """The querydata body: every election, every county, one request.
+def _column(name: str) -> dict:
+    return {"Column": {"Expression": {"SourceRef": {"Source": "a"}}, "Property": name}}
 
-    Selecting all elections rather than filtering server-side keeps the request
-    to columns and a Sum -- no filter DSL -- and the whole answer is 40 KB. The
-    cycle is picked out locally, where a mismatch is visible and testable.
-    """
-    def source():
-        return {"SourceRef": {"Source": "a"}}
 
-    select = [
-        {"Column": {"Expression": source(), "Property": name},
-         "Name": f"{POWERBI_ENTITY}.{name}"}
-        for name in POWERBI_COLUMNS
+def _select(columns, measures) -> list[dict]:
+    return [
+        {**_column(name), "Name": f"{POWERBI_ENTITY}.{name}"} for name in columns
     ] + [
-        {"Aggregation": {
-            "Expression": {"Column": {"Expression": source(), "Property": name}},
-            "Function": 0},
+        {"Aggregation": {"Expression": _column(name), "Function": 0},
          "Name": f"Sum({POWERBI_ENTITY}.{name})"}
-        for name in POWERBI_MEASURES
+        for name in measures
     ]
+
+
+def _query_body(select: list[dict], where: list[dict] | None = None) -> dict:
+    query = {
+        "Version": 2,
+        "From": [{"Name": "a", "Entity": POWERBI_ENTITY, "Type": 0}],
+        "Select": select,
+    }
+    if where:
+        query["Where"] = where
     return {
         "version": "1.0.0",
         "queries": [{
             "Query": {"Commands": [{"SemanticQueryDataShapeCommand": {
-                "Query": {
-                    "Version": 2,
-                    "From": [{"Name": "a", "Entity": POWERBI_ENTITY, "Type": 0}],
-                    "Select": select,
-                },
+                "Query": query,
                 "Binding": {
                     "Primary": {"Groupings": [{"Projections": list(range(len(select)))}]},
                     "DataReduction": {
@@ -530,7 +765,46 @@ def build_query() -> dict:
     }
 
 
-def decode_dsr(payload: dict) -> list[dict]:
+def build_query() -> dict:
+    """The querydata body: every election, every county, one request.
+
+    Selecting all elections rather than filtering server-side keeps the request
+    to columns and a Sum -- no filter DSL -- and the whole answer is 40 KB. The
+    cycle is picked out locally, where a mismatch is visible and testable.
+    """
+    return _query_body(_select(POWERBI_COLUMNS, POWERBI_MEASURES))
+
+
+def build_ledger_query(label: str) -> dict:
+    """The ledger body: one election, every county, every `Data_Date`.
+
+    Unlike `build_query` this DOES filter server-side, for two reasons. The
+    election filter keeps the answer to one cycle's ~3,200 rows instead of every
+    election's; `label` is the table's own spelling, discovered from the live
+    query, never guessed. The two boolean filters are the published report's own
+    page filters -- the thing that turns the raw table into what the report
+    shows -- and replicating them is what makes "as of D" mean what Ohio means.
+    """
+    def equals(name: str, literal: str) -> dict:
+        return {"Condition": {"Comparison": {
+            "ComparisonKind": 0,
+            "Left": _column(name),
+            "Right": {"Literal": {"Value": literal}},
+        }}}
+
+    quoted = "'" + label.replace("'", "''") + "'"
+    where = [
+        {"Condition": {"In": {
+            "Expressions": [_column(COL_ELECTION)],
+            "Values": [[{"Literal": {"Value": quoted}}]],
+        }}},
+        equals(FLAG_RETURN_RANGE, "true"),
+        equals(FLAG_VALID_DATE, "true"),
+    ]
+    return _query_body(_select(LEDGER_COLUMNS, POWERBI_MEASURES), where)
+
+
+def decode_dsr(payload: dict, required: tuple[str, ...] | None = None) -> list[dict]:
     """Turn one Power BI querydata response into a list of {column: value}.
 
     The wire format is column-compressed and has to be un-compressed exactly, or
@@ -546,7 +820,13 @@ def decode_dsr(payload: dict) -> list[dict]:
     Slots are matched back to column names through the response's own
     `descriptor.Select`, so a reordered projection cannot silently transpose the
     measures. Anything unrecognised is SchemaDrift.
+
+    `required` is the column set the caller is about to read; the default is the
+    live dashboard query's. The ledger query selects `Data_Date` in place of
+    `REFRESH_DATE` and passes its own.
     """
+    if required is None:
+        required = POWERBI_COLUMNS + POWERBI_MEASURES
     try:
         data = payload["results"][0]["result"]["data"]
         descriptor = data["descriptor"]["Select"]
@@ -565,8 +845,7 @@ def decode_dsr(payload: dict) -> list[dict]:
         bare = name.rsplit(".", 1)[-1].rstrip(")")
         slot_names[slot] = bare
 
-    wanted = set(POWERBI_COLUMNS) | set(POWERBI_MEASURES)
-    missing = sorted(wanted - set(slot_names.values()))
+    missing = sorted(set(required) - set(slot_names.values()))
     if missing:
         raise SchemaDrift(f"OH: dashboard response is missing columns {missing}")
 
@@ -624,22 +903,29 @@ def _epoch_ms_to_date(value) -> date:
     return datetime.fromtimestamp(value / 1000, tz=timezone.utc).date()
 
 
-def parse_dashboard(payload: dict, cycle: int) -> FetchResult:
-    """Parse the dashboard's cumulative county counts for `cycle`'s general."""
-    rows = decode_dsr(payload)
+def general_label(rows: list[dict], cycle: int) -> str:
+    """The table's own spelling of `cycle`'s November general ("2024 NOV GENERAL").
 
-    label = None
+    Read off the rows rather than formatted from the cycle, so that a ledger
+    `Where` always carries a label the table actually uses. NotYetPublished when
+    the table has no such election -- the ordinary answer for a live cycle before
+    the counties start submitting, and the permanent answer for 2022.
+    """
     for row in rows:
         m = _DASHBOARD_GENERAL.match(" ".join(str(row.get(COL_ELECTION) or "").split()))
         if m and int(m.group(1)) == int(cycle):
-            label = row[COL_ELECTION]
-            break
-    if label is None:
-        seen = sorted({str(r.get(COL_ELECTION)) for r in rows})
-        raise NotYetPublished(
-            f"OH: absentee dashboard has no {cycle} November general yet "
-            f"(it carries {seen})"
-        )
+            return row[COL_ELECTION]
+    seen = sorted({str(r.get(COL_ELECTION)) for r in rows})
+    raise NotYetPublished(
+        f"OH: absentee dashboard has no {cycle} November general yet "
+        f"(it carries {seen})"
+    )
+
+
+def parse_dashboard(payload: dict, cycle: int) -> FetchResult:
+    """Parse the dashboard's cumulative county counts for `cycle`'s general."""
+    rows = decode_dsr(payload)
+    label = general_label(rows, cycle)
 
     # One county can appear under several REFRESH_DATE partitions, so the counts
     # are summed and the newest stamp is the snapshot's as-of date.
@@ -672,7 +958,7 @@ def parse_dashboard(payload: dict, cycle: int) -> FetchResult:
         raise NotYetPublished(f"OH: absentee dashboard has no {cycle} county rows yet")
 
     county_rows: list[CountyDay] = []
-    running = [None, None, None, None]
+    running: list[int | None] = [None, None, None, None]
     for fips, (sent_all, back_all, sent_mail, back_mail) in sorted(totals.items()):
         county_rows.append(CountyDay(
             cycle=cycle, state="OH", county_fips=fips, day=refreshed,
@@ -711,14 +997,39 @@ def parse_dashboard(payload: dict, cycle: int) -> FetchResult:
     return FetchResult(state_rows=state_rows, county_rows=county_rows)
 
 
-def fetch_dashboard() -> dict:
-    """POST the querydata request and return the parsed JSON.
+def _query_error(payload: dict) -> str | None:
+    """The model's own complaint, if the query was rejected under HTTP 200.
+
+    Power BI answers a query it cannot run -- a `Where` on a column that has
+    been renamed, say -- with a 200 and an `odata.error` inside the first data
+    shape, not with a status code. Left unchecked that reads as an empty table.
+    """
+    try:
+        shapes = payload["results"][0]["result"]["data"]["dsr"]["DataShapes"]
+        error = shapes[0].get("odata.error")
+    except (KeyError, IndexError, TypeError, AttributeError):
+        return None
+    return json.dumps(error)[:300] if error else None
+
+
+def _post_query(body: dict, *, filename: str, what: str, use_cache: bool = False) -> dict:
+    """POST one querydata body and return the parsed JSON, mirrored to cache/.
 
     Uses the shared `_net` session because this host is NOT behind Cloudflare --
     it answers a stock python-requests POST, which is the entire reason Ohio has
-    a headless path at all.
+    a headless path at all. `use_cache` is for the archived ledger only, never
+    for the live dashboard.
     """
-    body = json.dumps(build_query())
+    path = cache_path("OH", filename)
+    if use_cache and path.exists() and path.stat().st_size >= 1024:
+        try:
+            cached = json.loads(path.read_bytes())
+        except ValueError:
+            cached = None
+        if cached is not None and _query_error(cached) is None:
+            log.debug("OH: cache hit %s", path)
+            return cached
+
     headers = {
         **DEFAULT_HEADERS,
         "X-PowerBI-ResourceKey": POWERBI_RESOURCE_KEY,
@@ -731,21 +1042,412 @@ def fetch_dashboard() -> dict:
     }
     try:
         response = SESSION.post(
-            POWERBI_QUERY_URL, headers=headers, data=body, timeout=120
+            POWERBI_QUERY_URL, headers=headers, data=json.dumps(body), timeout=120
         )
     except Exception as exc:  # noqa: BLE001 -- requests raises several types
-        raise SourceError(f"OH: absentee dashboard query failed: {exc}") from exc
+        raise SourceError(f"OH: {what} query failed: {exc}") from exc
     if response.status_code != 200:
         raise SourceError(
-            f"OH: absentee dashboard returned HTTP {response.status_code} "
+            f"OH: {what} returned HTTP {response.status_code} "
             "(the report's resource key may have been rotated -- see "
             "docs/ohio-source.md)"
         )
-    cache_path("OH", "powerbi_absentee_querydata.json").write_bytes(response.content)
     try:
-        return response.json()
+        payload = response.json()
     except ValueError as exc:
-        raise SchemaDrift(f"OH: absentee dashboard did not return JSON: {exc}") from exc
+        raise SchemaDrift(f"OH: {what} did not return JSON: {exc}") from exc
+    error = _query_error(payload)
+    if error:
+        raise SchemaDrift(f"OH: {what} query was rejected by the model: {error}")
+    path.write_bytes(response.content)
+    return payload
+
+
+def fetch_dashboard() -> dict:
+    """POST the live querydata request and return the parsed JSON."""
+    return _post_query(
+        build_query(), filename="powerbi_absentee_querydata.json",
+        what="absentee dashboard",
+    )
+
+
+def fetch_ledger(label: str, cycle: int, *, use_cache: bool = False) -> dict:
+    """POST the ledger query for one election and return the parsed JSON.
+
+    Cached per cycle: a past cycle's ledger is an archived file in all but
+    name, and `backfill` is the only caller.
+    """
+    return _post_query(
+        build_ledger_query(label), filename=f"{cycle}_powerbi_absentee_ledger.json",
+        what=f"absentee ledger ({label})", use_cache=use_cache,
+    )
+
+
+def parse_ledger(rows: list[dict], cycle: int) -> FetchResult:
+    """The per-event ledger, cumulated into "as of D" rows for every day before
+    Election Day. See THE LEDGER BEHIND THE DASHBOARD in the module docstring.
+
+    `rows` are decoded ledger rows (`decode_dsr` with `LEDGER_COLUMNS`), one per
+    county x `Data_Date`. Rows for any other election are SchemaDrift -- the
+    query's `Where` is supposed to have excluded them, and a filter that stops
+    being honoured must not be summed into the wrong cycle. Rows dated outside
+    the backstop window, or undated rows that carry ballots, are skipped and
+    logged with their ballot count; they are never on the curve.
+
+    A county with no event on or before a day is at zero that day, not blank:
+    this is a complete per-event ledger, so the absence of an event IS the
+    report. The BLANK RULE is about measures a state does not publish, and Ohio
+    publishes all four here for every county.
+    """
+    voting = election_date(cycle)
+    earliest = voting - timedelta(days=LEDGER_WINDOW_BEFORE)
+    latest = voting + timedelta(days=LEDGER_WINDOW_AFTER)
+    if not rows:
+        raise NotYetPublished(
+            f"OH: the absentee ledger has no rows for the {cycle} November general"
+        )
+
+    events: dict[str, dict[date, list[int]]] = {}
+    names: dict[str, str] = {}
+    unknown: list[str] = []
+    junk_rows = 0
+    junk_dates: set[str] = set()
+    junk = [0, 0, 0, 0]
+
+    for row in rows:
+        label = " ".join(str(row.get(COL_ELECTION) or "").split())
+        m = _DASHBOARD_GENERAL.match(label)
+        if not m or int(m.group(1)) != int(cycle):
+            raise SchemaDrift(
+                f"OH: ledger row is for {label!r}, not the {cycle} November "
+                "general -- the query's election filter is not being honoured"
+            )
+        raw_name = " ".join(str(row.get(COL_COUNTY) or "").split())
+        if not raw_name:
+            continue
+        hit = _fips.lookup("OH", raw_name)
+        if hit is None:
+            unknown.append(raw_name)
+            continue
+        fips, canonical = hit
+        names[fips] = canonical
+        measures = [_int(row.get(name)) or 0 for name in POWERBI_MEASURES]
+
+        stamp = row.get(COL_DATA_DATE)
+        if stamp is None:
+            # The table carries one undated bookkeeping row per county. Empty
+            # ones are nothing; one with ballots on it cannot be placed on a day.
+            if any(measures):
+                junk_rows += 1
+                junk_dates.add("undated")
+                junk = [a + b for a, b in zip(junk, measures)]
+            continue
+        day = _epoch_ms_to_date(stamp)
+        if not (earliest <= day <= latest):
+            junk_rows += 1
+            junk_dates.add(day.isoformat())
+            junk = [a + b for a, b in zip(junk, measures)]
+            continue
+        bucket = events.setdefault(fips, {}).setdefault(day, [0, 0, 0, 0])
+        for i, value in enumerate(measures):
+            bucket[i] += value
+
+    if unknown:
+        raise SchemaDrift(f"OH: unrecognised county names {sorted(set(unknown))[:5]}")
+    if junk_rows:
+        log.warning(
+            "OH: %d ledger rows for %s are dated outside %s..%s and were SKIPPED "
+            "(%d sent, %d received; dates %s)", junk_rows, cycle,
+            earliest.isoformat(), latest.isoformat(), junk[0], junk[1],
+            sorted(junk_dates)[:8],
+        )
+    if not events:
+        raise NotYetPublished(
+            f"OH: the absentee ledger has no dated county rows for {cycle}"
+        )
+
+    days = sorted({day for per_day in events.values() for day in per_day})
+    emit = [day for day in days if day < voting]
+    if not emit:
+        raise NotYetPublished(
+            f"OH: every {cycle} ledger day is on or after Election Day "
+            f"{voting.isoformat()}, which the certified workbook supplies"
+        )
+
+    county_rows: list[CountyDay] = []
+    state_totals: dict[date, list[int]] = {day: [0, 0, 0, 0] for day in emit}
+    for fips in sorted(events):
+        per_day = events[fips]
+        running = [0, 0, 0, 0]
+        for day in days:
+            if day in per_day:
+                running = [a + b for a, b in zip(running, per_day[day])]
+            if day >= voting:
+                # Election Day and after belong to the certified workbook.
+                break
+            sent_all, back_all, sent_mail, back_mail = running
+            county_rows.append(CountyDay(
+                cycle=cycle, state="OH", county_fips=fips, day=day,
+                county_name=names[fips],
+                ballots_total=back_all,
+                mail_returned=back_mail,
+                inperson=_sub(back_all, back_mail),
+                # Ohio has no party registration. Never 0.
+                party_dem=None, party_rep=None, party_oth=None, party_npa=None,
+            ))
+            total = state_totals[day]
+            for i, value in enumerate(running):
+                total[i] += value
+
+    state_rows: list[StateDay] = []
+    if len(events) == EXPECTED_COUNTIES:
+        for day in emit:
+            sent_all, back_all, sent_mail, back_mail = state_totals[day]
+            state_rows.append(StateDay(
+                cycle=cycle, state="OH", day=day,
+                ballots_total=back_all,
+                mail_requested=sent_mail,
+                mail_returned=back_mail,
+                inperson=_sub(back_all, back_mail),
+                party_dem=None, party_rep=None, party_oth=None, party_npa=None,
+            ))
+    else:
+        # Same rule as parse_dashboard: a sum of fewer than 88 counties looks
+        # exactly like a number for Ohio without being one.
+        log.warning(
+            "OH: ledger covers %d of %d counties for %s; publishing counties "
+            "only, no statewide rows", len(events), EXPECTED_COUNTIES, cycle,
+        )
+    return FetchResult(state_rows=state_rows, county_rows=county_rows)
+
+
+# --------------------------------------------------------------------------
+# The 2022 weekly press-release files
+# --------------------------------------------------------------------------
+def _http_date(raw: str | None) -> date | None:
+    """An HTTP-date header as a UTC calendar date, or None if unusable."""
+    if not raw:
+        return None
+    try:
+        parsed = parsedate_to_datetime(raw.strip())
+    except (TypeError, ValueError, IndexError):
+        return None
+    if parsed.tzinfo is None:
+        parsed = parsed.replace(tzinfo=timezone.utc)
+    return parsed.astimezone(timezone.utc).date()
+
+
+def download_dated(
+    url: str, *, filename: str, stamp_header: str, use_cache: bool = False,
+    min_interval: float = 0.0, min_bytes: int = 4096,
+) -> tuple[bytes, date | None]:
+    """GET `url`, returning its bytes and the date in `stamp_header`.
+
+    `_net.get` is not used because it discards response headers, and the write
+    date is the only thing that ties an archived file to its release. Neither
+    host this serves -- files.constantcontact.com and web.archive.org -- is
+    behind Cloudflare, so the plain session is enough; the browser-fingerprint
+    `download()` above is for `ohiosos.gov` itself, which these files
+    deliberately avoid.
+
+    The header is mirrored beside the cached body so a cache hit is dated the
+    same way a fresh fetch is. web.archive.org's 429s are waited through.
+    """
+    path = cache_path("OH", filename)
+    stamp = path.with_name(path.name + ".last-modified")
+    if use_cache and path.exists() and path.stat().st_size >= min_bytes:
+        cached = path.read_bytes()
+        if not looks_like_wall(cached):
+            log.debug("OH: cache hit %s", path)
+            return cached, _http_date(stamp.read_text() if stamp.exists() else None)
+
+    # The Archive flags a browser User-Agent on a non-browser handshake as a
+    # bot and 429s it indefinitely (see ARCHIVE_RETRY_WAITS); Constant Contact
+    # does not care either way. So no spoofed UA on the archived host.
+    headers = (impersonated_headers(DEFAULT_HEADERS)
+               if url.startswith("https://web.archive.org/") else DEFAULT_HEADERS)
+
+    def attempt():
+        _throttle(url, min_interval)
+        try:
+            return SESSION.get(url, headers=headers, timeout=DEFAULT_TIMEOUT)
+        except Exception as exc:  # noqa: BLE001 -- requests raises several types
+            raise SourceError(f"OH: GET {url} failed: {exc}") from exc
+
+    response = attempt()
+    for wait in ARCHIVE_RETRY_WAITS:
+        if response.status_code != 429:
+            break
+        log.debug("OH: %s answered 429; waiting %ss", url, wait)
+        time.sleep(wait)
+        response = attempt()
+
+    if response.status_code in (404, 410):
+        raise Missing(f"OH: {url} returned {response.status_code}")
+    if response.status_code != 200:
+        raise SourceError(f"OH: {url} returned HTTP {response.status_code}")
+    body = response.content
+    if looks_like_wall(body):
+        raise SourceError(f"OH: {url} answered with a bot wall, not the file")
+    if len(body) < min_bytes:
+        raise Missing(f"OH: {url} returned only {len(body)} bytes")
+
+    path.write_bytes(body)
+    raw = response.headers.get(stamp_header)
+    if raw:
+        stamp.write_text(raw)
+    elif stamp.exists():
+        stamp.unlink()
+    return body, _http_date(raw)
+
+
+def check_release_date(written: date | None, release: WeeklyRelease) -> None:
+    """Refuse a file whose own write date does not agree with its release date.
+
+    The row is dated by the press release, so the file must be the one the
+    release linked. A capture written days away from the release is some other
+    version of the page's attachment -- or the Archive's own redirect target --
+    and would put real numbers on the wrong day.
+    """
+    if written is None:
+        raise SchemaDrift(
+            f"OH: {release.url} carries no {release.stamp_header}; an undated "
+            f"file cannot be pinned to the {release.as_of.isoformat()} release"
+        )
+    if abs(written - release.as_of) > RELEASE_DATE_TOLERANCE:
+        raise SchemaDrift(
+            f"OH: {release.url} was written {written.isoformat()}, not within a "
+            f"day of its {release.as_of.isoformat()} release -- this is not the "
+            "file the release linked"
+        )
+
+
+def parse_weekly_xlsx(body: bytes, as_of: date, kind: str) -> FetchResult:
+    """Parse one 2022 press-release county workbook into rows dated `as_of`.
+
+    `kind` is one of WEEKLY_SHAPES and says which headers must be present; the
+    header row is found by those names within the first WEEKLY_HEADER_SCAN rows,
+    and the FIRST occurrence of each name is the one read (the "full" files
+    repeat the block to the right for the 2018 comparison). The `TOTAL` row is
+    the statewide row and must equal the county sum.
+    """
+    if kind not in WEEKLY_SHAPES:
+        raise ValueError(f"unknown weekly shape {kind!r}")
+    wanted = WEEKLY_SHAPES[kind]
+    if not looks_like_xlsx(body):
+        raise SourceError(f"OH: {as_of.isoformat()} weekly file was not an xlsx")
+    try:
+        book = openpyxl.load_workbook(io.BytesIO(body), read_only=True, data_only=True)
+    except Exception as exc:  # noqa: BLE001 -- openpyxl raises a zoo of types
+        raise SourceError(f"OH: could not open {as_of.isoformat()} weekly file: {exc}") from exc
+    rows = list(book.worksheets[0].iter_rows(values_only=True))
+
+    header_at = None
+    for i, row in enumerate(rows[:WEEKLY_HEADER_SCAN]):
+        names = [_norm_header(c) for c in row]
+        if all(name in names for name in wanted.values()):
+            header_at = i
+            break
+    if header_at is None:
+        raise SchemaDrift(
+            f"OH: {as_of.isoformat()} weekly file has no header row carrying "
+            f"{sorted(wanted.values())} in its first {WEEKLY_HEADER_SCAN} rows "
+            f"(expected the {kind!r} shape)"
+        )
+    names = [_norm_header(c) for c in rows[header_at]]
+    index = {key: names.index(name) for key, name in wanted.items()}
+    county_at = names.index(WEEKLY_COUNTY) if WEEKLY_COUNTY in names else 0
+    if names[county_at] not in ("", WEEKLY_COUNTY):
+        raise SchemaDrift(
+            f"OH: {as_of.isoformat()} weekly file's first column is "
+            f"{names[county_at]!r}, not the county"
+        )
+
+    def cell(row, key):
+        i = index[key]
+        return _int(row[i]) if i < len(row) else None
+
+    total_raw: dict[str, int | None] | None = None
+    county_raw: list[tuple[str, str, dict[str, int | None]]] = []
+    unknown: list[str] = []
+    for row in rows[header_at + 1:]:
+        if not row:
+            continue
+        raw_name = row[county_at] if county_at < len(row) else None
+        name = " ".join(str(raw_name or "").split())
+        if not name:
+            continue
+        values = {key: cell(row, key) for key in wanted}
+        if name.lower() in STATEWIDE_LABELS:
+            if total_raw is not None:
+                raise SchemaDrift(f"OH: {as_of.isoformat()} weekly file has two TOTAL rows")
+            total_raw = values
+            continue
+        hit = _fips.lookup("OH", name)
+        if hit is None:
+            unknown.append(name)
+            continue
+        fips, canonical = hit
+        county_raw.append((fips, canonical, values))
+
+    if unknown:
+        raise SchemaDrift(f"OH: unrecognised county names {sorted(set(unknown))[:5]}")
+    if total_raw is None:
+        raise SchemaDrift(f"OH: {as_of.isoformat()} weekly file has no TOTAL row")
+    if not county_raw:
+        raise SchemaDrift(f"OH: {as_of.isoformat()} weekly file has no county rows")
+    for key in wanted:
+        summed = _add(*(values[key] for _, _, values in county_raw))
+        if summed != total_raw[key]:
+            raise SchemaDrift(
+                f"OH: {as_of.isoformat()} weekly file's counties sum to {summed} "
+                f"{wanted[key]!r} against a TOTAL of {total_raw[key]}"
+            )
+
+    def measures(values: dict[str, int | None]) -> tuple:
+        """(mail_requested, mail_returned, inperson, ballots_total)."""
+        if kind == WEEKLY_REQUESTS:
+            return _add(values["uocava"], values["domestic"]), None, None, None
+        eip = values["eip"]
+        requested = _sub(
+            values["requests"], eip,
+            "OH: weekly file reports {part} early in-person inside {whole} "
+            "requests; requests no longer include in-person",
+        )
+        if kind == WEEKLY_REQUESTS_EIP:
+            return requested, None, eip, None
+        returned = values["returned"]
+        mail_back = _sub(
+            returned, eip,
+            "OH: weekly file reports {part} early in-person inside {whole} "
+            "returned; returns no longer include in-person",
+        )
+        return requested, mail_back, eip, returned
+
+    requested, mail_back, eip, total = measures(total_raw)
+    state_rows = [StateDay(
+        cycle=as_of.year, state="OH", day=as_of,
+        ballots_total=total,
+        mail_requested=requested,
+        mail_returned=mail_back,
+        inperson=eip,
+        # Ohio has no party registration. Never 0.
+        party_dem=None, party_rep=None, party_oth=None, party_npa=None,
+    )]
+    county_rows: list[CountyDay] = []
+    if kind != WEEKLY_REQUESTS:
+        # The requests-only file has nothing a county row can carry.
+        for fips, canonical, values in county_raw:
+            _, mail_back, eip, total = measures(values)
+            county_rows.append(CountyDay(
+                cycle=as_of.year, state="OH", county_fips=fips, day=as_of,
+                county_name=canonical,
+                ballots_total=total,
+                mail_returned=mail_back,
+                inperson=eip,
+                party_dem=None, party_rep=None, party_oth=None, party_npa=None,
+            ))
+    return FetchResult(state_rows=state_rows, county_rows=county_rows)
 
 
 # --------------------------------------------------------------------------
@@ -898,21 +1600,14 @@ class OHScraper(Adapter):
             raise NotYetPublished(detail)
         raise SourceError(detail)
 
-    def fetch_history(self, cycle: int) -> FetchResult:
-        """The archived workbook for a past cycle -- a single certified snapshot.
+    # ---- history: the certified final -------------------------------------
+    def _archived_workbook(self, cycle: int) -> FetchResult:
+        """The archived workbook for a past cycle -- the certified Election-Day row.
 
         Ohio overwrites the report in place rather than keeping a dated file per
-        day, so the archive is one row per table, not a daily series. That is
-        still worth backfilling: it is the cycle's final absentee total, which is
-        what the 2022/2024 comparison lines anchor on.
-
-        The dashboard is NOT used here. Its numbers are a pre-certification
-        tracker (2,262,963 ballots for the 2024 general against the workbook's
-        2,620,750), so backfilling from it would anchor the comparison lines on a
-        different measurement than the one they are compared against.
+        day, so this is one row per table, not a series: the cycle's final
+        absentee total, which the 2022/2024 comparison lines anchor on.
         """
-        if cycle >= datetime.now().year:
-            raise NotYetPublished(f"OH: {cycle} is not an archived cycle")
         problems: list[str] = []
         absent = False
         for label, answer in self._workbook_routes(cycle, use_cache=True):
@@ -933,3 +1628,109 @@ class OHScraper(Adapter):
         if absent:
             raise NotYetPublished(detail)
         raise SourceError(detail)
+
+    # ---- history: the dated series ----------------------------------------
+    def _ledger_series(self, cycle: int) -> FetchResult:
+        """Every pre-Election-Day day of `cycle`, cumulated out of the ledger."""
+        if cycle < LEDGER_FIRST_CYCLE:
+            raise NotYetPublished(
+                f"OH: the absentee ledger begins with the 2023 November general; "
+                f"it has no {cycle} rows"
+            )
+        # The table's own label for the cycle, from the live query -- a guessed
+        # "2024 NOV GENERAL" that the table spells differently would come back
+        # as an empty ledger and read as absence.
+        label = general_label(decode_dsr(fetch_dashboard()), cycle)
+        payload = fetch_ledger(label, cycle, use_cache=True)
+        rows = decode_dsr(payload, required=LEDGER_COLUMNS + POWERBI_MEASURES)
+        return parse_ledger(rows, cycle)
+
+    def _weekly_series(self, cycle: int) -> FetchResult:
+        """The pinned press-release files for `cycle`, each dated by its release.
+
+        One unreadable file is logged and skipped rather than failing the
+        others: each is its own dated snapshot and the rest are still right.
+        """
+        releases = WEEKLY_RELEASES.get(cycle)
+        if not releases:
+            raise NotYetPublished(f"OH: no weekly press-release files are pinned for {cycle}")
+        result = FetchResult()
+        problems: list[str] = []
+        absent = True
+        for release in releases:
+            archived = release.url.startswith("https://web.archive.org/")
+            try:
+                body, written = download_dated(
+                    release.url, filename=release.filename,
+                    stamp_header=release.stamp_header, use_cache=True,
+                    min_interval=ARCHIVE_MIN_INTERVAL if archived else 0.0,
+                )
+                check_release_date(written, release)
+                result.extend(parse_weekly_xlsx(body, release.as_of, release.kind))
+            except SourceError as exc:   # Missing and SchemaDrift included
+                # A 404 is a file that is gone, which is absence; anything else
+                # (a 429 that never cleared, a wall, drift) is a failure to look.
+                absent = absent and isinstance(exc, Missing)
+                log.warning("OH: %s weekly file skipped: %s", release.as_of.isoformat(), exc)
+                problems.append(f"{release.as_of.isoformat()}: {exc}")
+        if not result:
+            detail = (
+                f"OH: none of the {cycle} weekly files could be read ({'; '.join(problems)})"
+            )
+            if absent:
+                raise NotYetPublished(detail)
+            raise SourceError(detail)
+        return result
+
+    def _dated_series(self, cycle: int) -> FetchResult:
+        if cycle in WEEKLY_RELEASES:
+            return self._weekly_series(cycle)
+        return self._ledger_series(cycle)
+
+    def fetch_history(self, cycle: int) -> FetchResult:
+        """A past cycle: the certified Election-Day row plus a dated series.
+
+        Two parts, fetched independently and combined:
+
+        * the archived workbook (routes 1 and 2) -- the certified final, which
+          is the cycle's Election-Day row and the number the comparison lines
+          anchor on. Unchanged from before the series existed.
+        * the dated series -- for 2024 the dashboard's ledger cumulated per day
+          (receipt-dated and restated; see THE LEDGER BEHIND THE DASHBOARD),
+          emitted only for days BEFORE Election Day so the two parts never meet
+          on a key; for 2022 the four weekly press-release workbooks.
+
+        Either part may fail on its own: a blocked workbook route with a working
+        ledger still returns the series (and logs the problem), and vice versa.
+        Only when NEITHER produced a row does this raise -- NotYetPublished if
+        both reported absence, SourceError if either was a failure to look.
+
+        The live dashboard snapshot (`parse_dashboard`) is still NOT used here:
+        its single cumulative number is a pre-certification tracker (2,262,963
+        for 2024 against the workbook's 2,620,750). The ledger is a different
+        reading of the same table, and it stops where the workbook starts.
+        """
+        if cycle >= datetime.now().year:
+            raise NotYetPublished(f"OH: {cycle} is not an archived cycle")
+        result = FetchResult()
+        problems: list[str] = []
+        failed = False
+        for part, loader in (
+            ("workbook", self._archived_workbook),
+            ("series", self._dated_series),
+        ):
+            try:
+                result.extend(loader(cycle))
+            except NotYetPublished as exc:
+                problems.append(f"{part}: {exc}")
+            except SourceError as exc:
+                failed = True
+                problems.append(f"{part}: {exc}")
+        if result:
+            for problem in problems:
+                log.warning("OH: %s history is partial -- %s", cycle, problem)
+            return result
+        detail = f"OH: no archived absentee data for {cycle} ({'; '.join(problems)})"
+        if failed:
+            raise SourceError(detail)
+        raise NotYetPublished(detail)

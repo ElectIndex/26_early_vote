@@ -49,15 +49,18 @@ import csv
 import io
 import json
 import logging
+import time
 import urllib.parse
 from collections import defaultdict
-from datetime import date, datetime, timezone
+from datetime import date, datetime, timedelta, timezone
 
 from ..calendar import election_date
 from ..normalize import cd_code
 from ..schema import TIER_SCRAPER, CountyDay, DistrictDay, StateDay
 from . import _districts, _fips
-from ._net import Missing, get, looks_like_html
+from ._net import (DEFAULT_HEADERS, DEFAULT_TIMEOUT, SESSION, Missing, _throttle,
+                   impersonated_headers,
+                   cache_path, get, looks_like_html)
 from .base import Adapter, FetchResult, NotYetPublished, SchemaDrift, SourceError
 
 log = logging.getLogger(__name__)
@@ -79,6 +82,15 @@ ELECTION_URL = ENR + "/results/public/api/elections/Virginia/{election}"
 #: The report itself. `blob` changes on every republish, which is exactly why it
 #: is read out of the election metadata instead of being pinned here.
 BLOB_URL = ENR + "/cdn/results/{jurisdiction}/{blob}"
+
+#: ELECT writes CongressionalDistrict "0" on a handful of rows -- the certified
+#: 2024 file has five, all Harrisonburg City in-person voters -- for a ballot
+#: the locality could not place in a district. It is not an unknown district
+#: (there is no VA-00) and not drift: the ballot is real and belongs to the
+#: locality's and the state's totals, it just carries no district. Refusing
+#: the whole file over five ballots is what `backfill --cycle 2024` did from
+#: 2026-10-09 until 2026-10-13, so the code now reads "0" as "unassigned".
+UNASSIGNED_DISTRICT = "0"
 
 #: The report we want, matched case-insensitively on `reportName`.
 ABSENTEE_REPORT = "enrabsenteerawcsv"
@@ -243,10 +255,15 @@ def parse(body: bytes, cycle: int, day: date) -> FetchResult:
         targets = [tallies[fips]]
         if DISTRICT in index:
             raw_cd = str(row[index[DISTRICT]] or "").strip()
-            cd = cd_code("VA", raw_cd) if raw_cd else None
-            if raw_cd and cd is None:
-                unknown_district.add(raw_cd)
-            elif cd:
+            if raw_cd == UNASSIGNED_DISTRICT:
+                # Counted for the locality and the state, attributed to no
+                # district. See UNASSIGNED_DISTRICT.
+                cd = None
+            else:
+                cd = cd_code("VA", raw_cd) if raw_cd else None
+                if raw_cd and cd is None:
+                    unknown_district.add(raw_cd)
+            if cd:
                 targets.append(by_district[cd])
         for tally in targets:
             if application == INPERSON_APPLICATION:
@@ -346,6 +363,211 @@ def absentee_blob(election: dict) -> str | None:
     return None
 
 
+# --------------------------------------------------------------------------
+# THE ARCHIVED 2022 CURVE -- see `VAScraper.fetch_history` for what is in it.
+#
+# ELECT overwrites its absentee export in place, so the daily curve of a past
+# cycle exists only where somebody else kept dated copies. For 2022 that is the
+# Internet Archive's crawls of the retired results site; for 2024 nobody did
+# (see `fetch_history`). This runs in `backfill`, never in the daily job.
+# --------------------------------------------------------------------------
+CDX_URL = "http://web.archive.org/cdx/search/cdx"
+
+#: `id_` asks for the ORIGINAL bytes rather than a rewritten page. The payload
+#: is a CSV, which the rewriter would leave alone, but the headers are what
+#: matter here and only the raw replay carries the `x-archive-orig-*` set.
+WAYBACK_SNAPSHOT = "https://web.archive.org/web/{stamp}id_/{url}"
+
+#: The Wayback Machine replays the ORIGINAL response's `Last-Modified` under
+#: this name, so an archived capture is dated by the same rule as a live file:
+#: by when ELECT wrote it, never by when the crawler happened to pass.
+ARCHIVE_STAMP_HEADER = "x-archive-orig-last-modified"
+
+#: The capture sweep's window around Election Day. Virginia's early-voting
+#: period is 45 days; 60 leaves room for a crawl of the empty pre-season file,
+#: which parses to a partial export and is skipped on its own merits.
+ARCHIVE_WINDOW_BEFORE = 60
+
+#: Captures AFTER Election Day are swept too, because the file is still being
+#: rewritten for weeks and a capture's crawl time says nothing about when it
+#: was written. They are dated and then cut by `fetch_history`, not here.
+ARCHIVE_WINDOW_AFTER = 45
+
+#: Five captures of the 2022 file exist; 200 is room for a cycle the Archive
+#: crawled harder without ever running away.
+MAX_ARCHIVE_PROBES = 200
+
+#: web.archive.org is slower and less tolerant than a state CDN. Same reasoning
+#: as ca.py's constant of the same name.
+ARCHIVE_MIN_INTERVAL = 1.0
+
+#: How many times a 429 from the replay host is waited out before the capture
+#: is given up on. Bounded so one unreachable capture cannot stall a backfill.
+ARCHIVE_RETRIES = 3
+
+#: The longest a `Retry-After` is honoured for, and the wait when it is absent
+#: or unreadable. The Archive's own value has been 5-60s.
+ARCHIVE_RETRY_CAP = 60.0
+
+#: Seam for tests; nothing else should sleep in an adapter.
+_sleep = time.sleep
+
+
+def _retry_after(raw: str | None) -> float:
+    """A `Retry-After` in seconds, capped; the cap itself if unreadable."""
+    try:
+        seconds = float(str(raw or "").strip())
+    except ValueError:
+        return ARCHIVE_RETRY_CAP
+    return min(max(seconds, 1.0), ARCHIVE_RETRY_CAP)
+
+
+def last_modified(raw: str | None) -> date | None:
+    """An HTTP `Last-Modified` header as a UTC date, or None if unusable."""
+    if not raw:
+        return None
+    try:
+        return datetime.strptime(raw.strip(), "%a, %d %b %Y %H:%M:%S %Z").replace(
+            tzinfo=timezone.utc
+        ).date()
+    except ValueError:
+        return None
+
+
+def _archive_captures(cycle: int) -> list[tuple[str, str]]:
+    """(timestamp, original URL) for every DISTINCT capture of the cycle's
+    legacy export, oldest first.
+
+    Swept by PREFIX rather than exact URL so that a capture keyed under a
+    query-string variant of the same file is not missed, and deduplicated on
+    the payload digest HERE rather than with the CDX API's `collapse=digest`,
+    which only folds ADJACENT rows -- a prefix sweep is ordered by urlkey, so
+    the same bytes under two spellings are not adjacent.
+    """
+    folder = LEGACY_ELECTIONS[cycle]
+    anchor = election_date(cycle)
+    query = {
+        "url": LEGACY_URL.format(election=urllib.parse.quote(folder)),
+        "matchType": "prefix", "output": "json",
+        "fl": "timestamp,original,digest", "filter": "statuscode:200",
+        "from": (anchor - timedelta(days=ARCHIVE_WINDOW_BEFORE)).strftime("%Y%m%d"),
+        "to": (anchor + timedelta(days=ARCHIVE_WINDOW_AFTER)).strftime("%Y%m%d"),
+        "limit": str(MAX_ARCHIVE_PROBES),
+    }
+    _throttle(CDX_URL, ARCHIVE_MIN_INTERVAL)
+    try:
+        response = SESSION.get(CDX_URL, params=query, headers=DEFAULT_HEADERS,
+                               timeout=DEFAULT_TIMEOUT)
+    except Exception as exc:  # noqa: BLE001 - requests has its own hierarchy
+        raise SourceError(f"VA: the Wayback CDX index was unreachable: {exc}") from exc
+    if response.status_code != 200:
+        raise SourceError(
+            f"VA: the Wayback CDX index answered HTTP {response.status_code}"
+        )
+    text = response.text.strip()
+    if not text:
+        # The CDX API answers "nothing archived" with an empty body.
+        return []
+    try:
+        rows = json.loads(text)
+    except ValueError as exc:
+        raise SourceError(f"VA: the Wayback CDX index was not JSON: {exc}") from exc
+
+    seen: dict[str, tuple[str, str]] = {}
+    for row in sorted(rows[1:], key=lambda r: r[0]):
+        stamp, original, digest = row[0], row[1], row[2]
+        seen.setdefault(digest, (stamp, original))
+    return sorted(seen.values())
+
+
+def _archive_get(stamp: str, original: str) -> tuple[bytes, date | None]:
+    """One archived capture's bytes and the date ELECT wrote them.
+
+    `_net.get` is not used because it discards response headers, and
+    `x-archive-orig-last-modified` is the only honest as-of date a capture
+    has. The bytes are cached as any archived file is -- they can never change
+    -- with the stamp beside them; a capture that arrived WITHOUT a stamp is
+    not cached at all, so a transient header hiccup is retried next run
+    rather than frozen as "undatable".
+    """
+    path = cache_path("VA", f"archive-{stamp}.csv")
+    sidecar = path.with_suffix(path.suffix + ".last-modified")
+    if path.exists() and sidecar.exists() and path.stat().st_size >= 1024:
+        return path.read_bytes(), last_modified(sidecar.read_text())
+
+    url = WAYBACK_SNAPSHOT.format(stamp=stamp, url=original)
+    for attempt in range(ARCHIVE_RETRIES + 1):
+        _throttle(url, ARCHIVE_MIN_INTERVAL)
+        try:
+            # No spoofed browser UA on the Archive: it flags a Chrome User-Agent
+            # on a python-requests handshake as a bot and 429s it indefinitely
+            # (see oh.py ARCHIVE_RETRY_WAITS, measured 2026-10-13).
+            response = SESSION.get(url, headers=impersonated_headers(DEFAULT_HEADERS),
+                                   timeout=DEFAULT_TIMEOUT)
+        except Exception as exc:  # noqa: BLE001
+            raise SourceError(f"VA: GET {url} failed: {exc}") from exc
+        if response.status_code != 429 or attempt == ARCHIVE_RETRIES:
+            break
+        # The Archive rate-limits replays across everything this machine is
+        # walking, and it says how long to wait. A capture given up on here is
+        # a missing DAY, so one bounded wait is worth more than it costs.
+        wait = _retry_after(response.headers.get("Retry-After"))
+        log.info("VA: %s answered 429, waiting %ss (%d/%d)",
+                 url, wait, attempt + 1, ARCHIVE_RETRIES)
+        _sleep(wait)
+    if response.status_code in (404, 410):
+        raise Missing(f"VA: {url} returned {response.status_code}")
+    if response.status_code != 200:
+        raise SourceError(f"VA: {url} returned HTTP {response.status_code}")
+    body = response.content
+    if looks_like_html(body) or len(body) < 1024:
+        raise SourceError(f"VA: {url} is not the absentee export ({len(body)} bytes)")
+    raw_stamp = response.headers.get(ARCHIVE_STAMP_HEADER)
+    written = last_modified(raw_stamp)
+    if written is not None:
+        path.write_bytes(body)
+        sidecar.write_text(raw_stamp)
+    return body, written
+
+
+def archived_days(cycle: int) -> dict[date, bytes]:
+    """The archived export's bytes for each day it was captured BEFORE Election
+    Day -- the dated captures that make up the cycle's curve.
+
+    - A capture is dated by `x-archive-orig-last-modified`, ELECT's own write
+      time. One without it is SKIPPED: a crawl time is only an upper bound and
+      would put a row on the wrong day.
+    - Only days strictly BEFORE Election Day are kept. ELECT keeps rewriting the
+      file for weeks after the election as late mail and provisional ballots
+      are logged; those fills are not the curve, and the Election-Day row is
+      already published from the live final -- an archived capture must never
+      replace it.
+    - Captures are walked oldest first, so the LAST reading of a day wins.
+    """
+    anchor = election_date(cycle)
+    by_day: dict[date, bytes] = {}
+    for stamp, original in _archive_captures(cycle):
+        try:
+            body, written = _archive_get(stamp, original)
+        except SourceError as exc:
+            log.debug("VA: archived capture %s unusable (%s)", stamp, exc)
+            continue
+        if written is None:
+            log.warning("VA: capture %s kept no %s; a crawl time is not an "
+                        "as-of date, so it is skipped", stamp, ARCHIVE_STAMP_HEADER)
+            continue
+        if written >= anchor:
+            log.debug("VA: capture %s is stamped %s, on or after Election Day %s; "
+                      "the final already covers it", stamp, written, anchor)
+            continue
+        if written < anchor - timedelta(days=ARCHIVE_WINDOW_BEFORE):
+            log.debug("VA: capture %s is stamped %s, before %s's window",
+                      stamp, written, cycle)
+            continue
+        by_day[written] = body
+    return by_day
+
+
 class VAScraper(Adapter):
     """Tier 1 for Virginia: ELECT's absentee export, by locality."""
 
@@ -435,18 +657,72 @@ class VAScraper(Adapter):
         return parse(body, cycle, day)
 
     def fetch_history(self, cycle: int) -> FetchResult:
-        """The archived export for a past cycle -- one certified snapshot.
+        """A past cycle: the certified final on Election Day, plus -- for 2022
+        -- the daily curve rebuilt out of the Internet Archive.
 
-        ELECT overwrites the export in place rather than keeping a file per day,
-        so there is no daily series to recover. What survives is the cycle's
-        final absentee position, which is what the 2022/2024 comparison lines
-        anchor on, and it is dated to Election Day rather than to whenever ELECT
+        ELECT overwrites the export in place rather than keeping a file per
+        day, so the state itself holds no daily series. What it holds is the
+        cycle's final absentee position, which the 2022/2024 comparison lines
+        anchor on; it is dated to Election Day rather than to whenever ELECT
         last touched the file (months later, after certification).
+
+        **2022** also has a curve, because the Internet Archive crawled the
+        retired results site's `Absentee.csv` during the season. Each capture
+        replays ELECT's own `Last-Modified` as `x-archive-orig-last-modified`,
+        so an archived day is dated by the rule the live file is dated by.
+        VERIFIED 2026-10-13, captures of LEGACY_URL (CDX, 200s only):
+
+            capture          x-archive-orig-last-modified   voted
+            20221102204427   2022-11-02 16:11Z              698,812
+            20221107224812   2022-11-07                     943,162
+            20221115125251   2022-11-15                     988,506   (cut)
+            20221130002252   2022-11-30                               (cut)
+            live final       2022-12-06                     992,231   (Election Day)
+
+        Only captures written strictly BEFORE Election Day are emitted; the
+        post-election rewrites are late fills, not the curve, and the
+        Election-Day row is the live final, which no capture may replace.
+        See `archived_days` for the rules. The archived days parse through
+        the same `parse` as the live route -- locality, statewide and district
+        rows alike.
+
+        **2024 has no curve and this does not pretend otherwise.** ELECT's
+        ENR system came up for that cycle and the Archive's first capture of
+        its absentee blob is from election night; no pre-election copy of any
+        state file exists. The 2024 daily series lives in `data/manual/
+        2024_statewide.csv` (VPAP's by-ballot-date tracker, vendored once),
+        at the manual tier, and this returns the final alone.
         """
         if cycle >= date.today().year:
             raise NotYetPublished(f"VA: {cycle} is not an archived cycle")
         day = election_date(cycle)
-        if cycle in LEGACY_ELECTIONS:
-            return parse(self._load_legacy(cycle), cycle, day)
-        body, _ = self._load_current(cycle, use_cache=True)
-        return parse(body, cycle, day)
+        if cycle not in LEGACY_ELECTIONS:
+            body, _ = self._load_current(cycle, use_cache=True)
+            return parse(body, cycle, day)
+
+        result = parse(self._load_legacy(cycle), cycle, day)
+        try:
+            by_day = archived_days(cycle)
+        except SourceError as exc:
+            # The final is the load-bearing row; a curve the Archive cannot
+            # serve today is a gap, not a reason to publish nothing.
+            log.warning("VA: the %s archive walk failed, final only: %s", cycle, exc)
+            return result
+        days = 0
+        for archived in sorted(by_day):
+            try:
+                one = parse(by_day[archived], cycle, archived)
+            except SourceError as exc:
+                # A capture of something other than the export -- a styled
+                # error page, a partial crawl, a drifted header. Skipped,
+                # never guessed at.
+                log.info("VA: archived %s skipped (%s: %s)",
+                         archived.isoformat(), type(exc).__name__, exc)
+                continue
+            # District rows ride as an attribute `FetchResult.extend` cannot
+            # see, so they are folded in through the seam made for it.
+            result.extend(one)
+            _districts.extend(result, _districts.rows_of(one))
+            days += 1
+        log.info("VA: %d archived days for %s before Election Day", days, cycle)
+        return result

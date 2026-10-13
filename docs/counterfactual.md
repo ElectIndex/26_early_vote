@@ -136,6 +136,19 @@ up a live bug: North Carolina renamed `ballot_req_type` from `ONE-STOP` to
 published as a flat **0** for 4,231,692 ballots on all 47 days of NC 2024. See
 [Party by method](#party-by-method-2026-09-08--the-crosstab-that-did-exist).
 
+> **2026-10-13 — Oklahoma's crosstab moved the jackknife, not the verdict.**
+> Oklahoma's recovered 2022 and 2024 PDFs carry party by mail AND by early
+> in-person, so `output/methods/ok.csv` now exists for both cycles and OK2024
+> is a fifth celled fold. With it the raw cell term clears the bar in every
+> jackknife (worst **+1.13**). But the SAME-SUPPORT county term clears it too
+> (mean **+1.15**; Oklahoma **+2.73** against the cell's **+3.79**) — what
+> Oklahoma brought is support, not the method dimension. The cell term's
+> *edge* over the county term on the same support is still carried by
+> Florida: drop it and the edge goes negative. `validate` still prints
+> NOTHING SHIPS, and `test_the_county_by_method_term_is_carried_by_one_state`
+> now pins the edge rather than the raw gain. Whether a five-fold panel is
+> enough to revisit the refusal is an open question, not a settled one.
+
 **A ninth, added 2026-09-08 and not this document's own work.** Iowa's 2022
 backfill made the panel **nine** folds. IA 2024's early electorate moved
 **−23.12** registration points — the second largest in the panel — county
@@ -255,11 +268,21 @@ single most load-bearing line of code in the module and it has three tests.
 
 Some states published last cycle's early vote only as a **finished** file —
 Virginia's ENR export is frozen as the certified count and no daily copies were
-archived (the Wayback Machine holds two, both from 6 November); Ohio, Oklahoma
-and North Dakota post one day-0 snapshot; Idaho, New Mexico and Wyoming come
-from the EAC survey. Matched on days-out, those states produced nothing all
-season. They now compare against that **final early electorate**, and the row
-says so: `reference_basis` is `final` rather than `matched`.
+archived (the Wayback Machine holds two, both from 6 November); North Dakota
+posts one day-0 snapshot (its archived page captures are statewide only);
+Idaho, New Mexico and Wyoming come from the EAC survey. Matched on days-out,
+those states produced nothing all season. They now compare against that
+**final early electorate**, and the row says so: `reference_basis` is `final`
+rather than `matched`.
+
+Two states left that list on 2026-10-13 once their 2024 county curves were
+recovered: Ohio's Power BI absentee table turned out to be a per-day ledger
+(`oh.py`, 46 days from 20 September), and Oklahoma's State Election Board still
+hosts its dated county-by-party PDFs (`ok.py`, 29 October onward, so Oklahoma
+reads `final` until its 2026 date reaches that window and `matched` after).
+Virginia's 2022 curve gained two archived locality days (2 and 7 November) the
+same way; its 2024 stays final-only at the county level, with a statewide
+daily line in the manual tier.
 
 That is a weaker comparison and **not** the trap: both sides are still early
 electorates. What it gives up is the phase match — the county mix 22 days out

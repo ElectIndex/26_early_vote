@@ -256,6 +256,33 @@ def cmd_backfill(args) -> int:
         else:
             absent.append(state)
 
+        # The manual rung is ALWAYS offered, not only as the floor. The walk
+        # above stops at the first rung that answers, which is right for the
+        # scrapers (a state with a real archived file never needs EAVS), but a
+        # scraper that archives ONLY its certified final -- Virginia -- would
+        # shadow a hand-entered daily curve sitting in data/manual/ for the
+        # same cycle. merge_rows keeps the better tier wherever both have a
+        # row for the same day, so offering the manual file costs nothing
+        # where the scraper already answered that day.
+        if not any(entry.endswith(":manual") for entry in found
+                   if entry.startswith(f"{state}:")):
+            manual = next((a for a in history_ladder(state)
+                           if a.name == "manual"), None)
+            if manual is not None:
+                try:
+                    extra = manual.fetch_history(args.cycle)
+                except NotYetPublished:
+                    extra = None
+                except Exception as exc:  # noqa: BLE001
+                    log.warning("%s: manual history failed: %s", state, exc)
+                    extra = None
+                if extra and extra.state_rows:
+                    extra.stamp(manual.provenance())
+                    combined.state_rows.extend(extra.state_rows)
+                    found.append(f"{state}:manual")
+                    if state in absent:
+                        absent.remove(state)
+
     if not args.dry_run:
         if combined.state_rows:
             publish.publish_state_daily(out_dir, combined.state_rows)

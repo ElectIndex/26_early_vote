@@ -320,3 +320,377 @@ def test_an_unreadable_district_is_drift():
     text = FULL.read_text(encoding="utf-8-sig").replace('"ACCOMACK COUNTY","2"', '"ACCOMACK COUNTY","99"', 1)
     with pytest.raises(SchemaDrift):
         va.parse(text.encode("utf-8"), 2024, date(2024, 11, 5))
+
+
+def test_an_unassigned_district_counts_for_the_locality_and_no_district(gen2024):
+    """ELECT writes district "0" on a ballot no district could claim.
+
+    The certified 2024 file carries five such rows, all Harrisonburg City. They
+    are real ballots in the locality and state totals; they are simply not in
+    any VA-NN row. Refusing the file over them is what broke the 2024 backfill.
+    """
+    from ev.adapters import _districts
+    text = FULL.read_text(encoding="utf-8-sig").replace('"ACCOMACK COUNTY","2"', '"ACCOMACK COUNTY","0"', 1)
+    result = va.parse(text.encode("utf-8"), 2024, date(2024, 11, 5))
+    (state,), (before,) = result.state_rows, gen2024.state_rows
+    assert state.ballots_total == before.ballots_total, "the ballot still counts for the state"
+    rows = _districts.rows_of(result)
+    assert {r.cd_code for r in rows} == {f"VA-{n:02d}" for n in range(1, 12)}, "no VA-00 row"
+    assert sum(r.ballots_total for r in rows) < state.ballots_total, "and it is in no district"
+
+
+# --------------------------------------------------------------------------
+# History: the certified final plus, for 2022, the archived curve
+# --------------------------------------------------------------------------
+# The third fixture is the Internet Archive's 2022-11-02 capture of the retired
+# results site's Absentee.csv (x-archive-orig-last-modified 2022-11-02 16:11Z),
+# cut to four localities so the Fairfax County / Fairfax city pair survives
+# whole. Truncated it sums to in-person 54,284 + mail 38,817 = 93,101 ballots;
+# the full capture reads 473,518 + 225,294 = 698,812 across all 133 localities.
+ARCHIVED = FIXTURES / "2022-November-General_Absentee_wayback-20221102_partial.csv"
+
+ELECTION_DAY_2022 = date(2022, 11, 8)
+
+
+@pytest.fixture(scope="module")
+def capture_2022():
+    return va.parse(ARCHIVED.read_bytes(), 2022, date(2022, 11, 2))
+
+
+def test_the_archived_2022_capture_parses_through_the_live_parser(capture_2022):
+    """Same eight columns, same method rules, same city/county split. The
+    numbers are the ones ELECT had published five days out."""
+    by_fips = {r.county_fips: r for r in capture_2022.county_rows}
+    assert (by_fips["51059"].inperson, by_fips["51059"].mail_returned) == (51375, 37731)
+    assert (by_fips["51600"].inperson, by_fips["51600"].mail_returned) == (1919, 877)
+    assert by_fips["51097"].county_name == "King and Queen County"
+    assert sum(r.inperson for r in capture_2022.county_rows) == 54284
+    assert sum(r.mail_returned for r in capture_2022.county_rows) == 38817
+    assert sum(r.ballots_total for r in capture_2022.county_rows) == 93101
+    assert {r.day for r in capture_2022.county_rows} == {date(2022, 11, 2)}
+    # Four localities is a partial export: counties only, no Virginia total.
+    assert capture_2022.state_rows == []
+    assert all(r.party_dem is None for r in capture_2022.county_rows)
+
+
+def test_last_modified_reads_the_archive_stamp_and_refuses_junk():
+    assert va.last_modified("Wed, 02 Nov 2022 16:11:01 GMT") == date(2022, 11, 2)
+    assert va.last_modified("Mon, 07 Nov 2022 23:59:59 GMT") == date(2022, 11, 7)
+    assert va.last_modified("2022-11-02") is None
+    assert va.last_modified("") is None and va.last_modified(None) is None
+
+
+def _captures(monkeypatch, feed):
+    """Play a set of archived captures back to `archived_days`.
+
+    `feed` maps a Wayback timestamp to (bytes, written date | None); the CDX
+    listing is derived from its keys so the walk sees them oldest first.
+    """
+    monkeypatch.setattr(va, "_archive_captures", lambda cycle: [
+        (stamp, va.LEGACY_URL.format(election="2022%20November%20General"))
+        for stamp in sorted(feed)
+    ])
+    monkeypatch.setattr(va, "_archive_get", lambda stamp, original: feed[stamp])
+
+
+def test_archived_days_are_dated_by_elect_not_by_the_crawl(monkeypatch):
+    """The crawl ran on 2022-11-02 at 20:44Z; ELECT wrote the file at 16:11Z
+    the same day -- and on another capture, the crawl is a day later than the
+    write. The write date is the row's date."""
+    _captures(monkeypatch, {
+        "20221102204427": (b"nov2", date(2022, 11, 2)),
+        "20221108010000": (b"nov7", date(2022, 11, 7)),   # crawled on the 8th
+    })
+    assert va.archived_days(2022) == {date(2022, 11, 2): b"nov2",
+                                      date(2022, 11, 7): b"nov7"}
+
+
+def test_captures_on_or_after_election_day_are_cut(monkeypatch):
+    """The final is already published on Election Day from the live file; the
+    post-election rewrites (Nov 15, Nov 30, the following May) are late fills,
+    not the curve. None of them may reach the output, and an archived capture
+    written ON Election Day must not replace the live final either."""
+    _captures(monkeypatch, {
+        "20221102204427": (b"nov2", date(2022, 11, 2)),
+        "20221108120000": (b"eday", ELECTION_DAY_2022),
+        "20221115125251": (b"nov15", date(2022, 11, 15)),
+        "20221130002252": (b"nov30", date(2022, 11, 30)),
+        "20230517135216": (b"may", date(2023, 5, 17)),
+    })
+    assert va.archived_days(2022) == {date(2022, 11, 2): b"nov2"}
+
+
+def test_the_last_capture_of_a_day_wins(monkeypatch):
+    _captures(monkeypatch, {
+        "20221102090000": (b"morning", date(2022, 11, 2)),
+        "20221102204427": (b"evening", date(2022, 11, 2)),
+    })
+    assert va.archived_days(2022) == {date(2022, 11, 2): b"evening"}
+
+
+def test_an_undatable_capture_is_skipped_not_dated_by_its_crawl(monkeypatch, caplog):
+    _captures(monkeypatch, {
+        "20221102204427": (b"nov2", date(2022, 11, 2)),
+        "20221105000000": (b"mystery", None),
+    })
+    with caplog.at_level("WARNING", logger="ev.adapters.va"):
+        assert va.archived_days(2022) == {date(2022, 11, 2): b"nov2"}
+    assert "crawl time is not an as-of date" in caplog.text
+
+
+def test_a_capture_long_before_the_window_is_skipped(monkeypatch):
+    """A crawl of last cycle's leftover file, stamped a year early."""
+    _captures(monkeypatch, {
+        "20220101000000": (b"stale", date(2021, 11, 10)),
+        "20221102204427": (b"nov2", date(2022, 11, 2)),
+    })
+    assert va.archived_days(2022) == {date(2022, 11, 2): b"nov2"}
+
+
+def test_an_unusable_capture_falls_out_of_the_walk(monkeypatch):
+    """A capture the Archive cannot serve is one less day, not a dead walk."""
+    monkeypatch.setattr(va, "_archive_captures", lambda cycle: [
+        ("20221101000000", "x"), ("20221102204427", "x")])
+
+    def flaky(stamp, original):
+        if stamp == "20221101000000":
+            raise SourceError("VA: replay returned HTTP 503")
+        return b"nov2", date(2022, 11, 2)
+    monkeypatch.setattr(va, "_archive_get", flaky)
+    assert va.archived_days(2022) == {date(2022, 11, 2): b"nov2"}
+
+
+def test_a_rate_limited_replay_is_waited_out_then_given_up_on(monkeypatch, tmp_path):
+    """web.archive.org answers 429 across everything one machine is walking.
+    One capture is one DAY of the curve, so a bounded wait is worth it -- and
+    bounded means a capture that never clears does not stall the backfill."""
+    monkeypatch.setattr(va, "cache_path", lambda state, name: tmp_path / name)
+    waits = []
+    monkeypatch.setattr(va, "_sleep", waits.append)
+    answers = []
+
+    class Response:
+        def __init__(self, status, body=b"", headers=None):
+            self.status_code, self.content = status, body
+            self.headers = headers or {}
+    monkeypatch.setattr(va.SESSION, "get", lambda url, **kw: answers.pop(0))
+
+    answers[:] = [Response(429, headers={"Retry-After": "7"}),
+                  Response(200, FULL.read_bytes(),
+                           {va.ARCHIVE_STAMP_HEADER: "Wed, 02 Nov 2022 16:11:01 GMT"})]
+    body, written = va._archive_get("20221102204427", "https://x/Absentee.csv")
+    assert written == date(2022, 11, 2) and body == FULL.read_bytes()
+    assert waits == [7.0]
+    # ...and it is now cached beside its stamp, so the next walk never asks.
+    assert (tmp_path / "archive-20221102204427.csv.last-modified").read_text() \
+        == "Wed, 02 Nov 2022 16:11:01 GMT"
+
+    waits.clear()
+    answers[:] = [Response(429, headers={"Retry-After": "nonsense"})] * 10
+    with pytest.raises(SourceError, match="HTTP 429"):
+        va._archive_get("20221107224812", "https://x/Absentee.csv")
+    assert waits == [va.ARCHIVE_RETRY_CAP] * va.ARCHIVE_RETRIES
+    assert len(answers) == 10 - va.ARCHIVE_RETRIES - 1
+
+
+def test_an_undatable_replay_is_not_cached(monkeypatch, tmp_path):
+    """A capture that arrives without its stamp is skipped today and asked
+    for again next run, rather than frozen on disk as "undatable"."""
+    monkeypatch.setattr(va, "cache_path", lambda state, name: tmp_path / name)
+
+    class Response:
+        status_code, content, headers = 200, FULL.read_bytes(), {}
+    monkeypatch.setattr(va.SESSION, "get", lambda url, **kw: Response())
+    body, written = va._archive_get("20221102204427", "https://x/Absentee.csv")
+    assert written is None and body == FULL.read_bytes()
+    assert list(tmp_path.iterdir()) == []
+
+def test_2022_history_is_the_final_plus_the_archived_days(monkeypatch):
+    """The live final dated Election Day, exactly as before, and the archived
+    captures before it -- each through the same parser, locality + statewide +
+    district rows -- in one result."""
+    monkeypatch.setattr(va.VAScraper, "_load_legacy", lambda self, cycle: FULL.read_bytes())
+    _captures(monkeypatch, {
+        "20221102204427": (FULL.read_bytes(), date(2022, 11, 2)),
+        "20221107224812": (FULL.read_bytes(), date(2022, 11, 7)),
+        "20221115125251": (FULL.read_bytes(), date(2022, 11, 15)),
+    })
+    result = va.VAScraper().fetch_history(2022)
+    from ev.adapters import _districts
+    days = sorted({r.day for r in result.state_rows})
+    assert days == [date(2022, 11, 2), date(2022, 11, 7), ELECTION_DAY_2022]
+    assert len(result.county_rows) == 3 * 133
+    assert sorted({r.day for r in _districts.rows_of(result)}) == days
+    assert all(r.cycle == 2022 for r in result.state_rows + result.county_rows)
+
+
+def test_2022_history_keeps_the_final_when_the_archive_is_down(monkeypatch, caplog):
+    """The final is the load-bearing row. A CDX outage is a missing curve,
+    logged, not a missing Virginia."""
+    monkeypatch.setattr(va.VAScraper, "_load_legacy", lambda self, cycle: FULL.read_bytes())
+
+    def down(cycle):
+        raise SourceError("VA: the Wayback CDX index answered HTTP 503")
+    monkeypatch.setattr(va, "_archive_captures", down)
+    with caplog.at_level("WARNING", logger="ev.adapters.va"):
+        result = va.VAScraper().fetch_history(2022)
+    assert {r.day for r in result.state_rows} == {ELECTION_DAY_2022}
+    assert "archive walk failed, final only" in caplog.text
+
+
+def test_an_archived_capture_the_parser_refuses_is_skipped(monkeypatch):
+    monkeypatch.setattr(va.VAScraper, "_load_legacy", lambda self, cycle: FULL.read_bytes())
+    _captures(monkeypatch, {
+        "20221102204427": (b"<!DOCTYPE html><html>Site under maintenance</html>",
+                           date(2022, 11, 2)),
+        "20221107224812": (FULL.read_bytes(), date(2022, 11, 7)),
+    })
+    result = va.VAScraper().fetch_history(2022)
+    assert sorted({r.day for r in result.state_rows}) == [date(2022, 11, 7),
+                                                          ELECTION_DAY_2022]
+
+
+def test_2024_history_is_the_final_alone_and_never_walks_the_archive(monkeypatch):
+    """ENR came up for 2024 and the Archive's first capture of its absentee
+    blob is from election night: no pre-election state file exists. The 2024
+    curve is the manual tier's (data/manual/2024_statewide.csv), so this must
+    not touch the CDX index at all -- it is never a 2024 route."""
+    monkeypatch.setattr(va.VAScraper, "_load_current",
+                        lambda self, cycle, use_cache: (FULL.read_bytes(), None))
+
+    def never(cycle):
+        raise AssertionError("2024 must not walk the Wayback archive")
+    monkeypatch.setattr(va, "_archive_captures", never)
+    result = va.VAScraper().fetch_history(2024)
+    assert {r.day for r in result.state_rows} == {date(2024, 11, 5)}
+    assert 2024 not in va.LEGACY_ELECTIONS
+
+
+def test_the_cdx_query_sweeps_the_legacy_url_by_prefix(monkeypatch):
+    """A capture keyed under a query-string variant of the same file would be
+    missed by an exact match, and the digest de-dup is what keeps the same
+    bytes under two spellings from being walked twice."""
+    seen = {}
+
+    class Response:
+        status_code = 200
+        text = json.dumps([
+            ["timestamp", "original", "digest"],
+            ["20221102204427", "https://x/Absentee.csv", "AAA"],
+            ["20221102204428", "https://x/Absentee.csv?nocache=1", "AAA"],
+            ["20221107224812", "https://x/Absentee.csv", "BBB"],
+        ])
+
+    def fake_get(url, params=None, **kwargs):
+        seen.update(params)
+        return Response()
+    monkeypatch.setattr(va.SESSION, "get", fake_get)
+    captures = va._archive_captures(2022)
+    assert captures == [("20221102204427", "https://x/Absentee.csv"),
+                        ("20221107224812", "https://x/Absentee.csv")]
+    assert seen["matchType"] == "prefix" and seen["filter"] == "statuscode:200"
+    assert seen["url"].endswith("2022%20November%20General/Site/Statistics/Absentee.csv")
+    assert seen["from"] <= "20221108" <= seen["to"]
+
+
+# --------------------------------------------------------------------------
+# The manual tier: VPAP's statewide daily series, vendored
+# --------------------------------------------------------------------------
+from ev.adapters.manual import ManualAdapter  # noqa: E402
+from ev.schema import TIER_MANUAL  # noqa: E402
+
+
+def _manual(cycle):
+    return ManualAdapter(state="VA").fetch_history(cycle).state_rows
+
+
+@pytest.mark.parametrize("cycle, first, election_day, final", [
+    (2024, date(2024, 9, 20), date(2024, 11, 5), (2353062, 1862990, 490072)),
+    (2022, date(2022, 9, 23), date(2022, 11, 8), (968163, 681657, 286506)),
+])
+def test_the_vendored_series_runs_from_the_first_day_to_election_day(
+        cycle, first, election_day, final):
+    """One row per calendar day of the window and not one past Election Day:
+    the late-mail tail in VPAP's source (2022 to 11-14, 2024 to 11-10) is cut."""
+    rows = _manual(cycle)
+    days = [r.day for r in rows]
+    assert days == sorted(days) and len(set(days)) == len(days)
+    assert days[0] == first and days[-1] == election_day
+    assert len(days) == (election_day - first).days + 1 == 47
+    last = rows[-1]
+    assert (last.ballots_total, last.inperson, last.mail_returned) == final
+
+
+@pytest.mark.parametrize("cycle", [2024, 2022])
+def test_the_vendored_series_is_cumulative_and_blank_where_it_should_be(cycle):
+    rows = _manual(cycle)
+    for prev, row in zip(rows, rows[1:]):
+        assert row.ballots_total >= prev.ballots_total, row.day
+        assert row.inperson >= prev.inperson and row.mail_returned >= prev.mail_returned
+    for row in rows:
+        assert row.ballots_total == row.inperson + row.mail_returned, row.day
+        # VPAP reports no requests; Virginia has no party registration. Blank,
+        # never 0 -- THE BLANK RULE.
+        assert row.mail_requested is None
+        assert (row.party_dem, row.party_rep, row.party_oth, row.party_npa) == (
+            None, None, None, None)
+
+
+def test_the_vendored_2024_series_hits_its_checkpoints():
+    by_day = {r.day: r for r in _manual(2024)}
+    oct11 = by_day[date(2024, 10, 11)]
+    assert (oct11.ballots_total, oct11.inperson, oct11.mail_returned) == (
+        716818, 501604, 215214)
+    assert by_day[date(2024, 10, 30)].ballots_total == 1903252
+    assert by_day[date(2024, 11, 4)].ballots_total == 2323133
+
+
+def test_the_manual_files_say_where_the_numbers_came_from():
+    import csv as _csv
+    for cycle, asof in ((2024, "11/10/24"), (2022, "11/13/22")):
+        with ManualAdapter(state="VA")._path(cycle).open(newline="") as fh:
+            rows = [r for r in _csv.DictReader(fh) if r["state"] == "VA"]
+        assert rows and all("VPAP" in r["note"] and asof in r["note"] for r in rows)
+        assert all("Virginia Dept of Elections" in r["note"] for r in rows)
+
+
+def test_the_manual_rung_is_on_virginias_history_ladder():
+    """The series is only useful if backfill can reach it."""
+    from ev.registry import history_ladder
+    rungs = history_ladder("VA")
+    assert isinstance(rungs[0], va.VAScraper)
+    assert any(isinstance(a, ManualAdapter) for a in rungs)
+
+
+def test_manual_history_reaches_backfill_and_never_displaces_the_states_final(
+        tmp_path, monkeypatch):
+    """End to end through `cmd_backfill` and `merge_rows`: the manual curve
+    lands on disk at tier 5, and on Election Day -- the one date both sources
+    answer for -- the tier-1 ELECT final already on disk is kept."""
+    import csv as _csv
+    from ev import cli, publish
+    from ev.schema import Provenance, StateDay
+    out = tmp_path / "output"
+    final = StateDay(cycle=2024, state="VA", day=date(2024, 11, 5),
+                     ballots_total=2376938, mail_requested=575846,
+                     mail_returned=518217, inperson=1858721,
+                     provenance=Provenance(tier=TIER_SCRAPER, name="va-elect"))
+    publish.publish_state_daily(out, [final])
+
+    monkeypatch.setattr(cli, "history_ladder",
+                        lambda state: [ManualAdapter(state=state)])
+    parsed = cli.build_parser().parse_args(
+        ["--output", str(out), "backfill", "--cycle", "2024", "--state", "VA"])
+    assert cli.cmd_backfill(parsed) == 0
+
+    rows = {r["date"]: r for r in _csv.DictReader(
+        (out / "ev_state_daily.csv").open()) if r["state"] == "VA"}
+    assert len(rows) == 47
+    eday = rows["2024-11-05"]
+    assert (eday["source_tier"], eday["source_name"], eday["ballots_total"]) == (
+        "1", "va-elect", "2376938")
+    eve = rows["2024-11-04"]
+    assert (eve["source_tier"], eve["source_name"]) == (str(TIER_MANUAL), "manual")
+    assert (eve["ballots_total"], eve["inperson"], eve["mail_returned"]) == (
+        "2323133", "1857722", "465411")
+    assert eve["party_dem"] == "" and eve["mail_requested"] == ""

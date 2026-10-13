@@ -457,7 +457,9 @@ MODEL_ERROR_PP = 11.0
 #: kept. `test_an_early_band_always_contains_no_change` is the assertion.
 #:
 #: `test_early_error_matches_the_measured_early_domain` refits it from output/.
-EARLY_ERROR_PP = 23.5
+#: 2026-10-13: 23.5 -> 22.0 when Oklahoma's recovered 2022/2024 county curves
+#: added an eighth completed fold (OK2024, MAE 10.6); measured 21.64.
+EARLY_ERROR_PP = 22.0
 
 #: THE FINAL-SNAPSHOT REFERENCE (2026-10-12). Some states published no
 #: day-by-day county file last cycle, only the FINISHED early electorate:
