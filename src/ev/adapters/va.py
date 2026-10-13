@@ -59,7 +59,7 @@ from ..normalize import cd_code
 from ..schema import TIER_SCRAPER, CountyDay, DistrictDay, StateDay
 from . import _districts, _fips
 from ._net import (DEFAULT_HEADERS, DEFAULT_TIMEOUT, SESSION, Missing, _throttle,
-                   impersonated_headers,
+                   impersonated_headers, wayback_stamp,
                    cache_path, get, looks_like_html)
 from .base import Adapter, FetchResult, NotYetPublished, SchemaDrift, SourceError
 
@@ -474,8 +474,12 @@ def _archive_captures(cycle: int) -> list[tuple[str, str]]:
         raise SourceError(f"VA: the Wayback CDX index was not JSON: {exc}") from exc
 
     seen: dict[str, tuple[str, str]] = {}
-    for row in sorted(rows[1:], key=lambda r: r[0]):
-        stamp, original, digest = row[0], row[1], row[2]
+    for row in sorted(rows[1:], key=lambda r: str(r[0])):
+        stamp, original, digest = wayback_stamp(row[0]), str(row[1]), str(row[2])
+        if stamp is None:
+            # The stamp becomes a cache filename; see _net.wayback_stamp.
+            log.warning("VA: CDX row with a malformed timestamp skipped: %r", row[0])
+            continue
         seen.setdefault(digest, (stamp, original))
     return sorted(seen.values())
 

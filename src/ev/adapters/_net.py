@@ -25,6 +25,7 @@ every adapter here catches it deliberately.
 from __future__ import annotations
 
 import logging
+import re
 import ssl
 import threading
 import time
@@ -344,6 +345,21 @@ def _throttle(url: str, min_interval: float) -> None:
 
 class Missing(SourceError):
     """The URL returned 404/410. The caller decides what that means."""
+
+
+_WAYBACK_STAMP = re.compile(r"^\d{14}$")
+
+
+def wayback_stamp(value: object) -> str | None:
+    """A Wayback capture timestamp (`YYYYMMDDhhmmss`), or None for anything else.
+
+    CDX rows are external input and the stamp ends up in a cache FILENAME
+    (`archive-<stamp>.csv`), so it is validated to fourteen digits before it
+    touches a path. A row the Archive hands back with anything else in that
+    column is skipped by the caller, never written under.
+    """
+    text = str(value or "").strip()
+    return text if _WAYBACK_STAMP.match(text) else None
 
 
 def cache_path(state: str, filename: str) -> Path:

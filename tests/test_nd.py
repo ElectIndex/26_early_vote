@@ -51,6 +51,7 @@ import re
 from datetime import date
 from pathlib import Path
 
+import json
 import pytest
 
 from ev.adapters import nd
@@ -821,3 +822,18 @@ def test_an_archive_http_error_on_a_capture_raises_not_skips(monkeypatch, tmp_pa
     monkeypatch.setattr(nd.SESSION, "get", lambda *a, **k: Response())
     with pytest.raises(SourceError, match="HTTP 503"):
         nd.archived_page("20241007230303", "https://vip.sos.nd.gov/abev.aspx?eid=333", eid=333)
+
+
+def test_a_cdx_row_with_a_malformed_stamp_is_skipped_not_written_under(monkeypatch):
+    """The stamp is interpolated into cache/nd/archive_<eid>_<stamp>.html."""
+    class Response:
+        status_code = 200
+        text = json.dumps([
+            ["timestamp", "original", "statuscode", "digest"],
+            ["../../evil", f"{nd.BASE}?eid=333", "200", "D1"],
+            ["20241007230303", f"{nd.BASE}?eid=333", "200", "D2"],
+        ])
+    monkeypatch.setattr(nd, "_throttle", lambda *a, **k: None)
+    monkeypatch.setattr(nd.SESSION, "get", lambda *a, **k: Response())
+    captures = nd.archive_captures(2024)
+    assert [c[0] for c in captures] == ["20241007230303"]

@@ -694,3 +694,18 @@ def test_manual_history_reaches_backfill_and_never_displaces_the_states_final(
     assert (eve["ballots_total"], eve["inperson"], eve["mail_returned"]) == (
         "2323133", "1857722", "465411")
     assert eve["party_dem"] == "" and eve["mail_requested"] == ""
+
+
+def test_a_cdx_row_with_a_malformed_stamp_is_skipped_not_written_under(monkeypatch):
+    """The stamp is interpolated into cache/va/archive-<stamp>.csv."""
+    class Response:
+        status_code = 200
+        text = json.dumps([
+            ["timestamp", "original", "digest"],
+            ["../../evil", va.LEGACY_URL.format(election="2022 November General"), "D1"],
+            ["20221102204427", va.LEGACY_URL.format(election="2022 November General"), "D2"],
+        ])
+    monkeypatch.setattr(va, "_throttle", lambda *a, **k: None)
+    monkeypatch.setattr(va.SESSION, "get", lambda *a, **k: Response())
+    captures = va._archive_captures(2022)
+    assert [c[0] for c in captures] == ["20221102204427"]

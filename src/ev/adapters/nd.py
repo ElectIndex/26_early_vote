@@ -150,7 +150,7 @@ from ..schema import TIER_SCRAPER, CountyDay, StateDay
 from . import _fips
 from ._net import (
     DEFAULT_HEADERS, DEFAULT_MIN_INTERVAL, DEFAULT_TIMEOUT, SESSION, Missing,
-    impersonated_headers,
+    impersonated_headers, wayback_stamp,
     _throttle, cache_path, get, looks_like_html,
 )
 from .base import Adapter, FetchResult, NotYetPublished, SchemaDrift, SourceError
@@ -572,6 +572,10 @@ def archive_captures(cycle: int) -> list[tuple[str, str]]:
     seen: dict[tuple[date, str], tuple[str, str]] = {}
     for row in sorted(rows[1:], key=lambda r: str(r[0])):
         stamp, original, status, digest = (str(v) for v in row[:4])
+        if wayback_stamp(stamp) is None:
+            # The stamp becomes a cache filename; see _net.wayback_stamp.
+            log.warning("ND: CDX row with a malformed timestamp skipped: %r", stamp)
+            continue
         if status != "200":
             # Belt to the query's braces: a 302 here is the trap itself.
             continue

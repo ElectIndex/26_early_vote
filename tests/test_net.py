@@ -690,3 +690,14 @@ def test_a_zero_interval_still_short_circuits_the_profile_walk(monkeypatch, cloc
     with pytest.raises(SourceError):
         fetch(min_interval=0)
     assert clock.slept == []
+
+
+def test_a_wayback_stamp_is_fourteen_digits_or_nothing():
+    """CDX timestamps become cache filenames, so anything else is refused."""
+    from ev.adapters._net import wayback_stamp
+    assert wayback_stamp("20241105230226") == "20241105230226"
+    assert wayback_stamp(20241105230226) == "20241105230226"
+    assert wayback_stamp("../../etc/passwd") is None
+    assert wayback_stamp("2024110523022") is None
+    assert wayback_stamp("") is None
+    assert wayback_stamp(None) is None

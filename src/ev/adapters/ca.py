@@ -158,7 +158,8 @@ from datetime import date, datetime, timedelta, timezone
 from ..calendar import election_date
 from ..schema import TIER_SCRAPER, CountyDay, StateDay
 from . import _fips
-from ._net import DEFAULT_HEADERS, DEFAULT_TIMEOUT, SESSION, _throttle, cache_path
+from ._net import (DEFAULT_HEADERS, DEFAULT_TIMEOUT, SESSION, _throttle, cache_path,
+                   wayback_stamp)
 from .base import Adapter, FetchResult, NotYetPublished, SchemaDrift, SourceError
 
 log = logging.getLogger(__name__)
@@ -744,8 +745,12 @@ def _archive_captures(cycle: int) -> list[tuple[str, str]]:
         raise SourceError(f"CA: the Wayback CDX index was not JSON: {exc}") from exc
 
     seen: dict[str, tuple[str, str]] = {}
-    for row in sorted(rows[1:], key=lambda r: r[0]):
-        stamp, original, digest = row[0], row[1], row[2]
+    for row in sorted(rows[1:], key=lambda r: str(r[0])):
+        stamp, original, digest = wayback_stamp(row[0]), str(row[1]), str(row[2])
+        if stamp is None:
+            # The stamp becomes a cache filename; see _net.wayback_stamp.
+            log.warning("CA: CDX row with a malformed timestamp skipped: %r", row[0])
+            continue
         seen.setdefault(digest, (stamp, original))
     return sorted(seen.values())
 
