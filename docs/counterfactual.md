@@ -251,6 +251,40 @@ returned ballots moves enormously across a window.
 Not a fallback to the full-state comparison. Not a zero. That refusal is the
 single most load-bearing line of code in the module and it has three tests.
 
+### The final-snapshot reference (2026-10-12)
+
+Some states published last cycle's early vote only as a **finished** file —
+Virginia's ENR export is frozen as the certified count and no daily copies were
+archived (the Wayback Machine holds two, both from 6 November); Ohio, Oklahoma
+and North Dakota post one day-0 snapshot; Idaho, New Mexico and Wyoming come
+from the EAC survey. Matched on days-out, those states produced nothing all
+season. They now compare against that **final early electorate**, and the row
+says so: `reference_basis` is `final` rather than `matched`.
+
+That is a weaker comparison and **not** the trap: both sides are still early
+electorates. What it gives up is the phase match — the county mix 22 days out
+against the mix of the whole finished window. `score_proxy` measures the cost on
+every completed fold that has both a daily curve and a final, by swapping the
+matched reference day for that curve's own final:
+
+| this side's completeness | folds | mean shift in the reference | constant |
+|---|---|---|---|
+| ≥ 25% of the reference final | 15 | 1.33 pts | `PROXY_ERROR_PP` = 1.5 |
+| < 25% | 10 | 10.34 pts | `PROXY_EARLY_ERROR_PP` = 10.5 |
+
+Once a quarter of the vote is in, a state's county mix has largely settled
+(worst day 9.05, PA 2024); a mail stub's mix is nothing like the finished
+window's (worst 48.3). The constant is **added** to the band the row would
+otherwise carry, every final-basis band contains zero, and `confidence` is never
+above `low` — the substitution is measured, the model on it is not.
+
+Rules: a matched day within three days always wins; the reference's last day
+must be within `FINAL_MAX_DTE` (7) of Election Day; and a day *before* a daily
+reference curve began gets no final (that is last cycle's mail stub, not a gap).
+`score_panel` matches on its own, so `MODEL_ERROR_PP` and `EARLY_ERROR_PP` did
+not move. States with **no** county file last cycle at all (AZ, IL, IN, NE, NJ,
+MS, MT, HI) still get no row: there is nothing to substitute.
+
 ---
 
 ## The method

@@ -91,7 +91,7 @@ COLUMNS = [
     # reading this district is.
     "ballots", "reference_ballots",
     # Carried from the state row: the gate that admitted it and the label.
-    "completeness", "reference_completeness",
+    "completeness", "reference_completeness", "reference_basis",
     "behaviour_cycle", "confidence", "method", "source_name", "retrieved_at",
 ]
 
@@ -191,6 +191,9 @@ def compare_district(
         return []
     half = max(hi_s - shift_s, shift_s - lo_s)
     early = (state_row.get("confidence") or "").strip() == "early"
+    # "final": the state compared against last cycle's FINISHED early
+    # electorate; its band follows the same contains-zero rule as an early one.
+    basis = (state_row.get("reference_basis") or "").strip() or "matched"
     now_ballots = now.counties.get(dte, {})
     ref_ballots = reference.counties.get(ref_dte, {})
     stamp = retrieved_at or state_row.get("retrieved_at") or _utcnow()
@@ -206,9 +209,9 @@ def compare_district(
         ref_margin, ref_used, ref_ballots_n = there
         shift = margin - ref_margin
         lo, hi = shift - half, shift + half
-        if early:
-            # The floor rule the state row follows: an early band always
-            # contains "nothing changed".
+        if early or basis == "final":
+            # The floor rule the state row follows: an early (or final-basis)
+            # band always contains "nothing changed".
             lo, hi = min(lo, 0.0), max(hi, 0.0)
         out.append({
             "cycle": state_row["cycle"], "state": state, "cd_code": cd,
@@ -228,6 +231,7 @@ def compare_district(
             "reference_ballots": str(int(round(ref_ballots_n))),
             "completeness": state_row.get("completeness", ""),
             "reference_completeness": state_row.get("reference_completeness", ""),
+            "reference_basis": basis,
             "behaviour_cycle": state_row.get("behaviour_cycle", ""),
             "confidence": state_row.get("confidence", ""),
             "method": METHOD, "source_name": SOURCE_NAME, "retrieved_at": stamp,

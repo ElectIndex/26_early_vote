@@ -487,6 +487,90 @@ def test_days_are_matched_on_days_to_election_not_calendar_date(tmp_path, nc_bas
     assert row.reference_day == date(2022, 10, 29)
 
 
+# --------------------------------------------------------------------------
+# THE FINAL-SNAPSHOT REFERENCE (2026-10-12)
+#
+# Virginia, Ohio, Oklahoma, North Dakota and the survey states published only
+# their FINISHED early electorate last cycle. A live day there is compared
+# against that final, labelled `reference_basis: final`, with the measured
+# cost of the substitution added to its band. Still an early electorate on
+# both sides -- the trap stays shut.
+# --------------------------------------------------------------------------
+def test_a_final_only_reference_is_compared_against_its_final(tmp_path, nc_baseline):
+    """Virginia's shape: 2026 days, and one 2024 file frozen on Election Day."""
+    counties = (_county(2026, 20, {MECKLENBURG: 300, ALAMANCE: 100})
+                + _county(2024, 0, {MECKLENBURG: 600, ALAMANCE: 400}))
+    rows = cf.build(_tree(tmp_path, counties), nc_baseline)
+    assert len(rows) == 1
+    row = rows[0]
+    assert row.reference_basis == "final"
+    assert row.reference_days_to_election == 0
+    assert row.reference_completeness == pytest.approx(1.0)
+    assert not row.early, "40% of the reference curve is past the maturity floor"
+    # The measured substitution sits on top of the model's own band, the band
+    # contains no-change, and the label never reaches "medium".
+    assert (row.shift_hi - row.shift_lo) / 2 >= cf.MODEL_ERROR_PP + cf.PROXY_ERROR_PP
+    assert row.shift_lo <= 0.0 <= row.shift_hi
+    assert row.confidence == "low"
+    assert row.to_dict()["reference_basis"] == "final"
+    # And the reference is still an EARLY electorate, never the whole state.
+    assert row.reference_composition_margin != pytest.approx(row.actual_margin_2024)
+
+
+def test_an_immature_day_against_a_final_carries_both_early_bands(tmp_path, nc_baseline):
+    counties = (_county(2026, 30, {MECKLENBURG: 8}, scale=1)
+                + _county(2024, 0, {MECKLENBURG: 600, ALAMANCE: 400}))
+    row = cf.build(_tree(tmp_path, counties), nc_baseline)[0]
+    assert row.reference_basis == "final"
+    assert row.confidence == "early"
+    assert (row.shift_hi - row.shift_lo) / 2 >= cf.EARLY_ERROR_PP + cf.PROXY_EARLY_ERROR_PP
+
+
+def test_a_matched_day_always_wins_over_the_final(tmp_path, nc_baseline):
+    counties = (_county(2026, 20, {MECKLENBURG: 300, ALAMANCE: 100})
+                + _county(2024, 21, {MECKLENBURG: 500, ALAMANCE: 500})
+                + _county(2024, 0, {MECKLENBURG: 600, ALAMANCE: 400}))
+    row = cf.build(_tree(tmp_path, counties), nc_baseline)[0]
+    assert row.reference_basis == "matched"
+    assert row.reference_days_to_election == 21
+
+
+def test_a_curve_that_stops_short_of_election_day_is_not_a_final(tmp_path, nc_baseline):
+    """A reference that ends 30 days out is a fragment, not a finished electorate."""
+    counties = (_county(2026, 20, {MECKLENBURG: 300, ALAMANCE: 100})
+                + _county(2024, cf.FINAL_MAX_DTE + 23, {MECKLENBURG: 600, ALAMANCE: 400}))
+    assert cf.build(_tree(tmp_path, counties), nc_baseline) == []
+
+
+def test_a_day_before_the_reference_curve_began_gets_no_final(tmp_path, nc_baseline):
+    """Pennsylvania 2026 opens 120 days out; its 2024 curve starts at 69.
+
+    Day 100 is not a gap in 2024's curve, it is a day 2024 had not reached, so
+    it stays unmatched rather than being set against a finished electorate.
+    A gap INSIDE the curve is a different case and is filled.
+    """
+    counties = (_county(2026, 40, {MECKLENBURG: 300, ALAMANCE: 100})
+                + _county(2026, 20, {MECKLENBURG: 300, ALAMANCE: 100})
+                + _county(2024, 30, {MECKLENBURG: 500, ALAMANCE: 500})
+                + _county(2024, 0, {MECKLENBURG: 600, ALAMANCE: 400}))
+    rows = cf.build(_tree(tmp_path, counties), nc_baseline)
+    assert [(r.days_to_election, r.reference_basis) for r in rows] == [(20, "final")]
+
+
+def test_final_basis_rows_never_enter_the_scoring_panel(tmp_path, nc_baseline):
+    """The bands are measured on matched days; a substitution must not move them."""
+    counties = (_county(2026, 20, {MECKLENBURG: 300, ALAMANCE: 100})
+                + _county(2024, 0, {MECKLENBURG: 600, ALAMANCE: 400}))
+    states = [_state(2026, 20, 400 * BALLOT_SCALE, party_dem=200 * BALLOT_SCALE,
+                     party_rep=200 * BALLOT_SCALE),
+              _state(2024, 0, 1000 * BALLOT_SCALE, party_dem=500 * BALLOT_SCALE,
+                     party_rep=500 * BALLOT_SCALE)]
+    out = _tree(tmp_path, counties, states)
+    assert cf.build(out, nc_baseline)[0].reference_basis == "final"
+    assert cf.score_panel(out, nc_baseline) == {}
+    assert cf.score_panel(out, nc_baseline, early=True) == {}
+
+
 def test_a_reference_day_outside_the_tolerance_is_no_match(tmp_path, nc_baseline):
     counties = (_county(2024, 10, {MECKLENBURG: 1000})
                 + _county(2022, 10 + cf.DTE_MATCH_TOLERANCE + 1, {MECKLENBURG: 1000}))
@@ -1380,6 +1464,23 @@ def test_early_error_matches_the_measured_early_domain(full_baseline):
         overlap = {d.days_to_election for d in days} & {
             d.days_to_election for d in mature.get(fold, [])}
         assert not overlap, fold
+
+
+@pytest.mark.skipif(not (REPO_OUTPUT / "ev_state_daily.csv").exists(),
+                    reason="no published output/ tree in this checkout")
+def test_proxy_errors_match_the_measured_substitution(full_baseline):
+    """PROXY_ERROR_PP and PROXY_EARLY_ERROR_PP, refitted from output/.
+
+    Completed cycles only, for the reason EARLY_ERROR_PP is: the rows these
+    bands are stamped on are the running cycle's.
+    """
+    for early, constant in ((False, cf.PROXY_ERROR_PP), (True, cf.PROXY_EARLY_ERROR_PP)):
+        folds = cf.score_proxy(REPO_OUTPUT, full_baseline, early=early)
+        assert folds, "the substitution must be measurable from the published tree"
+        assert all(cycle < max(cf.CYCLES) for cycle, _ in folds)
+        measured = sum(folds.values()) / len(folds)
+        assert constant == pytest.approx(measured, abs=1.0), early
+        assert constant >= measured, "the band must not be narrower than the error"
 
 
 # --------------------------------------------------------------------------

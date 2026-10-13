@@ -459,6 +459,50 @@ MODEL_ERROR_PP = 11.0
 #: `test_early_error_matches_the_measured_early_domain` refits it from output/.
 EARLY_ERROR_PP = 23.5
 
+#: THE FINAL-SNAPSHOT REFERENCE (2026-10-12). Some states published no
+#: day-by-day county file last cycle, only the FINISHED early electorate:
+#: Virginia's ENR export is frozen as the certified file and the archives keep
+#: no daily copies; Ohio, Oklahoma, North Dakota and the survey states (ID, NM,
+#: WY) are one day-0 snapshot each. Matched on days-out they produce nothing all
+#: season, so a live 2026 day there is compared against the reference cycle's
+#: FINAL early electorate instead, and the row says so (`reference_basis`
+#: "final" rather than "matched").
+#:
+#: This is NOT the trap. The yardstick is still an EARLY electorate -- the
+#: people who voted early last time, all of them -- never the full electorate.
+#: What it gives up is the phase match: the county mix at 22 days out is
+#: compared against the mix of the whole finished window. How much that costs
+#: was measured rather than assumed: on every completed fold with a daily
+#: reference curve, `score_proxy` swaps the matched reference day for that
+#: curve's own final and records how far the reference composition moves.
+#: Measured 2026-10-12, mean over folds, binned by THIS side's completeness
+#: (the only half of the maturity gate a final reference leaves live):
+#:
+#:     at or past MATURE_FRACTION   15 folds   1.33 pts   (worst day 9.05, PA 2024)
+#:     short of it                  10 folds  10.34 pts   (worst day 48.3)
+#:
+#: Once a quarter of the vote is in the county mix has largely settled, which
+#: is why the mature cost is a point and a quarter; a mail stub's mix is not the
+#: finished window's at all. Each is rounded up to the next half point and ADDED
+#: to the band the row would otherwise carry -- added, not combined in
+#: quadrature, because the two errors are not independent and an upper bound is
+#: the honest statement. Every final-basis band is also widened to contain zero,
+#: and its confidence is never above "low": the substitution is measured, but the
+#: model's own error (MODEL_ERROR_PP) was never scored on it.
+#:
+#: Only a TRUE final qualifies: the reference series' last day must be within
+#: FINAL_MAX_DTE of Election Day (a curve that stops at 33 days out is not a
+#: finished electorate), and must fall after the day being compared. A day
+#: BEFORE a daily reference curve began gets no final -- that is not a gap, it
+#: is last cycle's mail stub, and `DayIndex.final_day` says why. A matched day
+#: inside DTE_MATCH_TOLERANCE always wins. `score_panel` never sees these
+#: rows -- it matches on its own -- so neither band above moves by a hair.
+#:
+#: `test_proxy_errors_match_the_measured_substitution` refits both from output/.
+FINAL_MAX_DTE = 7
+PROXY_ERROR_PP = 1.5
+PROXY_EARLY_ERROR_PP = 10.5
+
 #: With complete coverage on both sides the band's half-width is exactly
 #: MODEL_ERROR_PP, so the confidence threshold has to sit strictly above it or it
 #: flips on floating-point noise. Two points of headroom means "the ballots we
@@ -491,6 +535,10 @@ COUNTERFACTUAL_COLUMNS = [
     # MODEL_ERROR_PP; one short on either side is `confidence: early` and
     # carries EARLY_ERROR_PP. These two columns are the reason on the row.
     "completeness", "reference_completeness",
+    # "matched": the reference is the same days-out last cycle. "final": the
+    # reference cycle published no daily county file, so the reference is its
+    # FINISHED early electorate and the band carries PROXY_ERROR_PP on top.
+    "reference_basis",
     # Reported, never folded in: a party REGISTRATION point is not a
     # presidential margin point, and this repo holds nothing that converts one
     # into the other.
@@ -1226,6 +1274,28 @@ class DayIndex:
                 best, best_gap = day, gap
         return best
 
+    def final_day(self, dte: int, max_dte: int = FINAL_MAX_DTE) -> int | None:
+        """The series' FINISHED day, if it has one and it comes after `dte`.
+
+        The stand-in for a matched day where the reference cycle published only
+        its final -- see PROXY_ERROR_PP. None when the series stops short of
+        Election Day (its last day is not a finished electorate), when `dte`
+        is already at or past it, and when `dte` comes BEFORE a daily curve
+        began: that is not a gap in the reference, it is a day the reference
+        cycle had not reached yet, and its first mail stub -- not its final --
+        is the honest comparison, which the matched path already makes or
+        refuses. A series that is nothing BUT a final (Virginia) has no such
+        day, and a gap inside a curve (Minnesota's 33 -> 0) is filled.
+        """
+        if not self.counties:
+            return None
+        last, first = min(self.counties), max(self.counties)
+        if last > max_dte or last >= dte:
+            return None
+        if first > max_dte and dte > first:
+            return None
+        return last
+
     def final_ballots(self) -> int:
         """The largest county-ballot sum this series ever reached."""
         return max((sum(v for v in b.values() if v is not None)
@@ -1454,6 +1524,10 @@ class Counterfactual:
     #: panel MODEL_ERROR_PP is measured on. The completeness pair above is the
     #: reason, published.
     early: bool = False
+    #: "matched" (same days-out last cycle) or "final" (the reference cycle's
+    #: finished early electorate, where it published no daily county file).
+    #: See PROXY_ERROR_PP.
+    reference_basis: str = "matched"
     dims_used: tuple[str, ...] = ("county",)
     dims_reported: tuple[str, ...] = ("county",)
     party_margin_shift_pp: float | None = None
@@ -1508,6 +1582,10 @@ class Counterfactual:
         """
         if self.early:
             return "early"
+        if self.reference_basis == "final":
+            # Measured substitution, unscored model: never "medium". See
+            # PROXY_ERROR_PP.
+            return "low"
         thin = min(self.ballots, self.reference_ballots) < THIN_BALLOTS
         short_coverage = any(
             c is not None and c < MIN_COVERAGE
@@ -1548,6 +1626,7 @@ class Counterfactual:
             "reference_ballots": str(self.reference_ballots),
             "completeness": _pp(self.completeness),
             "reference_completeness": _pp(self.reference_completeness),
+            "reference_basis": self.reference_basis,
             "party_margin_shift_pp": _pp(self.party_margin_shift_pp),
             "party_coverage": _pp(self.party_coverage),
             "reference_party_coverage": _pp(self.reference_party_coverage),
@@ -1594,8 +1673,15 @@ def compare_day(
     if actual is None:
         return None
     ref_dte = reference.at(dte, tolerance)
+    basis = "matched"
     if ref_dte is None:
-        return None
+        # No day within the slack. Where the reference cycle published only its
+        # FINISHED early electorate, compare against that, labelled and with the
+        # substitution's measured cost in the band. See PROXY_ERROR_PP.
+        ref_dte = reference.final_day(dte)
+        if ref_dte is None:
+            return None
+        basis = "final"
 
     # THE MATURITY GATE, in its two halves. A stub reference curve is refused:
     # nothing can be measured against a series that never became an electorate
@@ -1668,13 +1754,16 @@ def compare_day(
     # sits at one end of its bound and the reference at the other. The flat
     # term is the band measured on THIS row's domain.
     error = EARLY_ERROR_PP if early else MODEL_ERROR_PP
+    if basis == "final":
+        error += PROXY_EARLY_ERROR_PP if early else PROXY_ERROR_PP
     lo = (lo_now - hi_ref) - error
     hi = (hi_now - lo_ref) + error
-    if early:
+    if early or basis == "final":
         # The floor rule, per row: an early band always contains "nothing
         # changed". The mature domain gets this from the constant; here the
         # largest published shift moves daily, so the row is widened instead.
-        # See EARLY_ERROR_PP.
+        # See EARLY_ERROR_PP. A final-basis row gets the same rule: it was never
+        # in the panel that sized the constant. See PROXY_ERROR_PP.
         lo, hi = min(lo, 0.0), max(hi, 0.0)
 
     # Dimensions that exist but are NOT priced.
@@ -1716,6 +1805,7 @@ def compare_day(
         reference_completeness=completeness(
             reference.counties.get(ref_dte, {}), reference_final),
         early=bool(early),
+        reference_basis=basis,
         dims_used=("county",),
         dims_reported=tuple(reported),
         party_margin_shift_pp=party_shift,
@@ -2214,6 +2304,59 @@ def score_panel(
     for series_days in panel.values():
         series_days.sort(key=lambda d: -d.days_to_election)
     return dict(panel)
+
+
+def score_proxy(
+    out_dir: Path,
+    baseline: Baseline,
+    *,
+    early: bool = False,
+    completed_only: bool = True,
+    tolerance: int = DTE_MATCH_TOLERANCE,
+) -> dict[tuple[int, str], float]:
+    """What substituting the reference's FINAL for a matched day costs, per fold.
+
+    For every fold whose reference curve has both a matched day and a true
+    final (`DayIndex.final_day`), the reference composition is computed twice --
+    at the matched day, and at the final -- and the absolute difference is the
+    error a final-basis row would have carried had it been published there. No
+    party truth is needed: this measures the substitution, not the model.
+
+    `early` picks the domain by THIS side's completeness against the reference
+    final, which is the half of the maturity gate a final reference leaves
+    live (the other half reads 100% by construction). Returns the mean absolute
+    error per (cycle, state); PROXY_ERROR_PP and PROXY_EARLY_ERROR_PP are the
+    mean over folds, rounded up to the next half point.
+    """
+    out_dir = Path(out_dir)
+    folds: dict[tuple[int, str], list[float]] = defaultdict(list)
+    for state in available_states(out_dir):
+        if state in PARTIAL_GEOGRAPHY or not baseline.counties(state):
+            continue
+        series = read_series(out_dir, state)
+        for cycle, reference_cycle in sorted(REFERENCE_CYCLE.items()):
+            if completed_only and cycle >= max(CYCLES):
+                continue
+            now, reference = series.get(cycle), series.get(reference_cycle)
+            if now is None or reference is None or not reference.counties:
+                continue
+            reference_final = reference.final_ballots()
+            if reference_final < MIN_REFERENCE_BALLOTS:
+                continue
+            for dte in now.counties:
+                ref_dte = reference.at(dte, tolerance)
+                final = reference.final_day(dte)
+                if ref_dte is None or final is None or ref_dte == final:
+                    continue
+                here = completeness(now.counties[dte], reference_final)
+                if (here is None or here < MATURE_FRACTION) != early:
+                    continue
+                matched = composition_margin(reference.counties[ref_dte], baseline)
+                proxy = composition_margin(reference.counties[final], baseline)
+                if matched is None or proxy is None:
+                    continue
+                folds[(cycle, state)].append(abs(proxy[0] - matched[0]))
+    return {k: sum(v) / len(v) for k, v in sorted(folds.items())}
 
 
 def within_reach(days: Sequence[ScoredDay]) -> bool:
