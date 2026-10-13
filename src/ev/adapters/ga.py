@@ -1124,14 +1124,28 @@ def hub_build(absentee: dict[str, dict[str, int]], early: dict[str, dict[str, in
     all 159 counties, and a county in one and not the other is drift worth
     raising rather than a row to quietly complete with a zero -- the whole point
     of turning suppression off was to stop guessing what an absence meant.
+
+    ⚠️ EXCEPT A COUNTY MISSING FROM THE EARLY TABLE ONLY. Observed live on
+    2026-10-13, the first day of in-person voting: 158 counties in the early
+    table, all 159 in the absentee one -- Wilkes had accepted 71 mail ballots and
+    uploaded no in-person ones yet, and the early table omits a county with no
+    rows even with suppression off. That is a county not reported YET, not drift,
+    so its in-person count is blank (never 0 -- THE BLANK RULE) and its total is
+    blank with it. The absentee table is the roster and must still be complete;
+    a county in the early table that the absentee table lacks is still drift.
+    The statewide row is the SoS's own sum over what it has, which is the figure
+    Georgia itself publishes.
     """
-    only_absentee = sorted(set(absentee) - set(early))
     only_early = sorted(set(early) - set(absentee))
-    if only_absentee or only_early:
+    if only_early:
         raise SchemaDrift(
             f"GA: the two county tables disagree on which counties exist "
-            f"(absentee only: {only_absentee[:5]}, early only: {only_early[:5]})"
+            f"(early only: {only_early[:5]})"
         )
+    early_missing = sorted(set(absentee) - set(early))
+    if early_missing:
+        log.warning("GA: no in-person rows yet for %d counties: %s",
+                    len(early_missing), early_missing[:10])
 
     result = FetchResult()
     totals = {"mail": 0, "inperson": 0, "requested": 0}
@@ -1142,14 +1156,14 @@ def hub_build(absentee: dict[str, dict[str, int]], early: dict[str, dict[str, in
         fips, canonical = hit
         mail = absentee[name][HUB_ACCEPTED]
         requested = absentee[name][HUB_REQUESTED]
-        inperson = early[name][HUB_ACCEPTED_EV]
+        inperson = early[name][HUB_ACCEPTED_EV] if name in early else None
         totals["mail"] += mail
-        totals["inperson"] += inperson
+        totals["inperson"] += inperson or 0
         totals["requested"] += requested
         result.county_rows.append(CountyDay(
             cycle=cycle, state="GA", county_fips=fips, day=day,
             county_name=canonical,
-            ballots_total=mail + inperson,
+            ballots_total=None if inperson is None else mail + inperson,
             ballots_new=None,
             mail_returned=mail,
             inperson=inperson,

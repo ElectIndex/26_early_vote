@@ -240,12 +240,26 @@ def test_a_readback_that_disagrees_is_DRIFT(log):
         run(log, patch=lie)
 
 
-def test_tables_that_disagree_on_counties_are_DRIFT(log):
+def test_a_county_only_in_the_EARLY_table_is_DRIFT(log):
     _, absentee, early, _ = run(log)
-    short = dict(early)
+    short = dict(absentee)
     short.pop(next(iter(short)))
     with pytest.raises(SchemaDrift, match="disagree on which counties"):
-        ga.hub_build(absentee, short, date(2024, 11, 5), 2024)
+        ga.hub_build(short, early, date(2024, 11, 5), 2024)
+
+
+def test_a_county_with_no_in_person_rows_yet_is_BLANK_not_zero(log):
+    """2026-10-13, day one of in-person voting: Wilkes had mail ballots and no
+    early-table row. Its in-person count is unknown, not zero."""
+    _, absentee, early, _ = run(log)
+    short = dict(early)
+    gone = short.pop("WILKES")[ga.HUB_ACCEPTED_EV]
+    result = ga.hub_build(absentee, short, date(2024, 11, 5), 2024)
+    wilkes = next(r for r in result.county_rows if r.county_name == "Wilkes County")
+    assert wilkes.inperson is None and wilkes.ballots_total is None
+    assert wilkes.mail_returned == absentee["WILKES"][ga.HUB_ACCEPTED]
+    assert len(result.county_rows) == 159
+    assert result.state_rows[0].inperson == 3_768_115 - gone
 
 
 def test_partial_coverage_publishes_NO_statewide_row(log):
