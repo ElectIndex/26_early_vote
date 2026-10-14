@@ -1,6 +1,6 @@
 name: ingest
 
-# Every 30 minutes by day, two hours by night, plus a button. The site reads output/*.csv straight off
+# On the prod box's clock (see `on:`), plus a six-hourly backup and a button. The site reads output/*.csv straight off
 # raw.githubusercontent.com, so this job IS the publish step -- there is nothing
 # else to deploy.
 #
@@ -22,17 +22,13 @@ name: ingest
 # A run that changes nothing commits nothing, so before October -- when every
 # state answers NotYetPublished -- the extra slots cost an empty log line each.
 #
-# ⚠️ SINCE 2026-10-13: EVERY 30 MINUTES, 9 AM-9 PM EASTERN (Davis's call, with
-# early voting open everywhere); every two hours overnight. Cron is UTC and
-# does not know daylight saving, so the daytime band is the UNION of EDT
-# (13:00-01:00 UTC) and EST after Nov 1 (14:00-02:00 UTC): it runs an extra
-# hour at one edge, never a short one. Overnight slots skip the band.
+# ⚠️ SINCE 2026-10-13 THE PROD BOX KEEPS THE CLOCK, NOT THIS CRON: every 30
+# minutes 9 AM-9 PM Eastern, every two hours overnight (Davis's call), via the
+# `tick` push below. The cron here is only a six-hourly backup for a box that
+# has gone quiet. Both stop at 2026-11-04 00:00 Eastern (the `gate` job).
 on:
   schedule:
-    - cron: "0,30 13-23 * * *"
-    - cron: "0,30 0-1 * * *"
-    - cron: "0 2 * * *"
-    - cron: "0 4-12/2 * * *"
+    - cron: "15 */6 * * *"
   # ⚠️ THE PROD BOX'S CLOCK. GitHub's cron is best-effort (4 of 12 slots fired
   # on 2026-10-13), so /usr/local/bin/ei-ev-dispatch on electindex-prod pushes
   # an orphan commit to `tick` on its own schedule (/etc/cron.d/ei-ev-dispatch)
@@ -75,6 +71,10 @@ jobs:
     if: needs.gate.outputs.go == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    # `as_of` is date.today(). On a UTC runner every run after 8 PM Eastern
+    # filed its numbers under TOMORROW; US states publish on Eastern-ish days.
+    env:
+      TZ: America/New_York
 
     steps:
       - uses: actions/checkout@v4
