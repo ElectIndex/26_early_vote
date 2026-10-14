@@ -13810,6 +13810,7 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,NC,37001,Alamance County,2026-10-11,23,mail,420,0,205,56,1,158,1,nc-sbe,2026-10-11T00:40:14+00:00
 2026,NC,37001,Alamance County,2026-10-12,22,mail,447,27,225,59,1,162,1,nc-sbe,2026-10-13T16:59:34+00:00
 2026,NC,37001,Alamance County,2026-10-13,21,mail,447,0,225,59,1,162,1,nc-sbe,2026-10-13T16:59:34+00:00
+2026,NC,37001,Alamance County,2026-10-14,20,mail,447,0,225,59,1,162,1,nc-sbe,2026-10-14T01:09:26+00:00
 2026,NC,37003,Alexander County,2026-09-08,56,mail,2,2,1,0,0,1,1,nc-sbe,2026-09-09T14:09:24+00:00
 2026,NC,37003,Alexander County,2026-09-09,55,mail,2,0,1,0,0,1,1,nc-sbe,2026-09-09T14:09:24+00:00
 2026,NC,37003,Alexander County,2026-09-10,54,mail,2,0,1,0,0,1,1,nc-sbe,2026-09-10T03:04:15+00:00
@@ -13846,6 +13847,7 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,NC,37003,Alexander County,2026-10-11,23,mail,46,0,17,10,2,17,1,nc-sbe,2026-10-11T00:40:14+00:00
 2026,NC,37003,Alexander County,2026-10-12,22,mail,46,0,17,10,2,17,1,nc-sbe,2026-10-12T00:57:49+00:00
 2026,NC,37003,Alexander County,2026-10-13,21,mail,46,0,17,10,2,17,1,nc-sbe,2026-10-13T07:23:42+00:00
+2026,NC,37003,Alexander County,2026-10-14,20,mail,46,0,17,10,2,17,1,nc-sbe,2026-10-14T01:09:26+00:00
 2026,NC,37005,Alleghany County,2026-09-15,49,mail,3,3,2,0,0,1,1,nc-sbe,2026-09-16T10:50:39+00:00
 2026,NC,37005,Alleghany County,2026-09-16,48,mail,3,0,2,0,0,1,1,nc-sbe,2026-09-16T10:50:39+00:00
 2026,NC,37005,Alleghany County,2026-09-17,47,mail,6,3,3,2,0,1,1,nc-sbe,2026-09-18T14:05:34+00:00
@@ -13875,6 +13877,7 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,NC,37005,Alleghany County,2026-10-11,23,mail,21,0,7,8,0,6,1,nc-sbe,2026-10-11T00:40:14+00:00
 2026,NC,37005,Alleghany County,2026-10-12,22,mail,21,0,7,8,0,6,1,nc-sbe,2026-10-12T00:57:49+00:00
 2026,NC,37005,Alleghany County,2026-10-13,21,mail,21,0,7,8,0,6,1,nc-sbe,2026-10-13T07:23:42+00:00
+2026,NC,37005,Alleghany County,2026-10-14,20,mail,21,0,7,8,0,6,1,nc-sbe,2026-10-14T01:09:26+00:00
 2026,NC,37007,Anson County,2026-09-15,49,mail,1,1,1,0,0,0,1,nc-sbe,2026-09-16T10:50:39+00:00
 2026,NC,37007,Anson County,2026-09-16,48,mail,1,0,1,0,0,0,1,nc-sbe,2026-09-16T10:50:39+00:00
 2026,NC,37007,Anson County,2026-09-17,47,mail,1,0,1,0,0,0,1,nc-sbe,2026-09-17T00:04:20+00:00
@@ -13904,6 +13907,7 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,NC,37007,Anson County,2026-10-11,23,mail,6,0,6,0,0,0,1,nc-sbe,2026-10-11T00:40:14+00:00
 2026,NC,37007,Anson County,2026-10-12,22,mail,6,0,6,0,0,0,1,nc-sbe,2026-10-12T00:57:49+00:00
 2026,NC,37007,Anson County,2026-10-13,21,mail,6,0,6,0,0,0,1,nc-sbe,2026-10-13T07:23:42+00:00
+2026,NC,37007,Anson County,2026-10-14,20,mail,6,0,6,0,0,0,1,nc-sbe,2026-10-14T01:09:26+00:00
 2026,NC,37009,Ashe County,2026-09-08,56,mail,1,1,1,0,0,0,1,nc-sbe,2026-09-30T14:00:57+00:00
 2026,NC,37009,Ashe County,2026-09-09,55,mail,2,1,2,0,0,0,1,nc-sbe,2026-09-30T14:00:57+00:00
 2026,NC,37009,Ashe County,2026-09-10,54,mail,3,1,3,0,0,0,1,nc-sbe,2026-09-30T14:00:57+00:00
@@ -13940,6 +13944,7 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,NC,37009,Ashe County,2026-10-11,23,mail,64,0,28,9,0,27,1,nc-sbe,2026-10-11T00:40:14+00:00
 2026,NC,37009,Ashe County,2026-10-12,22,mail,65,1,29,9,0,27,1,nc-sbe,2026-10-13T16:59:34+00:00
 2026,NC,37009,Ashe County,2026-10-13,21,mail,65,0,29,9,0,27,1,nc-sbe,2026-10-13T16:59:34+00:00
+2026,NC,37009,Ashe County,2026-10-14,20,mail,65,0,29,9,0,27,1,nc-sbe,2026-10-14T01:09:26+00:00
 2026,NC,37011,Avery County,2026-09-18,46,mail,3,3,1,2,0,0,1,nc-sbe,2026-10-07T12:39:00+00:00
 2026,NC,37011,Avery County,2026-09-19,45,mail,3,0,1,2,0,0,1,nc-sbe,2026-10-07T12:39:00+00:00
 2026,NC,37011,Avery County,2026-09-20,44,mail,3,0,1,2,0,0,1,nc-sbe,2026-10-07T12:39:00+00:00
@@ -13966,6 +13971,7 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,NC,37011,Avery County,2026-10-11,23,mail,22,0,6,6,0,10,1,nc-sbe,2026-10-11T00:40:14+00:00
 2026,NC,37011,Avery County,2026-10-12,22,mail,23,1,7,6,0,10,1,nc-sbe,2026-10-13T16:59:34+00:00
 2026,NC,37011,Avery County,2026-10-13,21,mail,23,0,7,6,0,10,1,nc-sbe,2026-10-13T16:59:34+00:00
+2026,NC,37011,Avery County,2026-10-14,20,mail,23,0,7,6,0,10,1,nc-sbe,2026-10-14T01:09:26+00:00
 2026,NC,37013,Beaufort County,2026-09-09,55,mail,5,5,3,0,0,2,1,nc-sbe,2026-09-12T13:20:35+00:00
 2026,NC,37013,Beaufort County,2026-09-10,54,mail,5,0,3,0,0,2,1,nc-sbe,2026-09-12T13:20:35+00:00
 2026,NC,37013,Beaufort County,2026-09-11,53,mail,6,1,4,0,0,2,1,nc-sbe,2026-09-12T13:20:35+00:00
@@ -14001,6 +14007,7 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,NC,37013,Beaufort County,2026-10-11,23,mail,66,0,26,17,0,23,1,nc-sbe,2026-10-13T16:59:34+00:00
 2026,NC,37013,Beaufort County,2026-10-12,22,mail,68,2,26,18,0,24,1,nc-sbe,2026-10-13T16:59:34+00:00
 2026,NC,37013,Beaufort County,2026-10-13,21,mail,68,0,26,18,0,24,1,nc-sbe,2026-10-13T16:59:34+00:00
+2026,NC,37013,Beaufort County,2026-10-14,20,mail,68,0,26,18,0,24,1,nc-sbe,2026-10-14T01:09:26+00:00
 2026,NC,37015,Bertie County,2026-09-24,40,mail,3,3,3,0,0,0,1,nc-sbe,2026-09-25T09:22:14+00:00
 2026,NC,37015,Bertie County,2026-09-25,39,mail,3,0,3,0,0,0,1,nc-sbe,2026-09-25T09:22:14+00:00
 2026,NC,37015,Bertie County,2026-09-26,38,mail,3,0,3,0,0,0,1,nc-sbe,2026-09-26T03:31:25+00:00
@@ -14021,6 +14028,7 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,NC,37015,Bertie County,2026-10-11,23,mail,3,0,3,0,0,0,1,nc-sbe,2026-10-11T00:40:14+00:00
 2026,NC,37015,Bertie County,2026-10-12,22,mail,3,0,3,0,0,0,1,nc-sbe,2026-10-12T00:57:49+00:00
 2026,NC,37015,Bertie County,2026-10-13,21,mail,3,0,3,0,0,0,1,nc-sbe,2026-10-13T07:23:42+00:00
+2026,NC,37015,Bertie County,2026-10-14,20,mail,3,0,3,0,0,0,1,nc-sbe,2026-10-14T01:09:26+00:00
 2026,NC,37017,Bladen County,2026-09-14,50,mail,3,3,1,1,0,1,1,nc-sbe,2026-09-17T12:39:38+00:00
 2026,NC,37017,Bladen County,2026-09-15,49,mail,3,0,1,1,0,1,1,nc-sbe,2026-09-17T12:39:38+00:00
 2026,NC,37017,Bladen County,2026-09-16,48,mail,3,0,1,1,0,1,1,nc-sbe,2026-09-17T12:39:38+00:00
@@ -14051,6 +14059,7 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,NC,37017,Bladen County,2026-10-11,23,mail,27,0,15,5,0,7,1,nc-sbe,2026-10-11T00:40:14+00:00
 2026,NC,37017,Bladen County,2026-10-12,22,mail,28,1,15,5,0,8,1,nc-sbe,2026-10-13T16:59:34+00:00
 2026,NC,37017,Bladen County,2026-10-13,21,mail,28,0,15,5,0,8,1,nc-sbe,2026-10-13T16:59:34+00:00
+2026,NC,37017,Bladen County,2026-10-14,20,mail,28,0,15,5,0,8,1,nc-sbe,2026-10-14T01:09:26+00:00
 2026,NC,37019,Brunswick County,2026-09-04,60,mail,1,1,0,0,0,1,1,nc-sbe,2026-09-09T14:09:24+00:00
 2026,NC,37019,Brunswick County,2026-09-05,59,mail,1,0,0,0,0,1,1,nc-sbe,2026-09-09T14:09:24+00:00
 2026,NC,37019,Brunswick County,2026-09-06,58,mail,1,0,0,0,0,1,1,nc-sbe,2026-09-09T14:09:24+00:00
@@ -14091,6 +14100,7 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,NC,37019,Brunswick County,2026-10-11,23,mail,776,0,300,170,2,304,1,nc-sbe,2026-10-13T16:59:34+00:00
 2026,NC,37019,Brunswick County,2026-10-12,22,mail,789,13,304,170,2,313,1,nc-sbe,2026-10-13T16:59:34+00:00
 2026,NC,37019,Brunswick County,2026-10-13,21,mail,789,0,304,170,2,313,1,nc-sbe,2026-10-13T16:59:34+00:00
+2026,NC,37019,Brunswick County,2026-10-14,20,mail,789,0,304,170,2,313,1,nc-sbe,2026-10-14T01:09:26+00:00
 2026,NC,37021,Buncombe County,2026-09-04,60,mail,10,10,7,0,0,3,1,nc-sbe,2026-09-09T14:09:24+00:00
 2026,NC,37021,Buncombe County,2026-09-05,59,mail,10,0,7,0,0,3,1,nc-sbe,2026-09-09T14:09:24+00:00
 2026,NC,37021,Buncombe County,2026-09-06,58,mail,10,0,7,0,0,3,1,nc-sbe,2026-09-09T14:09:24+00:00
@@ -14131,6 +14141,7 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,NC,37021,Buncombe County,2026-10-11,23,mail,1468,9,715,181,3,569,1,nc-sbe,2026-10-13T16:59:34+00:00
 2026,NC,37021,Buncombe County,2026-10-12,22,mail,1511,43,732,188,3,588,1,nc-sbe,2026-10-13T16:59:34+00:00
 2026,NC,37021,Buncombe County,2026-10-13,21,mail,1511,0,732,188,3,588,1,nc-sbe,2026-10-13T16:59:34+00:00
+2026,NC,37021,Buncombe County,2026-10-14,20,mail,1511,0,732,188,3,588,1,nc-sbe,2026-10-14T01:09:26+00:00
 2026,NC,37023,Burke County,2026-09-08,56,mail,9,9,7,0,0,2,1,nc-sbe,2026-09-09T14:09:24+00:00
 2026,NC,37023,Burke County,2026-09-09,55,mail,11,2,8,0,0,3,1,nc-sbe,2026-09-10T14:03:17+00:00
 2026,NC,37023,Burke County,2026-09-10,54,mail,14,3,11,0,0,3,1,nc-sbe,2026-09-11T14:02:50+00:00
@@ -14167,6 +14178,7 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,NC,37023,Burke County,2026-10-11,23,mail,196,0,96,36,1,63,1,nc-sbe,2026-10-13T16:59:34+00:00
 2026,NC,37023,Burke County,2026-10-12,22,mail,202,6,99,36,1,66,1,nc-sbe,2026-10-13T16:59:34+00:00
 2026,NC,37023,Burke County,2026-10-13,21,mail,202,0,99,36,1,66,1,nc-sbe,2026-10-13T16:59:34+00:00
+2026,NC,37023,Burke County,2026-10-14,20,mail,202,0,99,36,1,66,1,nc-sbe,2026-10-14T01:09:26+00:00
 2026,NC,37025,Cabarrus County,2026-09-08,56,mail,7,7,3,1,0,3,1,nc-sbe,2026-09-09T14:09:24+00:00
 2026,NC,37025,Cabarrus County,2026-09-09,55,mail,12,5,5,1,0,6,1,nc-sbe,2026-09-10T14:03:17+00:00
 2026,NC,37025,Cabarrus County,2026-09-10,54,mail,19,7,9,3,0,7,1,nc-sbe,2026-09-24T12:33:03+00:00
@@ -14203,6 +14215,7 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,NC,37025,Cabarrus County,2026-10-11,23,mail,658,0,261,150,0,247,1,nc-sbe,2026-10-11T16:08:18+00:00
 2026,NC,37025,Cabarrus County,2026-10-12,22,mail,687,29,270,154,0,263,1,nc-sbe,2026-10-13T16:59:34+00:00
 2026,NC,37025,Cabarrus County,2026-10-13,21,mail,687,0,270,154,0,263,1,nc-sbe,2026-10-13T16:59:34+00:00
+2026,NC,37025,Cabarrus County,2026-10-14,20,mail,687,0,270,154,0,263,1,nc-sbe,2026-10-14T01:09:26+00:00
 2026,NC,37027,Caldwell County,2026-09-04,60,mail,1,1,0,0,0,1,1,nc-sbe,2026-09-16T10:50:39+00:00
 2026,NC,37027,Caldwell County,2026-09-05,59,mail,1,0,0,0,0,1,1,nc-sbe,2026-09-16T10:50:39+00:00
 2026,NC,37027,Caldwell County,2026-09-06,58,mail,3,2,2,0,0,1,1,nc-sbe,2026-09-16T10:50:39+00:00
@@ -14243,6 +14256,7 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,NC,37027,Caldwell County,2026-10-11,23,mail,117,0,43,33,0,41,1,nc-sbe,2026-10-11T00:40:14+00:00
 2026,NC,37027,Caldwell County,2026-10-12,22,mail,127,10,46,36,0,45,1,nc-sbe,2026-10-13T16:59:34+00:00
 2026,NC,37027,Caldwell County,2026-10-13,21,mail,127,0,46,36,0,45,1,nc-sbe,2026-10-13T16:59:34+00:00
+2026,NC,37027,Caldwell County,2026-10-14,20,mail,127,0,46,36,0,45,1,nc-sbe,2026-10-14T01:09:26+00:00
 2026,NC,37029,Camden County,2026-09-14,50,mail,2,2,2,0,0,0,1,nc-sbe,2026-09-17T12:39:38+00:00
 2026,NC,37029,Camden County,2026-09-15,49,mail,3,1,2,1,0,0,1,nc-sbe,2026-09-17T12:39:38+00:00
 2026,NC,37029,Camden County,2026-09-16,48,mail,3,0,2,1,0,0,1,nc-sbe,2026-09-17T12:39:38+00:00
@@ -14273,6 +14287,7 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,NC,37029,Camden County,2026-10-11,23,mail,10,0,3,2,0,5,1,nc-sbe,2026-10-11T00:40:14+00:00
 2026,NC,37029,Camden County,2026-10-12,22,mail,10,0,3,2,0,5,1,nc-sbe,2026-10-12T00:57:49+00:00
 2026,NC,37029,Camden County,2026-10-13,21,mail,10,0,3,2,0,5,1,nc-sbe,2026-10-13T07:23:42+00:00
+2026,NC,37029,Camden County,2026-10-14,20,mail,10,0,3,2,0,5,1,nc-sbe,2026-10-14T01:09:26+00:00
 2026,NC,37031,Carteret County,2026-09-08,56,mail,8,8,3,1,0,4,1,nc-sbe,2026-09-09T14:09:24+00:00
 2026,NC,37031,Carteret County,2026-09-09,55,mail,8,0,3,1,0,4,1,nc-sbe,2026-09-09T14:09:24+00:00
 2026,NC,37031,Carteret County,2026-09-10,54,mail,11,3,5,1,0,5,1,nc-sbe,2026-09-11T14:02:50+00:00
@@ -14309,6 +14324,7 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,NC,37031,Carteret County,2026-10-11,23,mail,175,0,59,38,1,77,1,nc-sbe,2026-10-13T16:59:34+00:00
 2026,NC,37031,Carteret County,2026-10-12,22,mail,182,7,60,40,1,81,1,nc-sbe,2026-10-13T16:59:34+00:00
 2026,NC,37031,Carteret County,2026-10-13,21,mail,182,0,60,40,1,81,1,nc-sbe,2026-10-13T16:59:34+00:00
+2026,NC,37031,Carteret County,2026-10-14,20,mail,182,0,60,40,1,81,1,nc-sbe,2026-10-14T01:09:26+00:00
 2026,NC,37033,Caswell County,2026-09-25,39,mail,2,2,2,0,0,0,1,nc-sbe,2026-09-26T14:05:31+00:00
 2026,NC,37033,Caswell County,2026-09-26,38,mail,2,0,2,0,0,0,1,nc-sbe,2026-09-26T14:05:31+00:00
 2026,NC,37033,Caswell County,2026-09-27,37,mail,2,0,2,0,0,0,1,nc-sbe,2026-09-27T03:39:36+00:00
@@ -14328,6 +14344,7 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,NC,37033,Caswell County,2026-10-11,23,mail,26,0,9,4,0,13,1,nc-sbe,2026-10-11T00:40:14+00:00
 2026,NC,37033,Caswell County,2026-10-12,22,mail,30,4,12,4,0,14,1,nc-sbe,2026-10-13T16:59:34+00:00
 2026,NC,37033,Caswell County,2026-10-13,21,mail,30,0,12,4,0,14,1,nc-sbe,2026-10-13T16:59:34+00:00
+2026,NC,37033,Caswell County,2026-10-14,20,mail,30,0,12,4,0,14,1,nc-sbe,2026-10-14T01:09:26+00:00
 2026,NC,37035,Catawba County,2026-09-08,56,mail,5,5,3,0,0,2,1,nc-sbe,2026-09-09T14:09:24+00:00
 2026,NC,37035,Catawba County,2026-09-09,55,mail,9,4,4,1,0,4,1,nc-sbe,2026-09-10T14:03:17+00:00
 2026,NC,37035,Catawba County,2026-09-10,54,mail,9,0,4,1,0,4,1,nc-sbe,2026-09-10T14:03:17+00:00
@@ -14364,6 +14381,7 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,NC,37035,Catawba County,2026-10-11,23,mail,453,0,164,144,5,140,1,nc-sbe,2026-10-13T16:59:34+00:00
 2026,NC,37035,Catawba County,2026-10-12,22,mail,489,36,180,149,5,155,1,nc-sbe,2026-10-13T16:59:34+00:00
 2026,NC,37035,Catawba County,2026-10-13,21,mail,489,0,180,149,5,155,1,nc-sbe,2026-10-13T16:59:34+00:00
+2026,NC,37035,Catawba County,2026-10-14,20,mail,489,0,180,149,5,155,1,nc-sbe,2026-10-14T01:09:26+00:00
 2026,NC,37037,Chatham County,2026-09-11,53,mail,8,8,3,0,0,5,1,nc-sbe,2026-09-12T13:20:35+00:00
 2026,NC,37037,Chatham County,2026-09-12,52,mail,8,0,3,0,0,5,1,nc-sbe,2026-09-12T13:20:35+00:00
 2026,NC,37037,Chatham County,2026-09-13,51,mail,8,0,3,0,0,5,1,nc-sbe,2026-09-13T03:08:41+00:00
@@ -14397,6 +14415,7 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,NC,37037,Chatham County,2026-10-11,23,mail,583,0,285,60,0,238,1,nc-sbe,2026-10-11T00:40:14+00:00
 2026,NC,37037,Chatham County,2026-10-12,22,mail,591,8,290,60,0,241,1,nc-sbe,2026-10-13T16:59:34+00:00
 2026,NC,37037,Chatham County,2026-10-13,21,mail,591,0,290,60,0,241,1,nc-sbe,2026-10-13T16:59:34+00:00
+2026,NC,37037,Chatham County,2026-10-14,20,mail,591,0,290,60,0,241,1,nc-sbe,2026-10-14T01:09:26+00:00
 2026,NC,37039,Cherokee County,2026-09-15,49,mail,1,1,0,0,0,1,1,nc-sbe,2026-09-24T12:33:03+00:00
 2026,NC,37039,Cherokee County,2026-09-16,48,mail,1,0,0,0,0,1,1,nc-sbe,2026-09-24T12:33:03+00:00
 2026,NC,37039,Cherokee County,2026-09-17,47,mail,1,0,0,0,0,1,1,nc-sbe,2026-09-24T12:33:03+00:00
@@ -14426,6 +14445,7 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,NC,37039,Cherokee County,2026-10-11,23,mail,72,0,29,19,0,24,1,nc-sbe,2026-10-13T16:59:34+00:00
 2026,NC,37039,Cherokee County,2026-10-12,22,mail,73,1,29,20,0,24,1,nc-sbe,2026-10-13T16:59:34+00:00
 2026,NC,37039,Cherokee County,2026-10-13,21,mail,73,0,29,20,0,24,1,nc-sbe,2026-10-13T16:59:34+00:00
+2026,NC,37039,Cherokee County,2026-10-14,20,mail,73,0,29,20,0,24,1,nc-sbe,2026-10-14T01:09:26+00:00
 2026,NC,37041,Chowan County,2026-09-08,56,mail,3,3,1,1,0,1,1,nc-sbe,2026-09-09T14:09:24+00:00
 2026,NC,37041,Chowan County,2026-09-09,55,mail,5,2,1,1,0,3,1,nc-sbe,2026-09-10T14:03:17+00:00
 2026,NC,37041,Chowan County,2026-09-10,54,mail,5,0,1,1,0,3,1,nc-sbe,2026-09-10T14:03:17+00:00
@@ -14462,6 +14482,7 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,NC,37041,Chowan County,2026-10-11,23,mail,21,0,10,5,0,6,1,nc-sbe,2026-10-11T00:40:14+00:00
 2026,NC,37041,Chowan County,2026-10-12,22,mail,24,3,10,6,0,8,1,nc-sbe,2026-10-13T16:59:34+00:00
 2026,NC,37041,Chowan County,2026-10-13,21,mail,24,0,10,6,0,8,1,nc-sbe,2026-10-13T16:59:34+00:00
+2026,NC,37041,Chowan County,2026-10-14,20,mail,24,0,10,6,0,8,1,nc-sbe,2026-10-14T01:09:26+00:00
 2026,NC,37043,Clay County,2026-09-14,50,mail,4,4,2,0,0,2,1,nc-sbe,2026-09-22T13:05:02+00:00
 2026,NC,37043,Clay County,2026-09-15,49,mail,4,0,2,0,0,2,1,nc-sbe,2026-09-22T13:05:02+00:00
 2026,NC,37043,Clay County,2026-09-16,48,mail,4,0,2,0,0,2,1,nc-sbe,2026-09-22T13:05:02+00:00
@@ -14492,6 +14513,7 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,NC,37043,Clay County,2026-10-11,23,mail,15,0,5,1,0,9,1,nc-sbe,2026-10-11T00:40:14+00:00
 2026,NC,37043,Clay County,2026-10-12,22,mail,21,6,6,2,0,13,1,nc-sbe,2026-10-13T16:59:34+00:00
 2026,NC,37043,Clay County,2026-10-13,21,mail,21,0,6,2,0,13,1,nc-sbe,2026-10-13T16:59:34+00:00
+2026,NC,37043,Clay County,2026-10-14,20,mail,21,0,6,2,0,13,1,nc-sbe,2026-10-14T01:09:26+00:00
 2026,NC,37045,Cleveland County,2026-09-08,56,mail,1,1,1,0,0,0,1,nc-sbe,2026-09-09T14:09:24+00:00
 2026,NC,37045,Cleveland County,2026-09-09,55,mail,2,1,1,0,0,1,1,nc-sbe,2026-09-10T14:03:17+00:00
 2026,NC,37045,Cleveland County,2026-09-10,54,mail,5,3,3,1,0,1,1,nc-sbe,2026-09-11T14:02:50+00:00
@@ -14528,6 +14550,7 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,NC,37045,Cleveland County,2026-10-11,23,mail,116,4,49,29,0,38,1,nc-sbe,2026-10-12T15:50:11+00:00
 2026,NC,37045,Cleveland County,2026-10-12,22,mail,121,5,50,29,0,42,1,nc-sbe,2026-10-13T16:59:34+00:00
 2026,NC,37045,Cleveland County,2026-10-13,21,mail,121,0,50,29,0,42,1,nc-sbe,2026-10-13T16:59:34+00:00
+2026,NC,37045,Cleveland County,2026-10-14,20,mail,121,0,50,29,0,42,1,nc-sbe,2026-10-14T01:09:26+00:00
 2026,NC,37047,Columbus County,2026-09-14,50,mail,2,2,0,0,0,2,1,nc-sbe,2026-09-16T10:50:39+00:00
 2026,NC,37047,Columbus County,2026-09-15,49,mail,4,2,0,0,0,4,1,nc-sbe,2026-09-16T10:50:39+00:00
 2026,NC,37047,Columbus County,2026-09-16,48,mail,4,0,0,0,0,4,1,nc-sbe,2026-09-16T10:50:39+00:00
@@ -14558,6 +14581,7 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,NC,37047,Columbus County,2026-10-11,23,mail,78,0,41,17,1,19,1,nc-sbe,2026-10-11T00:40:14+00:00
 2026,NC,37047,Columbus County,2026-10-12,22,mail,82,4,43,18,1,20,1,nc-sbe,2026-10-13T16:59:34+00:00
 2026,NC,37047,Columbus County,2026-10-13,21,mail,82,0,43,18,1,20,1,nc-sbe,2026-10-13T16:59:34+00:00
+2026,NC,37047,Columbus County,2026-10-14,20,mail,82,0,43,18,1,20,1,nc-sbe,2026-10-14T01:09:26+00:00
 2026,NC,37049,Craven County,2026-09-08,56,mail,1,1,0,1,0,0,1,nc-sbe,2026-09-30T14:00:57+00:00
 2026,NC,37049,Craven County,2026-09-09,55,mail,2,1,0,2,0,0,1,nc-sbe,2026-09-30T14:00:57+00:00
 2026,NC,37049,Craven County,2026-09-10,54,mail,3,1,0,2,0,1,1,nc-sbe,2026-09-30T14:00:57+00:00
@@ -14594,6 +14618,7 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,NC,37049,Craven County,2026-10-11,23,mail,253,0,94,67,0,92,1,nc-sbe,2026-10-13T16:59:34+00:00
 2026,NC,37049,Craven County,2026-10-12,22,mail,269,16,99,71,0,99,1,nc-sbe,2026-10-13T16:59:34+00:00
 2026,NC,37049,Craven County,2026-10-13,21,mail,269,0,99,71,0,99,1,nc-sbe,2026-10-13T16:59:34+00:00
+2026,NC,37049,Craven County,2026-10-14,20,mail,269,0,99,71,0,99,1,nc-sbe,2026-10-14T01:09:26+00:00
 2026,NC,37051,Cumberland County,2026-09-08,56,mail,25,25,13,4,0,8,1,nc-sbe,2026-09-17T12:39:38+00:00
 2026,NC,37051,Cumberland County,2026-09-09,55,mail,33,8,17,4,0,12,1,nc-sbe,2026-09-17T12:39:38+00:00
 2026,NC,37051,Cumberland County,2026-09-10,54,mail,35,2,19,4,0,12,1,nc-sbe,2026-09-17T12:39:38+00:00
@@ -14630,6 +14655,7 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,NC,37051,Cumberland County,2026-10-11,23,mail,460,0,244,73,5,138,1,nc-sbe,2026-10-13T16:59:34+00:00
 2026,NC,37051,Cumberland County,2026-10-12,22,mail,479,19,255,75,5,144,1,nc-sbe,2026-10-13T16:59:34+00:00
 2026,NC,37051,Cumberland County,2026-10-13,21,mail,479,0,255,75,5,144,1,nc-sbe,2026-10-13T16:59:34+00:00
+2026,NC,37051,Cumberland County,2026-10-14,20,mail,479,0,255,75,5,144,1,nc-sbe,2026-10-14T01:09:26+00:00
 2026,NC,37053,Currituck County,2026-09-04,60,mail,1,1,1,0,0,0,1,nc-sbe,2026-09-08T03:02:49+00:00
 2026,NC,37053,Currituck County,2026-09-05,59,mail,1,0,1,0,0,0,1,nc-sbe,2026-09-08T03:02:49+00:00
 2026,NC,37053,Currituck County,2026-09-06,58,mail,1,0,1,0,0,0,1,nc-sbe,2026-09-08T03:02:49+00:00
@@ -14670,6 +14696,7 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,NC,37053,Currituck County,2026-10-11,23,mail,66,0,23,12,0,31,1,nc-sbe,2026-10-11T00:40:14+00:00
 2026,NC,37053,Currituck County,2026-10-12,22,mail,73,7,26,14,0,33,1,nc-sbe,2026-10-13T16:59:34+00:00
 2026,NC,37053,Currituck County,2026-10-13,21,mail,73,0,26,14,0,33,1,nc-sbe,2026-10-13T16:59:34+00:00
+2026,NC,37053,Currituck County,2026-10-14,20,mail,73,0,26,14,0,33,1,nc-sbe,2026-10-14T01:09:26+00:00
 2026,NC,37055,Dare County,2026-09-15,49,mail,12,12,4,2,0,6,1,nc-sbe,2026-09-16T10:50:39+00:00
 2026,NC,37055,Dare County,2026-09-16,48,mail,12,0,4,2,0,6,1,nc-sbe,2026-09-16T10:50:39+00:00
 2026,NC,37055,Dare County,2026-09-17,47,mail,13,1,4,2,0,7,1,nc-sbe,2026-09-18T14:05:34+00:00
@@ -14699,6 +14726,7 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,NC,37055,Dare County,2026-10-11,23,mail,92,0,31,13,0,48,1,nc-sbe,2026-10-11T00:40:14+00:00
 2026,NC,37055,Dare County,2026-10-12,22,mail,108,16,41,17,0,50,1,nc-sbe,2026-10-13T16:59:34+00:00
 2026,NC,37055,Dare County,2026-10-13,21,mail,108,0,41,17,0,50,1,nc-sbe,2026-10-13T16:59:34+00:00
+2026,NC,37055,Dare County,2026-10-14,20,mail,108,0,41,17,0,50,1,nc-sbe,2026-10-14T01:09:26+00:00
 2026,NC,37057,Davidson County,2026-09-08,56,mail,3,3,2,0,0,1,1,nc-sbe,2026-09-09T14:09:24+00:00
 2026,NC,37057,Davidson County,2026-09-09,55,mail,3,0,2,0,0,1,1,nc-sbe,2026-09-09T14:09:24+00:00
 2026,NC,37057,Davidson County,2026-09-10,54,mail,3,0,2,0,0,1,1,nc-sbe,2026-09-10T03:04:15+00:00
@@ -14735,6 +14763,7 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,NC,37057,Davidson County,2026-10-11,23,mail,370,0,155,91,0,124,1,nc-sbe,2026-10-11T00:40:14+00:00
 2026,NC,37057,Davidson County,2026-10-12,22,mail,375,5,157,93,0,125,1,nc-sbe,2026-10-13T16:59:34+00:00
 2026,NC,37057,Davidson County,2026-10-13,21,mail,375,0,157,93,0,125,1,nc-sbe,2026-10-13T16:59:34+00:00
+2026,NC,37057,Davidson County,2026-10-14,20,mail,375,0,157,93,0,125,1,nc-sbe,2026-10-14T01:09:26+00:00
 2026,NC,37059,Davie County,2026-09-08,56,mail,2,2,1,0,0,1,1,nc-sbe,2026-09-09T14:09:24+00:00
 2026,NC,37059,Davie County,2026-09-09,55,mail,3,1,1,0,0,2,1,nc-sbe,2026-09-10T14:03:17+00:00
 2026,NC,37059,Davie County,2026-09-10,54,mail,4,1,1,0,1,2,1,nc-sbe,2026-09-11T14:02:50+00:00
@@ -14771,6 +14800,7 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,NC,37059,Davie County,2026-10-11,23,mail,91,0,26,26,1,38,1,nc-sbe,2026-10-11T00:40:14+00:00
 2026,NC,37059,Davie County,2026-10-12,22,mail,92,1,26,26,1,39,1,nc-sbe,2026-10-13T16:59:34+00:00
 2026,NC,37059,Davie County,2026-10-13,21,mail,92,0,26,26,1,39,1,nc-sbe,2026-10-13T16:59:34+00:00
+2026,NC,37059,Davie County,2026-10-14,20,mail,92,0,26,26,1,39,1,nc-sbe,2026-10-14T01:09:26+00:00
 2026,NC,37061,Duplin County,2026-09-11,53,mail,2,2,0,2,0,0,1,nc-sbe,2026-09-12T13:20:35+00:00
 2026,NC,37061,Duplin County,2026-09-12,52,mail,2,0,0,2,0,0,1,nc-sbe,2026-09-12T13:20:35+00:00
 2026,NC,37061,Duplin County,2026-09-13,51,mail,2,0,0,2,0,0,1,nc-sbe,2026-09-13T03:08:41+00:00
@@ -14804,6 +14834,7 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,NC,37061,Duplin County,2026-10-11,23,mail,45,0,19,12,1,13,1,nc-sbe,2026-10-11T00:40:14+00:00
 2026,NC,37061,Duplin County,2026-10-12,22,mail,47,2,21,12,1,13,1,nc-sbe,2026-10-13T16:59:34+00:00
 2026,NC,37061,Duplin County,2026-10-13,21,mail,47,0,21,12,1,13,1,nc-sbe,2026-10-13T16:59:34+00:00
+2026,NC,37061,Duplin County,2026-10-14,20,mail,47,0,21,12,1,13,1,nc-sbe,2026-10-14T01:09:26+00:00
 2026,NC,37063,Durham County,2026-09-04,60,mail,4,4,2,0,0,2,1,nc-sbe,2026-09-10T14:03:17+00:00
 2026,NC,37063,Durham County,2026-09-05,59,mail,35,31,23,0,0,12,1,nc-sbe,2026-09-12T13:20:35+00:00
 2026,NC,37063,Durham County,2026-09-06,58,mail,50,15,32,0,0,18,1,nc-sbe,2026-09-12T13:20:35+00:00
@@ -14844,6 +14875,7 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,NC,37063,Durham County,2026-10-11,23,mail,1267,15,680,77,2,508,1,nc-sbe,2026-10-13T16:59:34+00:00
 2026,NC,37063,Durham County,2026-10-12,22,mail,1284,17,691,78,2,513,1,nc-sbe,2026-10-13T16:59:34+00:00
 2026,NC,37063,Durham County,2026-10-13,21,mail,1284,0,691,78,2,513,1,nc-sbe,2026-10-13T16:59:34+00:00
+2026,NC,37063,Durham County,2026-10-14,20,mail,1284,0,691,78,2,513,1,nc-sbe,2026-10-14T01:09:26+00:00
 2026,NC,37065,Edgecombe County,2026-09-18,46,mail,2,2,0,0,0,2,1,nc-sbe,2026-09-19T13:41:18+00:00
 2026,NC,37065,Edgecombe County,2026-09-19,45,mail,2,0,0,0,0,2,1,nc-sbe,2026-09-19T13:41:18+00:00
 2026,NC,37065,Edgecombe County,2026-09-20,44,mail,2,0,0,0,0,2,1,nc-sbe,2026-09-20T03:23:48+00:00
@@ -14870,6 +14902,7 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,NC,37065,Edgecombe County,2026-10-11,23,mail,29,0,22,0,0,7,1,nc-sbe,2026-10-11T00:40:14+00:00
 2026,NC,37065,Edgecombe County,2026-10-12,22,mail,29,0,22,0,0,7,1,nc-sbe,2026-10-12T00:57:49+00:00
 2026,NC,37065,Edgecombe County,2026-10-13,21,mail,29,0,22,0,0,7,1,nc-sbe,2026-10-13T07:23:42+00:00
+2026,NC,37065,Edgecombe County,2026-10-14,20,mail,29,0,22,0,0,7,1,nc-sbe,2026-10-14T01:09:26+00:00
 2026,NC,37067,Forsyth County,2026-09-04,60,mail,2,2,1,0,0,1,1,nc-sbe,2026-09-08T03:02:49+00:00
 2026,NC,37067,Forsyth County,2026-09-05,59,mail,2,0,1,0,0,1,1,nc-sbe,2026-09-08T03:02:49+00:00
 2026,NC,37067,Forsyth County,2026-09-06,58,mail,2,0,1,0,0,1,1,nc-sbe,2026-09-08T03:02:49+00:00
@@ -14910,6 +14943,7 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,NC,37067,Forsyth County,2026-10-11,23,mail,1190,0,565,221,4,400,1,nc-sbe,2026-10-13T16:59:34+00:00
 2026,NC,37067,Forsyth County,2026-10-12,22,mail,1215,25,577,223,5,410,1,nc-sbe,2026-10-13T16:59:34+00:00
 2026,NC,37067,Forsyth County,2026-10-13,21,mail,1216,1,577,223,5,411,1,nc-sbe,2026-10-13T16:59:34+00:00
+2026,NC,37067,Forsyth County,2026-10-14,20,mail,1216,0,577,223,5,411,1,nc-sbe,2026-10-14T01:09:26+00:00
 2026,NC,37069,Franklin County,2026-09-10,54,mail,1,1,1,0,0,0,1,nc-sbe,2026-09-29T13:11:50+00:00
 2026,NC,37069,Franklin County,2026-09-11,53,mail,6,5,5,0,0,1,1,nc-sbe,2026-09-29T13:11:50+00:00
 2026,NC,37069,Franklin County,2026-09-12,52,mail,6,0,5,0,0,1,1,nc-sbe,2026-09-29T13:11:50+00:00
@@ -14944,6 +14978,7 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,NC,37069,Franklin County,2026-10-11,23,mail,222,0,129,34,0,59,1,nc-sbe,2026-10-13T16:59:34+00:00
 2026,NC,37069,Franklin County,2026-10-12,22,mail,241,19,141,36,0,64,1,nc-sbe,2026-10-13T16:59:34+00:00
 2026,NC,37069,Franklin County,2026-10-13,21,mail,241,0,141,36,0,64,1,nc-sbe,2026-10-13T16:59:34+00:00
+2026,NC,37069,Franklin County,2026-10-14,20,mail,241,0,141,36,0,64,1,nc-sbe,2026-10-14T01:09:26+00:00
 2026,NC,37071,Gaston County,2026-09-05,59,mail,3,3,1,0,0,2,1,nc-sbe,2026-09-09T14:09:24+00:00
 2026,NC,37071,Gaston County,2026-09-06,58,mail,5,2,3,0,0,2,1,nc-sbe,2026-09-09T14:09:24+00:00
 2026,NC,37071,Gaston County,2026-09-07,57,mail,7,2,3,0,0,4,1,nc-sbe,2026-09-09T14:09:24+00:00
@@ -14983,6 +15018,7 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,NC,37071,Gaston County,2026-10-11,23,mail,551,2,225,164,3,159,1,nc-sbe,2026-10-13T16:59:34+00:00
 2026,NC,37071,Gaston County,2026-10-12,22,mail,552,1,225,164,3,160,1,nc-sbe,2026-10-13T16:59:34+00:00
 2026,NC,37071,Gaston County,2026-10-13,21,mail,552,0,225,164,3,160,1,nc-sbe,2026-10-13T16:59:34+00:00
+2026,NC,37071,Gaston County,2026-10-14,20,mail,552,0,225,164,3,160,1,nc-sbe,2026-10-14T01:09:26+00:00
 2026,NC,37073,Gates County,2026-09-11,53,mail,1,1,0,0,0,1,1,nc-sbe,2026-09-12T13:20:35+00:00
 2026,NC,37073,Gates County,2026-09-12,52,mail,1,0,0,0,0,1,1,nc-sbe,2026-09-12T13:20:35+00:00
 2026,NC,37073,Gates County,2026-09-13,51,mail,1,0,0,0,0,1,1,nc-sbe,2026-09-13T03:08:41+00:00
@@ -15016,6 +15052,7 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,NC,37073,Gates County,2026-10-11,23,mail,38,0,16,9,0,13,1,nc-sbe,2026-10-11T00:40:14+00:00
 2026,NC,37073,Gates County,2026-10-12,22,mail,38,0,16,9,0,13,1,nc-sbe,2026-10-12T00:57:49+00:00
 2026,NC,37073,Gates County,2026-10-13,21,mail,38,0,16,9,0,13,1,nc-sbe,2026-10-13T07:23:42+00:00
+2026,NC,37073,Gates County,2026-10-14,20,mail,38,0,16,9,0,13,1,nc-sbe,2026-10-14T01:09:26+00:00
 2026,NC,37075,Graham County,2026-09-05,59,mail,1,1,1,0,0,0,1,nc-sbe,2026-09-10T14:03:17+00:00
 2026,NC,37075,Graham County,2026-09-06,58,mail,1,0,1,0,0,0,1,nc-sbe,2026-09-10T14:03:17+00:00
 2026,NC,37075,Graham County,2026-09-07,57,mail,1,0,1,0,0,0,1,nc-sbe,2026-09-10T14:03:17+00:00
@@ -15055,6 +15092,7 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,NC,37075,Graham County,2026-10-11,23,mail,34,0,13,13,1,7,1,nc-sbe,2026-10-11T00:40:14+00:00
 2026,NC,37075,Graham County,2026-10-12,22,mail,34,0,13,13,1,7,1,nc-sbe,2026-10-12T00:57:49+00:00
 2026,NC,37075,Graham County,2026-10-13,21,mail,34,0,13,13,1,7,1,nc-sbe,2026-10-13T07:23:42+00:00
+2026,NC,37075,Graham County,2026-10-14,20,mail,34,0,13,13,1,7,1,nc-sbe,2026-10-14T01:09:26+00:00
 2026,NC,37077,Granville County,2026-09-04,60,mail,1,1,0,0,0,1,1,nc-sbe,2026-09-08T03:02:49+00:00
 2026,NC,37077,Granville County,2026-09-05,59,mail,1,0,0,0,0,1,1,nc-sbe,2026-09-08T03:02:49+00:00
 2026,NC,37077,Granville County,2026-09-06,58,mail,1,0,0,0,0,1,1,nc-sbe,2026-09-08T03:02:49+00:00
@@ -15095,6 +15133,7 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,NC,37077,Granville County,2026-10-11,23,mail,112,0,43,25,1,43,1,nc-sbe,2026-10-12T15:50:11+00:00
 2026,NC,37077,Granville County,2026-10-12,22,mail,113,1,43,25,1,44,1,nc-sbe,2026-10-13T16:59:34+00:00
 2026,NC,37077,Granville County,2026-10-13,21,mail,113,0,43,25,1,44,1,nc-sbe,2026-10-13T16:59:34+00:00
+2026,NC,37077,Granville County,2026-10-14,20,mail,113,0,43,25,1,44,1,nc-sbe,2026-10-14T01:09:26+00:00
 2026,NC,37079,Greene County,2026-09-09,55,mail,3,3,2,0,0,1,1,nc-sbe,2026-09-10T14:03:17+00:00
 2026,NC,37079,Greene County,2026-09-10,54,mail,4,1,3,0,0,1,1,nc-sbe,2026-09-11T14:02:50+00:00
 2026,NC,37079,Greene County,2026-09-11,53,mail,8,4,6,0,0,2,1,nc-sbe,2026-09-12T13:20:35+00:00
@@ -15130,6 +15169,7 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,NC,37079,Greene County,2026-10-11,23,mail,71,0,67,1,0,3,1,nc-sbe,2026-10-11T00:40:14+00:00
 2026,NC,37079,Greene County,2026-10-12,22,mail,71,0,67,1,0,3,1,nc-sbe,2026-10-12T00:57:49+00:00
 2026,NC,37079,Greene County,2026-10-13,21,mail,71,0,67,1,0,3,1,nc-sbe,2026-10-13T07:23:42+00:00
+2026,NC,37079,Greene County,2026-10-14,20,mail,71,0,67,1,0,3,1,nc-sbe,2026-10-14T01:09:26+00:00
 2026,NC,37081,Guilford County,2026-09-08,56,mail,33,33,21,1,0,11,1,nc-sbe,2026-09-10T14:03:17+00:00
 2026,NC,37081,Guilford County,2026-09-09,55,mail,40,7,27,1,0,12,1,nc-sbe,2026-09-10T14:03:17+00:00
 2026,NC,37081,Guilford County,2026-09-10,54,mail,51,11,33,1,0,17,1,nc-sbe,2026-09-11T14:02:50+00:00
@@ -15166,6 +15206,7 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,NC,37081,Guilford County,2026-10-11,23,mail,1025,0,514,145,1,365,1,nc-sbe,2026-10-13T16:59:34+00:00
 2026,NC,37081,Guilford County,2026-10-12,22,mail,1112,87,552,165,1,394,1,nc-sbe,2026-10-13T16:59:34+00:00
 2026,NC,37081,Guilford County,2026-10-13,21,mail,1112,0,552,165,1,394,1,nc-sbe,2026-10-13T16:59:34+00:00
+2026,NC,37081,Guilford County,2026-10-14,20,mail,1112,0,552,165,1,394,1,nc-sbe,2026-10-14T01:09:26+00:00
 2026,NC,37083,Halifax County,2026-09-15,49,mail,1,1,0,1,0,0,1,nc-sbe,2026-09-16T10:50:39+00:00
 2026,NC,37083,Halifax County,2026-09-16,48,mail,2,1,1,1,0,0,1,nc-sbe,2026-09-17T12:39:38+00:00
 2026,NC,37083,Halifax County,2026-09-17,47,mail,2,0,1,1,0,0,1,nc-sbe,2026-09-17T12:39:38+00:00
@@ -15195,6 +15236,7 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,NC,37083,Halifax County,2026-10-11,23,mail,53,0,30,6,1,16,1,nc-sbe,2026-10-11T16:08:18+00:00
 2026,NC,37083,Halifax County,2026-10-12,22,mail,53,0,30,6,1,16,1,nc-sbe,2026-10-12T00:57:49+00:00
 2026,NC,37083,Halifax County,2026-10-13,21,mail,53,0,30,6,1,16,1,nc-sbe,2026-10-13T07:23:42+00:00
+2026,NC,37083,Halifax County,2026-10-14,20,mail,53,0,30,6,1,16,1,nc-sbe,2026-10-14T01:09:26+00:00
 2026,NC,37085,Harnett County,2026-09-04,60,mail,2,2,1,1,0,0,1,nc-sbe,2026-09-09T14:09:24+00:00
 2026,NC,37085,Harnett County,2026-09-05,59,mail,4,2,1,1,0,2,1,nc-sbe,2026-09-09T14:09:24+00:00
 2026,NC,37085,Harnett County,2026-09-06,58,mail,4,0,1,1,0,2,1,nc-sbe,2026-09-09T14:09:24+00:00
@@ -15235,6 +15277,7 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,NC,37085,Harnett County,2026-10-11,23,mail,315,0,129,68,0,118,1,nc-sbe,2026-10-13T16:59:34+00:00
 2026,NC,37085,Harnett County,2026-10-12,22,mail,323,8,134,70,0,119,1,nc-sbe,2026-10-13T16:59:34+00:00
 2026,NC,37085,Harnett County,2026-10-13,21,mail,323,0,134,70,0,119,1,nc-sbe,2026-10-13T16:59:34+00:00
+2026,NC,37085,Harnett County,2026-10-14,20,mail,323,0,134,70,0,119,1,nc-sbe,2026-10-14T01:09:26+00:00
 2026,NC,37087,Haywood County,2026-09-05,59,mail,1,1,0,1,0,0,1,nc-sbe,2026-09-09T14:09:24+00:00
 2026,NC,37087,Haywood County,2026-09-06,58,mail,1,0,0,1,0,0,1,nc-sbe,2026-09-09T14:09:24+00:00
 2026,NC,37087,Haywood County,2026-09-07,57,mail,2,1,0,1,0,1,1,nc-sbe,2026-09-09T14:09:24+00:00
@@ -15274,6 +15317,7 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,NC,37087,Haywood County,2026-10-11,23,mail,208,0,98,40,1,69,1,nc-sbe,2026-10-11T00:40:14+00:00
 2026,NC,37087,Haywood County,2026-10-12,22,mail,220,12,103,40,1,76,1,nc-sbe,2026-10-13T16:59:34+00:00
 2026,NC,37087,Haywood County,2026-10-13,21,mail,220,0,103,40,1,76,1,nc-sbe,2026-10-13T16:59:34+00:00
+2026,NC,37087,Haywood County,2026-10-14,20,mail,220,0,103,40,1,76,1,nc-sbe,2026-10-14T01:09:26+00:00
 2026,NC,37089,Henderson County,2026-09-08,56,mail,15,15,8,0,0,7,1,nc-sbe,2026-09-29T13:11:50+00:00
 2026,NC,37089,Henderson County,2026-09-09,55,mail,16,1,9,0,0,7,1,nc-sbe,2026-09-29T13:11:50+00:00
 2026,NC,37089,Henderson County,2026-09-10,54,mail,23,7,12,0,0,11,1,nc-sbe,2026-09-29T13:11:50+00:00
@@ -15310,6 +15354,7 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,NC,37089,Henderson County,2026-10-11,23,mail,571,0,217,86,1,267,1,nc-sbe,2026-10-13T16:59:34+00:00
 2026,NC,37089,Henderson County,2026-10-12,22,mail,598,27,227,87,1,283,1,nc-sbe,2026-10-13T16:59:34+00:00
 2026,NC,37089,Henderson County,2026-10-13,21,mail,598,0,227,87,1,283,1,nc-sbe,2026-10-13T16:59:34+00:00
+2026,NC,37089,Henderson County,2026-10-14,20,mail,598,0,227,87,1,283,1,nc-sbe,2026-10-14T01:09:26+00:00
 2026,NC,37091,Hertford County,2026-09-06,58,mail,1,1,1,0,0,0,1,nc-sbe,2026-10-13T16:59:34+00:00
 2026,NC,37091,Hertford County,2026-09-07,57,mail,1,0,1,0,0,0,1,nc-sbe,2026-10-13T16:59:34+00:00
 2026,NC,37091,Hertford County,2026-09-08,56,mail,1,0,1,0,0,0,1,nc-sbe,2026-10-13T16:59:34+00:00
@@ -15348,6 +15393,7 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,NC,37091,Hertford County,2026-10-11,23,mail,12,0,7,2,0,3,1,nc-sbe,2026-10-13T16:59:34+00:00
 2026,NC,37091,Hertford County,2026-10-12,22,mail,12,0,7,2,0,3,1,nc-sbe,2026-10-13T16:59:34+00:00
 2026,NC,37091,Hertford County,2026-10-13,21,mail,12,0,7,2,0,3,1,nc-sbe,2026-10-13T16:59:34+00:00
+2026,NC,37091,Hertford County,2026-10-14,20,mail,12,0,7,2,0,3,1,nc-sbe,2026-10-14T01:09:26+00:00
 2026,NC,37093,Hoke County,2026-09-30,34,mail,2,2,0,0,0,2,1,nc-sbe,2026-10-01T16:52:34+00:00
 2026,NC,37093,Hoke County,2026-10-01,33,mail,2,0,0,0,0,2,1,nc-sbe,2026-10-01T16:52:34+00:00
 2026,NC,37093,Hoke County,2026-10-02,32,mail,13,11,5,3,0,5,1,nc-sbe,2026-10-03T13:01:40+00:00
@@ -15362,6 +15408,7 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,NC,37093,Hoke County,2026-10-11,23,mail,20,0,8,5,0,7,1,nc-sbe,2026-10-11T00:40:14+00:00
 2026,NC,37093,Hoke County,2026-10-12,22,mail,20,0,8,5,0,7,1,nc-sbe,2026-10-12T00:57:49+00:00
 2026,NC,37093,Hoke County,2026-10-13,21,mail,20,0,8,5,0,7,1,nc-sbe,2026-10-13T07:23:42+00:00
+2026,NC,37093,Hoke County,2026-10-14,20,mail,20,0,8,5,0,7,1,nc-sbe,2026-10-14T01:09:26+00:00
 2026,NC,37095,Hyde County,2026-09-22,42,mail,2,2,1,0,0,1,1,nc-sbe,2026-10-02T11:52:44+00:00
 2026,NC,37095,Hyde County,2026-09-23,41,mail,2,0,1,0,0,1,1,nc-sbe,2026-10-02T11:52:44+00:00
 2026,NC,37095,Hyde County,2026-09-24,40,mail,2,0,1,0,0,1,1,nc-sbe,2026-10-02T11:52:44+00:00
@@ -15384,6 +15431,7 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,NC,37095,Hyde County,2026-10-11,23,mail,9,0,2,2,0,5,1,nc-sbe,2026-10-11T00:40:14+00:00
 2026,NC,37095,Hyde County,2026-10-12,22,mail,10,1,3,2,0,5,1,nc-sbe,2026-10-13T16:59:34+00:00
 2026,NC,37095,Hyde County,2026-10-13,21,mail,10,0,3,2,0,5,1,nc-sbe,2026-10-13T16:59:34+00:00
+2026,NC,37095,Hyde County,2026-10-14,20,mail,10,0,3,2,0,5,1,nc-sbe,2026-10-14T01:09:26+00:00
 2026,NC,37097,Iredell County,2026-09-09,55,mail,13,13,3,2,0,8,1,nc-sbe,2026-09-11T14:02:50+00:00
 2026,NC,37097,Iredell County,2026-09-10,54,mail,23,10,6,2,0,15,1,nc-sbe,2026-09-11T14:02:50+00:00
 2026,NC,37097,Iredell County,2026-09-11,53,mail,28,5,8,2,0,18,1,nc-sbe,2026-09-12T13:20:35+00:00
@@ -15419,6 +15467,7 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,NC,37097,Iredell County,2026-10-11,23,mail,392,0,155,90,1,146,1,nc-sbe,2026-10-11T00:40:14+00:00
 2026,NC,37097,Iredell County,2026-10-12,22,mail,397,5,156,91,1,149,1,nc-sbe,2026-10-13T16:59:34+00:00
 2026,NC,37097,Iredell County,2026-10-13,21,mail,397,0,156,91,1,149,1,nc-sbe,2026-10-13T16:59:34+00:00
+2026,NC,37097,Iredell County,2026-10-14,20,mail,397,0,156,91,1,149,1,nc-sbe,2026-10-14T01:09:26+00:00
 2026,NC,37099,Jackson County,2026-09-08,56,mail,7,7,6,0,0,1,1,nc-sbe,2026-09-09T14:09:24+00:00
 2026,NC,37099,Jackson County,2026-09-09,55,mail,7,0,6,0,0,1,1,nc-sbe,2026-09-09T14:09:24+00:00
 2026,NC,37099,Jackson County,2026-09-10,54,mail,17,10,10,2,0,5,1,nc-sbe,2026-09-11T14:02:50+00:00
@@ -15455,6 +15504,7 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,NC,37099,Jackson County,2026-10-11,23,mail,130,0,73,30,0,27,1,nc-sbe,2026-10-13T16:59:34+00:00
 2026,NC,37099,Jackson County,2026-10-12,22,mail,138,8,76,30,0,32,1,nc-sbe,2026-10-13T16:59:34+00:00
 2026,NC,37099,Jackson County,2026-10-13,21,mail,138,0,76,30,0,32,1,nc-sbe,2026-10-13T16:59:34+00:00
+2026,NC,37099,Jackson County,2026-10-14,20,mail,138,0,76,30,0,32,1,nc-sbe,2026-10-14T01:09:26+00:00
 2026,NC,37101,Johnston County,2026-09-06,58,mail,1,1,0,1,0,0,1,nc-sbe,2026-09-12T13:20:35+00:00
 2026,NC,37101,Johnston County,2026-09-07,57,mail,1,0,0,1,0,0,1,nc-sbe,2026-09-12T13:20:35+00:00
 2026,NC,37101,Johnston County,2026-09-08,56,mail,4,3,1,2,0,1,1,nc-sbe,2026-09-20T13:56:30+00:00
@@ -15493,6 +15543,7 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,NC,37101,Johnston County,2026-10-11,23,mail,521,0,242,94,1,184,1,nc-sbe,2026-10-13T16:59:34+00:00
 2026,NC,37101,Johnston County,2026-10-12,22,mail,529,8,250,94,1,184,1,nc-sbe,2026-10-13T16:59:34+00:00
 2026,NC,37101,Johnston County,2026-10-13,21,mail,529,0,250,94,1,184,1,nc-sbe,2026-10-13T16:59:34+00:00
+2026,NC,37101,Johnston County,2026-10-14,20,mail,529,0,250,94,1,184,1,nc-sbe,2026-10-14T01:09:26+00:00
 2026,NC,37103,Jones County,2026-09-29,35,mail,2,2,0,2,0,0,1,nc-sbe,2026-09-30T14:00:57+00:00
 2026,NC,37103,Jones County,2026-09-30,34,mail,2,0,0,2,0,0,1,nc-sbe,2026-09-30T14:00:57+00:00
 2026,NC,37103,Jones County,2026-10-01,33,mail,2,0,0,2,0,0,1,nc-sbe,2026-10-01T01:03:29+00:00
@@ -15508,6 +15559,7 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,NC,37103,Jones County,2026-10-11,23,mail,4,0,1,2,0,1,1,nc-sbe,2026-10-11T00:40:14+00:00
 2026,NC,37103,Jones County,2026-10-12,22,mail,7,3,4,2,0,1,1,nc-sbe,2026-10-13T16:59:34+00:00
 2026,NC,37103,Jones County,2026-10-13,21,mail,7,0,4,2,0,1,1,nc-sbe,2026-10-13T16:59:34+00:00
+2026,NC,37103,Jones County,2026-10-14,20,mail,7,0,4,2,0,1,1,nc-sbe,2026-10-14T01:09:26+00:00
 2026,NC,37105,Lee County,2026-09-08,56,mail,1,1,0,0,0,1,1,nc-sbe,2026-09-09T14:09:24+00:00
 2026,NC,37105,Lee County,2026-09-09,55,mail,1,0,0,0,0,1,1,nc-sbe,2026-09-09T14:09:24+00:00
 2026,NC,37105,Lee County,2026-09-10,54,mail,1,0,0,0,0,1,1,nc-sbe,2026-09-10T03:04:15+00:00
@@ -15544,6 +15596,7 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,NC,37105,Lee County,2026-10-11,23,mail,111,0,57,18,0,36,1,nc-sbe,2026-10-11T00:40:14+00:00
 2026,NC,37105,Lee County,2026-10-12,22,mail,114,3,58,18,0,38,1,nc-sbe,2026-10-13T16:59:34+00:00
 2026,NC,37105,Lee County,2026-10-13,21,mail,114,0,58,18,0,38,1,nc-sbe,2026-10-13T16:59:34+00:00
+2026,NC,37105,Lee County,2026-10-14,20,mail,114,0,58,18,0,38,1,nc-sbe,2026-10-14T01:09:26+00:00
 2026,NC,37107,Lenoir County,2026-09-08,56,mail,1,1,1,0,0,0,1,nc-sbe,2026-09-09T14:09:24+00:00
 2026,NC,37107,Lenoir County,2026-09-09,55,mail,1,0,1,0,0,0,1,nc-sbe,2026-09-09T14:09:24+00:00
 2026,NC,37107,Lenoir County,2026-09-10,54,mail,1,0,1,0,0,0,1,nc-sbe,2026-09-10T03:04:15+00:00
@@ -15580,6 +15633,7 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,NC,37107,Lenoir County,2026-10-11,23,mail,82,0,44,16,0,22,1,nc-sbe,2026-10-11T00:40:14+00:00
 2026,NC,37107,Lenoir County,2026-10-12,22,mail,83,1,44,17,0,22,1,nc-sbe,2026-10-13T16:59:34+00:00
 2026,NC,37107,Lenoir County,2026-10-13,21,mail,83,0,44,17,0,22,1,nc-sbe,2026-10-13T16:59:34+00:00
+2026,NC,37107,Lenoir County,2026-10-14,20,mail,83,0,44,17,0,22,1,nc-sbe,2026-10-14T01:09:26+00:00
 2026,NC,37109,Lincoln County,2026-09-08,56,mail,1,1,0,1,0,0,1,nc-sbe,2026-09-15T13:07:59+00:00
 2026,NC,37109,Lincoln County,2026-09-09,55,mail,4,3,3,1,0,0,1,nc-sbe,2026-09-15T13:07:59+00:00
 2026,NC,37109,Lincoln County,2026-09-10,54,mail,9,5,3,2,1,3,1,nc-sbe,2026-09-30T14:00:57+00:00
@@ -15616,6 +15670,7 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,NC,37109,Lincoln County,2026-10-11,23,mail,172,2,42,46,2,82,1,nc-sbe,2026-10-12T15:50:11+00:00
 2026,NC,37109,Lincoln County,2026-10-12,22,mail,175,3,42,49,2,82,1,nc-sbe,2026-10-13T16:59:34+00:00
 2026,NC,37109,Lincoln County,2026-10-13,21,mail,175,0,42,49,2,82,1,nc-sbe,2026-10-13T16:59:34+00:00
+2026,NC,37109,Lincoln County,2026-10-14,20,mail,175,0,42,49,2,82,1,nc-sbe,2026-10-14T01:09:26+00:00
 2026,NC,37111,McDowell County,2026-09-10,54,mail,1,1,1,0,0,0,1,nc-sbe,2026-09-11T14:02:50+00:00
 2026,NC,37111,McDowell County,2026-09-11,53,mail,3,2,3,0,0,0,1,nc-sbe,2026-09-12T13:20:35+00:00
 2026,NC,37111,McDowell County,2026-09-12,52,mail,3,0,3,0,0,0,1,nc-sbe,2026-09-12T13:20:35+00:00
@@ -15650,6 +15705,7 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,NC,37111,McDowell County,2026-10-11,23,mail,64,0,21,12,1,30,1,nc-sbe,2026-10-11T00:40:14+00:00
 2026,NC,37111,McDowell County,2026-10-12,22,mail,65,1,21,13,1,30,1,nc-sbe,2026-10-13T16:59:34+00:00
 2026,NC,37111,McDowell County,2026-10-13,21,mail,65,0,21,13,1,30,1,nc-sbe,2026-10-13T16:59:34+00:00
+2026,NC,37111,McDowell County,2026-10-14,20,mail,65,0,21,13,1,30,1,nc-sbe,2026-10-14T01:09:26+00:00
 2026,NC,37113,Macon County,2026-09-08,56,mail,1,1,0,0,0,1,1,nc-sbe,2026-09-09T14:09:24+00:00
 2026,NC,37113,Macon County,2026-09-09,55,mail,1,0,0,0,0,1,1,nc-sbe,2026-09-09T14:09:24+00:00
 2026,NC,37113,Macon County,2026-09-10,54,mail,1,0,0,0,0,1,1,nc-sbe,2026-09-10T03:04:15+00:00
@@ -15686,6 +15742,7 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,NC,37113,Macon County,2026-10-11,23,mail,124,0,61,23,0,40,1,nc-sbe,2026-10-11T00:40:14+00:00
 2026,NC,37113,Macon County,2026-10-12,22,mail,131,7,65,23,0,43,1,nc-sbe,2026-10-13T16:59:34+00:00
 2026,NC,37113,Macon County,2026-10-13,21,mail,131,0,65,23,0,43,1,nc-sbe,2026-10-13T16:59:34+00:00
+2026,NC,37113,Macon County,2026-10-14,20,mail,131,0,65,23,0,43,1,nc-sbe,2026-10-14T01:09:26+00:00
 2026,NC,37115,Madison County,2026-09-05,59,mail,2,2,2,0,0,0,1,nc-sbe,2026-09-16T10:50:39+00:00
 2026,NC,37115,Madison County,2026-09-06,58,mail,2,0,2,0,0,0,1,nc-sbe,2026-09-16T10:50:39+00:00
 2026,NC,37115,Madison County,2026-09-07,57,mail,2,0,2,0,0,0,1,nc-sbe,2026-09-16T10:50:39+00:00
@@ -15725,6 +15782,7 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,NC,37115,Madison County,2026-10-11,23,mail,38,0,24,9,0,5,1,nc-sbe,2026-10-11T00:40:14+00:00
 2026,NC,37115,Madison County,2026-10-12,22,mail,43,5,27,9,0,7,1,nc-sbe,2026-10-13T16:59:34+00:00
 2026,NC,37115,Madison County,2026-10-13,21,mail,43,0,27,9,0,7,1,nc-sbe,2026-10-13T16:59:34+00:00
+2026,NC,37115,Madison County,2026-10-14,20,mail,43,0,27,9,0,7,1,nc-sbe,2026-10-14T01:09:26+00:00
 2026,NC,37117,Martin County,2026-09-14,50,mail,4,4,4,0,0,0,1,nc-sbe,2026-09-23T10:46:03+00:00
 2026,NC,37117,Martin County,2026-09-15,49,mail,4,0,4,0,0,0,1,nc-sbe,2026-09-23T10:46:03+00:00
 2026,NC,37117,Martin County,2026-09-16,48,mail,4,0,4,0,0,0,1,nc-sbe,2026-09-23T10:46:03+00:00
@@ -15755,6 +15813,7 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,NC,37117,Martin County,2026-10-11,23,mail,20,0,14,1,0,5,1,nc-sbe,2026-10-11T00:40:14+00:00
 2026,NC,37117,Martin County,2026-10-12,22,mail,20,0,14,1,0,5,1,nc-sbe,2026-10-12T00:57:49+00:00
 2026,NC,37117,Martin County,2026-10-13,21,mail,20,0,14,1,0,5,1,nc-sbe,2026-10-13T07:23:42+00:00
+2026,NC,37117,Martin County,2026-10-14,20,mail,20,0,14,1,0,5,1,nc-sbe,2026-10-14T01:09:26+00:00
 2026,NC,37119,Mecklenburg County,2026-09-04,60,mail,3,3,1,1,0,1,1,nc-sbe,2026-09-08T03:02:49+00:00
 2026,NC,37119,Mecklenburg County,2026-09-05,59,mail,3,0,1,1,0,1,1,nc-sbe,2026-09-08T03:02:49+00:00
 2026,NC,37119,Mecklenburg County,2026-09-06,58,mail,3,0,1,1,0,1,1,nc-sbe,2026-09-08T03:02:49+00:00
@@ -15795,6 +15854,7 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,NC,37119,Mecklenburg County,2026-10-11,23,mail,3139,0,1341,460,5,1333,1,nc-sbe,2026-10-13T16:59:34+00:00
 2026,NC,37119,Mecklenburg County,2026-10-12,22,mail,3259,120,1397,466,5,1391,1,nc-sbe,2026-10-13T16:59:34+00:00
 2026,NC,37119,Mecklenburg County,2026-10-13,21,mail,3259,0,1397,466,5,1391,1,nc-sbe,2026-10-13T16:59:34+00:00
+2026,NC,37119,Mecklenburg County,2026-10-14,20,mail,3259,0,1397,466,5,1391,1,nc-sbe,2026-10-14T01:09:26+00:00
 2026,NC,37121,Mitchell County,2026-09-21,43,mail,1,1,0,1,0,0,1,nc-sbe,2026-09-23T10:46:03+00:00
 2026,NC,37121,Mitchell County,2026-09-22,42,mail,3,2,0,1,0,2,1,nc-sbe,2026-09-23T10:46:03+00:00
 2026,NC,37121,Mitchell County,2026-09-23,41,mail,4,1,1,1,0,2,1,nc-sbe,2026-09-24T12:33:03+00:00
@@ -15818,6 +15878,7 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,NC,37121,Mitchell County,2026-10-11,23,mail,17,0,7,3,0,7,1,nc-sbe,2026-10-11T00:40:14+00:00
 2026,NC,37121,Mitchell County,2026-10-12,22,mail,17,0,7,3,0,7,1,nc-sbe,2026-10-12T00:57:49+00:00
 2026,NC,37121,Mitchell County,2026-10-13,21,mail,17,0,7,3,0,7,1,nc-sbe,2026-10-13T07:23:42+00:00
+2026,NC,37121,Mitchell County,2026-10-14,20,mail,17,0,7,3,0,7,1,nc-sbe,2026-10-14T01:09:26+00:00
 2026,NC,37123,Montgomery County,2026-09-14,50,mail,3,3,0,2,0,1,1,nc-sbe,2026-09-18T14:05:34+00:00
 2026,NC,37123,Montgomery County,2026-09-15,49,mail,3,0,0,2,0,1,1,nc-sbe,2026-09-18T14:05:34+00:00
 2026,NC,37123,Montgomery County,2026-09-16,48,mail,4,1,0,2,0,2,1,nc-sbe,2026-09-18T14:05:34+00:00
@@ -15848,6 +15909,7 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,NC,37123,Montgomery County,2026-10-11,23,mail,42,0,17,11,0,14,1,nc-sbe,2026-10-11T00:40:14+00:00
 2026,NC,37123,Montgomery County,2026-10-12,22,mail,42,0,17,11,0,14,1,nc-sbe,2026-10-12T00:57:49+00:00
 2026,NC,37123,Montgomery County,2026-10-13,21,mail,42,0,17,11,0,14,1,nc-sbe,2026-10-13T07:23:42+00:00
+2026,NC,37123,Montgomery County,2026-10-14,20,mail,42,0,17,11,0,14,1,nc-sbe,2026-10-14T01:09:26+00:00
 2026,NC,37125,Moore County,2026-09-04,60,mail,2,2,2,0,0,0,1,nc-sbe,2026-09-08T03:02:49+00:00
 2026,NC,37125,Moore County,2026-09-05,59,mail,2,0,2,0,0,0,1,nc-sbe,2026-09-08T03:02:49+00:00
 2026,NC,37125,Moore County,2026-09-06,58,mail,2,0,2,0,0,0,1,nc-sbe,2026-09-08T03:02:49+00:00
@@ -15888,6 +15950,7 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,NC,37125,Moore County,2026-10-11,23,mail,460,0,153,116,1,190,1,nc-sbe,2026-10-13T16:59:34+00:00
 2026,NC,37125,Moore County,2026-10-12,22,mail,495,35,165,127,1,202,1,nc-sbe,2026-10-13T16:59:34+00:00
 2026,NC,37125,Moore County,2026-10-13,21,mail,495,0,165,127,1,202,1,nc-sbe,2026-10-13T16:59:34+00:00
+2026,NC,37125,Moore County,2026-10-14,20,mail,495,0,165,127,1,202,1,nc-sbe,2026-10-14T01:09:26+00:00
 2026,NC,37127,Nash County,2026-09-08,56,mail,1,1,0,0,0,1,1,nc-sbe,2026-09-09T14:09:24+00:00
 2026,NC,37127,Nash County,2026-09-09,55,mail,3,2,0,2,0,1,1,nc-sbe,2026-09-10T14:03:17+00:00
 2026,NC,37127,Nash County,2026-09-10,54,mail,4,1,0,3,0,1,1,nc-sbe,2026-09-18T14:05:34+00:00
@@ -15924,6 +15987,7 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,NC,37127,Nash County,2026-10-11,23,mail,115,0,68,17,0,30,1,nc-sbe,2026-10-11T00:40:14+00:00
 2026,NC,37127,Nash County,2026-10-12,22,mail,124,9,72,20,0,32,1,nc-sbe,2026-10-13T16:59:34+00:00
 2026,NC,37127,Nash County,2026-10-13,21,mail,124,0,72,20,0,32,1,nc-sbe,2026-10-13T16:59:34+00:00
+2026,NC,37127,Nash County,2026-10-14,20,mail,124,0,72,20,0,32,1,nc-sbe,2026-10-14T01:09:26+00:00
 2026,NC,37129,New Hanover County,2026-09-04,60,mail,2,2,2,0,0,0,1,nc-sbe,2026-09-11T14:02:50+00:00
 2026,NC,37129,New Hanover County,2026-09-05,59,mail,9,7,6,0,0,3,1,nc-sbe,2026-09-11T14:02:50+00:00
 2026,NC,37129,New Hanover County,2026-09-06,58,mail,16,7,10,0,0,6,1,nc-sbe,2026-09-11T14:02:50+00:00
@@ -15964,6 +16028,7 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,NC,37129,New Hanover County,2026-10-11,23,mail,710,0,322,107,3,278,1,nc-sbe,2026-10-11T00:40:14+00:00
 2026,NC,37129,New Hanover County,2026-10-12,22,mail,710,0,322,107,3,278,1,nc-sbe,2026-10-12T00:57:49+00:00
 2026,NC,37129,New Hanover County,2026-10-13,21,mail,710,0,322,107,3,278,1,nc-sbe,2026-10-13T07:23:42+00:00
+2026,NC,37129,New Hanover County,2026-10-14,20,mail,710,0,322,107,3,278,1,nc-sbe,2026-10-14T01:09:26+00:00
 2026,NC,37131,Northampton County,2026-09-21,43,mail,3,3,2,1,0,0,1,nc-sbe,2026-09-24T12:33:03+00:00
 2026,NC,37131,Northampton County,2026-09-22,42,mail,3,0,2,1,0,0,1,nc-sbe,2026-09-24T12:33:03+00:00
 2026,NC,37131,Northampton County,2026-09-23,41,mail,5,2,2,1,0,2,1,nc-sbe,2026-09-26T14:05:31+00:00
@@ -15987,6 +16052,7 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,NC,37131,Northampton County,2026-10-11,23,mail,10,0,5,1,0,4,1,nc-sbe,2026-10-11T00:40:14+00:00
 2026,NC,37131,Northampton County,2026-10-12,22,mail,15,5,6,1,0,8,1,nc-sbe,2026-10-13T16:59:34+00:00
 2026,NC,37131,Northampton County,2026-10-13,21,mail,15,0,6,1,0,8,1,nc-sbe,2026-10-13T16:59:34+00:00
+2026,NC,37131,Northampton County,2026-10-14,20,mail,15,0,6,1,0,8,1,nc-sbe,2026-10-14T01:09:26+00:00
 2026,NC,37133,Onslow County,2026-09-05,59,mail,1,1,0,1,0,0,1,nc-sbe,2026-09-09T14:09:24+00:00
 2026,NC,37133,Onslow County,2026-09-06,58,mail,1,0,0,1,0,0,1,nc-sbe,2026-09-09T14:09:24+00:00
 2026,NC,37133,Onslow County,2026-09-07,57,mail,1,0,0,1,0,0,1,nc-sbe,2026-09-09T14:09:24+00:00
@@ -16026,6 +16092,7 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,NC,37133,Onslow County,2026-10-11,23,mail,277,0,123,48,1,105,1,nc-sbe,2026-10-11T00:40:14+00:00
 2026,NC,37133,Onslow County,2026-10-12,22,mail,286,9,126,52,1,107,1,nc-sbe,2026-10-13T16:59:34+00:00
 2026,NC,37133,Onslow County,2026-10-13,21,mail,286,0,126,52,1,107,1,nc-sbe,2026-10-13T16:59:34+00:00
+2026,NC,37133,Onslow County,2026-10-14,20,mail,286,0,126,52,1,107,1,nc-sbe,2026-10-14T01:09:26+00:00
 2026,NC,37135,Orange County,2026-09-04,60,mail,8,8,5,0,0,3,1,nc-sbe,2026-09-11T14:02:50+00:00
 2026,NC,37135,Orange County,2026-09-05,59,mail,23,15,14,2,0,7,1,nc-sbe,2026-09-11T14:02:50+00:00
 2026,NC,37135,Orange County,2026-09-06,58,mail,35,12,18,3,0,14,1,nc-sbe,2026-09-11T14:02:50+00:00
@@ -16066,6 +16133,7 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,NC,37135,Orange County,2026-10-11,23,mail,965,14,552,37,2,374,1,nc-sbe,2026-10-13T16:59:34+00:00
 2026,NC,37135,Orange County,2026-10-12,22,mail,984,19,563,37,2,382,1,nc-sbe,2026-10-13T16:59:34+00:00
 2026,NC,37135,Orange County,2026-10-13,21,mail,984,0,563,37,2,382,1,nc-sbe,2026-10-13T16:59:34+00:00
+2026,NC,37135,Orange County,2026-10-14,20,mail,984,0,563,37,2,382,1,nc-sbe,2026-10-14T01:09:26+00:00
 2026,NC,37137,Pamlico County,2026-09-05,59,mail,1,1,0,0,0,1,1,nc-sbe,2026-09-12T13:20:35+00:00
 2026,NC,37137,Pamlico County,2026-09-06,58,mail,1,0,0,0,0,1,1,nc-sbe,2026-09-12T13:20:35+00:00
 2026,NC,37137,Pamlico County,2026-09-07,57,mail,2,1,0,0,0,2,1,nc-sbe,2026-09-12T13:20:35+00:00
@@ -16105,6 +16173,7 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,NC,37137,Pamlico County,2026-10-11,23,mail,44,0,13,5,0,26,1,nc-sbe,2026-10-11T00:40:14+00:00
 2026,NC,37137,Pamlico County,2026-10-12,22,mail,48,4,13,5,0,30,1,nc-sbe,2026-10-13T16:59:34+00:00
 2026,NC,37137,Pamlico County,2026-10-13,21,mail,48,0,13,5,0,30,1,nc-sbe,2026-10-13T16:59:34+00:00
+2026,NC,37137,Pamlico County,2026-10-14,20,mail,48,0,13,5,0,30,1,nc-sbe,2026-10-14T01:09:26+00:00
 2026,NC,37139,Pasquotank County,2026-09-08,56,mail,2,2,1,1,0,0,1,nc-sbe,2026-09-09T14:09:24+00:00
 2026,NC,37139,Pasquotank County,2026-09-09,55,mail,2,0,1,1,0,0,1,nc-sbe,2026-09-09T14:09:24+00:00
 2026,NC,37139,Pasquotank County,2026-09-10,54,mail,4,2,3,1,0,0,1,nc-sbe,2026-09-11T14:02:50+00:00
@@ -16141,6 +16210,7 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,NC,37139,Pasquotank County,2026-10-11,23,mail,49,0,25,10,0,14,1,nc-sbe,2026-10-11T00:40:14+00:00
 2026,NC,37139,Pasquotank County,2026-10-12,22,mail,53,4,26,10,1,16,1,nc-sbe,2026-10-13T16:59:34+00:00
 2026,NC,37139,Pasquotank County,2026-10-13,21,mail,53,0,26,10,1,16,1,nc-sbe,2026-10-13T16:59:34+00:00
+2026,NC,37139,Pasquotank County,2026-10-14,20,mail,53,0,26,10,1,16,1,nc-sbe,2026-10-14T01:09:26+00:00
 2026,NC,37141,Pender County,2026-09-11,53,mail,1,1,1,0,0,0,1,nc-sbe,2026-09-12T13:20:35+00:00
 2026,NC,37141,Pender County,2026-09-12,52,mail,1,0,1,0,0,0,1,nc-sbe,2026-09-12T13:20:35+00:00
 2026,NC,37141,Pender County,2026-09-13,51,mail,1,0,1,0,0,0,1,nc-sbe,2026-09-13T03:08:41+00:00
@@ -16174,6 +16244,7 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,NC,37141,Pender County,2026-10-11,23,mail,114,0,47,23,0,44,1,nc-sbe,2026-10-13T16:59:34+00:00
 2026,NC,37141,Pender County,2026-10-12,22,mail,129,15,54,24,0,51,1,nc-sbe,2026-10-13T16:59:34+00:00
 2026,NC,37141,Pender County,2026-10-13,21,mail,129,0,54,24,0,51,1,nc-sbe,2026-10-13T16:59:34+00:00
+2026,NC,37141,Pender County,2026-10-14,20,mail,129,0,54,24,0,51,1,nc-sbe,2026-10-14T01:09:26+00:00
 2026,NC,37143,Perquimans County,2026-09-14,50,mail,3,3,0,2,0,1,1,nc-sbe,2026-10-07T12:39:00+00:00
 2026,NC,37143,Perquimans County,2026-09-15,49,mail,3,0,0,2,0,1,1,nc-sbe,2026-10-07T12:39:00+00:00
 2026,NC,37143,Perquimans County,2026-09-16,48,mail,3,0,0,2,0,1,1,nc-sbe,2026-10-07T12:39:00+00:00
@@ -16204,6 +16275,7 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,NC,37143,Perquimans County,2026-10-11,23,mail,28,0,7,6,0,15,1,nc-sbe,2026-10-11T00:40:14+00:00
 2026,NC,37143,Perquimans County,2026-10-12,22,mail,28,0,7,6,0,15,1,nc-sbe,2026-10-12T00:57:49+00:00
 2026,NC,37143,Perquimans County,2026-10-13,21,mail,28,0,7,6,0,15,1,nc-sbe,2026-10-13T07:23:42+00:00
+2026,NC,37143,Perquimans County,2026-10-14,20,mail,28,0,7,6,0,15,1,nc-sbe,2026-10-14T01:09:26+00:00
 2026,NC,37145,Person County,2026-09-08,56,mail,6,6,5,0,0,1,1,nc-sbe,2026-09-09T14:09:24+00:00
 2026,NC,37145,Person County,2026-09-09,55,mail,6,0,5,0,0,1,1,nc-sbe,2026-09-09T14:09:24+00:00
 2026,NC,37145,Person County,2026-09-10,54,mail,9,3,7,0,0,2,1,nc-sbe,2026-09-22T13:05:02+00:00
@@ -16240,6 +16312,7 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,NC,37145,Person County,2026-10-11,23,mail,92,0,46,17,0,29,1,nc-sbe,2026-10-11T00:40:14+00:00
 2026,NC,37145,Person County,2026-10-12,22,mail,95,3,46,17,0,32,1,nc-sbe,2026-10-13T16:59:34+00:00
 2026,NC,37145,Person County,2026-10-13,21,mail,95,0,46,17,0,32,1,nc-sbe,2026-10-13T16:59:34+00:00
+2026,NC,37145,Person County,2026-10-14,20,mail,95,0,46,17,0,32,1,nc-sbe,2026-10-14T01:09:26+00:00
 2026,NC,37147,Pitt County,2026-09-08,56,mail,8,8,6,0,0,2,1,nc-sbe,2026-10-02T11:52:44+00:00
 2026,NC,37147,Pitt County,2026-09-09,55,mail,10,2,8,0,0,2,1,nc-sbe,2026-10-02T11:52:44+00:00
 2026,NC,37147,Pitt County,2026-09-10,54,mail,15,5,13,0,0,2,1,nc-sbe,2026-10-02T11:52:44+00:00
@@ -16276,6 +16349,7 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,NC,37147,Pitt County,2026-10-11,23,mail,194,0,109,26,0,59,1,nc-sbe,2026-10-11T00:40:14+00:00
 2026,NC,37147,Pitt County,2026-10-12,22,mail,206,12,118,26,0,62,1,nc-sbe,2026-10-13T16:59:34+00:00
 2026,NC,37147,Pitt County,2026-10-13,21,mail,206,0,118,26,0,62,1,nc-sbe,2026-10-13T16:59:34+00:00
+2026,NC,37147,Pitt County,2026-10-14,20,mail,206,0,118,26,0,62,1,nc-sbe,2026-10-14T01:09:26+00:00
 2026,NC,37149,Polk County,2026-09-11,53,mail,9,9,3,1,0,5,1,nc-sbe,2026-09-12T13:20:35+00:00
 2026,NC,37149,Polk County,2026-09-12,52,mail,9,0,3,1,0,5,1,nc-sbe,2026-09-12T13:20:35+00:00
 2026,NC,37149,Polk County,2026-09-13,51,mail,9,0,3,1,0,5,1,nc-sbe,2026-09-13T03:08:41+00:00
@@ -16309,6 +16383,7 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,NC,37149,Polk County,2026-10-11,23,mail,77,0,26,18,0,33,1,nc-sbe,2026-10-11T00:40:14+00:00
 2026,NC,37149,Polk County,2026-10-12,22,mail,80,3,29,18,0,33,1,nc-sbe,2026-10-13T16:59:34+00:00
 2026,NC,37149,Polk County,2026-10-13,21,mail,80,0,29,18,0,33,1,nc-sbe,2026-10-13T16:59:34+00:00
+2026,NC,37149,Polk County,2026-10-14,20,mail,80,0,29,18,0,33,1,nc-sbe,2026-10-14T01:09:26+00:00
 2026,NC,37151,Randolph County,2026-09-05,59,mail,1,1,1,0,0,0,1,nc-sbe,2026-09-09T14:09:24+00:00
 2026,NC,37151,Randolph County,2026-09-06,58,mail,3,2,1,2,0,0,1,nc-sbe,2026-09-09T14:09:24+00:00
 2026,NC,37151,Randolph County,2026-09-07,57,mail,3,0,1,2,0,0,1,nc-sbe,2026-09-09T14:09:24+00:00
@@ -16348,6 +16423,7 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,NC,37151,Randolph County,2026-10-11,23,mail,260,0,83,90,0,87,1,nc-sbe,2026-10-11T00:40:14+00:00
 2026,NC,37151,Randolph County,2026-10-12,22,mail,260,0,83,90,0,87,1,nc-sbe,2026-10-12T00:57:49+00:00
 2026,NC,37151,Randolph County,2026-10-13,21,mail,260,0,83,90,0,87,1,nc-sbe,2026-10-13T07:23:42+00:00
+2026,NC,37151,Randolph County,2026-10-14,20,mail,260,0,83,90,0,87,1,nc-sbe,2026-10-14T01:09:26+00:00
 2026,NC,37153,Richmond County,2026-09-18,46,mail,6,6,3,2,0,1,1,nc-sbe,2026-09-19T13:41:18+00:00
 2026,NC,37153,Richmond County,2026-09-19,45,mail,6,0,3,2,0,1,1,nc-sbe,2026-09-19T13:41:18+00:00
 2026,NC,37153,Richmond County,2026-09-20,44,mail,6,0,3,2,0,1,1,nc-sbe,2026-09-20T03:23:48+00:00
@@ -16374,6 +16450,7 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,NC,37153,Richmond County,2026-10-11,23,mail,23,0,12,4,0,7,1,nc-sbe,2026-10-11T00:40:14+00:00
 2026,NC,37153,Richmond County,2026-10-12,22,mail,23,0,12,4,0,7,1,nc-sbe,2026-10-12T00:57:49+00:00
 2026,NC,37153,Richmond County,2026-10-13,21,mail,23,0,12,4,0,7,1,nc-sbe,2026-10-13T07:23:42+00:00
+2026,NC,37153,Richmond County,2026-10-14,20,mail,23,0,12,4,0,7,1,nc-sbe,2026-10-14T01:09:26+00:00
 2026,NC,37155,Robeson County,2026-09-04,60,mail,1,1,0,0,0,1,1,nc-sbe,2026-09-09T14:09:24+00:00
 2026,NC,37155,Robeson County,2026-09-05,59,mail,2,1,1,0,0,1,1,nc-sbe,2026-09-09T14:09:24+00:00
 2026,NC,37155,Robeson County,2026-09-06,58,mail,2,0,1,0,0,1,1,nc-sbe,2026-09-09T14:09:24+00:00
@@ -16414,6 +16491,7 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,NC,37155,Robeson County,2026-10-11,23,mail,56,0,20,16,0,20,1,nc-sbe,2026-10-11T00:40:14+00:00
 2026,NC,37155,Robeson County,2026-10-12,22,mail,60,4,21,17,0,22,1,nc-sbe,2026-10-13T16:59:34+00:00
 2026,NC,37155,Robeson County,2026-10-13,21,mail,60,0,21,17,0,22,1,nc-sbe,2026-10-13T16:59:34+00:00
+2026,NC,37155,Robeson County,2026-10-14,20,mail,60,0,21,17,0,22,1,nc-sbe,2026-10-14T01:09:26+00:00
 2026,NC,37157,Rockingham County,2026-09-14,50,mail,2,2,0,1,0,1,1,nc-sbe,2026-09-15T13:07:59+00:00
 2026,NC,37157,Rockingham County,2026-09-15,49,mail,4,2,0,1,0,3,1,nc-sbe,2026-09-17T12:39:38+00:00
 2026,NC,37157,Rockingham County,2026-09-16,48,mail,9,5,3,1,0,5,1,nc-sbe,2026-09-17T12:39:38+00:00
@@ -16444,6 +16522,7 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,NC,37157,Rockingham County,2026-10-11,23,mail,93,0,47,20,1,25,1,nc-sbe,2026-10-11T00:40:14+00:00
 2026,NC,37157,Rockingham County,2026-10-12,22,mail,93,0,47,20,1,25,1,nc-sbe,2026-10-12T00:57:49+00:00
 2026,NC,37157,Rockingham County,2026-10-13,21,mail,93,0,47,20,1,25,1,nc-sbe,2026-10-13T07:23:42+00:00
+2026,NC,37157,Rockingham County,2026-10-14,20,mail,93,0,47,20,1,25,1,nc-sbe,2026-10-14T01:09:26+00:00
 2026,NC,37159,Rowan County,2026-09-08,56,mail,1,1,1,0,0,0,1,nc-sbe,2026-09-09T14:09:24+00:00
 2026,NC,37159,Rowan County,2026-09-09,55,mail,2,1,2,0,0,0,1,nc-sbe,2026-09-10T14:03:17+00:00
 2026,NC,37159,Rowan County,2026-09-10,54,mail,9,7,3,4,0,2,1,nc-sbe,2026-09-11T14:02:50+00:00
@@ -16480,6 +16559,7 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,NC,37159,Rowan County,2026-10-11,23,mail,319,1,120,96,1,102,1,nc-sbe,2026-10-13T16:59:34+00:00
 2026,NC,37159,Rowan County,2026-10-12,22,mail,330,11,124,98,1,107,1,nc-sbe,2026-10-13T16:59:34+00:00
 2026,NC,37159,Rowan County,2026-10-13,21,mail,330,0,124,98,1,107,1,nc-sbe,2026-10-13T16:59:34+00:00
+2026,NC,37159,Rowan County,2026-10-14,20,mail,330,0,124,98,1,107,1,nc-sbe,2026-10-14T01:09:26+00:00
 2026,NC,37161,Rutherford County,2026-09-08,56,mail,3,3,2,0,0,1,1,nc-sbe,2026-09-09T14:09:24+00:00
 2026,NC,37161,Rutherford County,2026-09-09,55,mail,4,1,3,0,0,1,1,nc-sbe,2026-09-10T14:03:17+00:00
 2026,NC,37161,Rutherford County,2026-09-10,54,mail,5,1,3,0,0,2,1,nc-sbe,2026-09-11T14:02:50+00:00
@@ -16516,6 +16596,7 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,NC,37161,Rutherford County,2026-10-11,23,mail,69,0,24,14,1,30,1,nc-sbe,2026-10-11T00:40:14+00:00
 2026,NC,37161,Rutherford County,2026-10-12,22,mail,88,19,31,20,1,36,1,nc-sbe,2026-10-13T16:59:34+00:00
 2026,NC,37161,Rutherford County,2026-10-13,21,mail,88,0,31,20,1,36,1,nc-sbe,2026-10-13T16:59:34+00:00
+2026,NC,37161,Rutherford County,2026-10-14,20,mail,88,0,31,20,1,36,1,nc-sbe,2026-10-14T01:09:26+00:00
 2026,NC,37163,Sampson County,2026-09-09,55,mail,1,1,0,0,0,1,1,nc-sbe,2026-09-10T14:03:17+00:00
 2026,NC,37163,Sampson County,2026-09-10,54,mail,1,0,0,0,0,1,1,nc-sbe,2026-09-10T14:03:17+00:00
 2026,NC,37163,Sampson County,2026-09-11,53,mail,1,0,0,0,0,1,1,nc-sbe,2026-09-11T02:59:21+00:00
@@ -16551,6 +16632,7 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,NC,37163,Sampson County,2026-10-11,23,mail,31,0,18,7,0,6,1,nc-sbe,2026-10-13T16:59:34+00:00
 2026,NC,37163,Sampson County,2026-10-12,22,mail,32,1,19,7,0,6,1,nc-sbe,2026-10-13T16:59:34+00:00
 2026,NC,37163,Sampson County,2026-10-13,21,mail,32,0,19,7,0,6,1,nc-sbe,2026-10-13T16:59:34+00:00
+2026,NC,37163,Sampson County,2026-10-14,20,mail,32,0,19,7,0,6,1,nc-sbe,2026-10-14T01:09:26+00:00
 2026,NC,37165,Scotland County,2026-09-11,53,mail,1,1,1,0,0,0,1,nc-sbe,2026-10-02T11:52:44+00:00
 2026,NC,37165,Scotland County,2026-09-12,52,mail,1,0,1,0,0,0,1,nc-sbe,2026-10-02T11:52:44+00:00
 2026,NC,37165,Scotland County,2026-09-13,51,mail,1,0,1,0,0,0,1,nc-sbe,2026-10-02T11:52:44+00:00
@@ -16584,6 +16666,7 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,NC,37165,Scotland County,2026-10-11,23,mail,36,0,13,7,0,16,1,nc-sbe,2026-10-11T00:40:14+00:00
 2026,NC,37165,Scotland County,2026-10-12,22,mail,38,2,14,7,0,17,1,nc-sbe,2026-10-13T16:59:34+00:00
 2026,NC,37165,Scotland County,2026-10-13,21,mail,38,0,14,7,0,17,1,nc-sbe,2026-10-13T16:59:34+00:00
+2026,NC,37165,Scotland County,2026-10-14,20,mail,38,0,14,7,0,17,1,nc-sbe,2026-10-14T01:09:26+00:00
 2026,NC,37167,Stanly County,2026-09-06,58,mail,2,2,2,0,0,0,1,nc-sbe,2026-09-09T14:09:24+00:00
 2026,NC,37167,Stanly County,2026-09-07,57,mail,2,0,2,0,0,0,1,nc-sbe,2026-09-09T14:09:24+00:00
 2026,NC,37167,Stanly County,2026-09-08,56,mail,3,1,3,0,0,0,1,nc-sbe,2026-09-09T14:09:24+00:00
@@ -16622,6 +16705,7 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,NC,37167,Stanly County,2026-10-11,23,mail,76,1,30,25,0,21,1,nc-sbe,2026-10-13T16:59:34+00:00
 2026,NC,37167,Stanly County,2026-10-12,22,mail,83,7,33,26,0,24,1,nc-sbe,2026-10-13T16:59:34+00:00
 2026,NC,37167,Stanly County,2026-10-13,21,mail,83,0,33,26,0,24,1,nc-sbe,2026-10-13T16:59:34+00:00
+2026,NC,37167,Stanly County,2026-10-14,20,mail,83,0,33,26,0,24,1,nc-sbe,2026-10-14T01:09:26+00:00
 2026,NC,37169,Stokes County,2026-09-05,59,mail,1,1,1,0,0,0,1,nc-sbe,2026-09-09T14:09:24+00:00
 2026,NC,37169,Stokes County,2026-09-06,58,mail,1,0,1,0,0,0,1,nc-sbe,2026-09-09T14:09:24+00:00
 2026,NC,37169,Stokes County,2026-09-07,57,mail,1,0,1,0,0,0,1,nc-sbe,2026-09-09T14:09:24+00:00
@@ -16661,6 +16745,7 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,NC,37169,Stokes County,2026-10-11,23,mail,89,0,34,23,1,31,1,nc-sbe,2026-10-13T16:59:34+00:00
 2026,NC,37169,Stokes County,2026-10-12,22,mail,100,11,36,29,1,34,1,nc-sbe,2026-10-13T16:59:34+00:00
 2026,NC,37169,Stokes County,2026-10-13,21,mail,100,0,36,29,1,34,1,nc-sbe,2026-10-13T16:59:34+00:00
+2026,NC,37169,Stokes County,2026-10-14,20,mail,100,0,36,29,1,34,1,nc-sbe,2026-10-14T01:09:26+00:00
 2026,NC,37171,Surry County,2026-09-08,56,mail,1,1,1,0,0,0,1,nc-sbe,2026-09-09T14:09:24+00:00
 2026,NC,37171,Surry County,2026-09-09,55,mail,2,1,2,0,0,0,1,nc-sbe,2026-09-10T14:03:17+00:00
 2026,NC,37171,Surry County,2026-09-10,54,mail,5,3,5,0,0,0,1,nc-sbe,2026-09-11T14:02:50+00:00
@@ -16697,6 +16782,7 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,NC,37171,Surry County,2026-10-11,23,mail,149,0,60,48,1,40,1,nc-sbe,2026-10-11T00:40:14+00:00
 2026,NC,37171,Surry County,2026-10-12,22,mail,157,8,61,49,1,46,1,nc-sbe,2026-10-13T16:59:34+00:00
 2026,NC,37171,Surry County,2026-10-13,21,mail,157,0,61,49,1,46,1,nc-sbe,2026-10-13T16:59:34+00:00
+2026,NC,37171,Surry County,2026-10-14,20,mail,157,0,61,49,1,46,1,nc-sbe,2026-10-14T01:09:26+00:00
 2026,NC,37173,Swain County,2026-09-18,46,mail,3,3,2,0,0,1,1,nc-sbe,2026-09-19T13:41:18+00:00
 2026,NC,37173,Swain County,2026-09-19,45,mail,3,0,2,0,0,1,1,nc-sbe,2026-09-19T13:41:18+00:00
 2026,NC,37173,Swain County,2026-09-20,44,mail,3,0,2,0,0,1,1,nc-sbe,2026-09-20T03:23:48+00:00
@@ -16723,6 +16809,7 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,NC,37173,Swain County,2026-10-11,23,mail,20,0,15,3,0,2,1,nc-sbe,2026-10-13T16:59:34+00:00
 2026,NC,37173,Swain County,2026-10-12,22,mail,21,1,16,3,0,2,1,nc-sbe,2026-10-13T16:59:34+00:00
 2026,NC,37173,Swain County,2026-10-13,21,mail,21,0,16,3,0,2,1,nc-sbe,2026-10-13T07:23:42+00:00
+2026,NC,37173,Swain County,2026-10-14,20,mail,21,0,16,3,0,2,1,nc-sbe,2026-10-14T01:09:26+00:00
 2026,NC,37175,Transylvania County,2026-09-08,56,mail,4,4,1,0,0,3,1,nc-sbe,2026-09-09T14:09:24+00:00
 2026,NC,37175,Transylvania County,2026-09-09,55,mail,4,0,1,0,0,3,1,nc-sbe,2026-09-09T14:09:24+00:00
 2026,NC,37175,Transylvania County,2026-09-10,54,mail,6,2,2,0,0,4,1,nc-sbe,2026-09-11T14:02:50+00:00
@@ -16759,6 +16846,7 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,NC,37175,Transylvania County,2026-10-11,23,mail,153,0,52,26,0,75,1,nc-sbe,2026-10-11T00:40:14+00:00
 2026,NC,37175,Transylvania County,2026-10-12,22,mail,162,9,55,26,0,81,1,nc-sbe,2026-10-13T16:59:34+00:00
 2026,NC,37175,Transylvania County,2026-10-13,21,mail,163,1,55,26,0,82,1,nc-sbe,2026-10-13T16:59:34+00:00
+2026,NC,37175,Transylvania County,2026-10-14,20,mail,163,0,55,26,0,82,1,nc-sbe,2026-10-14T01:09:26+00:00
 2026,NC,37179,Union County,2026-09-04,60,mail,1,1,1,0,0,0,1,nc-sbe,2026-09-22T13:05:02+00:00
 2026,NC,37179,Union County,2026-09-05,59,mail,9,8,5,0,1,3,1,nc-sbe,2026-09-22T13:05:02+00:00
 2026,NC,37179,Union County,2026-09-06,58,mail,12,3,5,0,1,6,1,nc-sbe,2026-09-22T13:05:02+00:00
@@ -16799,6 +16887,7 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,NC,37179,Union County,2026-10-11,23,mail,563,0,215,96,2,250,1,nc-sbe,2026-10-13T16:59:34+00:00
 2026,NC,37179,Union County,2026-10-12,22,mail,610,47,233,109,2,266,1,nc-sbe,2026-10-13T16:59:34+00:00
 2026,NC,37179,Union County,2026-10-13,21,mail,610,0,233,109,2,266,1,nc-sbe,2026-10-13T16:59:34+00:00
+2026,NC,37179,Union County,2026-10-14,20,mail,610,0,233,109,2,266,1,nc-sbe,2026-10-14T01:09:26+00:00
 2026,NC,37181,Vance County,2026-09-10,54,mail,4,4,4,0,0,0,1,nc-sbe,2026-09-11T14:02:50+00:00
 2026,NC,37181,Vance County,2026-09-11,53,mail,4,0,4,0,0,0,1,nc-sbe,2026-09-11T14:02:50+00:00
 2026,NC,37181,Vance County,2026-09-12,52,mail,4,0,4,0,0,0,1,nc-sbe,2026-09-12T03:06:51+00:00
@@ -16833,6 +16922,7 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,NC,37181,Vance County,2026-10-11,23,mail,65,0,38,17,1,9,1,nc-sbe,2026-10-11T00:40:14+00:00
 2026,NC,37181,Vance County,2026-10-12,22,mail,66,1,38,17,1,10,1,nc-sbe,2026-10-13T16:59:34+00:00
 2026,NC,37181,Vance County,2026-10-13,21,mail,66,0,38,17,1,10,1,nc-sbe,2026-10-13T16:59:34+00:00
+2026,NC,37181,Vance County,2026-10-14,20,mail,66,0,38,17,1,10,1,nc-sbe,2026-10-14T01:09:26+00:00
 2026,NC,37183,Wake County,2026-09-09,55,mail,202,202,101,13,0,88,1,nc-sbe,2026-09-12T13:20:35+00:00
 2026,NC,37183,Wake County,2026-09-10,54,mail,288,86,143,17,0,128,1,nc-sbe,2026-09-16T10:50:39+00:00
 2026,NC,37183,Wake County,2026-09-11,53,mail,347,59,166,24,0,157,1,nc-sbe,2026-10-06T16:29:37+00:00
@@ -16868,6 +16958,7 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,NC,37183,Wake County,2026-10-11,23,mail,5261,0,2316,637,13,2295,1,nc-sbe,2026-10-13T16:59:34+00:00
 2026,NC,37183,Wake County,2026-10-12,22,mail,5354,93,2355,645,13,2341,1,nc-sbe,2026-10-13T16:59:34+00:00
 2026,NC,37183,Wake County,2026-10-13,21,mail,5354,0,2355,645,13,2341,1,nc-sbe,2026-10-13T16:59:34+00:00
+2026,NC,37183,Wake County,2026-10-14,20,mail,5354,0,2355,645,13,2341,1,nc-sbe,2026-10-14T01:09:26+00:00
 2026,NC,37185,Warren County,2026-09-16,48,mail,4,4,2,0,0,2,1,nc-sbe,2026-09-17T12:39:38+00:00
 2026,NC,37185,Warren County,2026-09-17,47,mail,6,2,3,1,0,2,1,nc-sbe,2026-09-19T13:41:18+00:00
 2026,NC,37185,Warren County,2026-09-18,46,mail,6,0,3,1,0,2,1,nc-sbe,2026-09-19T13:41:18+00:00
@@ -16896,6 +16987,7 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,NC,37185,Warren County,2026-10-11,23,mail,33,0,10,10,0,13,1,nc-sbe,2026-10-11T00:40:14+00:00
 2026,NC,37185,Warren County,2026-10-12,22,mail,36,3,11,10,0,15,1,nc-sbe,2026-10-13T16:59:34+00:00
 2026,NC,37185,Warren County,2026-10-13,21,mail,36,0,11,10,0,15,1,nc-sbe,2026-10-13T16:59:34+00:00
+2026,NC,37185,Warren County,2026-10-14,20,mail,36,0,11,10,0,15,1,nc-sbe,2026-10-14T01:09:26+00:00
 2026,NC,37187,Washington County,2026-09-14,50,mail,3,3,2,0,0,1,1,nc-sbe,2026-09-15T13:07:59+00:00
 2026,NC,37187,Washington County,2026-09-15,49,mail,4,1,3,0,0,1,1,nc-sbe,2026-09-16T10:50:39+00:00
 2026,NC,37187,Washington County,2026-09-16,48,mail,4,0,3,0,0,1,1,nc-sbe,2026-09-16T10:50:39+00:00
@@ -16926,6 +17018,7 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,NC,37187,Washington County,2026-10-11,23,mail,10,0,7,1,0,2,1,nc-sbe,2026-10-11T00:40:14+00:00
 2026,NC,37187,Washington County,2026-10-12,22,mail,10,0,7,1,0,2,1,nc-sbe,2026-10-12T00:57:49+00:00
 2026,NC,37187,Washington County,2026-10-13,21,mail,10,0,7,1,0,2,1,nc-sbe,2026-10-13T07:23:42+00:00
+2026,NC,37187,Washington County,2026-10-14,20,mail,10,0,7,1,0,2,1,nc-sbe,2026-10-14T01:09:26+00:00
 2026,NC,37189,Watauga County,2026-09-08,56,mail,6,6,2,1,0,3,1,nc-sbe,2026-09-09T14:09:24+00:00
 2026,NC,37189,Watauga County,2026-09-09,55,mail,10,4,4,1,0,5,1,nc-sbe,2026-09-11T14:02:50+00:00
 2026,NC,37189,Watauga County,2026-09-10,54,mail,13,3,6,1,0,6,1,nc-sbe,2026-09-11T14:02:50+00:00
@@ -16962,6 +17055,7 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,NC,37189,Watauga County,2026-10-11,23,mail,143,0,52,33,0,58,1,nc-sbe,2026-10-13T16:59:34+00:00
 2026,NC,37189,Watauga County,2026-10-12,22,mail,158,15,58,38,0,62,1,nc-sbe,2026-10-13T16:59:34+00:00
 2026,NC,37189,Watauga County,2026-10-13,21,mail,158,0,58,38,0,62,1,nc-sbe,2026-10-13T16:59:34+00:00
+2026,NC,37189,Watauga County,2026-10-14,20,mail,158,0,58,38,0,62,1,nc-sbe,2026-10-14T01:09:26+00:00
 2026,NC,37191,Wayne County,2026-09-04,60,mail,1,1,1,0,0,0,1,nc-sbe,2026-09-08T03:02:49+00:00
 2026,NC,37191,Wayne County,2026-09-05,59,mail,1,0,1,0,0,0,1,nc-sbe,2026-09-08T03:02:49+00:00
 2026,NC,37191,Wayne County,2026-09-06,58,mail,1,0,1,0,0,0,1,nc-sbe,2026-09-08T03:02:49+00:00
@@ -17002,6 +17096,7 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,NC,37191,Wayne County,2026-10-11,23,mail,136,0,68,33,0,35,1,nc-sbe,2026-10-11T00:40:14+00:00
 2026,NC,37191,Wayne County,2026-10-12,22,mail,144,8,72,35,0,37,1,nc-sbe,2026-10-13T16:59:34+00:00
 2026,NC,37191,Wayne County,2026-10-13,21,mail,144,0,72,35,0,37,1,nc-sbe,2026-10-13T16:59:34+00:00
+2026,NC,37191,Wayne County,2026-10-14,20,mail,144,0,72,35,0,37,1,nc-sbe,2026-10-14T01:09:26+00:00
 2026,NC,37193,Wilkes County,2026-09-10,54,mail,4,4,3,0,0,1,1,nc-sbe,2026-09-11T14:02:50+00:00
 2026,NC,37193,Wilkes County,2026-09-11,53,mail,4,0,3,0,0,1,1,nc-sbe,2026-09-11T14:02:50+00:00
 2026,NC,37193,Wilkes County,2026-09-12,52,mail,4,0,3,0,0,1,1,nc-sbe,2026-09-12T03:06:51+00:00
@@ -17036,6 +17131,7 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,NC,37193,Wilkes County,2026-10-11,23,mail,149,0,49,68,0,32,1,nc-sbe,2026-10-11T00:40:14+00:00
 2026,NC,37193,Wilkes County,2026-10-12,22,mail,158,9,51,73,0,34,1,nc-sbe,2026-10-13T16:59:34+00:00
 2026,NC,37193,Wilkes County,2026-10-13,21,mail,158,0,51,73,0,34,1,nc-sbe,2026-10-13T16:59:34+00:00
+2026,NC,37193,Wilkes County,2026-10-14,20,mail,158,0,51,73,0,34,1,nc-sbe,2026-10-14T01:09:26+00:00
 2026,NC,37195,Wilson County,2026-09-09,55,mail,2,2,0,0,0,2,1,nc-sbe,2026-09-10T14:03:17+00:00
 2026,NC,37195,Wilson County,2026-09-10,54,mail,8,6,5,0,0,3,1,nc-sbe,2026-09-11T14:02:50+00:00
 2026,NC,37195,Wilson County,2026-09-11,53,mail,8,0,5,0,0,3,1,nc-sbe,2026-09-11T14:02:50+00:00
@@ -17071,6 +17167,7 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,NC,37195,Wilson County,2026-10-11,23,mail,89,0,49,12,0,28,1,nc-sbe,2026-10-11T00:40:14+00:00
 2026,NC,37195,Wilson County,2026-10-12,22,mail,98,9,55,14,0,29,1,nc-sbe,2026-10-13T16:59:34+00:00
 2026,NC,37195,Wilson County,2026-10-13,21,mail,98,0,55,14,0,29,1,nc-sbe,2026-10-13T16:59:34+00:00
+2026,NC,37195,Wilson County,2026-10-14,20,mail,98,0,55,14,0,29,1,nc-sbe,2026-10-14T01:09:26+00:00
 2026,NC,37197,Yadkin County,2026-09-08,56,mail,1,1,1,0,0,0,1,nc-sbe,2026-09-09T14:09:24+00:00
 2026,NC,37197,Yadkin County,2026-09-09,55,mail,1,0,1,0,0,0,1,nc-sbe,2026-09-09T14:09:24+00:00
 2026,NC,37197,Yadkin County,2026-09-10,54,mail,1,0,1,0,0,0,1,nc-sbe,2026-09-10T03:04:15+00:00
@@ -17107,6 +17204,7 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,NC,37197,Yadkin County,2026-10-11,23,mail,51,0,19,19,0,13,1,nc-sbe,2026-10-11T00:40:14+00:00
 2026,NC,37197,Yadkin County,2026-10-12,22,mail,53,2,19,19,0,15,1,nc-sbe,2026-10-13T16:59:34+00:00
 2026,NC,37197,Yadkin County,2026-10-13,21,mail,53,0,19,19,0,15,1,nc-sbe,2026-10-13T16:59:34+00:00
+2026,NC,37197,Yadkin County,2026-10-14,20,mail,53,0,19,19,0,15,1,nc-sbe,2026-10-14T01:09:26+00:00
 2026,NC,37199,Yancey County,2026-09-14,50,mail,5,5,1,4,0,0,1,nc-sbe,2026-09-15T13:07:59+00:00
 2026,NC,37199,Yancey County,2026-09-15,49,mail,5,0,1,4,0,0,1,nc-sbe,2026-09-15T13:07:59+00:00
 2026,NC,37199,Yancey County,2026-09-16,48,mail,5,0,1,4,0,0,1,nc-sbe,2026-09-16T04:07:52+00:00
@@ -17137,3 +17235,4 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,NC,37199,Yancey County,2026-10-11,23,mail,44,0,24,10,0,10,1,nc-sbe,2026-10-11T00:40:14+00:00
 2026,NC,37199,Yancey County,2026-10-12,22,mail,46,2,24,12,0,10,1,nc-sbe,2026-10-13T16:59:34+00:00
 2026,NC,37199,Yancey County,2026-10-13,21,mail,46,0,24,12,0,10,1,nc-sbe,2026-10-13T16:59:34+00:00
+2026,NC,37199,Yancey County,2026-10-14,20,mail,46,0,24,12,0,10,1,nc-sbe,2026-10-14T01:09:26+00:00
