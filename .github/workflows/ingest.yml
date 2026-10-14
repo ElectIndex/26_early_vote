@@ -35,11 +35,11 @@ on:
     - cron: "0 4-12/2 * * *"
   # ⚠️ THE PROD BOX'S CLOCK. GitHub's cron is best-effort (4 of 12 slots fired
   # on 2026-10-13), so /usr/local/bin/ei-ev-dispatch on electindex-prod pushes
-  # an empty commit to `tick` on its own schedule (/etc/cron.d/ei-ev-dispatch)
-  # with a deploy key scoped to this repo. That push is only a trigger: the run
-  # checks out and publishes MAIN, never `tick`.
-  push:
-    branches: [tick]
+  # an orphan commit to `tick` on its own schedule (/etc/cron.d/ei-ev-dispatch)
+  # with a deploy key scoped to this repo. A push runs the workflows IN THE
+  # PUSHED COMMIT, so that commit carries one file, tick.yml, which calls this
+  # workflow at @main. The run checks out and publishes MAIN, never `tick`.
+  workflow_call:
   workflow_dispatch:
 
 # Runs must never overlap. Two concurrent runs would each commit their own
