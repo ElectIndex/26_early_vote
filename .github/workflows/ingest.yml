@@ -33,6 +33,13 @@ on:
     - cron: "0,30 0-1 * * *"
     - cron: "0 2 * * *"
     - cron: "0 4-12/2 * * *"
+  # ⚠️ THE PROD BOX'S CLOCK. GitHub's cron is best-effort (4 of 12 slots fired
+  # on 2026-10-13), so /usr/local/bin/ei-ev-dispatch on electindex-prod pushes
+  # an empty commit to `tick` on its own schedule (/etc/cron.d/ei-ev-dispatch)
+  # with a deploy key scoped to this repo. That push is only a trigger: the run
+  # checks out and publishes MAIN, never `tick`.
+  push:
+    branches: [tick]
   workflow_dispatch:
 
 # Runs must never overlap. Two concurrent runs would each commit their own
@@ -48,7 +55,7 @@ permissions:
 
 jobs:
   # The season ends 2026-11-04 00:00 Eastern (05:00 UTC; Davis, 2026-10-13).
-  # Scheduled runs after that skip; the button still works. The prod box's
+  # Scheduled and `tick` runs after that skip; the button still works. The prod box's
   # dispatcher (/usr/local/bin/ei-ev-dispatch) stops itself at the same moment.
   gate:
     runs-on: ubuntu-latest
@@ -57,7 +64,7 @@ jobs:
     steps:
       - id: when
         run: |
-          if [ "${{ github.event_name }}" = "schedule" ] && [ "$(date -u +%s)" -ge "$(date -u -d '2026-11-04 05:00' +%s)" ]; then
+          if [ "${{ github.event_name }}" != "workflow_dispatch" ] && [ "$(date -u +%s)" -ge "$(date -u -d '2026-11-04 05:00' +%s)" ]; then
             echo "go=false" >> "$GITHUB_OUTPUT"
           else
             echo "go=true" >> "$GITHUB_OUTPUT"
@@ -72,6 +79,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
+          ref: main
           # Full history: the push retry below rebases onto origin, and a
           # depth-1 clone cannot.
           fetch-depth: 0
@@ -139,7 +147,7 @@ jobs:
 
           # A human push or a queued sibling run can land between our fetch and
           # our push. Rebase and try once more before giving up.
-          branch="${GITHUB_REF_NAME}"
+          branch=main  # a `tick` push triggers this run; output always goes to main
           for attempt in 1 2; do
             if git pull --rebase --autostash origin "$branch" \
                && git push origin "HEAD:$branch"; then

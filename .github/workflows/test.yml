@@ -2,6 +2,7 @@ name: tests
 
 on:
   push:
+    branches-ignore: [tick]  # the prod box's ingest trigger, empty commits
   pull_request:
 
 # A new push supersedes the previous run on the same ref; there is no state to
