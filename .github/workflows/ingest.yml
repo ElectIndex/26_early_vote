@@ -1,6 +1,6 @@
 name: ingest
 
-# Every two hours, plus a button. The site reads output/*.csv straight off
+# Every 30 minutes by day, two hours by night, plus a button. The site reads output/*.csv straight off
 # raw.githubusercontent.com, so this job IS the publish step -- there is nothing
 # else to deploy.
 #
@@ -21,9 +21,18 @@ name: ingest
 #
 # A run that changes nothing commits nothing, so before October -- when every
 # state answers NotYetPublished -- the extra slots cost an empty log line each.
+#
+# ⚠️ SINCE 2026-10-13: EVERY 30 MINUTES, 9 AM-9 PM EASTERN (Davis's call, with
+# early voting open everywhere); every two hours overnight. Cron is UTC and
+# does not know daylight saving, so the daytime band is the UNION of EDT
+# (13:00-01:00 UTC) and EST after Nov 1 (14:00-02:00 UTC): it runs an extra
+# hour at one edge, never a short one. Overnight slots skip the band.
 on:
   schedule:
-    - cron: "0 */2 * * *"
+    - cron: "0,30 13-23 * * *"
+    - cron: "0,30 0-1 * * *"
+    - cron: "0 2 * * *"
+    - cron: "0 4-12/2 * * *"
   workflow_dispatch:
 
 # Runs must never overlap. Two concurrent runs would each commit their own
