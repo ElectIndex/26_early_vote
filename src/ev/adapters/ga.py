@@ -104,7 +104,8 @@ from datetime import date, datetime
 import requests
 
 from ..calendar import election_date
-from ..schema import TIER_SCRAPER, CountyDay, StateDay
+from .. import normalize
+from ..schema import TIER_SCRAPER, CountyDay, DemoDay, StateDay
 from . import _fips, _net
 from .base import Adapter, FetchResult, NotYetPublished, SchemaDrift, SourceError
 
@@ -711,13 +712,13 @@ class GAScraper(Adapter):
 # Qlik Cloud Government tenant over an entirely anonymous chain. No captcha
 # anywhere on it, so this is the class the registry points at.
 #
-# ⚠️ IT IS THINNER THAN THE FILE ABOVE, ON PURPOSE. County and method only: the
-# hub carries `Age Group`, `RACE_DESC` and `Gender_Clean`, and the age bands
-# OVERLAP (`35-40` and `40-45` share a year), so an age crosstab built from them
-# double-counts a cohort in silence. Until that boundary is settled with the
-# Elections Division none of the three is published, and states.csv is corrected
-# to `county|method` to match -- a dims list promising rows nothing produces is
-# its own kind of wrong.
+# AGE, RACE AND SEX ARE PUBLISHED FROM IT (2026-10-14), statewide, out of the
+# hub's `Age Group`, `RACE_DESC` and `Gender_Clean`. They were held back for a
+# month on the worry that the age labels OVERLAP (`35-40` and `40-45` share a
+# year) and so "double-count a cohort". Measured, that worry was wrong: each
+# ballot carries ONE `Age Group` value, and every field partitions the ballots
+# exactly -- see `hub_demo` for the numbers and for how the labels' boundary
+# was settled.
 
 #: The Qlik Cloud Government tenant, from `DH.ELECTION2024/js/vars.js`.
 HUB_TENANT = "sos-ga-gov.us.qlikcloudgov.com"
@@ -1193,6 +1194,150 @@ def hub_build(absentee: dict[str, dict[str, int]], early: dict[str, dict[str, in
 
 
 # ==========================================================================
+# DEMOGRAPHICS -- statewide age, race and sex, out of the same two tables
+# ==========================================================================
+
+#: The data-model fields each demographic is read off, by dimension.
+HUB_DEMO_FIELDS = {"age": "Age Group", "race": "RACE_DESC", "sex": "Gender_Clean"}
+
+#: Georgia's age labels, onto the tracker's bands. ⚠️ THE LABELS ARE HALF-OPEN
+#: from `35-40` up: `35-40` is 35-39 and `40-45` is 40-44, so they share a
+#: written year and no voter. Settled 2026-10-14 on the 2024 general: the hub's
+#: `65-70` and above total 959,025 in-person ballots against UF Election Lab's
+#: 65+ of 953,922 (0.5% apart, UF reading the voter file on its own date). Were
+#: `60-65` to hold the 65-year-olds, the hub's 65+ would be a whole cohort
+#: short -- roughly 5% -- not 0.5% over. `18-24`, `25-29` and `30-34` are
+#: written the closed way and mean what they say. Pinned label by label rather
+#: than parsed: a label not in this table is drift, never a band guessed from
+#: its digits (`normalize.age_band` reads `95-100` and `100+` as nothing).
+HUB_AGE_BANDS = {
+    "18-24": "18-24",
+    "25-29": "25-34", "30-34": "25-34",
+    "35-40": "35-44", "40-45": "35-44",
+    "45-50": "45-54", "50-55": "45-54",
+    "55-60": "55-64", "60-65": "55-64",
+    "65-70": "65+", "70-75": "65+", "75-80": "65+", "80-85": "65+",
+    "85-90": "65+", "90-95": "65+", "95-100": "65+", "100+": "65+",
+}
+
+#: Georgia's race labels. `Other/Unknown` is ONE category in the state's own
+#: model and cannot be split, so it goes to `other`; `unknown` is reserved for
+#: ballots the hub could not match to a voter record at all (the null row).
+HUB_RACE = {
+    "white": "white",
+    "black": "black",
+    "hispanic/latino": "hispanic",
+    "asian/pacific islander": "asian",
+    "american indian or alaskan native": "native",
+    "other/unknown": "other",
+}
+
+#: Every bucket a dimension can hold, so each day writes all of them -- a zero
+#: included. The page shows each bucket's NEWEST row, so a bucket left out on
+#: one day would keep showing an older day's (or an older tier's) count.
+#:
+#: ⚠️ AGE HAS NO `unknown` BAND, in this vocabulary or in any state's output,
+#: so the unmatched ballots (13,880 of 372,174 on 2026-10-14) are NOT an age
+#: row: the page's age bar is shares of ballots whose age is known, exactly as
+#: for every other state. Race and sex do carry `unknown`, and get them.
+_DEMO_BUCKETS = {
+    "age": normalize.AGE_BANDS,
+    "race": normalize.RACE_BUCKETS,
+    "sex": normalize.SEX_BUCKETS,
+}
+
+
+def field_measure(engine: Engine, doc: int, object_id: str, label: str,
+                  field: str) -> dict[str | None, int]:
+    """`{value: ballots}` for one published measure, dimensioned by `field`.
+
+    The object's own measure is lifted off the app exactly as `county_measures`
+    lifts it; only the dimension is swapped. The NULL row -- ballots with no
+    value in `field`, which is how the hub shows a ballot it could not match to
+    a voter record -- comes back under the key `None`, never dropped.
+    """
+    cube = _object_cube(engine, doc, object_id)
+    _dimension(cube, ["County"], object_id)
+    keep = _measures(cube, (label,), object_id)
+    cube = dict(cube)
+    cube["qDimensions"] = [{"qDef": {"qFieldDefs": [field]}, "qNullSuppression": False}]
+    cube["qMeasures"] = keep
+    cube["qSuppressZero"] = False
+    cube["qSuppressMissing"] = False
+    cube["qInitialDataFetch"] = []
+    session = _handle(engine.call(doc, "CreateSessionObject", {"qProp": {
+        "qInfo": {"qType": "ev-demo"}, "qHyperCubeDef": cube,
+    }}), "CreateSessionObject(demo)")
+
+    layout = engine.call(session, "GetLayout", {}).get("qLayout", {}).get("qHyperCube", {})
+    height = int(layout.get("qSize", {}).get("qcy", 0))
+    if height <= 0:
+        raise SchemaDrift(f"GA: {object_id} by {field} produced no rows")
+
+    out: dict[str | None, int] = {}
+    for row in _matrix(engine, session, height, 2):
+        head, cell = row[0], row[1]
+        number = cell.get("qNum")
+        if number is None or cell.get("qIsNull"):
+            raise SchemaDrift(f"GA: no numeric {label!r} by {field} in {object_id}")
+        text = (head.get("qText") or "").strip()
+        key = None if head.get("qIsNull") or text in ("", "-") else text
+        out[key] = out.get(key, 0) + int(round(float(number)))
+    return out
+
+
+def _demo_bucket(dimension: str, value: str | None) -> str:
+    if value is None:
+        return "unknown"
+    if dimension == "age":
+        bucket = HUB_AGE_BANDS.get(value)
+    elif dimension == "race":
+        bucket = HUB_RACE.get(" ".join(value.lower().split()))
+    else:
+        bucket = normalize.sex(value)  # Female / Male / Other -> unknown
+    if bucket is None:
+        raise SchemaDrift(f"GA: unrecognised {dimension} label {value!r}")
+    return bucket
+
+
+def hub_demo(by_dimension: dict[str, list[dict[str | None, int]]],
+             totals: list[int], day: date, cycle: int) -> list[DemoDay]:
+    """Statewide DemoDay rows, mail plus in-person, refused unless they ADD UP.
+
+    `by_dimension[dim]` holds one `field_measure` reading per table (absentee,
+    then early), and `totals` the same two tables' sums over their counties.
+
+    ⚠️ EVERY DIMENSION MUST SUM TO EXACTLY ITS TABLE'S TOTAL, and that check is
+    the answer to the "overlapping bands double-count" worry this replaced. On
+    the 2024 general all three fields partition the ballots to the ballot --
+    286,235 absentee and 3,768,115 in person, each the county tables' own sum,
+    with 9,981 and 134,212 in the null row. A label that DID put one ballot in
+    two bands would push its dimension over, and that is drift, not a row.
+    """
+    rows: list[DemoDay] = []
+    for dimension, readings in sorted(by_dimension.items()):
+        if len(readings) != len(totals):
+            raise SchemaDrift(f"GA: {dimension} has {len(readings)} readings "
+                              f"for {len(totals)} tables")
+        counts: dict[str, int] = defaultdict(int)
+        for reading, want in zip(readings, totals):
+            got = sum(reading.values())
+            if got != want:
+                raise SchemaDrift(
+                    f"GA: ballots by {HUB_DEMO_FIELDS[dimension]} total {got:,}, "
+                    f"not the county tables' {want:,} -- the field no longer "
+                    "partitions the ballots"
+                )
+            for value, n in reading.items():
+                counts[_demo_bucket(dimension, value)] += n
+        for bucket in _DEMO_BUCKETS[dimension]:
+            rows.append(DemoDay(cycle=cycle, state="GA", day=day,
+                                dimension=dimension, bucket=bucket,
+                                ballots_total=counts.get(bucket, 0)))
+    return rows
+
+
+# ==========================================================================
 # THE DAILY HISTORY -- county x day, out of the same app
 # ==========================================================================
 #
@@ -1527,8 +1672,20 @@ class GADataHubScraper(Adapter):
             absentee = county_measures(engine, doc, HUB_ABSENTEE_TABLE,
                                        (HUB_ACCEPTED, HUB_REQUESTED))
             early = county_measures(engine, doc, HUB_EARLY_TABLE, (HUB_ACCEPTED_EV,))
+            by_dimension = {
+                dim: [field_measure(engine, doc, HUB_ABSENTEE_TABLE, HUB_ACCEPTED, f),
+                      field_measure(engine, doc, HUB_EARLY_TABLE, HUB_ACCEPTED_EV, f)]
+                for dim, f in HUB_DEMO_FIELDS.items()
+            }
 
-        return hub_build(absentee, early, as_of, cycle)
+        result = hub_build(absentee, early, as_of, cycle)
+        result.demo_rows.extend(hub_demo(
+            by_dimension,
+            [sum(v[HUB_ACCEPTED] for v in absentee.values()),
+             sum(v[HUB_ACCEPTED_EV] for v in early.values())],
+            as_of, cycle,
+        ))
+        return result
 
     def _session(self):
         """One token, one socket. See docs/georgia-source.md §7 on the limit."""

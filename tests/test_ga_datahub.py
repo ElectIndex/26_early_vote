@@ -679,3 +679,101 @@ def test_the_window_start_is_the_apps_own_date_and_not_a_span_we_chose():
         ga.window_start(Stub([("09/17/2024", "O"), ("09/18/2024", "O")]), 1)
     with pytest.raises(SchemaDrift, match="Absentee_Min_Date"):
         ga.window_start(Stub([]), 1)
+
+
+# ------------------------------------------------------------- demographics
+
+DEMO_TRANSCRIPT = Path(__file__).parent / "fixtures" / "ga" / "engine_2024_demo.json"
+
+#: The 2024 general's county-table sums, pinned by the transcript above.
+DEMO_TOTALS_2024 = [286_235, 3_768_115]
+
+
+def demo_readings(*, patch=None):
+    ws = Replay(json.loads(DEMO_TRANSCRIPT.read_text()), patch=patch)
+    engine = ga.Engine(ws)
+    doc = ga._handle(engine.call(-1, "OpenDoc", {"qDocName": ga.HUB_APP_ID}), "OpenDoc")
+    ga.choose_election(engine, doc, date(2024, 11, 5))
+    by_dimension = {
+        dim: [ga.field_measure(engine, doc, ga.HUB_ABSENTEE_TABLE, ga.HUB_ACCEPTED, f),
+              ga.field_measure(engine, doc, ga.HUB_EARLY_TABLE, ga.HUB_ACCEPTED_EV, f)]
+        for dim, f in ga.HUB_DEMO_FIELDS.items()
+    }
+    return by_dimension, ws
+
+
+def test_every_demographic_field_partitions_the_ballots_exactly():
+    """The answer to "the overlapping age bands double-count": they do not."""
+    by_dimension, _ = demo_readings()
+    for dim, readings in by_dimension.items():
+        assert [sum(r.values()) for r in readings] == DEMO_TOTALS_2024, dim
+    # The unmatched ballots come back as the NULL row, not dropped.
+    assert by_dimension["sex"][0][None] == 9_981
+    assert by_dimension["sex"][1][None] == 134_212
+
+
+def test_georgias_2024_demographics():
+    by_dimension, _ = demo_readings()
+    rows = ga.hub_demo(by_dimension, DEMO_TOTALS_2024, date(2024, 11, 5), 2024)
+    got = {(r.dimension, r.bucket): r.ballots_total for r in rows}
+    assert got[("sex", "female")] == 162_175 + 2_029_150
+    assert got[("sex", "unknown")] == 917 + 6_965 + 9_981 + 134_212   # Other + null
+    assert got[("race", "black")] == 78_256 + 953_108
+    assert got[("race", "other")] == 26_088 + 341_704                 # Other/Unknown
+    assert got[("race", "unknown")] == 9_981 + 134_212                # null only
+    assert got[("age", "35-44")] == 10_813 + 10_191 + 256_369 + 279_816
+    assert got[("age", "65+")] == 959_025 + 143_496
+    # Race and sex account for every ballot; age for every ballot with an age.
+    total = sum(DEMO_TOTALS_2024)
+    assert sum(v for (d, _), v in got.items() if d == "race") == total
+    assert sum(v for (d, _), v in got.items() if d == "sex") == total
+    assert sum(v for (d, _), v in got.items() if d == "age") == total - 9_981 - 134_212
+
+
+def test_every_bucket_is_written_every_day_even_at_zero():
+    by_dimension, _ = demo_readings()
+    rows = ga.hub_demo(by_dimension, DEMO_TOTALS_2024, date(2024, 11, 5), 2024)
+    from ev import normalize
+    assert [r.bucket for r in rows if r.dimension == "age"] == list(normalize.AGE_BANDS)
+    assert [r.bucket for r in rows if r.dimension == "race"] == list(normalize.RACE_BUCKETS)
+    assert [r.bucket for r in rows if r.dimension == "sex"] == list(normalize.SEX_BUCKETS)
+    assert all(r.ballots_total is not None for r in rows)
+
+
+def test_every_age_label_maps_and_the_half_open_bands_roll_up():
+    by_dimension, _ = demo_readings()
+    labels = {k for r in by_dimension["age"] for k in r if k is not None}
+    assert labels == set(ga.HUB_AGE_BANDS)
+    # 35-40 and 40-45 both land in 35-44; 60-65 is 55-64 and 65-70 is 65+.
+    assert ga.HUB_AGE_BANDS["40-45"] == "35-44"
+    assert ga.HUB_AGE_BANDS["60-65"] == "55-64"
+    assert ga.HUB_AGE_BANDS["65-70"] == "65+"
+
+
+def test_a_dimension_that_stops_adding_up_is_DRIFT():
+    by_dimension, _ = demo_readings()
+    by_dimension["age"][1]["40-45"] += by_dimension["age"][1]["35-40"]
+    with pytest.raises(SchemaDrift, match="no longer partitions"):
+        ga.hub_demo(by_dimension, DEMO_TOTALS_2024, date(2024, 11, 5), 2024)
+
+
+def test_an_unrecognised_demographic_label_is_DRIFT():
+    by_dimension, _ = demo_readings()
+    reading = by_dimension["race"][0]
+    reading["Two or More Races"] = reading.pop("Other/Unknown")
+    with pytest.raises(SchemaDrift, match="unrecognised race"):
+        ga.hub_demo(by_dimension, DEMO_TOTALS_2024, date(2024, 11, 5), 2024)
+
+
+def test_the_demo_cubes_keep_the_null_row_and_the_apps_own_measure():
+    _, ws = demo_readings()
+    cubes = [f["params"]["qProp"]["qHyperCubeDef"]
+             for f in ws.sent
+             if f["method"] == "CreateSessionObject"
+             and "qHyperCubeDef" in f["params"].get("qProp", {})]
+    assert len(cubes) == 6
+    for cube in cubes:
+        assert cube["qDimensions"][0]["qNullSuppression"] is False
+        assert cube["qSuppressZero"] is False
+        assert [m["qDef"]["qLabel"] for m in cube["qMeasures"]] in (
+            [ga.HUB_ACCEPTED], [ga.HUB_ACCEPTED_EV])

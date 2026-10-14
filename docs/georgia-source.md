@@ -518,12 +518,19 @@ that `Ballots_Accepted_Counter` and `Early In-Person` appear nowhere in
 
 ### Still not published
 
-* **Age, race and sex.** The model carries `Age Group`, `RACE_DESC` and
+* ~~**Age, race and sex.** The model carries `Age Group`, `RACE_DESC` and
   `Gender_Clean`, and the age bands overlap — `35-40` and `40-45` share a year —
-  so any age crosstab built from them double-counts a cohort silently.
-  `data/meta/states.csv` is corrected from `county|method|age|race|sex` to
-  `county|method` to match, because a dims list promising rows nothing produces
-  is its own kind of wrong.
+  so any age crosstab built from them double-counts a cohort silently.~~
+  **PUBLISHED 2026-10-14, statewide.** The worry did not survive measurement:
+  each ballot carries one `Age Group` value and all three fields sum to the
+  county tables' totals to the ballot (2024 general: 286,235 absentee, 3,768,115
+  in person, 9,981 / 134,212 in the null row). The labels are half-open from
+  `35-40` up — the hub's 65+ is 959,025 in-person ballots against UF's 953,922,
+  where a closed `60-65` would leave it a whole cohort (~5%) short. So
+  `35-40`+`40-45` → 35-44 and so on; `Other/Unknown` → `other`, the null row →
+  `unknown` (race, sex; age has no unknown band). `hub_demo` refuses any
+  dimension that stops adding up. `states.csv` is back to
+  `county|method|age|race|sex`.
 * **Party**, which Georgia does not register. The app's `Party` field is a
   primary ballot choice, exactly as in Idaho.
 * ~~**History.** Every past election is one selection away, which is the trap:
