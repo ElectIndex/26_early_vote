@@ -528,11 +528,13 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,CA,06001,Alameda County,2026-10-12,22,8495,,8495,,,,,,2,civicapi,2026-10-14T01:11:45+00:00
 2026,CA,06001,Alameda County,2026-10-13,21,8495,,8495,,,,,,2,civicapi,2026-10-14T02:22:06+00:00
 2026,CA,06001,Alameda County,2026-10-14,20,14902,,14902,,,,,,2,civicapi,2026-10-15T03:02:44+00:00
+2026,CA,06001,Alameda County,2026-10-15,19,23952,,23952,,,,,,2,civicapi,2026-10-15T17:03:05+00:00
 2026,CA,06003,Alpine County,2026-10-09,25,1,,1,,,,,,2,civicapi,2026-10-09T19:17:05+00:00
 2026,CA,06003,Alpine County,2026-10-10,24,6,,6,,,,,,2,civicapi,2026-10-11T00:42:44+00:00
 2026,CA,06003,Alpine County,2026-10-12,22,6,,6,,,,,,2,civicapi,2026-10-13T07:26:46+00:00
 2026,CA,06003,Alpine County,2026-10-13,21,6,,6,,,,,,2,civicapi,2026-10-14T02:22:06+00:00
 2026,CA,06003,Alpine County,2026-10-14,20,36,,36,,,,,,2,civicapi,2026-10-14T19:32:44+00:00
+2026,CA,06003,Alpine County,2026-10-15,19,43,,43,,,,,,2,civicapi,2026-10-15T17:03:05+00:00
 2026,CA,06005,Amador County,2026-10-07,27,92,,92,,,,,,2,civicapi,2026-10-08T00:03:37+00:00
 2026,CA,06005,Amador County,2026-10-08,26,642,,642,,,,,,2,civicapi,2026-10-08T22:55:15+00:00
 2026,CA,06005,Amador County,2026-10-09,25,994,,994,,,,,,2,civicapi,2026-10-09T19:17:05+00:00
@@ -540,7 +542,9 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,CA,06005,Amador County,2026-10-12,22,1324,,1324,,,,,,2,civicapi,2026-10-13T07:26:46+00:00
 2026,CA,06005,Amador County,2026-10-13,21,1324,,1324,,,,,,2,civicapi,2026-10-14T02:22:06+00:00
 2026,CA,06005,Amador County,2026-10-14,20,2075,,2075,,,,,,2,civicapi,2026-10-15T03:02:44+00:00
+2026,CA,06005,Amador County,2026-10-15,19,2550,,2550,,,,,,2,civicapi,2026-10-15T17:03:05+00:00
 2026,CA,06007,Butte County,2026-10-14,20,2519,,2519,,,,,,2,civicapi,2026-10-15T03:02:44+00:00
+2026,CA,06007,Butte County,2026-10-15,19,2519,,2519,,,,,,2,civicapi,2026-10-15T17:03:05+00:00
 2026,CA,06009,Calaveras County,2026-10-07,27,38,,38,,,,,,2,civicapi,2026-10-08T00:03:37+00:00
 2026,CA,06009,Calaveras County,2026-10-08,26,197,,197,,,,,,2,civicapi,2026-10-08T22:55:15+00:00
 2026,CA,06009,Calaveras County,2026-10-09,25,307,,307,,,,,,2,civicapi,2026-10-09T19:17:05+00:00
@@ -548,6 +552,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,CA,06009,Calaveras County,2026-10-12,22,841,,841,,,,,,2,civicapi,2026-10-13T07:26:46+00:00
 2026,CA,06009,Calaveras County,2026-10-13,21,841,,841,,,,,,2,civicapi,2026-10-14T02:22:06+00:00
 2026,CA,06009,Calaveras County,2026-10-14,20,1779,,1779,,,,,,2,civicapi,2026-10-15T03:02:44+00:00
+2026,CA,06009,Calaveras County,2026-10-15,19,1779,,1779,,,,,,2,civicapi,2026-10-15T17:03:05+00:00
 2026,CA,06011,Colusa County,2026-10-07,27,1,,1,,,,,,2,civicapi,2026-10-08T00:03:37+00:00
 2026,CA,06011,Colusa County,2026-10-08,26,1,,1,,,,,,2,civicapi,2026-10-08T22:55:15+00:00
 2026,CA,06011,Colusa County,2026-10-09,25,1,,1,,,,,,2,civicapi,2026-10-09T19:17:05+00:00
@@ -555,6 +560,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,CA,06011,Colusa County,2026-10-12,22,1,,1,,,,,,2,civicapi,2026-10-13T07:26:46+00:00
 2026,CA,06011,Colusa County,2026-10-13,21,1,,1,,,,,,2,civicapi,2026-10-14T02:22:06+00:00
 2026,CA,06011,Colusa County,2026-10-14,20,1,,1,,,,,,2,civicapi,2026-10-14T19:32:44+00:00
+2026,CA,06011,Colusa County,2026-10-15,19,1,,1,,,,,,2,civicapi,2026-10-15T17:03:05+00:00
 2026,CA,06013,Contra Costa County,2026-10-07,27,134,,134,,,,,,2,civicapi,2026-10-08T00:03:37+00:00
 2026,CA,06013,Contra Costa County,2026-10-08,26,187,,187,,,,,,2,civicapi,2026-10-08T22:55:15+00:00
 2026,CA,06013,Contra Costa County,2026-10-09,25,563,,563,,,,,,2,civicapi,2026-10-09T19:17:05+00:00
@@ -562,12 +568,14 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,CA,06013,Contra Costa County,2026-10-12,22,8008,,8008,,,,,,2,civicapi,2026-10-14T01:11:45+00:00
 2026,CA,06013,Contra Costa County,2026-10-13,21,8172,,8172,,,,,,2,civicapi,2026-10-14T03:02:29+00:00
 2026,CA,06013,Contra Costa County,2026-10-14,20,17850,,17850,,,,,,2,civicapi,2026-10-15T03:02:44+00:00
+2026,CA,06013,Contra Costa County,2026-10-15,19,24495,,24495,,,,,,2,civicapi,2026-10-15T17:03:05+00:00
 2026,CA,06015,Del Norte County,2026-10-08,26,64,,64,,,,,,2,civicapi,2026-10-08T22:55:15+00:00
 2026,CA,06015,Del Norte County,2026-10-09,25,357,,357,,,,,,2,civicapi,2026-10-09T19:17:05+00:00
 2026,CA,06015,Del Norte County,2026-10-10,24,488,,488,,,,,,2,civicapi,2026-10-11T00:42:44+00:00
 2026,CA,06015,Del Norte County,2026-10-12,22,605,,605,,,,,,2,civicapi,2026-10-14T01:11:45+00:00
 2026,CA,06015,Del Norte County,2026-10-13,21,605,,605,,,,,,2,civicapi,2026-10-14T02:22:06+00:00
 2026,CA,06015,Del Norte County,2026-10-14,20,1075,,1075,,,,,,2,civicapi,2026-10-15T03:02:44+00:00
+2026,CA,06015,Del Norte County,2026-10-15,19,1075,,1075,,,,,,2,civicapi,2026-10-15T17:03:05+00:00
 2026,CA,06017,El Dorado County,2026-10-07,27,66,,66,,,,,,2,civicapi,2026-10-08T00:03:37+00:00
 2026,CA,06017,El Dorado County,2026-10-08,26,86,,86,,,,,,2,civicapi,2026-10-08T22:55:15+00:00
 2026,CA,06017,El Dorado County,2026-10-09,25,274,,274,,,,,,2,civicapi,2026-10-09T19:17:05+00:00
@@ -575,6 +583,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,CA,06017,El Dorado County,2026-10-12,22,3990,,3990,,,,,,2,civicapi,2026-10-14T01:11:45+00:00
 2026,CA,06017,El Dorado County,2026-10-13,21,6139,,6139,,,,,,2,civicapi,2026-10-14T03:02:29+00:00
 2026,CA,06017,El Dorado County,2026-10-14,20,6167,,6167,,,,,,2,civicapi,2026-10-14T19:32:44+00:00
+2026,CA,06017,El Dorado County,2026-10-15,19,6171,,6171,,,,,,2,civicapi,2026-10-15T17:03:05+00:00
 2026,CA,06019,Fresno County,2026-10-07,27,23,,23,,,,,,2,civicapi,2026-10-08T00:03:37+00:00
 2026,CA,06019,Fresno County,2026-10-08,26,27,,27,,,,,,2,civicapi,2026-10-08T22:55:15+00:00
 2026,CA,06019,Fresno County,2026-10-09,25,47,,47,,,,,,2,civicapi,2026-10-09T19:17:05+00:00
@@ -582,16 +591,20 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,CA,06019,Fresno County,2026-10-12,22,5507,,5507,,,,,,2,civicapi,2026-10-14T01:11:45+00:00
 2026,CA,06019,Fresno County,2026-10-13,21,5507,,5507,,,,,,2,civicapi,2026-10-14T02:22:06+00:00
 2026,CA,06019,Fresno County,2026-10-14,20,9990,,9990,,,,,,2,civicapi,2026-10-14T19:32:44+00:00
+2026,CA,06019,Fresno County,2026-10-15,19,11612,,11612,,,,,,2,civicapi,2026-10-15T17:03:05+00:00
 2026,CA,06021,Glenn County,2026-10-10,24,4,,4,,,,,,2,civicapi,2026-10-11T00:42:44+00:00
 2026,CA,06021,Glenn County,2026-10-12,22,72,,72,,,,,,2,civicapi,2026-10-14T01:11:45+00:00
 2026,CA,06021,Glenn County,2026-10-13,21,72,,72,,,,,,2,civicapi,2026-10-14T02:22:06+00:00
 2026,CA,06021,Glenn County,2026-10-14,20,138,,138,,,,,,2,civicapi,2026-10-14T19:32:44+00:00
+2026,CA,06021,Glenn County,2026-10-15,19,138,,138,,,,,,2,civicapi,2026-10-15T17:03:05+00:00
 2026,CA,06023,Humboldt County,2026-10-12,22,74,,74,,,,,,2,civicapi,2026-10-13T07:26:46+00:00
 2026,CA,06023,Humboldt County,2026-10-13,21,76,,76,,,,,,2,civicapi,2026-10-14T03:02:29+00:00
 2026,CA,06023,Humboldt County,2026-10-14,20,174,,174,,,,,,2,civicapi,2026-10-15T03:02:44+00:00
+2026,CA,06023,Humboldt County,2026-10-15,19,174,,174,,,,,,2,civicapi,2026-10-15T17:03:05+00:00
 2026,CA,06025,Imperial County,2026-10-12,22,38,,38,,,,,,2,civicapi,2026-10-14T01:11:45+00:00
 2026,CA,06025,Imperial County,2026-10-13,21,178,,178,,,,,,2,civicapi,2026-10-14T03:02:29+00:00
 2026,CA,06025,Imperial County,2026-10-14,20,1349,,1349,,,,,,2,civicapi,2026-10-15T03:02:44+00:00
+2026,CA,06025,Imperial County,2026-10-15,19,1349,,1349,,,,,,2,civicapi,2026-10-15T17:03:05+00:00
 2026,CA,06027,Inyo County,2026-10-07,27,1,,1,,,,,,2,civicapi,2026-10-08T00:03:37+00:00
 2026,CA,06027,Inyo County,2026-10-08,26,1,,1,,,,,,2,civicapi,2026-10-08T22:55:15+00:00
 2026,CA,06027,Inyo County,2026-10-09,25,4,,4,,,,,,2,civicapi,2026-10-09T19:17:05+00:00
@@ -599,6 +612,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,CA,06027,Inyo County,2026-10-12,22,59,,59,,,,,,2,civicapi,2026-10-14T01:11:45+00:00
 2026,CA,06027,Inyo County,2026-10-13,21,59,,59,,,,,,2,civicapi,2026-10-14T02:22:06+00:00
 2026,CA,06027,Inyo County,2026-10-14,20,456,,456,,,,,,2,civicapi,2026-10-15T03:02:44+00:00
+2026,CA,06027,Inyo County,2026-10-15,19,461,,461,,,,,,2,civicapi,2026-10-15T17:03:05+00:00
 2026,CA,06029,Kern County,2026-10-07,27,34,,34,,,,,,2,civicapi,2026-10-08T00:03:37+00:00
 2026,CA,06029,Kern County,2026-10-08,26,35,,35,,,,,,2,civicapi,2026-10-08T22:55:15+00:00
 2026,CA,06029,Kern County,2026-10-09,25,35,,35,,,,,,2,civicapi,2026-10-09T19:17:05+00:00
@@ -606,6 +620,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,CA,06029,Kern County,2026-10-12,22,62,,62,,,,,,2,civicapi,2026-10-13T07:26:46+00:00
 2026,CA,06029,Kern County,2026-10-13,21,62,,62,,,,,,2,civicapi,2026-10-14T02:22:06+00:00
 2026,CA,06029,Kern County,2026-10-14,20,3742,,3742,,,,,,2,civicapi,2026-10-14T19:32:44+00:00
+2026,CA,06029,Kern County,2026-10-15,19,11141,,11141,,,,,,2,civicapi,2026-10-15T17:03:05+00:00
 2026,CA,06031,Kings County,2026-10-07,27,8,,8,,,,,,2,civicapi,2026-10-08T00:03:37+00:00
 2026,CA,06031,Kings County,2026-10-08,26,27,,27,,,,,,2,civicapi,2026-10-08T22:55:15+00:00
 2026,CA,06031,Kings County,2026-10-09,25,225,,225,,,,,,2,civicapi,2026-10-09T19:17:05+00:00
@@ -613,6 +628,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,CA,06031,Kings County,2026-10-12,22,822,,822,,,,,,2,civicapi,2026-10-14T01:11:45+00:00
 2026,CA,06031,Kings County,2026-10-13,21,826,,826,,,,,,2,civicapi,2026-10-14T03:02:29+00:00
 2026,CA,06031,Kings County,2026-10-14,20,988,,988,,,,,,2,civicapi,2026-10-15T03:02:44+00:00
+2026,CA,06031,Kings County,2026-10-15,19,2282,,2282,,,,,,2,civicapi,2026-10-15T17:03:05+00:00
 2026,CA,06033,Lake County,2026-10-07,27,13,,13,,,,,,2,civicapi,2026-10-08T00:03:37+00:00
 2026,CA,06033,Lake County,2026-10-08,26,13,,13,,,,,,2,civicapi,2026-10-08T22:55:15+00:00
 2026,CA,06033,Lake County,2026-10-09,25,13,,13,,,,,,2,civicapi,2026-10-09T19:17:05+00:00
@@ -620,6 +636,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,CA,06033,Lake County,2026-10-12,22,16,,16,,,,,,2,civicapi,2026-10-13T07:26:46+00:00
 2026,CA,06033,Lake County,2026-10-13,21,16,,16,,,,,,2,civicapi,2026-10-14T02:22:06+00:00
 2026,CA,06033,Lake County,2026-10-14,20,278,,278,,,,,,2,civicapi,2026-10-14T19:32:44+00:00
+2026,CA,06033,Lake County,2026-10-15,19,325,,325,,,,,,2,civicapi,2026-10-15T17:03:05+00:00
 2026,CA,06035,Lassen County,2026-10-07,27,1,,1,,,,,,2,civicapi,2026-10-08T00:03:37+00:00
 2026,CA,06035,Lassen County,2026-10-08,26,2,,2,,,,,,2,civicapi,2026-10-08T22:55:15+00:00
 2026,CA,06035,Lassen County,2026-10-09,25,4,,4,,,,,,2,civicapi,2026-10-09T19:17:05+00:00
@@ -627,6 +644,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,CA,06035,Lassen County,2026-10-12,22,73,,73,,,,,,2,civicapi,2026-10-14T01:11:45+00:00
 2026,CA,06035,Lassen County,2026-10-13,21,73,,73,,,,,,2,civicapi,2026-10-14T02:22:06+00:00
 2026,CA,06035,Lassen County,2026-10-14,20,199,,199,,,,,,2,civicapi,2026-10-15T03:02:44+00:00
+2026,CA,06035,Lassen County,2026-10-15,19,310,,310,,,,,,2,civicapi,2026-10-15T17:03:05+00:00
 2026,CA,06037,Los Angeles County,2026-10-07,27,7324,,7324,,,,,,2,civicapi,2026-10-08T00:03:37+00:00
 2026,CA,06037,Los Angeles County,2026-10-08,26,17851,,17851,,,,,,2,civicapi,2026-10-08T22:55:15+00:00
 2026,CA,06037,Los Angeles County,2026-10-09,25,39762,,39762,,,,,,2,civicapi,2026-10-09T19:17:05+00:00
@@ -634,6 +652,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,CA,06037,Los Angeles County,2026-10-12,22,64728,,64728,,,,,,2,civicapi,2026-10-14T01:11:45+00:00
 2026,CA,06037,Los Angeles County,2026-10-13,21,89570,,89570,,,,,,2,civicapi,2026-10-14T03:02:29+00:00
 2026,CA,06037,Los Angeles County,2026-10-14,20,123626,,123626,,,,,,2,civicapi,2026-10-15T03:02:44+00:00
+2026,CA,06037,Los Angeles County,2026-10-15,19,154052,,154052,,,,,,2,civicapi,2026-10-15T17:03:05+00:00
 2026,CA,06039,Madera County,2026-10-07,27,11,,11,,,,,,2,civicapi,2026-10-08T00:03:37+00:00
 2026,CA,06039,Madera County,2026-10-08,26,11,,11,,,,,,2,civicapi,2026-10-08T22:55:15+00:00
 2026,CA,06039,Madera County,2026-10-09,25,20,,20,,,,,,2,civicapi,2026-10-09T19:17:05+00:00
@@ -641,6 +660,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,CA,06039,Madera County,2026-10-12,22,624,,624,,,,,,2,civicapi,2026-10-14T01:11:45+00:00
 2026,CA,06039,Madera County,2026-10-13,21,1312,,1312,,,,,,2,civicapi,2026-10-14T03:02:29+00:00
 2026,CA,06039,Madera County,2026-10-14,20,1869,,1869,,,,,,2,civicapi,2026-10-15T03:02:44+00:00
+2026,CA,06039,Madera County,2026-10-15,19,1869,,1869,,,,,,2,civicapi,2026-10-15T17:03:05+00:00
 2026,CA,06041,Marin County,2026-10-07,27,257,,257,,,,,,2,civicapi,2026-10-08T00:03:37+00:00
 2026,CA,06041,Marin County,2026-10-08,26,273,,273,,,,,,2,civicapi,2026-10-08T22:55:15+00:00
 2026,CA,06041,Marin County,2026-10-09,25,295,,295,,,,,,2,civicapi,2026-10-09T19:17:05+00:00
@@ -648,8 +668,10 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,CA,06041,Marin County,2026-10-12,22,344,,344,,,,,,2,civicapi,2026-10-14T01:11:45+00:00
 2026,CA,06041,Marin County,2026-10-13,21,433,,433,,,,,,2,civicapi,2026-10-14T03:02:29+00:00
 2026,CA,06041,Marin County,2026-10-14,20,1447,,1447,,,,,,2,civicapi,2026-10-15T03:02:44+00:00
+2026,CA,06041,Marin County,2026-10-15,19,1559,,1559,,,,,,2,civicapi,2026-10-15T17:03:05+00:00
 2026,CA,06043,Mariposa County,2026-10-13,21,150,,150,,,,,,2,civicapi,2026-10-14T03:02:29+00:00
 2026,CA,06043,Mariposa County,2026-10-14,20,329,,329,,,,,,2,civicapi,2026-10-15T03:02:44+00:00
+2026,CA,06043,Mariposa County,2026-10-15,19,329,,329,,,,,,2,civicapi,2026-10-15T17:03:05+00:00
 2026,CA,06045,Mendocino County,2026-10-07,27,148,,148,,,,,,2,civicapi,2026-10-08T00:03:37+00:00
 2026,CA,06045,Mendocino County,2026-10-08,26,307,,307,,,,,,2,civicapi,2026-10-08T22:55:15+00:00
 2026,CA,06045,Mendocino County,2026-10-09,25,506,,506,,,,,,2,civicapi,2026-10-09T19:17:05+00:00
@@ -657,6 +679,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,CA,06045,Mendocino County,2026-10-12,22,1027,,1027,,,,,,2,civicapi,2026-10-13T07:26:46+00:00
 2026,CA,06045,Mendocino County,2026-10-13,21,1336,,1336,,,,,,2,civicapi,2026-10-14T03:02:29+00:00
 2026,CA,06045,Mendocino County,2026-10-14,20,3664,,3664,,,,,,2,civicapi,2026-10-15T03:02:44+00:00
+2026,CA,06045,Mendocino County,2026-10-15,19,3664,,3664,,,,,,2,civicapi,2026-10-15T17:03:05+00:00
 2026,CA,06047,Merced County,2026-10-07,27,5,,5,,,,,,2,civicapi,2026-10-08T00:03:37+00:00
 2026,CA,06047,Merced County,2026-10-08,26,5,,5,,,,,,2,civicapi,2026-10-08T22:55:15+00:00
 2026,CA,06047,Merced County,2026-10-09,25,5,,5,,,,,,2,civicapi,2026-10-09T19:17:05+00:00
@@ -664,18 +687,21 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,CA,06047,Merced County,2026-10-12,22,11,,11,,,,,,2,civicapi,2026-10-13T07:26:46+00:00
 2026,CA,06047,Merced County,2026-10-13,21,11,,11,,,,,,2,civicapi,2026-10-14T02:22:06+00:00
 2026,CA,06047,Merced County,2026-10-14,20,800,,800,,,,,,2,civicapi,2026-10-15T03:02:44+00:00
+2026,CA,06047,Merced County,2026-10-15,19,978,,978,,,,,,2,civicapi,2026-10-15T17:03:05+00:00
 2026,CA,06049,Modoc County,2026-10-08,26,3,,3,,,,,,2,civicapi,2026-10-08T22:55:15+00:00
 2026,CA,06049,Modoc County,2026-10-09,25,3,,3,,,,,,2,civicapi,2026-10-09T19:17:05+00:00
 2026,CA,06049,Modoc County,2026-10-10,24,6,,6,,,,,,2,civicapi,2026-10-11T00:42:44+00:00
 2026,CA,06049,Modoc County,2026-10-12,22,6,,6,,,,,,2,civicapi,2026-10-13T07:26:46+00:00
 2026,CA,06049,Modoc County,2026-10-13,21,6,,6,,,,,,2,civicapi,2026-10-14T02:22:06+00:00
 2026,CA,06049,Modoc County,2026-10-14,20,48,,48,,,,,,2,civicapi,2026-10-14T19:32:44+00:00
+2026,CA,06049,Modoc County,2026-10-15,19,69,,69,,,,,,2,civicapi,2026-10-15T17:03:05+00:00
 2026,CA,06051,Mono County,2026-10-08,26,4,,4,,,,,,2,civicapi,2026-10-08T22:55:15+00:00
 2026,CA,06051,Mono County,2026-10-09,25,4,,4,,,,,,2,civicapi,2026-10-09T19:17:05+00:00
 2026,CA,06051,Mono County,2026-10-10,24,37,,37,,,,,,2,civicapi,2026-10-11T00:42:44+00:00
 2026,CA,06051,Mono County,2026-10-12,22,37,,37,,,,,,2,civicapi,2026-10-13T07:26:46+00:00
 2026,CA,06051,Mono County,2026-10-13,21,127,,127,,,,,,2,civicapi,2026-10-14T03:02:29+00:00
 2026,CA,06051,Mono County,2026-10-14,20,136,,136,,,,,,2,civicapi,2026-10-14T19:32:44+00:00
+2026,CA,06051,Mono County,2026-10-15,19,143,,143,,,,,,2,civicapi,2026-10-15T17:03:05+00:00
 2026,CA,06053,Monterey County,2026-10-07,27,786,,786,,,,,,2,civicapi,2026-10-08T00:03:37+00:00
 2026,CA,06053,Monterey County,2026-10-08,26,1537,,1537,,,,,,2,civicapi,2026-10-08T22:55:15+00:00
 2026,CA,06053,Monterey County,2026-10-09,25,3063,,3063,,,,,,2,civicapi,2026-10-09T19:17:05+00:00
@@ -683,9 +709,11 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,CA,06053,Monterey County,2026-10-12,22,6591,,6591,,,,,,2,civicapi,2026-10-14T01:11:45+00:00
 2026,CA,06053,Monterey County,2026-10-13,21,6632,,6632,,,,,,2,civicapi,2026-10-14T03:02:29+00:00
 2026,CA,06053,Monterey County,2026-10-14,20,11134,,11134,,,,,,2,civicapi,2026-10-15T03:02:44+00:00
+2026,CA,06053,Monterey County,2026-10-15,19,12662,,12662,,,,,,2,civicapi,2026-10-15T17:03:05+00:00
 2026,CA,06055,Napa County,2026-10-12,22,22,,22,,,,,,2,civicapi,2026-10-13T07:26:46+00:00
 2026,CA,06055,Napa County,2026-10-13,21,25,,25,,,,,,2,civicapi,2026-10-14T03:02:29+00:00
 2026,CA,06055,Napa County,2026-10-14,20,1782,,1782,,,,,,2,civicapi,2026-10-15T03:02:44+00:00
+2026,CA,06055,Napa County,2026-10-15,19,1782,,1782,,,,,,2,civicapi,2026-10-15T17:03:05+00:00
 2026,CA,06057,Nevada County,2026-10-07,27,16,,16,,,,,,2,civicapi,2026-10-08T00:03:37+00:00
 2026,CA,06057,Nevada County,2026-10-08,26,21,,21,,,,,,2,civicapi,2026-10-08T22:55:15+00:00
 2026,CA,06057,Nevada County,2026-10-09,25,21,,21,,,,,,2,civicapi,2026-10-09T19:17:05+00:00
@@ -693,6 +721,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,CA,06057,Nevada County,2026-10-12,22,51,,51,,,,,,2,civicapi,2026-10-13T07:26:46+00:00
 2026,CA,06057,Nevada County,2026-10-13,21,94,,94,,,,,,2,civicapi,2026-10-14T03:02:29+00:00
 2026,CA,06057,Nevada County,2026-10-14,20,111,,111,,,,,,2,civicapi,2026-10-15T03:02:44+00:00
+2026,CA,06057,Nevada County,2026-10-15,19,111,,111,,,,,,2,civicapi,2026-10-15T17:03:05+00:00
 2026,CA,06059,Orange County,2026-10-07,27,381,,381,,,,,,2,civicapi,2026-10-08T00:03:37+00:00
 2026,CA,06059,Orange County,2026-10-08,26,3878,,3878,,,,,,2,civicapi,2026-10-08T22:55:15+00:00
 2026,CA,06059,Orange County,2026-10-09,25,22865,,22865,,,,,,2,civicapi,2026-10-09T19:17:05+00:00
@@ -700,6 +729,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,CA,06059,Orange County,2026-10-12,22,64109,,64109,,,,,,2,civicapi,2026-10-14T01:11:45+00:00
 2026,CA,06059,Orange County,2026-10-13,21,73326,,73326,,,,,,2,civicapi,2026-10-14T03:02:29+00:00
 2026,CA,06059,Orange County,2026-10-14,20,100986,,100986,,,,,,2,civicapi,2026-10-15T03:02:44+00:00
+2026,CA,06059,Orange County,2026-10-15,19,100986,,100986,,,,,,2,civicapi,2026-10-15T17:03:05+00:00
 2026,CA,06061,Placer County,2026-10-07,27,78,,78,,,,,,2,civicapi,2026-10-08T00:03:37+00:00
 2026,CA,06061,Placer County,2026-10-08,26,648,,648,,,,,,2,civicapi,2026-10-08T22:55:15+00:00
 2026,CA,06061,Placer County,2026-10-09,25,1972,,1972,,,,,,2,civicapi,2026-10-09T19:17:05+00:00
@@ -707,6 +737,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,CA,06061,Placer County,2026-10-12,22,4267,,4267,,,,,,2,civicapi,2026-10-13T07:26:46+00:00
 2026,CA,06061,Placer County,2026-10-13,21,4522,,4522,,,,,,2,civicapi,2026-10-14T03:02:29+00:00
 2026,CA,06061,Placer County,2026-10-14,20,7167,,7167,,,,,,2,civicapi,2026-10-15T03:02:44+00:00
+2026,CA,06061,Placer County,2026-10-15,19,12192,,12192,,,,,,2,civicapi,2026-10-15T17:03:05+00:00
 2026,CA,06063,Plumas County,2026-10-07,27,3,,3,,,,,,2,civicapi,2026-10-08T00:03:37+00:00
 2026,CA,06063,Plumas County,2026-10-08,26,3,,3,,,,,,2,civicapi,2026-10-08T22:55:15+00:00
 2026,CA,06063,Plumas County,2026-10-09,25,6,,6,,,,,,2,civicapi,2026-10-09T19:17:05+00:00
@@ -714,9 +745,11 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,CA,06063,Plumas County,2026-10-12,22,48,,48,,,,,,2,civicapi,2026-10-13T07:26:46+00:00
 2026,CA,06063,Plumas County,2026-10-13,21,388,,388,,,,,,2,civicapi,2026-10-14T03:02:29+00:00
 2026,CA,06063,Plumas County,2026-10-14,20,405,,405,,,,,,2,civicapi,2026-10-15T03:02:44+00:00
+2026,CA,06063,Plumas County,2026-10-15,19,477,,477,,,,,,2,civicapi,2026-10-15T17:03:05+00:00
 2026,CA,06065,Riverside County,2026-10-12,22,47,,47,,,,,,2,civicapi,2026-10-13T07:26:46+00:00
 2026,CA,06065,Riverside County,2026-10-13,21,68,,68,,,,,,2,civicapi,2026-10-14T03:02:29+00:00
 2026,CA,06065,Riverside County,2026-10-14,20,396,,396,,,,,,2,civicapi,2026-10-15T03:02:44+00:00
+2026,CA,06065,Riverside County,2026-10-15,19,43900,,43900,,,,,,2,civicapi,2026-10-15T17:03:05+00:00
 2026,CA,06067,Sacramento County,2026-10-07,27,183,,183,,,,,,2,civicapi,2026-10-08T00:03:37+00:00
 2026,CA,06067,Sacramento County,2026-10-08,26,273,,273,,,,,,2,civicapi,2026-10-08T22:55:15+00:00
 2026,CA,06067,Sacramento County,2026-10-09,25,1815,,1815,,,,,,2,civicapi,2026-10-09T19:17:05+00:00
@@ -724,10 +757,12 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,CA,06067,Sacramento County,2026-10-12,22,16796,,16796,,,,,,2,civicapi,2026-10-13T07:26:46+00:00
 2026,CA,06067,Sacramento County,2026-10-13,21,24445,,24445,,,,,,2,civicapi,2026-10-14T03:02:29+00:00
 2026,CA,06067,Sacramento County,2026-10-14,20,30695,,30695,,,,,,2,civicapi,2026-10-15T03:02:44+00:00
+2026,CA,06067,Sacramento County,2026-10-15,19,30695,,30695,,,,,,2,civicapi,2026-10-15T17:03:05+00:00
 2026,CA,06069,San Benito County,2026-10-10,24,282,,282,,,,,,2,civicapi,2026-10-11T00:42:44+00:00
 2026,CA,06069,San Benito County,2026-10-12,22,527,,527,,,,,,2,civicapi,2026-10-13T07:26:46+00:00
 2026,CA,06069,San Benito County,2026-10-13,21,1124,,1124,,,,,,2,civicapi,2026-10-14T03:02:29+00:00
 2026,CA,06069,San Benito County,2026-10-14,20,1229,,1229,,,,,,2,civicapi,2026-10-15T03:02:44+00:00
+2026,CA,06069,San Benito County,2026-10-15,19,1229,,1229,,,,,,2,civicapi,2026-10-15T17:03:05+00:00
 2026,CA,06071,San Bernardino County,2026-10-07,27,60,,60,,,,,,2,civicapi,2026-10-08T00:03:37+00:00
 2026,CA,06071,San Bernardino County,2026-10-08,26,125,,125,,,,,,2,civicapi,2026-10-08T22:55:15+00:00
 2026,CA,06071,San Bernardino County,2026-10-09,25,1658,,1658,,,,,,2,civicapi,2026-10-09T19:17:05+00:00
@@ -735,12 +770,14 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,CA,06071,San Bernardino County,2026-10-12,22,4276,,4276,,,,,,2,civicapi,2026-10-13T07:26:46+00:00
 2026,CA,06071,San Bernardino County,2026-10-13,21,12827,,12827,,,,,,2,civicapi,2026-10-14T03:02:29+00:00
 2026,CA,06071,San Bernardino County,2026-10-14,20,27857,,27857,,,,,,2,civicapi,2026-10-15T03:02:44+00:00
+2026,CA,06071,San Bernardino County,2026-10-15,19,27857,,27857,,,,,,2,civicapi,2026-10-15T17:03:05+00:00
 2026,CA,06073,San Diego County,2026-10-08,26,57,,57,,,,,,2,civicapi,2026-10-08T22:55:15+00:00
 2026,CA,06073,San Diego County,2026-10-09,25,24777,,24777,,,,,,2,civicapi,2026-10-09T19:17:05+00:00
 2026,CA,06073,San Diego County,2026-10-10,24,42310,,42310,,,,,,2,civicapi,2026-10-11T00:42:44+00:00
 2026,CA,06073,San Diego County,2026-10-12,22,65647,,65647,,,,,,2,civicapi,2026-10-14T01:11:45+00:00
 2026,CA,06073,San Diego County,2026-10-13,21,74509,,74509,,,,,,2,civicapi,2026-10-14T03:02:29+00:00
 2026,CA,06073,San Diego County,2026-10-14,20,122034,,122034,,,,,,2,civicapi,2026-10-15T03:02:44+00:00
+2026,CA,06073,San Diego County,2026-10-15,19,122034,,122034,,,,,,2,civicapi,2026-10-15T17:03:05+00:00
 2026,CA,06075,San Francisco County,2026-10-07,27,1550,,1550,,,,,,2,civicapi,2026-10-08T00:03:37+00:00
 2026,CA,06075,San Francisco County,2026-10-08,26,4301,,4301,,,,,,2,civicapi,2026-10-08T22:55:15+00:00
 2026,CA,06075,San Francisco County,2026-10-09,25,6684,,6684,,,,,,2,civicapi,2026-10-09T19:17:05+00:00
@@ -748,6 +785,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,CA,06075,San Francisco County,2026-10-12,22,9381,,9381,,,,,,2,civicapi,2026-10-13T07:26:46+00:00
 2026,CA,06075,San Francisco County,2026-10-13,21,9381,,9381,,,,,,2,civicapi,2026-10-14T02:22:06+00:00
 2026,CA,06075,San Francisco County,2026-10-14,20,13574,,13574,,,,,,2,civicapi,2026-10-14T19:32:44+00:00
+2026,CA,06075,San Francisco County,2026-10-15,19,19432,,19432,,,,,,2,civicapi,2026-10-15T17:03:05+00:00
 2026,CA,06077,San Joaquin County,2026-10-07,27,2819,,2819,,,,,,2,civicapi,2026-10-08T00:03:37+00:00
 2026,CA,06077,San Joaquin County,2026-10-08,26,4521,,4521,,,,,,2,civicapi,2026-10-08T22:55:15+00:00
 2026,CA,06077,San Joaquin County,2026-10-09,25,7493,,7493,,,,,,2,civicapi,2026-10-09T19:17:05+00:00
@@ -755,6 +793,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,CA,06077,San Joaquin County,2026-10-12,22,11571,,11571,,,,,,2,civicapi,2026-10-13T07:26:46+00:00
 2026,CA,06077,San Joaquin County,2026-10-13,21,17669,,17669,,,,,,2,civicapi,2026-10-14T03:02:29+00:00
 2026,CA,06077,San Joaquin County,2026-10-14,20,17671,,17671,,,,,,2,civicapi,2026-10-15T03:02:44+00:00
+2026,CA,06077,San Joaquin County,2026-10-15,19,18649,,18649,,,,,,2,civicapi,2026-10-15T17:03:05+00:00
 2026,CA,06079,San Luis Obispo County,2026-10-07,27,92,,92,,,,,,2,civicapi,2026-10-08T00:03:37+00:00
 2026,CA,06079,San Luis Obispo County,2026-10-08,26,830,,830,,,,,,2,civicapi,2026-10-08T22:55:15+00:00
 2026,CA,06079,San Luis Obispo County,2026-10-09,25,1549,,1549,,,,,,2,civicapi,2026-10-09T19:17:05+00:00
@@ -762,6 +801,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,CA,06079,San Luis Obispo County,2026-10-12,22,7306,,7306,,,,,,2,civicapi,2026-10-14T01:11:45+00:00
 2026,CA,06079,San Luis Obispo County,2026-10-13,21,7306,,7306,,,,,,2,civicapi,2026-10-14T02:22:06+00:00
 2026,CA,06079,San Luis Obispo County,2026-10-14,20,10821,,10821,,,,,,2,civicapi,2026-10-14T19:32:44+00:00
+2026,CA,06079,San Luis Obispo County,2026-10-15,19,14562,,14562,,,,,,2,civicapi,2026-10-15T17:03:05+00:00
 2026,CA,06081,San Mateo County,2026-10-07,27,220,,220,,,,,,2,civicapi,2026-10-08T00:03:37+00:00
 2026,CA,06081,San Mateo County,2026-10-08,26,374,,374,,,,,,2,civicapi,2026-10-08T22:55:15+00:00
 2026,CA,06081,San Mateo County,2026-10-09,25,1233,,1233,,,,,,2,civicapi,2026-10-09T19:17:05+00:00
@@ -769,6 +809,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,CA,06081,San Mateo County,2026-10-12,22,7146,,7146,,,,,,2,civicapi,2026-10-13T07:26:46+00:00
 2026,CA,06081,San Mateo County,2026-10-13,21,12125,,12125,,,,,,2,civicapi,2026-10-14T03:02:29+00:00
 2026,CA,06081,San Mateo County,2026-10-14,20,12477,,12477,,,,,,2,civicapi,2026-10-14T19:32:44+00:00
+2026,CA,06081,San Mateo County,2026-10-15,19,22426,,22426,,,,,,2,civicapi,2026-10-15T17:03:05+00:00
 2026,CA,06083,Santa Barbara County,2026-10-07,27,138,,138,,,,,,2,civicapi,2026-10-08T00:03:37+00:00
 2026,CA,06083,Santa Barbara County,2026-10-08,26,166,,166,,,,,,2,civicapi,2026-10-08T22:55:15+00:00
 2026,CA,06083,Santa Barbara County,2026-10-09,25,202,,202,,,,,,2,civicapi,2026-10-09T19:17:05+00:00
@@ -776,6 +817,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,CA,06083,Santa Barbara County,2026-10-12,22,1235,,1235,,,,,,2,civicapi,2026-10-14T01:11:45+00:00
 2026,CA,06083,Santa Barbara County,2026-10-13,21,1465,,1465,,,,,,2,civicapi,2026-10-14T03:02:29+00:00
 2026,CA,06083,Santa Barbara County,2026-10-14,20,1878,,1878,,,,,,2,civicapi,2026-10-15T03:02:44+00:00
+2026,CA,06083,Santa Barbara County,2026-10-15,19,3615,,3615,,,,,,2,civicapi,2026-10-15T17:03:05+00:00
 2026,CA,06085,Santa Clara County,2026-10-07,27,165,,165,,,,,,2,civicapi,2026-10-08T00:03:37+00:00
 2026,CA,06085,Santa Clara County,2026-10-08,26,247,,247,,,,,,2,civicapi,2026-10-08T22:55:15+00:00
 2026,CA,06085,Santa Clara County,2026-10-09,25,277,,277,,,,,,2,civicapi,2026-10-09T19:17:05+00:00
@@ -783,6 +825,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,CA,06085,Santa Clara County,2026-10-12,22,441,,441,,,,,,2,civicapi,2026-10-13T07:26:46+00:00
 2026,CA,06085,Santa Clara County,2026-10-13,21,18408,,18408,,,,,,2,civicapi,2026-10-14T03:02:29+00:00
 2026,CA,06085,Santa Clara County,2026-10-14,20,29204,,29204,,,,,,2,civicapi,2026-10-15T03:02:44+00:00
+2026,CA,06085,Santa Clara County,2026-10-15,19,29204,,29204,,,,,,2,civicapi,2026-10-15T17:03:05+00:00
 2026,CA,06087,Santa Cruz County,2026-10-07,27,216,,216,,,,,,2,civicapi,2026-10-08T00:03:37+00:00
 2026,CA,06087,Santa Cruz County,2026-10-08,26,268,,268,,,,,,2,civicapi,2026-10-08T22:55:15+00:00
 2026,CA,06087,Santa Cruz County,2026-10-09,25,937,,937,,,,,,2,civicapi,2026-10-09T19:17:05+00:00
@@ -790,7 +833,9 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,CA,06087,Santa Cruz County,2026-10-12,22,3180,,3180,,,,,,2,civicapi,2026-10-14T01:11:45+00:00
 2026,CA,06087,Santa Cruz County,2026-10-13,21,3956,,3956,,,,,,2,civicapi,2026-10-14T03:02:29+00:00
 2026,CA,06087,Santa Cruz County,2026-10-14,20,4440,,4440,,,,,,2,civicapi,2026-10-15T03:02:44+00:00
+2026,CA,06087,Santa Cruz County,2026-10-15,19,7630,,7630,,,,,,2,civicapi,2026-10-15T17:03:05+00:00
 2026,CA,06089,Shasta County,2026-10-14,20,2242,,2242,,,,,,2,civicapi,2026-10-15T03:02:44+00:00
+2026,CA,06089,Shasta County,2026-10-15,19,2451,,2451,,,,,,2,civicapi,2026-10-15T17:03:05+00:00
 2026,CA,06091,Sierra County,2026-10-07,27,2,,2,,,,,,2,civicapi,2026-10-08T00:03:37+00:00
 2026,CA,06091,Sierra County,2026-10-08,26,11,,11,,,,,,2,civicapi,2026-10-08T22:55:15+00:00
 2026,CA,06091,Sierra County,2026-10-09,25,20,,20,,,,,,2,civicapi,2026-10-09T19:17:05+00:00
@@ -798,6 +843,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,CA,06091,Sierra County,2026-10-12,22,39,,39,,,,,,2,civicapi,2026-10-14T01:11:45+00:00
 2026,CA,06091,Sierra County,2026-10-13,21,39,,39,,,,,,2,civicapi,2026-10-14T02:22:06+00:00
 2026,CA,06091,Sierra County,2026-10-14,20,67,,67,,,,,,2,civicapi,2026-10-14T19:32:44+00:00
+2026,CA,06091,Sierra County,2026-10-15,19,109,,109,,,,,,2,civicapi,2026-10-15T17:03:05+00:00
 2026,CA,06093,Siskiyou County,2026-10-07,27,48,,48,,,,,,2,civicapi,2026-10-08T00:03:37+00:00
 2026,CA,06093,Siskiyou County,2026-10-08,26,115,,115,,,,,,2,civicapi,2026-10-08T22:55:15+00:00
 2026,CA,06093,Siskiyou County,2026-10-09,25,266,,266,,,,,,2,civicapi,2026-10-09T19:17:05+00:00
@@ -805,6 +851,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,CA,06093,Siskiyou County,2026-10-12,22,593,,593,,,,,,2,civicapi,2026-10-14T01:11:45+00:00
 2026,CA,06093,Siskiyou County,2026-10-13,21,596,,596,,,,,,2,civicapi,2026-10-14T03:02:29+00:00
 2026,CA,06093,Siskiyou County,2026-10-14,20,1382,,1382,,,,,,2,civicapi,2026-10-15T03:02:44+00:00
+2026,CA,06093,Siskiyou County,2026-10-15,19,1495,,1495,,,,,,2,civicapi,2026-10-15T17:03:05+00:00
 2026,CA,06095,Solano County,2026-10-07,27,97,,97,,,,,,2,civicapi,2026-10-08T00:03:37+00:00
 2026,CA,06095,Solano County,2026-10-08,26,396,,396,,,,,,2,civicapi,2026-10-08T22:55:15+00:00
 2026,CA,06095,Solano County,2026-10-09,25,1216,,1216,,,,,,2,civicapi,2026-10-09T19:17:05+00:00
@@ -812,6 +859,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,CA,06095,Solano County,2026-10-12,22,2044,,2044,,,,,,2,civicapi,2026-10-13T07:26:46+00:00
 2026,CA,06095,Solano County,2026-10-13,21,2457,,2457,,,,,,2,civicapi,2026-10-14T03:02:29+00:00
 2026,CA,06095,Solano County,2026-10-14,20,7188,,7188,,,,,,2,civicapi,2026-10-15T03:02:44+00:00
+2026,CA,06095,Solano County,2026-10-15,19,8164,,8164,,,,,,2,civicapi,2026-10-15T17:03:05+00:00
 2026,CA,06097,Sonoma County,2026-10-07,27,194,,194,,,,,,2,civicapi,2026-10-08T00:03:37+00:00
 2026,CA,06097,Sonoma County,2026-10-08,26,210,,210,,,,,,2,civicapi,2026-10-08T22:55:15+00:00
 2026,CA,06097,Sonoma County,2026-10-09,25,235,,235,,,,,,2,civicapi,2026-10-09T19:17:05+00:00
@@ -819,6 +867,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,CA,06097,Sonoma County,2026-10-12,22,305,,305,,,,,,2,civicapi,2026-10-13T07:26:46+00:00
 2026,CA,06097,Sonoma County,2026-10-13,21,2266,,2266,,,,,,2,civicapi,2026-10-14T03:02:29+00:00
 2026,CA,06097,Sonoma County,2026-10-14,20,8383,,8383,,,,,,2,civicapi,2026-10-15T03:02:44+00:00
+2026,CA,06097,Sonoma County,2026-10-15,19,8383,,8383,,,,,,2,civicapi,2026-10-15T17:03:05+00:00
 2026,CA,06099,Stanislaus County,2026-10-07,27,51,,51,,,,,,2,civicapi,2026-10-08T00:03:37+00:00
 2026,CA,06099,Stanislaus County,2026-10-08,26,51,,51,,,,,,2,civicapi,2026-10-08T22:55:15+00:00
 2026,CA,06099,Stanislaus County,2026-10-09,25,51,,51,,,,,,2,civicapi,2026-10-09T19:17:05+00:00
@@ -826,6 +875,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,CA,06099,Stanislaus County,2026-10-12,22,61,,61,,,,,,2,civicapi,2026-10-13T07:26:46+00:00
 2026,CA,06099,Stanislaus County,2026-10-13,21,1571,,1571,,,,,,2,civicapi,2026-10-14T03:02:29+00:00
 2026,CA,06099,Stanislaus County,2026-10-14,20,1595,,1595,,,,,,2,civicapi,2026-10-14T19:32:44+00:00
+2026,CA,06099,Stanislaus County,2026-10-15,19,3431,,3431,,,,,,2,civicapi,2026-10-15T17:03:05+00:00
 2026,CA,06101,Sutter County,2026-10-07,27,325,,325,,,,,,2,civicapi,2026-10-08T00:03:37+00:00
 2026,CA,06101,Sutter County,2026-10-08,26,557,,557,,,,,,2,civicapi,2026-10-08T22:55:15+00:00
 2026,CA,06101,Sutter County,2026-10-09,25,669,,669,,,,,,2,civicapi,2026-10-09T19:17:05+00:00
@@ -833,6 +883,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,CA,06101,Sutter County,2026-10-12,22,1729,,1729,,,,,,2,civicapi,2026-10-13T07:26:46+00:00
 2026,CA,06101,Sutter County,2026-10-13,21,2331,,2331,,,,,,2,civicapi,2026-10-14T03:02:29+00:00
 2026,CA,06101,Sutter County,2026-10-14,20,2606,,2606,,,,,,2,civicapi,2026-10-15T03:02:44+00:00
+2026,CA,06101,Sutter County,2026-10-15,19,2606,,2606,,,,,,2,civicapi,2026-10-15T17:03:05+00:00
 2026,CA,06103,Tehama County,2026-10-07,27,5,,5,,,,,,2,civicapi,2026-10-08T00:03:37+00:00
 2026,CA,06103,Tehama County,2026-10-08,26,5,,5,,,,,,2,civicapi,2026-10-08T22:55:15+00:00
 2026,CA,06103,Tehama County,2026-10-09,25,74,,74,,,,,,2,civicapi,2026-10-09T19:17:05+00:00
@@ -840,6 +891,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,CA,06103,Tehama County,2026-10-12,22,218,,218,,,,,,2,civicapi,2026-10-13T07:26:46+00:00
 2026,CA,06103,Tehama County,2026-10-13,21,735,,735,,,,,,2,civicapi,2026-10-14T03:02:29+00:00
 2026,CA,06103,Tehama County,2026-10-14,20,1348,,1348,,,,,,2,civicapi,2026-10-15T03:02:44+00:00
+2026,CA,06103,Tehama County,2026-10-15,19,1348,,1348,,,,,,2,civicapi,2026-10-15T17:03:05+00:00
 2026,CA,06105,Trinity County,2026-10-07,27,11,,11,,,,,,2,civicapi,2026-10-08T00:03:37+00:00
 2026,CA,06105,Trinity County,2026-10-08,26,11,,11,,,,,,2,civicapi,2026-10-08T22:55:15+00:00
 2026,CA,06105,Trinity County,2026-10-09,25,11,,11,,,,,,2,civicapi,2026-10-09T19:17:05+00:00
@@ -847,6 +899,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,CA,06105,Trinity County,2026-10-12,22,11,,11,,,,,,2,civicapi,2026-10-13T07:26:46+00:00
 2026,CA,06105,Trinity County,2026-10-13,21,11,,11,,,,,,2,civicapi,2026-10-14T02:22:06+00:00
 2026,CA,06105,Trinity County,2026-10-14,20,214,,214,,,,,,2,civicapi,2026-10-15T03:02:44+00:00
+2026,CA,06105,Trinity County,2026-10-15,19,337,,337,,,,,,2,civicapi,2026-10-15T17:03:05+00:00
 2026,CA,06107,Tulare County,2026-10-07,27,18,,18,,,,,,2,civicapi,2026-10-08T00:03:37+00:00
 2026,CA,06107,Tulare County,2026-10-08,26,20,,20,,,,,,2,civicapi,2026-10-08T22:55:15+00:00
 2026,CA,06107,Tulare County,2026-10-09,25,23,,23,,,,,,2,civicapi,2026-10-09T19:17:05+00:00
@@ -854,6 +907,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,CA,06107,Tulare County,2026-10-12,22,618,,618,,,,,,2,civicapi,2026-10-14T01:11:45+00:00
 2026,CA,06107,Tulare County,2026-10-13,21,653,,653,,,,,,2,civicapi,2026-10-14T03:02:29+00:00
 2026,CA,06107,Tulare County,2026-10-14,20,3950,,3950,,,,,,2,civicapi,2026-10-15T03:02:44+00:00
+2026,CA,06107,Tulare County,2026-10-15,19,5701,,5701,,,,,,2,civicapi,2026-10-15T17:03:05+00:00
 2026,CA,06109,Tuolumne County,2026-10-07,27,4,,4,,,,,,2,civicapi,2026-10-08T00:03:37+00:00
 2026,CA,06109,Tuolumne County,2026-10-08,26,4,,4,,,,,,2,civicapi,2026-10-08T22:55:15+00:00
 2026,CA,06109,Tuolumne County,2026-10-09,25,8,,8,,,,,,2,civicapi,2026-10-09T19:17:05+00:00
@@ -861,12 +915,14 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,CA,06109,Tuolumne County,2026-10-12,22,174,,174,,,,,,2,civicapi,2026-10-13T07:26:46+00:00
 2026,CA,06109,Tuolumne County,2026-10-13,21,174,,174,,,,,,2,civicapi,2026-10-14T02:22:06+00:00
 2026,CA,06109,Tuolumne County,2026-10-14,20,884,,884,,,,,,2,civicapi,2026-10-15T03:02:44+00:00
+2026,CA,06109,Tuolumne County,2026-10-15,19,884,,884,,,,,,2,civicapi,2026-10-15T17:03:05+00:00
 2026,CA,06111,Ventura County,2026-10-08,26,101,,101,,,,,,2,civicapi,2026-10-08T22:55:15+00:00
 2026,CA,06111,Ventura County,2026-10-09,25,160,,160,,,,,,2,civicapi,2026-10-09T19:17:05+00:00
 2026,CA,06111,Ventura County,2026-10-10,24,202,,202,,,,,,2,civicapi,2026-10-11T00:42:44+00:00
 2026,CA,06111,Ventura County,2026-10-12,22,2411,,2411,,,,,,2,civicapi,2026-10-14T01:11:45+00:00
 2026,CA,06111,Ventura County,2026-10-13,21,2411,,2411,,,,,,2,civicapi,2026-10-14T02:22:06+00:00
 2026,CA,06111,Ventura County,2026-10-14,20,12537,,12537,,,,,,2,civicapi,2026-10-14T19:32:44+00:00
+2026,CA,06111,Ventura County,2026-10-15,19,12537,,12537,,,,,,2,civicapi,2026-10-15T17:03:05+00:00
 2026,CA,06113,Yolo County,2026-10-07,27,50,,50,,,,,,2,civicapi,2026-10-08T00:03:37+00:00
 2026,CA,06113,Yolo County,2026-10-08,26,58,,58,,,,,,2,civicapi,2026-10-08T22:55:15+00:00
 2026,CA,06113,Yolo County,2026-10-09,25,63,,63,,,,,,2,civicapi,2026-10-09T19:17:05+00:00
@@ -874,6 +930,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,CA,06113,Yolo County,2026-10-12,22,180,,180,,,,,,2,civicapi,2026-10-14T01:11:45+00:00
 2026,CA,06113,Yolo County,2026-10-13,21,180,,180,,,,,,2,civicapi,2026-10-14T02:22:06+00:00
 2026,CA,06113,Yolo County,2026-10-14,20,1375,,1375,,,,,,2,civicapi,2026-10-14T19:32:44+00:00
+2026,CA,06113,Yolo County,2026-10-15,19,2544,,2544,,,,,,2,civicapi,2026-10-15T17:03:05+00:00
 2026,CA,06115,Yuba County,2026-10-07,27,1,,1,,,,,,2,civicapi,2026-10-08T00:03:37+00:00
 2026,CA,06115,Yuba County,2026-10-08,26,2,,2,,,,,,2,civicapi,2026-10-08T22:55:15+00:00
 2026,CA,06115,Yuba County,2026-10-09,25,2,,2,,,,,,2,civicapi,2026-10-09T19:17:05+00:00
@@ -881,3 +938,4 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,CA,06115,Yuba County,2026-10-12,22,224,,224,,,,,,2,civicapi,2026-10-14T01:11:45+00:00
 2026,CA,06115,Yuba County,2026-10-13,21,226,,226,,,,,,2,civicapi,2026-10-14T03:02:29+00:00
 2026,CA,06115,Yuba County,2026-10-14,20,490,,490,,,,,,2,civicapi,2026-10-14T19:32:44+00:00
+2026,CA,06115,Yuba County,2026-10-15,19,637,,637,,,,,,2,civicapi,2026-10-15T17:03:05+00:00
