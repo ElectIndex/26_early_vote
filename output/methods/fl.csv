@@ -6833,6 +6833,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,FL,12001,Alachua County,2026-10-15,19,mail,6900,,4066,1606,152,1076,1,fl-doe,2026-10-15T13:00:35+00:00
 2026,FL,12001,Alachua County,2026-10-16,18,inperson,0,,0,0,0,0,1,fl-doe,2026-10-16T13:00:43+00:00
 2026,FL,12001,Alachua County,2026-10-16,18,mail,7658,,4533,1765,171,1189,1,fl-doe,2026-10-16T13:00:43+00:00
+2026,FL,12001,Alachua County,2026-10-17,17,inperson,0,,0,0,0,0,1,fl-doe,2026-10-17T13:00:49+00:00
+2026,FL,12001,Alachua County,2026-10-17,17,mail,8979,,5309,2072,195,1403,1,fl-doe,2026-10-17T13:00:49+00:00
 2026,FL,12003,Baker County,2026-09-16,48,inperson,0,,0,0,0,0,1,fl-doe,2026-09-16T16:07:18+00:00
 2026,FL,12003,Baker County,2026-09-16,48,mail,0,,0,0,0,0,1,fl-doe,2026-09-16T16:07:18+00:00
 2026,FL,12003,Baker County,2026-09-17,47,inperson,0,,0,0,0,0,1,fl-doe,2026-09-17T12:39:43+00:00
@@ -6895,6 +6897,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,FL,12003,Baker County,2026-10-15,19,mail,344,,73,242,3,26,1,fl-doe,2026-10-15T13:00:35+00:00
 2026,FL,12003,Baker County,2026-10-16,18,inperson,0,,0,0,0,0,1,fl-doe,2026-10-16T13:00:43+00:00
 2026,FL,12003,Baker County,2026-10-16,18,mail,344,,73,242,3,26,1,fl-doe,2026-10-16T13:00:43+00:00
+2026,FL,12003,Baker County,2026-10-17,17,inperson,0,,0,0,0,0,1,fl-doe,2026-10-17T13:00:49+00:00
+2026,FL,12003,Baker County,2026-10-17,17,mail,376,,77,270,3,26,1,fl-doe,2026-10-17T13:00:49+00:00
 2026,FL,12005,Bay County,2026-09-12,52,inperson,0,,0,0,0,0,1,fl-doe,2026-09-12T13:20:39+00:00
 2026,FL,12005,Bay County,2026-09-12,52,mail,0,,0,0,0,0,1,fl-doe,2026-09-12T13:20:39+00:00
 2026,FL,12005,Bay County,2026-09-13,51,inperson,0,,0,0,0,0,1,fl-doe,2026-09-13T14:03:25+00:00
@@ -6965,6 +6969,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,FL,12005,Bay County,2026-10-15,19,mail,3930,,1208,2058,88,576,1,fl-doe,2026-10-15T15:30:34+00:00
 2026,FL,12005,Bay County,2026-10-16,18,inperson,0,,0,0,0,0,1,fl-doe,2026-10-16T13:00:43+00:00
 2026,FL,12005,Bay County,2026-10-16,18,mail,4074,,1247,2140,92,595,1,fl-doe,2026-10-16T13:00:43+00:00
+2026,FL,12005,Bay County,2026-10-17,17,inperson,0,,0,0,0,0,1,fl-doe,2026-10-17T13:00:49+00:00
+2026,FL,12005,Bay County,2026-10-17,17,mail,4197,,1300,2190,95,612,1,fl-doe,2026-10-17T13:00:49+00:00
 2026,FL,12007,Bradford County,2026-09-19,45,inperson,0,,0,0,0,0,1,fl-doe,2026-09-19T13:41:22+00:00
 2026,FL,12007,Bradford County,2026-09-19,45,mail,0,,0,0,0,0,1,fl-doe,2026-09-19T13:41:22+00:00
 2026,FL,12007,Bradford County,2026-09-20,44,inperson,0,,0,0,0,0,1,fl-doe,2026-09-20T13:56:34+00:00
@@ -7021,6 +7027,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,FL,12007,Bradford County,2026-10-15,19,mail,323,,119,172,7,25,1,fl-doe,2026-10-15T13:00:35+00:00
 2026,FL,12007,Bradford County,2026-10-16,18,inperson,0,,0,0,0,0,1,fl-doe,2026-10-16T13:00:43+00:00
 2026,FL,12007,Bradford County,2026-10-16,18,mail,373,,137,197,7,32,1,fl-doe,2026-10-16T13:00:43+00:00
+2026,FL,12007,Bradford County,2026-10-17,17,inperson,0,,0,0,0,0,1,fl-doe,2026-10-17T13:00:49+00:00
+2026,FL,12007,Bradford County,2026-10-17,17,mail,412,,142,227,8,35,1,fl-doe,2026-10-17T13:00:49+00:00
 2026,FL,12009,Brevard County,2026-09-18,46,inperson,0,,0,0,0,0,1,fl-doe,2026-09-18T14:05:38+00:00
 2026,FL,12009,Brevard County,2026-09-18,46,mail,0,,0,0,0,0,1,fl-doe,2026-09-18T14:05:38+00:00
 2026,FL,12009,Brevard County,2026-09-19,45,inperson,0,,0,0,0,0,1,fl-doe,2026-09-19T13:41:22+00:00
@@ -7079,6 +7087,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,FL,12009,Brevard County,2026-10-15,19,mail,20457,,7984,8081,584,3808,1,fl-doe,2026-10-15T13:00:35+00:00
 2026,FL,12009,Brevard County,2026-10-16,18,inperson,0,,0,0,0,0,1,fl-doe,2026-10-16T13:00:43+00:00
 2026,FL,12009,Brevard County,2026-10-16,18,mail,24607,,9502,9775,719,4611,1,fl-doe,2026-10-16T13:00:43+00:00
+2026,FL,12009,Brevard County,2026-10-17,17,inperson,0,,0,0,0,0,1,fl-doe,2026-10-17T13:00:49+00:00
+2026,FL,12009,Brevard County,2026-10-17,17,mail,27100,,10494,10781,781,5044,1,fl-doe,2026-10-17T13:00:49+00:00
 2026,FL,12011,Broward County,2026-09-15,49,inperson,0,,0,0,0,0,1,fl-doe,2026-09-15T13:08:04+00:00
 2026,FL,12011,Broward County,2026-09-15,49,mail,0,,0,0,0,0,1,fl-doe,2026-09-15T13:08:04+00:00
 2026,FL,12011,Broward County,2026-09-16,48,inperson,0,,0,0,0,0,1,fl-doe,2026-09-16T16:07:18+00:00
@@ -7143,6 +7153,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,FL,12011,Broward County,2026-10-15,19,mail,37125,,21402,7975,709,7039,1,fl-doe,2026-10-15T13:00:35+00:00
 2026,FL,12011,Broward County,2026-10-16,18,inperson,0,,0,0,0,0,1,fl-doe,2026-10-16T13:00:43+00:00
 2026,FL,12011,Broward County,2026-10-16,18,mail,41197,,23681,8895,781,7840,1,fl-doe,2026-10-16T13:00:43+00:00
+2026,FL,12011,Broward County,2026-10-17,17,inperson,0,,0,0,0,0,1,fl-doe,2026-10-17T13:00:49+00:00
+2026,FL,12011,Broward County,2026-10-17,17,mail,46168,,26456,10018,867,8827,1,fl-doe,2026-10-17T13:00:49+00:00
 2026,FL,12013,Calhoun County,2026-09-18,46,inperson,0,,0,0,0,0,1,fl-doe,2026-09-18T14:05:38+00:00
 2026,FL,12013,Calhoun County,2026-09-18,46,mail,0,,0,0,0,0,1,fl-doe,2026-09-18T14:05:38+00:00
 2026,FL,12013,Calhoun County,2026-09-19,45,inperson,0,,0,0,0,0,1,fl-doe,2026-09-19T13:41:22+00:00
@@ -7201,6 +7213,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,FL,12013,Calhoun County,2026-10-15,19,mail,196,,77,113,0,6,1,fl-doe,2026-10-15T13:00:35+00:00
 2026,FL,12013,Calhoun County,2026-10-16,18,inperson,0,,0,0,0,0,1,fl-doe,2026-10-16T13:00:43+00:00
 2026,FL,12013,Calhoun County,2026-10-16,18,mail,211,,81,124,0,6,1,fl-doe,2026-10-16T13:00:43+00:00
+2026,FL,12013,Calhoun County,2026-10-17,17,inperson,0,,0,0,0,0,1,fl-doe,2026-10-17T13:00:49+00:00
+2026,FL,12013,Calhoun County,2026-10-17,17,mail,229,,83,138,0,8,1,fl-doe,2026-10-17T13:00:49+00:00
 2026,FL,12015,Charlotte County,2026-09-19,45,inperson,0,,0,0,0,0,1,fl-doe,2026-09-19T13:41:22+00:00
 2026,FL,12015,Charlotte County,2026-09-19,45,mail,2,,2,0,0,0,1,fl-doe,2026-09-19T13:41:22+00:00
 2026,FL,12015,Charlotte County,2026-09-20,44,inperson,0,,0,0,0,0,1,fl-doe,2026-09-20T13:56:34+00:00
@@ -7257,6 +7271,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,FL,12015,Charlotte County,2026-10-15,19,mail,12822,,4279,5765,478,2300,1,fl-doe,2026-10-15T13:00:35+00:00
 2026,FL,12015,Charlotte County,2026-10-16,18,inperson,0,,0,0,0,0,1,fl-doe,2026-10-16T13:00:43+00:00
 2026,FL,12015,Charlotte County,2026-10-16,18,mail,14229,,4750,6374,538,2567,1,fl-doe,2026-10-16T13:00:43+00:00
+2026,FL,12015,Charlotte County,2026-10-17,17,inperson,0,,0,0,0,0,1,fl-doe,2026-10-17T13:00:49+00:00
+2026,FL,12015,Charlotte County,2026-10-17,17,mail,15168,,5037,6803,567,2761,1,fl-doe,2026-10-17T13:00:49+00:00
 2026,FL,12017,Citrus County,2026-09-18,46,inperson,0,,0,0,0,0,1,fl-doe,2026-09-18T14:05:38+00:00
 2026,FL,12017,Citrus County,2026-09-18,46,mail,0,,0,0,0,0,1,fl-doe,2026-09-18T14:05:38+00:00
 2026,FL,12017,Citrus County,2026-09-19,45,inperson,0,,0,0,0,0,1,fl-doe,2026-09-19T13:41:22+00:00
@@ -7315,6 +7331,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,FL,12017,Citrus County,2026-10-15,19,mail,8633,,2761,4137,257,1478,1,fl-doe,2026-10-15T13:00:35+00:00
 2026,FL,12017,Citrus County,2026-10-16,18,inperson,0,,0,0,0,0,1,fl-doe,2026-10-16T13:00:43+00:00
 2026,FL,12017,Citrus County,2026-10-16,18,mail,9188,,2933,4407,276,1572,1,fl-doe,2026-10-16T13:00:43+00:00
+2026,FL,12017,Citrus County,2026-10-17,17,inperson,0,,0,0,0,0,1,fl-doe,2026-10-17T13:00:49+00:00
+2026,FL,12017,Citrus County,2026-10-17,17,mail,10123,,3179,4894,307,1743,1,fl-doe,2026-10-17T13:00:49+00:00
 2026,FL,12019,Clay County,2026-09-18,46,inperson,0,,0,0,0,0,1,fl-doe,2026-09-18T14:05:38+00:00
 2026,FL,12019,Clay County,2026-09-18,46,mail,0,,0,0,0,0,1,fl-doe,2026-09-18T14:05:38+00:00
 2026,FL,12019,Clay County,2026-09-19,45,inperson,0,,0,0,0,0,1,fl-doe,2026-09-19T13:41:22+00:00
@@ -7373,6 +7391,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,FL,12019,Clay County,2026-10-15,19,mail,5220,,1686,2554,125,855,1,fl-doe,2026-10-15T13:00:35+00:00
 2026,FL,12019,Clay County,2026-10-16,18,inperson,0,,0,0,0,0,1,fl-doe,2026-10-16T13:00:43+00:00
 2026,FL,12019,Clay County,2026-10-16,18,mail,5822,,1863,2867,145,947,1,fl-doe,2026-10-16T13:00:43+00:00
+2026,FL,12019,Clay County,2026-10-17,17,inperson,0,,0,0,0,0,1,fl-doe,2026-10-17T13:00:49+00:00
+2026,FL,12019,Clay County,2026-10-17,17,mail,6022,,1925,2967,145,985,1,fl-doe,2026-10-17T13:00:49+00:00
 2026,FL,12021,Collier County,2026-09-18,46,inperson,0,,0,0,0,0,1,fl-doe,2026-09-18T14:05:38+00:00
 2026,FL,12021,Collier County,2026-09-18,46,mail,0,,0,0,0,0,1,fl-doe,2026-09-18T14:05:38+00:00
 2026,FL,12021,Collier County,2026-09-19,45,inperson,0,,0,0,0,0,1,fl-doe,2026-09-19T13:41:22+00:00
@@ -7431,6 +7451,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,FL,12021,Collier County,2026-10-15,19,mail,19992,,5588,10281,469,3654,1,fl-doe,2026-10-15T13:00:35+00:00
 2026,FL,12021,Collier County,2026-10-16,18,inperson,0,,0,0,0,0,1,fl-doe,2026-10-16T13:00:43+00:00
 2026,FL,12021,Collier County,2026-10-16,18,mail,22079,,6122,11386,512,4059,1,fl-doe,2026-10-16T13:00:43+00:00
+2026,FL,12021,Collier County,2026-10-17,17,inperson,0,,0,0,0,0,1,fl-doe,2026-10-17T13:00:49+00:00
+2026,FL,12021,Collier County,2026-10-17,17,mail,23598,,6515,12187,548,4348,1,fl-doe,2026-10-17T13:00:49+00:00
 2026,FL,12023,Columbia County,2026-09-16,48,inperson,0,,0,0,0,0,1,fl-doe,2026-09-16T16:07:18+00:00
 2026,FL,12023,Columbia County,2026-09-16,48,mail,0,,0,0,0,0,1,fl-doe,2026-09-16T16:07:18+00:00
 2026,FL,12023,Columbia County,2026-09-17,47,inperson,0,,0,0,0,0,1,fl-doe,2026-09-17T12:39:43+00:00
@@ -7493,6 +7515,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,FL,12023,Columbia County,2026-10-15,19,mail,1462,,533,766,30,133,1,fl-doe,2026-10-15T13:00:35+00:00
 2026,FL,12023,Columbia County,2026-10-16,18,inperson,0,,0,0,0,0,1,fl-doe,2026-10-16T13:00:43+00:00
 2026,FL,12023,Columbia County,2026-10-16,18,mail,1562,,567,818,32,145,1,fl-doe,2026-10-16T13:00:43+00:00
+2026,FL,12023,Columbia County,2026-10-17,17,inperson,0,,0,0,0,0,1,fl-doe,2026-10-17T13:00:49+00:00
+2026,FL,12023,Columbia County,2026-10-17,17,mail,1712,,615,900,34,163,1,fl-doe,2026-10-17T13:00:49+00:00
 2026,FL,12027,DeSoto County,2026-09-19,45,inperson,0,,0,0,0,0,1,fl-doe,2026-09-19T13:41:22+00:00
 2026,FL,12027,DeSoto County,2026-09-19,45,mail,0,,0,0,0,0,1,fl-doe,2026-09-19T13:41:22+00:00
 2026,FL,12027,DeSoto County,2026-09-20,44,inperson,0,,0,0,0,0,1,fl-doe,2026-09-20T13:56:34+00:00
@@ -7549,6 +7573,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,FL,12027,DeSoto County,2026-10-15,19,mail,531,,208,235,8,80,1,fl-doe,2026-10-15T13:00:35+00:00
 2026,FL,12027,DeSoto County,2026-10-16,18,inperson,0,,0,0,0,0,1,fl-doe,2026-10-16T13:00:43+00:00
 2026,FL,12027,DeSoto County,2026-10-16,18,mail,559,,218,248,8,85,1,fl-doe,2026-10-16T13:00:43+00:00
+2026,FL,12027,DeSoto County,2026-10-17,17,inperson,0,,0,0,0,0,1,fl-doe,2026-10-17T13:00:49+00:00
+2026,FL,12027,DeSoto County,2026-10-17,17,mail,606,,241,261,10,94,1,fl-doe,2026-10-17T13:00:49+00:00
 2026,FL,12029,Dixie County,2026-09-17,47,inperson,0,,0,0,0,0,1,fl-doe,2026-09-17T12:39:43+00:00
 2026,FL,12029,Dixie County,2026-09-17,47,mail,0,,0,0,0,0,1,fl-doe,2026-09-17T12:39:43+00:00
 2026,FL,12029,Dixie County,2026-09-18,46,inperson,0,,0,0,0,0,1,fl-doe,2026-09-18T14:05:38+00:00
@@ -7609,6 +7635,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,FL,12029,Dixie County,2026-10-15,19,mail,388,,88,257,7,36,1,fl-doe,2026-10-15T13:00:35+00:00
 2026,FL,12029,Dixie County,2026-10-16,18,inperson,0,,0,0,0,0,1,fl-doe,2026-10-16T13:00:43+00:00
 2026,FL,12029,Dixie County,2026-10-16,18,mail,420,,91,281,9,39,1,fl-doe,2026-10-16T13:00:43+00:00
+2026,FL,12029,Dixie County,2026-10-17,17,inperson,0,,0,0,0,0,1,fl-doe,2026-10-17T13:00:49+00:00
+2026,FL,12029,Dixie County,2026-10-17,17,mail,460,,100,306,9,45,1,fl-doe,2026-10-17T13:00:49+00:00
 2026,FL,12031,Duval County,2026-09-16,48,inperson,0,,0,0,0,0,1,fl-doe,2026-09-16T16:07:18+00:00
 2026,FL,12031,Duval County,2026-09-16,48,mail,0,,0,0,0,0,1,fl-doe,2026-09-16T16:07:18+00:00
 2026,FL,12031,Duval County,2026-09-17,47,inperson,0,,0,0,0,0,1,fl-doe,2026-09-17T12:39:43+00:00
@@ -7671,6 +7699,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,FL,12031,Duval County,2026-10-15,19,mail,10295,,5074,3592,237,1392,1,fl-doe,2026-10-15T13:00:35+00:00
 2026,FL,12031,Duval County,2026-10-16,18,inperson,0,,0,0,0,0,1,fl-doe,2026-10-16T13:00:43+00:00
 2026,FL,12031,Duval County,2026-10-16,18,mail,12370,,6109,4314,272,1675,1,fl-doe,2026-10-16T13:00:43+00:00
+2026,FL,12031,Duval County,2026-10-17,17,inperson,0,,0,0,0,0,1,fl-doe,2026-10-17T13:00:49+00:00
+2026,FL,12031,Duval County,2026-10-17,17,mail,12681,,6232,4435,282,1732,1,fl-doe,2026-10-17T13:00:49+00:00
 2026,FL,12033,Escambia County,2026-09-16,48,inperson,0,,0,0,0,0,1,fl-doe,2026-09-16T16:07:18+00:00
 2026,FL,12033,Escambia County,2026-09-16,48,mail,0,,0,0,0,0,1,fl-doe,2026-09-16T16:07:18+00:00
 2026,FL,12033,Escambia County,2026-09-17,47,inperson,0,,0,0,0,0,1,fl-doe,2026-09-17T12:39:43+00:00
@@ -7733,6 +7763,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,FL,12033,Escambia County,2026-10-15,19,mail,5814,,2373,2499,126,816,1,fl-doe,2026-10-15T13:00:35+00:00
 2026,FL,12033,Escambia County,2026-10-16,18,inperson,0,,0,0,0,0,1,fl-doe,2026-10-16T13:00:43+00:00
 2026,FL,12033,Escambia County,2026-10-16,18,mail,6059,,2485,2577,132,865,1,fl-doe,2026-10-16T13:00:43+00:00
+2026,FL,12033,Escambia County,2026-10-17,17,inperson,0,,0,0,0,0,1,fl-doe,2026-10-17T13:00:49+00:00
+2026,FL,12033,Escambia County,2026-10-17,17,mail,6939,,2859,2955,146,979,1,fl-doe,2026-10-17T13:00:49+00:00
 2026,FL,12035,Flagler County,2026-09-18,46,inperson,0,,0,0,0,0,1,fl-doe,2026-09-18T14:05:38+00:00
 2026,FL,12035,Flagler County,2026-09-18,46,mail,0,,0,0,0,0,1,fl-doe,2026-09-18T14:05:38+00:00
 2026,FL,12035,Flagler County,2026-09-19,45,inperson,0,,0,0,0,0,1,fl-doe,2026-09-19T13:41:22+00:00
@@ -7791,6 +7823,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,FL,12035,Flagler County,2026-10-15,19,mail,6572,,2721,2595,157,1099,1,fl-doe,2026-10-15T13:00:35+00:00
 2026,FL,12035,Flagler County,2026-10-16,18,inperson,0,,0,0,0,0,1,fl-doe,2026-10-16T13:00:43+00:00
 2026,FL,12035,Flagler County,2026-10-16,18,mail,7480,,3067,2970,179,1264,1,fl-doe,2026-10-16T13:00:43+00:00
+2026,FL,12035,Flagler County,2026-10-17,17,inperson,0,,0,0,0,0,1,fl-doe,2026-10-17T13:00:49+00:00
+2026,FL,12035,Flagler County,2026-10-17,17,mail,7614,,3131,3015,181,1287,1,fl-doe,2026-10-17T13:00:49+00:00
 2026,FL,12037,Franklin County,2026-09-09,55,inperson,0,,0,0,0,0,1,fl-doe,2026-09-09T14:09:29+00:00
 2026,FL,12037,Franklin County,2026-09-09,55,mail,0,,0,0,0,0,1,fl-doe,2026-09-09T14:09:29+00:00
 2026,FL,12037,Franklin County,2026-09-10,54,inperson,0,,0,0,0,0,1,fl-doe,2026-09-10T14:03:21+00:00
@@ -7867,6 +7901,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,FL,12037,Franklin County,2026-10-15,19,mail,333,,139,139,14,41,1,fl-doe,2026-10-15T13:00:35+00:00
 2026,FL,12037,Franklin County,2026-10-16,18,inperson,0,,0,0,0,0,1,fl-doe,2026-10-16T13:00:43+00:00
 2026,FL,12037,Franklin County,2026-10-16,18,mail,353,,147,146,16,44,1,fl-doe,2026-10-16T13:00:43+00:00
+2026,FL,12037,Franklin County,2026-10-17,17,inperson,0,,0,0,0,0,1,fl-doe,2026-10-17T13:00:49+00:00
+2026,FL,12037,Franklin County,2026-10-17,17,mail,379,,158,158,16,47,1,fl-doe,2026-10-17T13:00:49+00:00
 2026,FL,12039,Gadsden County,2026-09-17,47,inperson,0,,0,0,0,0,1,fl-doe,2026-09-17T12:39:43+00:00
 2026,FL,12039,Gadsden County,2026-09-17,47,mail,0,,0,0,0,0,1,fl-doe,2026-09-17T12:39:43+00:00
 2026,FL,12039,Gadsden County,2026-09-18,46,inperson,0,,0,0,0,0,1,fl-doe,2026-09-18T14:05:38+00:00
@@ -7927,6 +7963,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,FL,12039,Gadsden County,2026-10-15,19,mail,978,,754,165,7,52,1,fl-doe,2026-10-15T13:00:35+00:00
 2026,FL,12039,Gadsden County,2026-10-16,18,inperson,0,,0,0,0,0,1,fl-doe,2026-10-16T13:00:43+00:00
 2026,FL,12039,Gadsden County,2026-10-16,18,mail,1021,,787,171,7,56,1,fl-doe,2026-10-16T13:00:43+00:00
+2026,FL,12039,Gadsden County,2026-10-17,17,inperson,0,,0,0,0,0,1,fl-doe,2026-10-17T13:00:49+00:00
+2026,FL,12039,Gadsden County,2026-10-17,17,mail,1110,,858,183,7,62,1,fl-doe,2026-10-17T13:00:49+00:00
 2026,FL,12041,Gilchrist County,2026-09-18,46,inperson,0,,0,0,0,0,1,fl-doe,2026-09-18T14:05:38+00:00
 2026,FL,12041,Gilchrist County,2026-09-18,46,mail,0,,0,0,0,0,1,fl-doe,2026-09-18T14:05:38+00:00
 2026,FL,12041,Gilchrist County,2026-09-19,45,inperson,0,,0,0,0,0,1,fl-doe,2026-09-19T13:41:22+00:00
@@ -7985,6 +8023,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,FL,12041,Gilchrist County,2026-10-15,19,mail,423,,108,274,8,33,1,fl-doe,2026-10-15T13:00:35+00:00
 2026,FL,12041,Gilchrist County,2026-10-16,18,inperson,0,,0,0,0,0,1,fl-doe,2026-10-16T13:00:43+00:00
 2026,FL,12041,Gilchrist County,2026-10-16,18,mail,458,,120,294,9,35,1,fl-doe,2026-10-16T13:00:43+00:00
+2026,FL,12041,Gilchrist County,2026-10-17,17,inperson,0,,0,0,0,0,1,fl-doe,2026-10-17T13:00:49+00:00
+2026,FL,12041,Gilchrist County,2026-10-17,17,mail,491,,133,311,9,38,1,fl-doe,2026-10-17T13:00:49+00:00
 2026,FL,12043,Glades County,2026-09-18,46,inperson,0,,0,0,0,0,1,fl-doe,2026-09-18T14:05:38+00:00
 2026,FL,12043,Glades County,2026-09-18,46,mail,0,,0,0,0,0,1,fl-doe,2026-09-18T14:05:38+00:00
 2026,FL,12043,Glades County,2026-09-19,45,inperson,0,,0,0,0,0,1,fl-doe,2026-09-19T13:41:22+00:00
@@ -8043,6 +8083,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,FL,12043,Glades County,2026-10-15,19,mail,269,,84,149,4,32,1,fl-doe,2026-10-15T13:00:35+00:00
 2026,FL,12043,Glades County,2026-10-16,18,inperson,0,,0,0,0,0,1,fl-doe,2026-10-16T13:00:43+00:00
 2026,FL,12043,Glades County,2026-10-16,18,mail,300,,96,166,4,34,1,fl-doe,2026-10-16T13:00:43+00:00
+2026,FL,12043,Glades County,2026-10-17,17,inperson,0,,0,0,0,0,1,fl-doe,2026-10-17T13:00:49+00:00
+2026,FL,12043,Glades County,2026-10-17,17,mail,330,,109,181,4,36,1,fl-doe,2026-10-17T13:00:49+00:00
 2026,FL,12045,Gulf County,2026-09-19,45,inperson,0,,0,0,0,0,1,fl-doe,2026-09-19T13:41:22+00:00
 2026,FL,12045,Gulf County,2026-09-19,45,mail,0,,0,0,0,0,1,fl-doe,2026-09-19T13:41:22+00:00
 2026,FL,12045,Gulf County,2026-09-20,44,inperson,0,,0,0,0,0,1,fl-doe,2026-09-20T13:56:34+00:00
@@ -8099,6 +8141,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,FL,12045,Gulf County,2026-10-15,19,mail,309,,96,169,16,28,1,fl-doe,2026-10-15T13:00:35+00:00
 2026,FL,12045,Gulf County,2026-10-16,18,inperson,0,,0,0,0,0,1,fl-doe,2026-10-16T13:00:43+00:00
 2026,FL,12045,Gulf County,2026-10-16,18,mail,309,,96,169,16,28,1,fl-doe,2026-10-16T13:00:43+00:00
+2026,FL,12045,Gulf County,2026-10-17,17,inperson,0,,0,0,0,0,1,fl-doe,2026-10-17T13:00:49+00:00
+2026,FL,12045,Gulf County,2026-10-17,17,mail,398,,122,222,18,36,1,fl-doe,2026-10-17T13:00:49+00:00
 2026,FL,12047,Hamilton County,2026-09-15,49,inperson,0,,0,0,0,0,1,fl-doe,2026-09-15T13:08:04+00:00
 2026,FL,12047,Hamilton County,2026-09-15,49,mail,0,,0,0,0,0,1,fl-doe,2026-09-15T13:08:04+00:00
 2026,FL,12047,Hamilton County,2026-09-16,48,inperson,0,,0,0,0,0,1,fl-doe,2026-09-16T16:07:18+00:00
@@ -8163,6 +8207,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,FL,12047,Hamilton County,2026-10-15,19,mail,241,,95,125,5,16,1,fl-doe,2026-10-15T13:00:35+00:00
 2026,FL,12047,Hamilton County,2026-10-16,18,inperson,0,,0,0,0,0,1,fl-doe,2026-10-16T13:00:43+00:00
 2026,FL,12047,Hamilton County,2026-10-16,18,mail,265,,108,136,5,16,1,fl-doe,2026-10-16T13:00:43+00:00
+2026,FL,12047,Hamilton County,2026-10-17,17,inperson,0,,0,0,0,0,1,fl-doe,2026-10-17T13:00:49+00:00
+2026,FL,12047,Hamilton County,2026-10-17,17,mail,265,,108,136,5,16,1,fl-doe,2026-10-17T13:00:49+00:00
 2026,FL,12049,Hardee County,2026-09-09,55,inperson,0,,0,0,0,0,1,fl-doe,2026-09-09T14:09:29+00:00
 2026,FL,12049,Hardee County,2026-09-09,55,mail,0,,0,0,0,0,1,fl-doe,2026-09-09T14:09:29+00:00
 2026,FL,12049,Hardee County,2026-09-10,54,inperson,0,,0,0,0,0,1,fl-doe,2026-09-10T14:03:21+00:00
@@ -8239,6 +8285,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,FL,12049,Hardee County,2026-10-15,19,mail,199,,74,102,2,21,1,fl-doe,2026-10-15T13:00:35+00:00
 2026,FL,12049,Hardee County,2026-10-16,18,inperson,0,,0,0,0,0,1,fl-doe,2026-10-16T13:00:43+00:00
 2026,FL,12049,Hardee County,2026-10-16,18,mail,199,,74,102,2,21,1,fl-doe,2026-10-16T13:00:43+00:00
+2026,FL,12049,Hardee County,2026-10-17,17,inperson,0,,0,0,0,0,1,fl-doe,2026-10-17T13:00:49+00:00
+2026,FL,12049,Hardee County,2026-10-17,17,mail,199,,74,102,2,21,1,fl-doe,2026-10-17T13:00:49+00:00
 2026,FL,12051,Hendry County,2026-09-19,45,inperson,0,,0,0,0,0,1,fl-doe,2026-09-19T13:41:22+00:00
 2026,FL,12051,Hendry County,2026-09-19,45,mail,0,,0,0,0,0,1,fl-doe,2026-09-19T13:41:22+00:00
 2026,FL,12051,Hendry County,2026-09-20,44,inperson,0,,0,0,0,0,1,fl-doe,2026-09-20T13:56:34+00:00
@@ -8295,6 +8343,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,FL,12051,Hendry County,2026-10-15,19,mail,428,,192,184,8,44,1,fl-doe,2026-10-15T13:00:35+00:00
 2026,FL,12051,Hendry County,2026-10-16,18,inperson,0,,0,0,0,0,1,fl-doe,2026-10-16T13:00:43+00:00
 2026,FL,12051,Hendry County,2026-10-16,18,mail,465,,201,207,10,47,1,fl-doe,2026-10-16T13:00:43+00:00
+2026,FL,12051,Hendry County,2026-10-17,17,inperson,0,,0,0,0,0,1,fl-doe,2026-10-17T13:00:49+00:00
+2026,FL,12051,Hendry County,2026-10-17,17,mail,504,,214,224,12,54,1,fl-doe,2026-10-17T13:00:49+00:00
 2026,FL,12053,Hernando County,2026-09-18,46,inperson,0,,0,0,0,0,1,fl-doe,2026-09-18T14:05:38+00:00
 2026,FL,12053,Hernando County,2026-09-18,46,mail,0,,0,0,0,0,1,fl-doe,2026-09-18T14:05:38+00:00
 2026,FL,12053,Hernando County,2026-09-19,45,inperson,0,,0,0,0,0,1,fl-doe,2026-09-19T13:41:22+00:00
@@ -8353,6 +8403,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,FL,12053,Hernando County,2026-10-15,19,mail,8658,,3591,3381,178,1508,1,fl-doe,2026-10-15T13:00:35+00:00
 2026,FL,12053,Hernando County,2026-10-16,18,inperson,0,,0,0,0,0,1,fl-doe,2026-10-16T13:00:43+00:00
 2026,FL,12053,Hernando County,2026-10-16,18,mail,9205,,3803,3611,186,1605,1,fl-doe,2026-10-16T13:00:43+00:00
+2026,FL,12053,Hernando County,2026-10-17,17,inperson,0,,0,0,0,0,1,fl-doe,2026-10-17T13:00:49+00:00
+2026,FL,12053,Hernando County,2026-10-17,17,mail,10369,,4183,4129,219,1838,1,fl-doe,2026-10-17T13:00:49+00:00
 2026,FL,12055,Highlands County,2026-09-18,46,inperson,0,,0,0,0,0,1,fl-doe,2026-09-18T14:05:38+00:00
 2026,FL,12055,Highlands County,2026-09-18,46,mail,0,,0,0,0,0,1,fl-doe,2026-09-18T14:05:38+00:00
 2026,FL,12055,Highlands County,2026-09-19,45,inperson,0,,0,0,0,0,1,fl-doe,2026-09-19T13:41:22+00:00
@@ -8411,6 +8463,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,FL,12055,Highlands County,2026-10-15,19,mail,2775,,1164,1078,85,448,1,fl-doe,2026-10-15T13:00:35+00:00
 2026,FL,12055,Highlands County,2026-10-16,18,inperson,0,,0,0,0,0,1,fl-doe,2026-10-16T13:00:43+00:00
 2026,FL,12055,Highlands County,2026-10-16,18,mail,2947,,1230,1152,87,478,1,fl-doe,2026-10-16T13:00:43+00:00
+2026,FL,12055,Highlands County,2026-10-17,17,inperson,0,,0,0,0,0,1,fl-doe,2026-10-17T13:00:49+00:00
+2026,FL,12055,Highlands County,2026-10-17,17,mail,3378,,1387,1354,102,535,1,fl-doe,2026-10-17T13:00:49+00:00
 2026,FL,12057,Hillsborough County,2026-09-19,45,inperson,0,,0,0,0,0,1,fl-doe,2026-09-19T13:41:22+00:00
 2026,FL,12057,Hillsborough County,2026-09-19,45,mail,1,,0,0,0,1,1,fl-doe,2026-09-19T13:41:22+00:00
 2026,FL,12057,Hillsborough County,2026-09-20,44,inperson,0,,0,0,0,0,1,fl-doe,2026-09-20T13:56:34+00:00
@@ -8467,6 +8521,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,FL,12057,Hillsborough County,2026-10-15,19,mail,33517,,14581,11604,866,6466,1,fl-doe,2026-10-15T13:00:35+00:00
 2026,FL,12057,Hillsborough County,2026-10-16,18,inperson,0,,0,0,0,0,1,fl-doe,2026-10-16T13:00:43+00:00
 2026,FL,12057,Hillsborough County,2026-10-16,18,mail,37483,,16365,12948,953,7217,1,fl-doe,2026-10-16T13:00:43+00:00
+2026,FL,12057,Hillsborough County,2026-10-17,17,inperson,0,,0,0,0,0,1,fl-doe,2026-10-17T13:00:49+00:00
+2026,FL,12057,Hillsborough County,2026-10-17,17,mail,45113,,19741,15522,1118,8732,1,fl-doe,2026-10-17T13:00:49+00:00
 2026,FL,12059,Holmes County,2026-09-18,46,inperson,0,,0,0,0,0,1,fl-doe,2026-09-18T14:05:38+00:00
 2026,FL,12059,Holmes County,2026-09-18,46,mail,0,,0,0,0,0,1,fl-doe,2026-09-18T14:05:38+00:00
 2026,FL,12059,Holmes County,2026-09-19,45,inperson,0,,0,0,0,0,1,fl-doe,2026-09-19T13:41:22+00:00
@@ -8525,6 +8581,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,FL,12059,Holmes County,2026-10-15,19,mail,238,,62,157,3,16,1,fl-doe,2026-10-15T13:00:35+00:00
 2026,FL,12059,Holmes County,2026-10-16,18,inperson,0,,0,0,0,0,1,fl-doe,2026-10-16T13:00:43+00:00
 2026,FL,12059,Holmes County,2026-10-16,18,mail,260,,66,174,4,16,1,fl-doe,2026-10-16T13:00:43+00:00
+2026,FL,12059,Holmes County,2026-10-17,17,inperson,0,,0,0,0,0,1,fl-doe,2026-10-17T13:00:49+00:00
+2026,FL,12059,Holmes County,2026-10-17,17,mail,275,,69,186,4,16,1,fl-doe,2026-10-17T13:00:49+00:00
 2026,FL,12061,Indian River County,2026-09-18,46,inperson,0,,0,0,0,0,1,fl-doe,2026-09-18T14:05:38+00:00
 2026,FL,12061,Indian River County,2026-09-18,46,mail,0,,0,0,0,0,1,fl-doe,2026-09-18T14:05:38+00:00
 2026,FL,12061,Indian River County,2026-09-19,45,inperson,0,,0,0,0,0,1,fl-doe,2026-09-19T13:41:22+00:00
@@ -8583,6 +8641,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,FL,12061,Indian River County,2026-10-15,19,mail,9100,,3365,3889,303,1543,1,fl-doe,2026-10-15T13:00:35+00:00
 2026,FL,12061,Indian River County,2026-10-16,18,inperson,0,,0,0,0,0,1,fl-doe,2026-10-16T13:00:43+00:00
 2026,FL,12061,Indian River County,2026-10-16,18,mail,10082,,3708,4334,333,1707,1,fl-doe,2026-10-16T13:00:43+00:00
+2026,FL,12061,Indian River County,2026-10-17,17,inperson,0,,0,0,0,0,1,fl-doe,2026-10-17T13:00:49+00:00
+2026,FL,12061,Indian River County,2026-10-17,17,mail,10845,,3969,4674,362,1840,1,fl-doe,2026-10-17T13:00:49+00:00
 2026,FL,12063,Jackson County,2026-09-18,46,inperson,0,,0,0,0,0,1,fl-doe,2026-09-18T14:05:38+00:00
 2026,FL,12063,Jackson County,2026-09-18,46,mail,0,,0,0,0,0,1,fl-doe,2026-09-18T14:05:38+00:00
 2026,FL,12063,Jackson County,2026-09-19,45,inperson,0,,0,0,0,0,1,fl-doe,2026-09-19T13:41:22+00:00
@@ -8641,6 +8701,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,FL,12063,Jackson County,2026-10-15,19,mail,636,,288,303,6,39,1,fl-doe,2026-10-15T13:00:35+00:00
 2026,FL,12063,Jackson County,2026-10-16,18,inperson,0,,0,0,0,0,1,fl-doe,2026-10-16T13:00:43+00:00
 2026,FL,12063,Jackson County,2026-10-16,18,mail,696,,318,332,7,39,1,fl-doe,2026-10-16T13:00:43+00:00
+2026,FL,12063,Jackson County,2026-10-17,17,inperson,0,,0,0,0,0,1,fl-doe,2026-10-17T13:00:49+00:00
+2026,FL,12063,Jackson County,2026-10-17,17,mail,789,,361,375,8,45,1,fl-doe,2026-10-17T13:00:49+00:00
 2026,FL,12065,Jefferson County,2026-09-16,48,inperson,0,,0,0,0,0,1,fl-doe,2026-09-16T16:07:18+00:00
 2026,FL,12065,Jefferson County,2026-09-16,48,mail,0,,0,0,0,0,1,fl-doe,2026-09-16T16:07:18+00:00
 2026,FL,12065,Jefferson County,2026-09-17,47,inperson,0,,0,0,0,0,1,fl-doe,2026-09-17T12:39:43+00:00
@@ -8703,6 +8765,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,FL,12065,Jefferson County,2026-10-15,19,mail,310,,198,82,6,24,1,fl-doe,2026-10-15T13:00:35+00:00
 2026,FL,12065,Jefferson County,2026-10-16,18,inperson,0,,0,0,0,0,1,fl-doe,2026-10-16T13:00:43+00:00
 2026,FL,12065,Jefferson County,2026-10-16,18,mail,325,,209,86,6,24,1,fl-doe,2026-10-16T13:00:43+00:00
+2026,FL,12065,Jefferson County,2026-10-17,17,inperson,0,,0,0,0,0,1,fl-doe,2026-10-17T13:00:49+00:00
+2026,FL,12065,Jefferson County,2026-10-17,17,mail,355,,225,95,6,29,1,fl-doe,2026-10-17T13:00:49+00:00
 2026,FL,12067,Lafayette County,2026-09-18,46,inperson,0,,0,0,0,0,1,fl-doe,2026-09-18T14:05:38+00:00
 2026,FL,12067,Lafayette County,2026-09-18,46,mail,0,,0,0,0,0,1,fl-doe,2026-09-18T14:05:38+00:00
 2026,FL,12067,Lafayette County,2026-09-19,45,inperson,0,,0,0,0,0,1,fl-doe,2026-09-19T13:41:22+00:00
@@ -8761,6 +8825,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,FL,12067,Lafayette County,2026-10-15,19,mail,56,,11,44,1,0,1,fl-doe,2026-10-15T13:00:35+00:00
 2026,FL,12067,Lafayette County,2026-10-16,18,inperson,0,,0,0,0,0,1,fl-doe,2026-10-16T13:00:43+00:00
 2026,FL,12067,Lafayette County,2026-10-16,18,mail,71,,15,55,1,0,1,fl-doe,2026-10-16T13:00:43+00:00
+2026,FL,12067,Lafayette County,2026-10-17,17,inperson,0,,0,0,0,0,1,fl-doe,2026-10-17T13:00:49+00:00
+2026,FL,12067,Lafayette County,2026-10-17,17,mail,83,,18,64,1,0,1,fl-doe,2026-10-17T13:00:49+00:00
 2026,FL,12069,Lake County,2026-09-19,45,inperson,0,,0,0,0,0,1,fl-doe,2026-09-19T13:41:22+00:00
 2026,FL,12069,Lake County,2026-09-19,45,mail,0,,0,0,0,0,1,fl-doe,2026-09-19T13:41:22+00:00
 2026,FL,12069,Lake County,2026-09-20,44,inperson,0,,0,0,0,0,1,fl-doe,2026-09-20T13:56:34+00:00
@@ -8817,6 +8883,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,FL,12069,Lake County,2026-10-15,19,mail,13160,,5393,4979,281,2507,1,fl-doe,2026-10-15T13:00:35+00:00
 2026,FL,12069,Lake County,2026-10-16,18,inperson,0,,0,0,0,0,1,fl-doe,2026-10-16T13:00:43+00:00
 2026,FL,12069,Lake County,2026-10-16,18,mail,13268,,5443,5012,286,2527,1,fl-doe,2026-10-16T13:00:43+00:00
+2026,FL,12069,Lake County,2026-10-17,17,inperson,0,,0,0,0,0,1,fl-doe,2026-10-17T13:00:49+00:00
+2026,FL,12069,Lake County,2026-10-17,17,mail,14166,,5819,5319,302,2726,1,fl-doe,2026-10-17T13:00:49+00:00
 2026,FL,12071,Lee County,2026-09-18,46,inperson,0,,0,0,0,0,1,fl-doe,2026-09-18T14:05:38+00:00
 2026,FL,12071,Lee County,2026-09-18,46,mail,0,,0,0,0,0,1,fl-doe,2026-09-18T14:05:38+00:00
 2026,FL,12071,Lee County,2026-09-19,45,inperson,0,,0,0,0,0,1,fl-doe,2026-09-19T13:41:22+00:00
@@ -8875,6 +8943,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,FL,12071,Lee County,2026-10-15,19,mail,38839,,12326,17731,983,7799,1,fl-doe,2026-10-15T13:00:35+00:00
 2026,FL,12071,Lee County,2026-10-16,18,inperson,0,,0,0,0,0,1,fl-doe,2026-10-16T13:00:43+00:00
 2026,FL,12071,Lee County,2026-10-16,18,mail,47946,,15104,22062,1210,9570,1,fl-doe,2026-10-16T13:00:43+00:00
+2026,FL,12071,Lee County,2026-10-17,17,inperson,0,,0,0,0,0,1,fl-doe,2026-10-17T13:00:49+00:00
+2026,FL,12071,Lee County,2026-10-17,17,mail,52348,,16428,24178,1321,10421,1,fl-doe,2026-10-17T13:00:49+00:00
 2026,FL,12073,Leon County,2026-09-15,49,inperson,0,,0,0,0,0,1,fl-doe,2026-09-15T13:08:04+00:00
 2026,FL,12073,Leon County,2026-09-15,49,mail,0,,0,0,0,0,1,fl-doe,2026-09-15T13:08:04+00:00
 2026,FL,12073,Leon County,2026-09-16,48,inperson,0,,0,0,0,0,1,fl-doe,2026-09-16T16:07:18+00:00
@@ -8939,6 +9009,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,FL,12073,Leon County,2026-10-15,19,mail,8952,,5380,2261,156,1155,1,fl-doe,2026-10-15T13:00:35+00:00
 2026,FL,12073,Leon County,2026-10-16,18,inperson,0,,0,0,0,0,1,fl-doe,2026-10-16T13:00:43+00:00
 2026,FL,12073,Leon County,2026-10-16,18,mail,9447,,5684,2377,159,1227,1,fl-doe,2026-10-16T13:00:43+00:00
+2026,FL,12073,Leon County,2026-10-17,17,inperson,0,,0,0,0,0,1,fl-doe,2026-10-17T13:00:49+00:00
+2026,FL,12073,Leon County,2026-10-17,17,mail,10438,,6245,2653,174,1366,1,fl-doe,2026-10-17T13:00:49+00:00
 2026,FL,12075,Levy County,2026-09-17,47,inperson,0,,0,0,0,0,1,fl-doe,2026-09-17T12:39:43+00:00
 2026,FL,12075,Levy County,2026-09-17,47,mail,0,,0,0,0,0,1,fl-doe,2026-09-17T12:39:43+00:00
 2026,FL,12075,Levy County,2026-09-18,46,inperson,0,,0,0,0,0,1,fl-doe,2026-09-18T14:05:38+00:00
@@ -8999,6 +9071,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,FL,12075,Levy County,2026-10-15,19,mail,1549,,479,864,43,163,1,fl-doe,2026-10-15T13:00:35+00:00
 2026,FL,12075,Levy County,2026-10-16,18,inperson,0,,0,0,0,0,1,fl-doe,2026-10-16T13:00:43+00:00
 2026,FL,12075,Levy County,2026-10-16,18,mail,1648,,511,925,43,169,1,fl-doe,2026-10-16T13:00:43+00:00
+2026,FL,12075,Levy County,2026-10-17,17,inperson,0,,0,0,0,0,1,fl-doe,2026-10-17T13:00:49+00:00
+2026,FL,12075,Levy County,2026-10-17,17,mail,1648,,511,925,43,169,1,fl-doe,2026-10-17T13:00:49+00:00
 2026,FL,12077,Liberty County,2026-09-19,45,inperson,0,,0,0,0,0,1,fl-doe,2026-09-19T13:41:22+00:00
 2026,FL,12077,Liberty County,2026-09-19,45,mail,0,,0,0,0,0,1,fl-doe,2026-09-19T13:41:22+00:00
 2026,FL,12077,Liberty County,2026-09-20,44,inperson,0,,0,0,0,0,1,fl-doe,2026-09-20T13:56:34+00:00
@@ -9055,6 +9129,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,FL,12077,Liberty County,2026-10-15,19,mail,61,,29,32,0,0,1,fl-doe,2026-10-15T13:00:35+00:00
 2026,FL,12077,Liberty County,2026-10-16,18,inperson,0,,0,0,0,0,1,fl-doe,2026-10-16T13:00:43+00:00
 2026,FL,12077,Liberty County,2026-10-16,18,mail,64,,31,33,0,0,1,fl-doe,2026-10-16T13:00:43+00:00
+2026,FL,12077,Liberty County,2026-10-17,17,inperson,0,,0,0,0,0,1,fl-doe,2026-10-17T13:00:49+00:00
+2026,FL,12077,Liberty County,2026-10-17,17,mail,72,,34,38,0,0,1,fl-doe,2026-10-17T13:00:49+00:00
 2026,FL,12079,Madison County,2026-09-18,46,inperson,0,,0,0,0,0,1,fl-doe,2026-09-18T14:05:38+00:00
 2026,FL,12079,Madison County,2026-09-18,46,mail,0,,0,0,0,0,1,fl-doe,2026-09-18T14:05:38+00:00
 2026,FL,12079,Madison County,2026-09-19,45,inperson,0,,0,0,0,0,1,fl-doe,2026-09-19T13:41:22+00:00
@@ -9113,6 +9189,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,FL,12079,Madison County,2026-10-15,19,mail,276,,150,98,2,26,1,fl-doe,2026-10-15T13:00:35+00:00
 2026,FL,12079,Madison County,2026-10-16,18,inperson,0,,0,0,0,0,1,fl-doe,2026-10-16T13:00:43+00:00
 2026,FL,12079,Madison County,2026-10-16,18,mail,291,,155,107,2,27,1,fl-doe,2026-10-16T13:00:43+00:00
+2026,FL,12079,Madison County,2026-10-17,17,inperson,0,,0,0,0,0,1,fl-doe,2026-10-17T13:00:49+00:00
+2026,FL,12079,Madison County,2026-10-17,17,mail,324,,175,117,2,30,1,fl-doe,2026-10-17T13:00:49+00:00
 2026,FL,12081,Manatee County,2026-09-18,46,inperson,0,,0,0,0,0,1,fl-doe,2026-09-18T14:05:38+00:00
 2026,FL,12081,Manatee County,2026-09-18,46,mail,0,,0,0,0,0,1,fl-doe,2026-09-18T14:05:38+00:00
 2026,FL,12081,Manatee County,2026-09-19,45,inperson,0,,0,0,0,0,1,fl-doe,2026-09-19T13:41:22+00:00
@@ -9171,6 +9249,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,FL,12081,Manatee County,2026-10-15,19,mail,18027,,6917,7525,395,3190,1,fl-doe,2026-10-15T13:00:35+00:00
 2026,FL,12081,Manatee County,2026-10-16,18,inperson,0,,0,0,0,0,1,fl-doe,2026-10-16T13:00:43+00:00
 2026,FL,12081,Manatee County,2026-10-16,18,mail,19623,,7515,8194,434,3480,1,fl-doe,2026-10-16T13:00:43+00:00
+2026,FL,12081,Manatee County,2026-10-17,17,inperson,0,,0,0,0,0,1,fl-doe,2026-10-17T13:00:49+00:00
+2026,FL,12081,Manatee County,2026-10-17,17,mail,21618,,8228,9041,489,3860,1,fl-doe,2026-10-17T13:00:49+00:00
 2026,FL,12083,Marion County,2026-09-18,46,inperson,0,,0,0,0,0,1,fl-doe,2026-09-18T14:05:38+00:00
 2026,FL,12083,Marion County,2026-09-18,46,mail,0,,0,0,0,0,1,fl-doe,2026-09-18T14:05:38+00:00
 2026,FL,12083,Marion County,2026-09-19,45,inperson,0,,0,0,0,0,1,fl-doe,2026-09-19T13:41:22+00:00
@@ -9229,6 +9309,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,FL,12083,Marion County,2026-10-15,19,mail,11972,,5254,4615,319,1784,1,fl-doe,2026-10-15T13:00:35+00:00
 2026,FL,12083,Marion County,2026-10-16,18,inperson,0,,0,0,0,0,1,fl-doe,2026-10-16T13:00:43+00:00
 2026,FL,12083,Marion County,2026-10-16,18,mail,12718,,5606,4882,333,1897,1,fl-doe,2026-10-16T13:00:43+00:00
+2026,FL,12083,Marion County,2026-10-17,17,inperson,0,,0,0,0,0,1,fl-doe,2026-10-17T13:00:49+00:00
+2026,FL,12083,Marion County,2026-10-17,17,mail,14564,,6344,5645,392,2183,1,fl-doe,2026-10-17T13:00:49+00:00
 2026,FL,12085,Martin County,2026-09-18,46,inperson,0,,0,0,0,0,1,fl-doe,2026-09-18T14:05:38+00:00
 2026,FL,12085,Martin County,2026-09-18,46,mail,0,,0,0,0,0,1,fl-doe,2026-09-18T14:05:38+00:00
 2026,FL,12085,Martin County,2026-09-19,45,inperson,0,,0,0,0,0,1,fl-doe,2026-09-19T13:41:22+00:00
@@ -9287,6 +9369,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,FL,12085,Martin County,2026-10-15,19,mail,6954,,2646,3059,216,1033,1,fl-doe,2026-10-15T13:00:35+00:00
 2026,FL,12085,Martin County,2026-10-16,18,inperson,0,,0,0,0,0,1,fl-doe,2026-10-16T13:00:43+00:00
 2026,FL,12085,Martin County,2026-10-16,18,mail,7516,,2833,3326,232,1125,1,fl-doe,2026-10-16T13:00:43+00:00
+2026,FL,12085,Martin County,2026-10-17,17,inperson,0,,0,0,0,0,1,fl-doe,2026-10-17T13:00:49+00:00
+2026,FL,12085,Martin County,2026-10-17,17,mail,8394,,3095,3769,264,1266,1,fl-doe,2026-10-17T13:00:49+00:00
 2026,FL,12086,Miami-Dade County,2026-09-18,46,inperson,0,,0,0,0,0,1,fl-doe,2026-09-18T14:05:38+00:00
 2026,FL,12086,Miami-Dade County,2026-09-18,46,mail,0,,0,0,0,0,1,fl-doe,2026-09-18T14:05:38+00:00
 2026,FL,12086,Miami-Dade County,2026-09-19,45,inperson,0,,0,0,0,0,1,fl-doe,2026-09-19T13:41:22+00:00
@@ -9345,6 +9429,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,FL,12086,Miami-Dade County,2026-10-15,19,mail,68662,,28937,21716,1289,16720,1,fl-doe,2026-10-15T13:00:35+00:00
 2026,FL,12086,Miami-Dade County,2026-10-16,18,inperson,0,,0,0,0,0,1,fl-doe,2026-10-16T13:00:43+00:00
 2026,FL,12086,Miami-Dade County,2026-10-16,18,mail,69937,,29516,22026,1315,17080,1,fl-doe,2026-10-16T13:00:43+00:00
+2026,FL,12086,Miami-Dade County,2026-10-17,17,inperson,0,,0,0,0,0,1,fl-doe,2026-10-17T13:00:49+00:00
+2026,FL,12086,Miami-Dade County,2026-10-17,17,mail,77412,,32486,24403,1455,19068,1,fl-doe,2026-10-17T13:00:49+00:00
 2026,FL,12087,Monroe County,2026-09-17,47,inperson,0,,0,0,0,0,1,fl-doe,2026-09-17T12:39:43+00:00
 2026,FL,12087,Monroe County,2026-09-17,47,mail,0,,0,0,0,0,1,fl-doe,2026-09-17T12:39:43+00:00
 2026,FL,12087,Monroe County,2026-09-18,46,inperson,0,,0,0,0,0,1,fl-doe,2026-09-18T14:05:38+00:00
@@ -9405,6 +9491,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,FL,12087,Monroe County,2026-10-15,19,mail,3209,,1385,1332,54,438,1,fl-doe,2026-10-15T13:00:35+00:00
 2026,FL,12087,Monroe County,2026-10-16,18,inperson,0,,0,0,0,0,1,fl-doe,2026-10-16T13:00:43+00:00
 2026,FL,12087,Monroe County,2026-10-16,18,mail,3851,,1636,1625,72,518,1,fl-doe,2026-10-16T13:00:43+00:00
+2026,FL,12087,Monroe County,2026-10-17,17,inperson,0,,0,0,0,0,1,fl-doe,2026-10-17T13:00:49+00:00
+2026,FL,12087,Monroe County,2026-10-17,17,mail,4110,,1721,1750,78,561,1,fl-doe,2026-10-17T13:00:49+00:00
 2026,FL,12089,Nassau County,2026-09-15,49,inperson,0,,0,0,0,0,1,fl-doe,2026-09-15T13:08:04+00:00
 2026,FL,12089,Nassau County,2026-09-15,49,mail,0,,0,0,0,0,1,fl-doe,2026-09-15T13:08:04+00:00
 2026,FL,12089,Nassau County,2026-09-16,48,inperson,0,,0,0,0,0,1,fl-doe,2026-09-16T16:07:18+00:00
@@ -9469,6 +9557,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,FL,12089,Nassau County,2026-10-15,19,mail,3465,,1151,1611,99,604,1,fl-doe,2026-10-15T13:00:35+00:00
 2026,FL,12089,Nassau County,2026-10-16,18,inperson,0,,0,0,0,0,1,fl-doe,2026-10-16T13:00:43+00:00
 2026,FL,12089,Nassau County,2026-10-16,18,mail,3769,,1240,1758,115,656,1,fl-doe,2026-10-16T13:00:43+00:00
+2026,FL,12089,Nassau County,2026-10-17,17,inperson,0,,0,0,0,0,1,fl-doe,2026-10-17T13:00:49+00:00
+2026,FL,12089,Nassau County,2026-10-17,17,mail,4001,,1316,1867,123,695,1,fl-doe,2026-10-17T13:00:49+00:00
 2026,FL,12091,Okaloosa County,2026-09-10,54,inperson,0,,0,0,0,0,1,fl-doe,2026-09-10T14:03:21+00:00
 2026,FL,12091,Okaloosa County,2026-09-10,54,mail,0,,0,0,0,0,1,fl-doe,2026-09-10T14:03:21+00:00
 2026,FL,12091,Okaloosa County,2026-09-11,53,inperson,0,,0,0,0,0,1,fl-doe,2026-09-11T14:02:54+00:00
@@ -9543,6 +9633,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,FL,12091,Okaloosa County,2026-10-15,19,mail,2392,,802,1131,54,405,1,fl-doe,2026-10-15T13:00:35+00:00
 2026,FL,12091,Okaloosa County,2026-10-16,18,inperson,0,,0,0,0,0,1,fl-doe,2026-10-16T13:00:43+00:00
 2026,FL,12091,Okaloosa County,2026-10-16,18,mail,2544,,853,1206,59,426,1,fl-doe,2026-10-16T13:00:43+00:00
+2026,FL,12091,Okaloosa County,2026-10-17,17,inperson,0,,0,0,0,0,1,fl-doe,2026-10-17T13:00:49+00:00
+2026,FL,12091,Okaloosa County,2026-10-17,17,mail,3025,,1001,1450,65,509,1,fl-doe,2026-10-17T13:00:49+00:00
 2026,FL,12093,Okeechobee County,2026-09-17,47,inperson,0,,0,0,0,0,1,fl-doe,2026-09-17T12:39:43+00:00
 2026,FL,12093,Okeechobee County,2026-09-17,47,mail,0,,0,0,0,0,1,fl-doe,2026-09-17T12:39:43+00:00
 2026,FL,12093,Okeechobee County,2026-09-18,46,inperson,0,,0,0,0,0,1,fl-doe,2026-09-18T14:05:38+00:00
@@ -9603,6 +9695,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,FL,12093,Okeechobee County,2026-10-15,19,mail,732,,273,368,18,73,1,fl-doe,2026-10-15T15:30:34+00:00
 2026,FL,12093,Okeechobee County,2026-10-16,18,inperson,0,,0,0,0,0,1,fl-doe,2026-10-16T13:00:43+00:00
 2026,FL,12093,Okeechobee County,2026-10-16,18,mail,783,,289,397,19,78,1,fl-doe,2026-10-16T13:00:43+00:00
+2026,FL,12093,Okeechobee County,2026-10-17,17,inperson,0,,0,0,0,0,1,fl-doe,2026-10-17T13:00:49+00:00
+2026,FL,12093,Okeechobee County,2026-10-17,17,mail,849,,312,434,19,84,1,fl-doe,2026-10-17T13:00:49+00:00
 2026,FL,12095,Orange County,2026-09-18,46,inperson,0,,0,0,0,0,1,fl-doe,2026-09-18T14:05:38+00:00
 2026,FL,12095,Orange County,2026-09-18,46,mail,0,,0,0,0,0,1,fl-doe,2026-09-18T14:05:38+00:00
 2026,FL,12095,Orange County,2026-09-19,45,inperson,0,,0,0,0,0,1,fl-doe,2026-09-19T13:41:22+00:00
@@ -9661,6 +9755,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,FL,12095,Orange County,2026-10-15,19,mail,36101,,18009,10015,832,7245,1,fl-doe,2026-10-15T13:00:35+00:00
 2026,FL,12095,Orange County,2026-10-16,18,inperson,0,,0,0,0,0,1,fl-doe,2026-10-16T13:00:43+00:00
 2026,FL,12095,Orange County,2026-10-16,18,mail,40525,,20118,11291,930,8186,1,fl-doe,2026-10-16T13:00:43+00:00
+2026,FL,12095,Orange County,2026-10-17,17,inperson,0,,0,0,0,0,1,fl-doe,2026-10-17T13:00:49+00:00
+2026,FL,12095,Orange County,2026-10-17,17,mail,42901,,21221,12005,978,8697,1,fl-doe,2026-10-17T13:00:49+00:00
 2026,FL,12097,Osceola County,2026-09-18,46,inperson,0,,0,0,0,0,1,fl-doe,2026-09-18T14:05:38+00:00
 2026,FL,12097,Osceola County,2026-09-18,46,mail,0,,0,0,0,0,1,fl-doe,2026-09-18T14:05:38+00:00
 2026,FL,12097,Osceola County,2026-09-19,45,inperson,0,,0,0,0,0,1,fl-doe,2026-09-19T13:41:22+00:00
@@ -9719,6 +9815,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,FL,12097,Osceola County,2026-10-15,19,mail,9192,,4422,2475,212,2083,1,fl-doe,2026-10-15T13:00:35+00:00
 2026,FL,12097,Osceola County,2026-10-16,18,inperson,0,,0,0,0,0,1,fl-doe,2026-10-16T13:00:43+00:00
 2026,FL,12097,Osceola County,2026-10-16,18,mail,11058,,5228,2997,269,2564,1,fl-doe,2026-10-16T13:00:43+00:00
+2026,FL,12097,Osceola County,2026-10-17,17,inperson,0,,0,0,0,0,1,fl-doe,2026-10-17T13:00:49+00:00
+2026,FL,12097,Osceola County,2026-10-17,17,mail,12161,,5735,3306,300,2820,1,fl-doe,2026-10-17T13:00:49+00:00
 2026,FL,12099,Palm Beach County,2026-09-16,48,inperson,0,,0,0,0,0,1,fl-doe,2026-09-16T16:07:18+00:00
 2026,FL,12099,Palm Beach County,2026-09-16,48,mail,0,,0,0,0,0,1,fl-doe,2026-09-16T16:07:18+00:00
 2026,FL,12099,Palm Beach County,2026-09-17,47,inperson,0,,0,0,0,0,1,fl-doe,2026-09-17T12:39:43+00:00
@@ -9781,6 +9879,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,FL,12099,Palm Beach County,2026-10-15,19,mail,56456,,30304,14444,1520,10188,1,fl-doe,2026-10-15T13:00:35+00:00
 2026,FL,12099,Palm Beach County,2026-10-16,18,inperson,0,,0,0,0,0,1,fl-doe,2026-10-16T13:00:43+00:00
 2026,FL,12099,Palm Beach County,2026-10-16,18,mail,62557,,33446,16039,1683,11389,1,fl-doe,2026-10-16T13:00:43+00:00
+2026,FL,12099,Palm Beach County,2026-10-17,17,inperson,0,,0,0,0,0,1,fl-doe,2026-10-17T13:00:49+00:00
+2026,FL,12099,Palm Beach County,2026-10-17,17,mail,68592,,36515,17611,1870,12596,1,fl-doe,2026-10-17T13:00:49+00:00
 2026,FL,12101,Pasco County,2026-09-07,57,inperson,0,,0,0,0,0,1,fl-doe,2026-09-08T03:02:52+00:00
 2026,FL,12101,Pasco County,2026-09-07,57,mail,0,,0,0,0,0,1,fl-doe,2026-09-08T03:02:52+00:00
 2026,FL,12101,Pasco County,2026-09-08,56,inperson,0,,0,0,0,0,1,fl-doe,2026-09-08T14:07:56+00:00
@@ -9843,6 +9943,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,FL,12101,Pasco County,2026-10-15,19,mail,19014,,7913,6830,561,3710,1,fl-doe,2026-10-15T13:00:35+00:00
 2026,FL,12101,Pasco County,2026-10-16,18,inperson,0,,0,0,0,0,1,fl-doe,2026-10-16T13:00:43+00:00
 2026,FL,12101,Pasco County,2026-10-16,18,mail,20950,,8686,7575,603,4086,1,fl-doe,2026-10-16T13:00:43+00:00
+2026,FL,12101,Pasco County,2026-10-17,17,inperson,0,,0,0,0,0,1,fl-doe,2026-10-17T13:00:49+00:00
+2026,FL,12101,Pasco County,2026-10-17,17,mail,23584,,9735,8515,690,4644,1,fl-doe,2026-10-17T13:00:49+00:00
 2026,FL,12103,Pinellas County,2026-09-17,47,inperson,0,,0,0,0,0,1,fl-doe,2026-09-17T12:39:43+00:00
 2026,FL,12103,Pinellas County,2026-09-17,47,mail,0,,0,0,0,0,1,fl-doe,2026-09-17T12:39:43+00:00
 2026,FL,12103,Pinellas County,2026-09-18,46,inperson,0,,0,0,0,0,1,fl-doe,2026-09-18T14:05:38+00:00
@@ -9903,6 +10005,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,FL,12103,Pinellas County,2026-10-15,19,mail,45891,,18152,17576,1163,9000,1,fl-doe,2026-10-15T13:00:35+00:00
 2026,FL,12103,Pinellas County,2026-10-16,18,inperson,0,,0,0,0,0,1,fl-doe,2026-10-16T13:00:43+00:00
 2026,FL,12103,Pinellas County,2026-10-16,18,mail,54263,,21518,20785,1366,10594,1,fl-doe,2026-10-16T13:00:43+00:00
+2026,FL,12103,Pinellas County,2026-10-17,17,inperson,0,,0,0,0,0,1,fl-doe,2026-10-17T13:00:49+00:00
+2026,FL,12103,Pinellas County,2026-10-17,17,mail,61256,,24107,23565,1557,12027,1,fl-doe,2026-10-17T13:00:49+00:00
 2026,FL,12105,Polk County,2026-09-18,46,inperson,0,,0,0,0,0,1,fl-doe,2026-09-18T14:05:38+00:00
 2026,FL,12105,Polk County,2026-09-18,46,mail,0,,0,0,0,0,1,fl-doe,2026-09-18T14:05:38+00:00
 2026,FL,12105,Polk County,2026-09-19,45,inperson,0,,0,0,0,0,1,fl-doe,2026-09-19T13:41:22+00:00
@@ -9961,6 +10065,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,FL,12105,Polk County,2026-10-15,19,mail,22602,,9444,9091,513,3554,1,fl-doe,2026-10-15T13:00:35+00:00
 2026,FL,12105,Polk County,2026-10-16,18,inperson,0,,0,0,0,0,1,fl-doe,2026-10-16T13:00:43+00:00
 2026,FL,12105,Polk County,2026-10-16,18,mail,24478,,10240,9856,543,3839,1,fl-doe,2026-10-16T13:00:43+00:00
+2026,FL,12105,Polk County,2026-10-17,17,inperson,0,,0,0,0,0,1,fl-doe,2026-10-17T13:00:49+00:00
+2026,FL,12105,Polk County,2026-10-17,17,mail,25691,,10757,10338,565,4031,1,fl-doe,2026-10-17T13:00:49+00:00
 2026,FL,12107,Putnam County,2026-09-17,47,inperson,0,,0,0,0,0,1,fl-doe,2026-09-17T12:39:43+00:00
 2026,FL,12107,Putnam County,2026-09-17,47,mail,0,,0,0,0,0,1,fl-doe,2026-09-17T12:39:43+00:00
 2026,FL,12107,Putnam County,2026-09-18,46,inperson,0,,0,0,0,0,1,fl-doe,2026-09-18T14:05:38+00:00
@@ -10021,6 +10127,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,FL,12107,Putnam County,2026-10-15,19,mail,1272,,527,584,22,139,1,fl-doe,2026-10-15T13:00:35+00:00
 2026,FL,12107,Putnam County,2026-10-16,18,inperson,0,,0,0,0,0,1,fl-doe,2026-10-16T13:00:43+00:00
 2026,FL,12107,Putnam County,2026-10-16,18,mail,1430,,570,670,27,163,1,fl-doe,2026-10-16T13:00:43+00:00
+2026,FL,12107,Putnam County,2026-10-17,17,inperson,0,,0,0,0,0,1,fl-doe,2026-10-17T13:00:49+00:00
+2026,FL,12107,Putnam County,2026-10-17,17,mail,1498,,593,704,27,174,1,fl-doe,2026-10-17T13:00:49+00:00
 2026,FL,12109,St. Johns County,2026-09-19,45,inperson,0,,0,0,0,0,1,fl-doe,2026-09-19T13:41:22+00:00
 2026,FL,12109,St. Johns County,2026-09-19,45,mail,0,,0,0,0,0,1,fl-doe,2026-09-19T13:41:22+00:00
 2026,FL,12109,St. Johns County,2026-09-20,44,inperson,0,,0,0,0,0,1,fl-doe,2026-09-20T13:56:34+00:00
@@ -10077,6 +10185,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,FL,12109,St. Johns County,2026-10-15,19,mail,7949,,3371,3130,191,1257,1,fl-doe,2026-10-15T13:00:35+00:00
 2026,FL,12109,St. Johns County,2026-10-16,18,inperson,0,,0,0,0,0,1,fl-doe,2026-10-16T13:00:43+00:00
 2026,FL,12109,St. Johns County,2026-10-16,18,mail,8852,,3725,3497,209,1421,1,fl-doe,2026-10-16T13:00:43+00:00
+2026,FL,12109,St. Johns County,2026-10-17,17,inperson,0,,0,0,0,0,1,fl-doe,2026-10-17T13:00:49+00:00
+2026,FL,12109,St. Johns County,2026-10-17,17,mail,9660,,4033,3813,223,1591,1,fl-doe,2026-10-17T13:00:49+00:00
 2026,FL,12111,St. Lucie County,2026-09-16,48,inperson,0,,0,0,0,0,1,fl-doe,2026-09-16T16:07:18+00:00
 2026,FL,12111,St. Lucie County,2026-09-16,48,mail,0,,0,0,0,0,1,fl-doe,2026-09-16T16:07:18+00:00
 2026,FL,12111,St. Lucie County,2026-09-17,47,inperson,0,,0,0,0,0,1,fl-doe,2026-09-17T12:39:43+00:00
@@ -10139,6 +10249,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,FL,12111,St. Lucie County,2026-10-15,19,mail,12202,,5453,4217,343,2189,1,fl-doe,2026-10-15T13:00:35+00:00
 2026,FL,12111,St. Lucie County,2026-10-16,18,inperson,0,,0,0,0,0,1,fl-doe,2026-10-16T13:00:43+00:00
 2026,FL,12111,St. Lucie County,2026-10-16,18,mail,12858,,5742,4449,362,2305,1,fl-doe,2026-10-16T13:00:43+00:00
+2026,FL,12111,St. Lucie County,2026-10-17,17,inperson,0,,0,0,0,0,1,fl-doe,2026-10-17T13:00:49+00:00
+2026,FL,12111,St. Lucie County,2026-10-17,17,mail,13647,,6113,4666,385,2483,1,fl-doe,2026-10-17T13:00:49+00:00
 2026,FL,12113,Santa Rosa County,2026-09-16,48,inperson,0,,0,0,0,0,1,fl-doe,2026-09-16T16:07:18+00:00
 2026,FL,12113,Santa Rosa County,2026-09-16,48,mail,0,,0,0,0,0,1,fl-doe,2026-09-16T16:07:18+00:00
 2026,FL,12113,Santa Rosa County,2026-09-17,47,inperson,0,,0,0,0,0,1,fl-doe,2026-09-17T12:39:43+00:00
@@ -10201,6 +10313,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,FL,12113,Santa Rosa County,2026-10-15,19,mail,1440,,491,716,34,199,1,fl-doe,2026-10-15T13:00:35+00:00
 2026,FL,12113,Santa Rosa County,2026-10-16,18,inperson,0,,0,0,0,0,1,fl-doe,2026-10-16T13:00:43+00:00
 2026,FL,12113,Santa Rosa County,2026-10-16,18,mail,1568,,538,775,38,217,1,fl-doe,2026-10-16T13:00:43+00:00
+2026,FL,12113,Santa Rosa County,2026-10-17,17,inperson,0,,0,0,0,0,1,fl-doe,2026-10-17T13:00:49+00:00
+2026,FL,12113,Santa Rosa County,2026-10-17,17,mail,1800,,607,897,42,254,1,fl-doe,2026-10-17T13:00:49+00:00
 2026,FL,12115,Sarasota County,2026-09-10,54,inperson,0,,0,0,0,0,1,fl-doe,2026-09-10T14:03:21+00:00
 2026,FL,12115,Sarasota County,2026-09-10,54,mail,0,,0,0,0,0,1,fl-doe,2026-09-10T14:03:21+00:00
 2026,FL,12115,Sarasota County,2026-09-11,53,inperson,0,,0,0,0,0,1,fl-doe,2026-09-11T14:02:54+00:00
@@ -10275,6 +10389,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,FL,12115,Sarasota County,2026-10-15,19,mail,32210,,14360,11499,828,5523,1,fl-doe,2026-10-15T13:00:35+00:00
 2026,FL,12115,Sarasota County,2026-10-16,18,inperson,0,,0,0,0,0,1,fl-doe,2026-10-16T13:00:43+00:00
 2026,FL,12115,Sarasota County,2026-10-16,18,mail,34054,,15165,12148,862,5879,1,fl-doe,2026-10-16T13:00:43+00:00
+2026,FL,12115,Sarasota County,2026-10-17,17,inperson,0,,0,0,0,0,1,fl-doe,2026-10-17T13:00:49+00:00
+2026,FL,12115,Sarasota County,2026-10-17,17,mail,36658,,16098,13279,923,6358,1,fl-doe,2026-10-17T13:00:49+00:00
 2026,FL,12117,Seminole County,2026-09-16,48,inperson,0,,0,0,0,0,1,fl-doe,2026-09-16T16:07:18+00:00
 2026,FL,12117,Seminole County,2026-09-16,48,mail,0,,0,0,0,0,1,fl-doe,2026-09-16T16:07:18+00:00
 2026,FL,12117,Seminole County,2026-09-17,47,inperson,0,,0,0,0,0,1,fl-doe,2026-09-17T12:39:43+00:00
@@ -10337,6 +10453,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,FL,12117,Seminole County,2026-10-15,19,mail,12467,,5323,4387,329,2428,1,fl-doe,2026-10-15T13:00:35+00:00
 2026,FL,12117,Seminole County,2026-10-16,18,inperson,0,,0,0,0,0,1,fl-doe,2026-10-16T13:00:43+00:00
 2026,FL,12117,Seminole County,2026-10-16,18,mail,14082,,5991,4974,369,2748,1,fl-doe,2026-10-16T13:00:43+00:00
+2026,FL,12117,Seminole County,2026-10-17,17,inperson,0,,0,0,0,0,1,fl-doe,2026-10-17T13:00:49+00:00
+2026,FL,12117,Seminole County,2026-10-17,17,mail,14677,,6240,5168,392,2877,1,fl-doe,2026-10-17T13:00:49+00:00
 2026,FL,12119,Sumter County,2026-09-18,46,inperson,0,,0,0,0,0,1,fl-doe,2026-09-18T14:05:38+00:00
 2026,FL,12119,Sumter County,2026-09-18,46,mail,0,,0,0,0,0,1,fl-doe,2026-09-18T14:05:38+00:00
 2026,FL,12119,Sumter County,2026-09-19,45,inperson,0,,0,0,0,0,1,fl-doe,2026-09-19T13:41:22+00:00
@@ -10395,6 +10513,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,FL,12119,Sumter County,2026-10-15,19,mail,10006,,3462,4576,252,1716,1,fl-doe,2026-10-15T13:00:35+00:00
 2026,FL,12119,Sumter County,2026-10-16,18,inperson,0,,0,0,0,0,1,fl-doe,2026-10-16T13:00:43+00:00
 2026,FL,12119,Sumter County,2026-10-16,18,mail,11160,,3853,5092,280,1935,1,fl-doe,2026-10-16T13:00:43+00:00
+2026,FL,12119,Sumter County,2026-10-17,17,inperson,0,,0,0,0,0,1,fl-doe,2026-10-17T13:00:49+00:00
+2026,FL,12119,Sumter County,2026-10-17,17,mail,11160,,3853,5092,280,1935,1,fl-doe,2026-10-17T13:00:49+00:00
 2026,FL,12121,Suwannee County,2026-09-09,55,inperson,0,,0,0,0,0,1,fl-doe,2026-09-09T14:09:29+00:00
 2026,FL,12121,Suwannee County,2026-09-09,55,mail,0,,0,0,0,0,1,fl-doe,2026-09-09T14:09:29+00:00
 2026,FL,12121,Suwannee County,2026-09-10,54,inperson,0,,0,0,0,0,1,fl-doe,2026-09-10T14:03:21+00:00
@@ -10471,6 +10591,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,FL,12121,Suwannee County,2026-10-15,19,mail,850,,272,491,21,66,1,fl-doe,2026-10-15T13:00:35+00:00
 2026,FL,12121,Suwannee County,2026-10-16,18,inperson,0,,0,0,0,0,1,fl-doe,2026-10-16T13:00:43+00:00
 2026,FL,12121,Suwannee County,2026-10-16,18,mail,898,,290,514,21,73,1,fl-doe,2026-10-16T13:00:43+00:00
+2026,FL,12121,Suwannee County,2026-10-17,17,inperson,0,,0,0,0,0,1,fl-doe,2026-10-17T13:00:49+00:00
+2026,FL,12121,Suwannee County,2026-10-17,17,mail,953,,303,549,21,80,1,fl-doe,2026-10-17T13:00:49+00:00
 2026,FL,12123,Taylor County,2026-09-18,46,inperson,0,,0,0,0,0,1,fl-doe,2026-09-18T14:05:38+00:00
 2026,FL,12123,Taylor County,2026-09-18,46,mail,0,,0,0,0,0,1,fl-doe,2026-09-18T14:05:38+00:00
 2026,FL,12123,Taylor County,2026-09-19,45,inperson,0,,0,0,0,0,1,fl-doe,2026-09-19T13:41:22+00:00
@@ -10529,6 +10651,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,FL,12123,Taylor County,2026-10-15,19,mail,228,,91,117,3,17,1,fl-doe,2026-10-15T13:00:35+00:00
 2026,FL,12123,Taylor County,2026-10-16,18,inperson,0,,0,0,0,0,1,fl-doe,2026-10-16T13:00:43+00:00
 2026,FL,12123,Taylor County,2026-10-16,18,mail,247,,102,125,3,17,1,fl-doe,2026-10-16T13:00:43+00:00
+2026,FL,12123,Taylor County,2026-10-17,17,inperson,0,,0,0,0,0,1,fl-doe,2026-10-17T13:00:49+00:00
+2026,FL,12123,Taylor County,2026-10-17,17,mail,263,,110,133,3,17,1,fl-doe,2026-10-17T13:00:49+00:00
 2026,FL,12125,Union County,2026-09-12,52,inperson,0,,0,0,0,0,1,fl-doe,2026-09-12T13:20:39+00:00
 2026,FL,12125,Union County,2026-09-12,52,mail,0,,0,0,0,0,1,fl-doe,2026-09-12T13:20:39+00:00
 2026,FL,12125,Union County,2026-09-13,51,inperson,0,,0,0,0,0,1,fl-doe,2026-09-13T14:03:25+00:00
@@ -10599,6 +10723,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,FL,12125,Union County,2026-10-15,19,mail,89,,23,60,2,4,1,fl-doe,2026-10-15T13:00:35+00:00
 2026,FL,12125,Union County,2026-10-16,18,inperson,0,,0,0,0,0,1,fl-doe,2026-10-16T13:00:43+00:00
 2026,FL,12125,Union County,2026-10-16,18,mail,106,,29,69,3,5,1,fl-doe,2026-10-16T13:00:43+00:00
+2026,FL,12125,Union County,2026-10-17,17,inperson,0,,0,0,0,0,1,fl-doe,2026-10-17T13:00:49+00:00
+2026,FL,12125,Union County,2026-10-17,17,mail,116,,35,72,3,6,1,fl-doe,2026-10-17T13:00:49+00:00
 2026,FL,12127,Volusia County,2026-09-18,46,inperson,0,,0,0,0,0,1,fl-doe,2026-09-18T14:05:38+00:00
 2026,FL,12127,Volusia County,2026-09-18,46,mail,0,,0,0,0,0,1,fl-doe,2026-09-18T14:05:38+00:00
 2026,FL,12127,Volusia County,2026-09-19,45,inperson,0,,0,0,0,0,1,fl-doe,2026-09-19T13:41:22+00:00
@@ -10657,6 +10783,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,FL,12127,Volusia County,2026-10-15,19,mail,21586,,8350,8294,676,4266,1,fl-doe,2026-10-15T13:00:35+00:00
 2026,FL,12127,Volusia County,2026-10-16,18,inperson,0,,0,0,0,0,1,fl-doe,2026-10-16T13:00:43+00:00
 2026,FL,12127,Volusia County,2026-10-16,18,mail,23502,,9092,9045,728,4637,1,fl-doe,2026-10-16T13:00:43+00:00
+2026,FL,12127,Volusia County,2026-10-17,17,inperson,0,,0,0,0,0,1,fl-doe,2026-10-17T13:00:49+00:00
+2026,FL,12127,Volusia County,2026-10-17,17,mail,27300,,10589,10530,848,5333,1,fl-doe,2026-10-17T13:00:49+00:00
 2026,FL,12129,Wakulla County,2026-09-17,47,inperson,0,,0,0,0,0,1,fl-doe,2026-09-17T12:39:43+00:00
 2026,FL,12129,Wakulla County,2026-09-17,47,mail,0,,0,0,0,0,1,fl-doe,2026-09-17T12:39:43+00:00
 2026,FL,12129,Wakulla County,2026-09-18,46,inperson,0,,0,0,0,0,1,fl-doe,2026-09-18T14:05:38+00:00
@@ -10717,6 +10845,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,FL,12129,Wakulla County,2026-10-15,19,mail,685,,265,334,17,69,1,fl-doe,2026-10-15T13:00:35+00:00
 2026,FL,12129,Wakulla County,2026-10-16,18,inperson,0,,0,0,0,0,1,fl-doe,2026-10-16T13:00:43+00:00
 2026,FL,12129,Wakulla County,2026-10-16,18,mail,709,,277,346,17,69,1,fl-doe,2026-10-16T13:00:43+00:00
+2026,FL,12129,Wakulla County,2026-10-17,17,inperson,0,,0,0,0,0,1,fl-doe,2026-10-17T13:00:49+00:00
+2026,FL,12129,Wakulla County,2026-10-17,17,mail,746,,288,363,18,77,1,fl-doe,2026-10-17T13:00:49+00:00
 2026,FL,12131,Walton County,2026-09-16,48,inperson,0,,0,0,0,0,1,fl-doe,2026-09-16T16:07:18+00:00
 2026,FL,12131,Walton County,2026-09-16,48,mail,0,,0,0,0,0,1,fl-doe,2026-09-16T16:07:18+00:00
 2026,FL,12131,Walton County,2026-09-17,47,inperson,0,,0,0,0,0,1,fl-doe,2026-09-17T12:39:43+00:00
@@ -10779,6 +10909,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,FL,12131,Walton County,2026-10-15,19,mail,1315,,367,758,36,154,1,fl-doe,2026-10-15T13:00:35+00:00
 2026,FL,12131,Walton County,2026-10-16,18,inperson,0,,0,0,0,0,1,fl-doe,2026-10-16T13:00:43+00:00
 2026,FL,12131,Walton County,2026-10-16,18,mail,1374,,386,797,36,155,1,fl-doe,2026-10-16T13:00:43+00:00
+2026,FL,12131,Walton County,2026-10-17,17,inperson,0,,0,0,0,0,1,fl-doe,2026-10-17T13:00:49+00:00
+2026,FL,12131,Walton County,2026-10-17,17,mail,1374,,386,797,36,155,1,fl-doe,2026-10-17T13:00:49+00:00
 2026,FL,12133,Washington County,2026-09-14,50,inperson,0,,0,0,0,0,1,fl-doe,2026-09-14T16:09:23+00:00
 2026,FL,12133,Washington County,2026-09-14,50,mail,0,,0,0,0,0,1,fl-doe,2026-09-14T16:09:23+00:00
 2026,FL,12133,Washington County,2026-09-15,49,inperson,0,,0,0,0,0,1,fl-doe,2026-09-15T13:08:04+00:00
@@ -10845,3 +10977,5 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,FL,12133,Washington County,2026-10-15,19,mail,342,,99,220,10,13,1,fl-doe,2026-10-15T13:00:35+00:00
 2026,FL,12133,Washington County,2026-10-16,18,inperson,0,,0,0,0,0,1,fl-doe,2026-10-16T13:00:43+00:00
 2026,FL,12133,Washington County,2026-10-16,18,mail,375,,107,237,11,20,1,fl-doe,2026-10-16T13:00:43+00:00
+2026,FL,12133,Washington County,2026-10-17,17,inperson,0,,0,0,0,0,1,fl-doe,2026-10-17T13:00:49+00:00
+2026,FL,12133,Washington County,2026-10-17,17,mail,414,,120,260,12,22,1,fl-doe,2026-10-17T13:00:49+00:00

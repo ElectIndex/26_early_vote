@@ -1,8 +1,19 @@
 cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_new,mail_returned,inperson,party_dem,party_rep,party_oth,party_npa,source_tier,source_name,retrieved_at
+2026,UT,49003,Box Elder County,2026-10-17,17,20,,20,,7,4,9,,2,civicapi,2026-10-17T13:05:22+00:00
+2026,UT,49005,Cache County,2026-10-17,17,30,,30,,2,19,9,,2,civicapi,2026-10-17T13:05:22+00:00
+2026,UT,49013,Duchesne County,2026-10-17,17,96,,96,,13,70,13,,2,civicapi,2026-10-17T13:05:22+00:00
+2026,UT,49017,Garfield County,2026-10-17,17,50,,50,,2,39,9,,2,civicapi,2026-10-17T13:05:22+00:00
 2026,UT,49027,Millard County,2026-10-13,21,2,,2,,,1,1,,2,civicapi,2026-10-13T22:20:27+00:00
 2026,UT,49027,Millard County,2026-10-14,20,2,,2,,,1,1,,2,civicapi,2026-10-14T12:00:25+00:00
 2026,UT,49027,Millard County,2026-10-15,19,2,,2,,,1,1,,2,civicapi,2026-10-15T11:38:39+00:00
+2026,UT,49027,Millard County,2026-10-17,17,3,,3,,,1,2,,2,civicapi,2026-10-17T13:05:22+00:00
+2026,UT,49029,Morgan County,2026-10-17,17,3,,3,,1,,2,,2,civicapi,2026-10-17T13:05:22+00:00
+2026,UT,49035,Salt Lake County,2026-10-17,17,275,,275,,108,107,60,,2,civicapi,2026-10-17T13:05:22+00:00
+2026,UT,49047,Uintah County,2026-10-17,17,298,,298,,18,249,31,,2,civicapi,2026-10-17T13:05:22+00:00
+2026,UT,49049,Utah County,2026-10-17,17,1962,,1962,,244,1233,485,,2,civicapi,2026-10-17T13:05:22+00:00
 2026,UT,49055,Wayne County,2026-10-13,21,1,,1,,,1,,,2,civicapi,2026-10-13T22:20:27+00:00
 2026,UT,49055,Wayne County,2026-10-14,20,1,,1,,,1,,,2,civicapi,2026-10-14T12:00:25+00:00
 2026,UT,49055,Wayne County,2026-10-15,19,1,,1,,,1,,,2,civicapi,2026-10-15T11:38:39+00:00
+2026,UT,49055,Wayne County,2026-10-17,17,1,,1,,,1,,,2,civicapi,2026-10-17T13:05:22+00:00
 2026,UT,49057,Weber County,2026-10-15,19,88,,88,,32,20,36,,2,civicapi,2026-10-15T11:38:39+00:00
+2026,UT,49057,Weber County,2026-10-17,17,119,,119,,45,30,44,,2,civicapi,2026-10-17T13:05:22+00:00
