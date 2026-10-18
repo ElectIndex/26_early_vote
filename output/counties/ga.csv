@@ -5565,7 +5565,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,GA,13009,Baldwin County,2026-10-14,20,1817,,89,1728,,,,,1,ga-datahub,2026-10-14T23:00:45+00:00
 2026,GA,13009,Baldwin County,2026-10-15,19,2586,,136,2450,,,,,1,ga-datahub,2026-10-15T23:00:30+00:00
 2026,GA,13009,Baldwin County,2026-10-16,18,3500,,206,3294,,,,,1,ga-datahub,2026-10-16T23:00:40+00:00
-2026,GA,13009,Baldwin County,2026-10-17,17,3855,,241,3614,,,,,1,ga-datahub,2026-10-17T22:00:46+00:00
+2026,GA,13009,Baldwin County,2026-10-17,17,3856,,242,3614,,,,,1,ga-datahub,2026-10-18T00:00:48+00:00
 2026,GA,13011,Banks County,2026-10-06,28,3,,3,,,,,,2,civicapi,2026-10-06T16:29:43+00:00
 2026,GA,13011,Banks County,2026-10-07,27,3,,3,,,,,,2,civicapi,2026-10-07T19:43:42+00:00
 2026,GA,13011,Banks County,2026-10-08,26,4,,4,,,,,,2,civicapi,2026-10-08T17:11:29+00:00
@@ -5641,7 +5641,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,GA,13021,Bibb County,2026-10-14,20,4815,,17,4798,,,,,1,ga-datahub,2026-10-15T00:00:34+00:00
 2026,GA,13021,Bibb County,2026-10-15,19,6913,,22,6891,,,,,1,ga-datahub,2026-10-16T00:00:33+00:00
 2026,GA,13021,Bibb County,2026-10-16,18,9097,,109,8988,,,,,1,ga-datahub,2026-10-17T01:00:40+00:00
-2026,GA,13021,Bibb County,2026-10-17,17,10255,,111,10144,,,,,1,ga-datahub,2026-10-17T23:00:51+00:00
+2026,GA,13021,Bibb County,2026-10-17,17,10287,,143,10144,,,,,1,ga-datahub,2026-10-18T00:00:48+00:00
 2026,GA,13023,Bleckley County,2026-10-09,25,1,,1,,,,,,2,civicapi,2026-10-09T12:34:07+00:00
 2026,GA,13023,Bleckley County,2026-10-10,24,1,,1,,,,,,2,civicapi,2026-10-10T11:54:45+00:00
 2026,GA,13023,Bleckley County,2026-10-11,23,1,,1,,,,,,2,civicapi,2026-10-11T16:08:23+00:00
@@ -5769,7 +5769,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,GA,13045,Carroll County,2026-10-14,20,2686,,129,2557,,,,,1,ga-datahub,2026-10-14T23:00:45+00:00
 2026,GA,13045,Carroll County,2026-10-15,19,3854,,153,3701,,,,,1,ga-datahub,2026-10-15T23:00:30+00:00
 2026,GA,13045,Carroll County,2026-10-16,18,5469,,329,5140,,,,,1,ga-datahub,2026-10-17T00:00:44+00:00
-2026,GA,13045,Carroll County,2026-10-17,17,6172,,343,5829,,,,,1,ga-datahub,2026-10-17T23:00:51+00:00
+2026,GA,13045,Carroll County,2026-10-17,17,6173,,343,5830,,,,,1,ga-datahub,2026-10-18T00:00:48+00:00
 2026,GA,13047,Catoosa County,2026-10-06,28,1,,1,,,,,,2,civicapi,2026-10-06T16:29:43+00:00
 2026,GA,13047,Catoosa County,2026-10-07,27,1,,1,,,,,,2,civicapi,2026-10-07T19:43:42+00:00
 2026,GA,13047,Catoosa County,2026-10-08,26,5,,5,,,,,,2,civicapi,2026-10-08T17:11:29+00:00
@@ -5813,7 +5813,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,GA,13051,Chatham County,2026-10-14,20,9171,,563,8608,,,,,1,ga-datahub,2026-10-15T01:00:35+00:00
 2026,GA,13051,Chatham County,2026-10-15,19,13185,,794,12391,,,,,1,ga-datahub,2026-10-16T03:00:35+00:00
 2026,GA,13051,Chatham County,2026-10-16,18,17563,,1088,16475,,,,,1,ga-datahub,2026-10-17T03:00:37+00:00
-2026,GA,13051,Chatham County,2026-10-17,17,19287,,1198,18089,,,,,1,ga-datahub,2026-10-17T23:00:51+00:00
+2026,GA,13051,Chatham County,2026-10-17,17,19301,,1212,18089,,,,,1,ga-datahub,2026-10-18T00:00:48+00:00
 2026,GA,13053,Chattahoochee County,2026-10-13,21,46,,0,46,,,,,1,ga-datahub,2026-10-13T22:41:59+00:00
 2026,GA,13053,Chattahoochee County,2026-10-14,20,82,,0,82,,,,,1,ga-datahub,2026-10-14T23:00:45+00:00
 2026,GA,13053,Chattahoochee County,2026-10-15,19,122,,5,117,,,,,1,ga-datahub,2026-10-15T23:00:30+00:00
@@ -5866,7 +5866,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,GA,13059,Clarke County,2026-10-14,20,2050,,186,1864,,,,,1,ga-datahub,2026-10-15T01:00:35+00:00
 2026,GA,13059,Clarke County,2026-10-15,19,2923,,265,2658,,,,,1,ga-datahub,2026-10-16T00:00:33+00:00
 2026,GA,13059,Clarke County,2026-10-16,18,3820,,439,3381,,,,,1,ga-datahub,2026-10-17T00:00:44+00:00
-2026,GA,13059,Clarke County,2026-10-17,17,4080,,439,3641,,,,,1,ga-datahub,2026-10-17T23:00:51+00:00
+2026,GA,13059,Clarke County,2026-10-17,17,4086,,439,3647,,,,,1,ga-datahub,2026-10-18T00:00:48+00:00
 2026,GA,13061,Clay County,2026-10-13,21,70,,4,66,,,,,1,ga-datahub,2026-10-13T22:41:59+00:00
 2026,GA,13061,Clay County,2026-10-14,20,108,,6,102,,,,,1,ga-datahub,2026-10-14T21:43:36+00:00
 2026,GA,13061,Clay County,2026-10-15,19,164,,10,154,,,,,1,ga-datahub,2026-10-15T22:00:32+00:00
@@ -5951,7 +5951,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,GA,13073,Columbia County,2026-10-14,20,5641,,331,5310,,,,,1,ga-datahub,2026-10-15T00:00:34+00:00
 2026,GA,13073,Columbia County,2026-10-15,19,8257,,514,7743,,,,,1,ga-datahub,2026-10-16T00:00:33+00:00
 2026,GA,13073,Columbia County,2026-10-16,18,11478,,736,10742,,,,,1,ga-datahub,2026-10-17T00:00:44+00:00
-2026,GA,13073,Columbia County,2026-10-17,17,13443,,863,12580,,,,,1,ga-datahub,2026-10-17T23:00:51+00:00
+2026,GA,13073,Columbia County,2026-10-17,17,13448,,868,12580,,,,,1,ga-datahub,2026-10-18T00:00:48+00:00
 2026,GA,13075,Cook County,2026-10-10,24,1,,1,,,,,,2,civicapi,2026-10-10T11:54:45+00:00
 2026,GA,13075,Cook County,2026-10-11,23,1,,1,,,,,,2,civicapi,2026-10-11T16:08:23+00:00
 2026,GA,13075,Cook County,2026-10-12,22,1,,1,,,,,,2,civicapi,2026-10-12T15:50:17+00:00
@@ -6053,7 +6053,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,GA,13089,DeKalb County,2026-10-14,20,32043,,382,31661,,,,,1,ga-datahub,2026-10-15T03:00:31+00:00
 2026,GA,13089,DeKalb County,2026-10-15,19,45493,,508,44985,,,,,1,ga-datahub,2026-10-16T01:00:37+00:00
 2026,GA,13089,DeKalb County,2026-10-16,18,61663,,1241,60422,,,,,1,ga-datahub,2026-10-17T01:00:40+00:00
-2026,GA,13089,DeKalb County,2026-10-17,17,70515,,1242,69273,,,,,1,ga-datahub,2026-10-17T23:00:51+00:00
+2026,GA,13089,DeKalb County,2026-10-17,17,70725,,1242,69483,,,,,1,ga-datahub,2026-10-18T00:00:48+00:00
 2026,GA,13091,Dodge County,2026-10-13,21,234,,0,234,,,,,1,ga-datahub,2026-10-13T22:41:59+00:00
 2026,GA,13091,Dodge County,2026-10-14,20,578,,0,578,,,,,1,ga-datahub,2026-10-14T23:00:45+00:00
 2026,GA,13091,Dodge County,2026-10-15,19,814,,25,789,,,,,1,ga-datahub,2026-10-15T23:00:30+00:00
@@ -6190,7 +6190,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,GA,13113,Fayette County,2026-10-14,20,6759,,386,6373,,,,,1,ga-datahub,2026-10-15T01:00:35+00:00
 2026,GA,13113,Fayette County,2026-10-15,19,9915,,528,9387,,,,,1,ga-datahub,2026-10-16T01:00:37+00:00
 2026,GA,13113,Fayette County,2026-10-16,18,13284,,674,12610,,,,,1,ga-datahub,2026-10-17T01:00:40+00:00
-2026,GA,13113,Fayette County,2026-10-17,17,14685,,696,13989,,,,,1,ga-datahub,2026-10-17T23:00:51+00:00
+2026,GA,13113,Fayette County,2026-10-17,17,14792,,744,14048,,,,,1,ga-datahub,2026-10-18T00:00:48+00:00
 2026,GA,13115,Floyd County,2026-10-02,32,2,,2,,,,,,2,civicapi,2026-10-02T21:49:03+00:00
 2026,GA,13115,Floyd County,2026-10-03,31,2,,2,,,,,,2,civicapi,2026-10-03T13:01:49+00:00
 2026,GA,13115,Floyd County,2026-10-04,30,2,,2,,,,,,2,civicapi,2026-10-04T17:58:30+00:00
@@ -6222,7 +6222,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,GA,13117,Forsyth County,2026-10-14,20,8864,,529,8335,,,,,1,ga-datahub,2026-10-15T00:00:34+00:00
 2026,GA,13117,Forsyth County,2026-10-15,19,12977,,657,12320,,,,,1,ga-datahub,2026-10-16T00:00:33+00:00
 2026,GA,13117,Forsyth County,2026-10-16,18,17787,,784,17003,,,,,1,ga-datahub,2026-10-17T00:00:44+00:00
-2026,GA,13117,Forsyth County,2026-10-17,17,20823,,934,19889,,,,,1,ga-datahub,2026-10-17T23:00:51+00:00
+2026,GA,13117,Forsyth County,2026-10-17,17,20842,,953,19889,,,,,1,ga-datahub,2026-10-18T00:00:48+00:00
 2026,GA,13119,Franklin County,2026-10-08,26,4,,4,,,,,,2,civicapi,2026-10-08T17:11:29+00:00
 2026,GA,13119,Franklin County,2026-10-09,25,4,,4,,,,,,2,civicapi,2026-10-09T12:34:07+00:00
 2026,GA,13119,Franklin County,2026-10-10,24,4,,4,,,,,,2,civicapi,2026-10-10T11:54:45+00:00
@@ -6280,7 +6280,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,GA,13127,Glynn County,2026-10-14,20,4290,,363,3927,,,,,1,ga-datahub,2026-10-15T03:00:31+00:00
 2026,GA,13127,Glynn County,2026-10-15,19,6141,,477,5664,,,,,1,ga-datahub,2026-10-16T01:00:37+00:00
 2026,GA,13127,Glynn County,2026-10-16,18,7812,,490,7322,,,,,1,ga-datahub,2026-10-17T00:00:44+00:00
-2026,GA,13127,Glynn County,2026-10-17,17,8609,,505,8104,,,,,1,ga-datahub,2026-10-17T23:00:51+00:00
+2026,GA,13127,Glynn County,2026-10-17,17,8621,,517,8104,,,,,1,ga-datahub,2026-10-18T00:00:48+00:00
 2026,GA,13129,Gordon County,2026-10-07,27,3,,3,,,,,,2,civicapi,2026-10-07T19:43:42+00:00
 2026,GA,13129,Gordon County,2026-10-08,26,5,,5,,,,,,2,civicapi,2026-10-08T17:11:29+00:00
 2026,GA,13129,Gordon County,2026-10-09,25,20,,20,,,,,,2,civicapi,2026-10-09T12:34:07+00:00
@@ -6328,7 +6328,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,GA,13135,Gwinnett County,2026-10-14,20,27219,,157,27062,,,,,1,ga-datahub,2026-10-15T01:00:35+00:00
 2026,GA,13135,Gwinnett County,2026-10-15,19,39735,,415,39320,,,,,1,ga-datahub,2026-10-16T01:00:37+00:00
 2026,GA,13135,Gwinnett County,2026-10-16,18,54169,,746,53423,,,,,1,ga-datahub,2026-10-17T01:00:40+00:00
-2026,GA,13135,Gwinnett County,2026-10-17,17,62993,,1315,61678,,,,,1,ga-datahub,2026-10-17T23:00:51+00:00
+2026,GA,13135,Gwinnett County,2026-10-17,17,63476,,1315,62161,,,,,1,ga-datahub,2026-10-18T00:00:48+00:00
 2026,GA,13137,Habersham County,2026-10-02,32,1,,1,,,,,,2,civicapi,2026-10-02T21:49:03+00:00
 2026,GA,13137,Habersham County,2026-10-03,31,1,,1,,,,,,2,civicapi,2026-10-03T13:01:49+00:00
 2026,GA,13137,Habersham County,2026-10-04,30,1,,1,,,,,,2,civicapi,2026-10-04T17:58:30+00:00
@@ -6780,7 +6780,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,GA,13215,Muscogee County,2026-10-14,20,6570,,732,5838,,,,,1,ga-datahub,2026-10-15T03:00:31+00:00
 2026,GA,13215,Muscogee County,2026-10-15,19,9131,,928,8203,,,,,1,ga-datahub,2026-10-16T01:00:37+00:00
 2026,GA,13215,Muscogee County,2026-10-16,18,11819,,1180,10639,,,,,1,ga-datahub,2026-10-17T03:00:37+00:00
-2026,GA,13215,Muscogee County,2026-10-17,17,12844,,1254,11590,,,,,1,ga-datahub,2026-10-17T23:00:51+00:00
+2026,GA,13215,Muscogee County,2026-10-17,17,12871,,1254,11617,,,,,1,ga-datahub,2026-10-18T00:00:48+00:00
 2026,GA,13217,Newton County,2026-10-02,32,1,,1,,,,,,2,civicapi,2026-10-02T21:49:03+00:00
 2026,GA,13217,Newton County,2026-10-03,31,1,,1,,,,,,2,civicapi,2026-10-03T13:01:49+00:00
 2026,GA,13217,Newton County,2026-10-04,30,1,,1,,,,,,2,civicapi,2026-10-04T17:58:30+00:00
@@ -6945,7 +6945,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,GA,13245,Richmond County,2026-10-14,20,5911,,169,5742,,,,,1,ga-datahub,2026-10-15T00:00:34+00:00
 2026,GA,13245,Richmond County,2026-10-15,19,8635,,479,8156,,,,,1,ga-datahub,2026-10-16T00:00:33+00:00
 2026,GA,13245,Richmond County,2026-10-16,18,11258,,595,10663,,,,,1,ga-datahub,2026-10-17T00:00:44+00:00
-2026,GA,13245,Richmond County,2026-10-17,17,12337,,595,11742,,,,,1,ga-datahub,2026-10-17T23:00:51+00:00
+2026,GA,13245,Richmond County,2026-10-17,17,12369,,595,11774,,,,,1,ga-datahub,2026-10-18T00:00:48+00:00
 2026,GA,13247,Rockdale County,2026-10-02,32,5,,5,,,,,,2,civicapi,2026-10-02T21:49:03+00:00
 2026,GA,13247,Rockdale County,2026-10-03,31,9,,9,,,,,,2,civicapi,2026-10-03T13:01:49+00:00
 2026,GA,13247,Rockdale County,2026-10-04,30,9,,9,,,,,,2,civicapi,2026-10-04T17:58:30+00:00
@@ -6991,7 +6991,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,GA,13255,Spalding County,2026-10-14,20,3055,,256,2799,,,,,1,ga-datahub,2026-10-15T00:00:34+00:00
 2026,GA,13255,Spalding County,2026-10-15,19,4382,,355,4027,,,,,1,ga-datahub,2026-10-16T03:00:35+00:00
 2026,GA,13255,Spalding County,2026-10-16,18,5732,,447,5285,,,,,1,ga-datahub,2026-10-17T00:00:44+00:00
-2026,GA,13255,Spalding County,2026-10-17,17,6194,,456,5738,,,,,1,ga-datahub,2026-10-17T23:00:51+00:00
+2026,GA,13255,Spalding County,2026-10-17,17,6204,,456,5748,,,,,1,ga-datahub,2026-10-18T00:00:48+00:00
 2026,GA,13257,Stephens County,2026-10-03,31,1,,1,,,,,,2,civicapi,2026-10-03T13:01:49+00:00
 2026,GA,13257,Stephens County,2026-10-04,30,1,,1,,,,,,2,civicapi,2026-10-04T17:58:30+00:00
 2026,GA,13257,Stephens County,2026-10-05,29,1,,1,,,,,,2,civicapi,2026-10-05T19:03:30+00:00
