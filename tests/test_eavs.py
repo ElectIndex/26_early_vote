@@ -3,9 +3,11 @@
 ⚠️ THE FIXTURE IS TRUNCATED AND THAT MATTERS FOR WHAT MAY BE ASSERTED.
 `eavs_2024_sample.zip` carries the real 535-column header verbatim and every
 jurisdiction for Idaho (44), New Mexico (33) and DC (1) -- so those three have
-real statewide totals and are checked against them. Missouri, Montana, West
-Virginia and Arizona are cut to a handful of rows each, kept for the SHAPE they
-demonstrate. Their sums are fixture artefacts and nothing here asserts one.
+real statewide totals and are checked against them. Arizona carries all 15
+counties too (added 2026-10-18 for the BY_METHOD reader), and
+`eavs_2022_az.zip` is the real 2022 header with Arizona's 15 rows. Missouri,
+Montana and West Virginia are cut to a handful of rows each, kept for the SHAPE
+they demonstrate. Their sums are fixture artefacts and nothing here asserts one.
 """
 
 from __future__ import annotations
@@ -112,9 +114,53 @@ def test_columns_that_cannot_both_be_true_are_DRIFT(archive):
 
     Every column is populated and every value is a plausible number. Only the
     survey's own identity catches it, which is Rule 3: do not guess a mapping.
+    Arizona now reads section F instead (BY_METHOD, below); forcing it down the
+    C1b + F1f path is what proves the guard still fires.
     """
     with pytest.raises(SchemaDrift, match="against .* total voters"):
-        parse(archive, "AZ")
+        eavs.parse(eavs.rows(archive, "AZ"), "AZ", 2024, DAY, by_method=False)
+
+
+def test_arizona_reads_section_F_and_publishes_no_mode_split(archive):
+    """⚠️ ARIZONA'S COUNTIES FILE THE SAME EARLY BALLOT IN DIFFERENT COLUMNS.
+
+    Section F partitions F1a in every county, so F1c + F1d + F1f is the early
+    vote wherever a county put its in-person and UOCAVA ballots. Maricopa's
+    1,822,403 sits 371 off its own C1b (1,822,032); Pima's is its 442,409 mail
+    plus 45,211 in-person plus 4,607 UOCAVA.
+    """
+    result = parse(archive, "AZ")
+    assert len(result.county_rows) == 15
+    by_name = {r.county_name: r for r in result.county_rows}
+    assert by_name["Maricopa County"].ballots_total == 1_822_403
+    assert by_name["Pima County"].ballots_total == 492_227
+    # Apache: 3,461 mail + 16,601 in-person + 55 UOCAVA, NOT C1b's 21,608 + 16,601.
+    assert by_name["Apache County"].ballots_total == 20_117
+    (state,) = result.state_rows
+    assert state.ballots_total == 2_965_552
+    assert all(r.mail_returned is None and r.inperson is None
+               for r in result.county_rows + result.state_rows)
+
+
+def test_arizona_2022_counts_the_column_maricopa_folded_away():
+    """Maricopa 2022 answers F1f = -99 and says in-person early is IN F1d.
+
+    The partition holds (F1b..F1e sum to F1a exactly), so the -99 is a folded
+    column, not an unknown one, and Maricopa is not withheld for it.
+    """
+    body = (FIXTURES / "eavs_2022_az.zip").read_bytes()
+    result = eavs.parse(eavs.rows(body, "AZ"), "AZ", 2022, date(2022, 11, 8))
+    by_name = {r.county_name: r for r in result.county_rows}
+    assert by_name["Maricopa County"].ballots_total == 1_311_734
+    (state,) = result.state_rows
+    assert state.ballots_total == 2_110_799
+
+
+def test_a_section_F_that_stops_summing_to_F1a_is_DRIFT(archive):
+    records = eavs.rows(archive, "AZ")
+    records[0] = dict(records[0], F1d=str(int(records[0]["F1d"]) + 5_000))
+    with pytest.raises(SchemaDrift, match="no longer a partition"):
+        eavs.parse(records, "AZ", 2024, DAY)
 
 
 def test_a_single_county_state_still_parses(archive):

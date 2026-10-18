@@ -99,6 +99,41 @@ JURISDICTION = "Jurisdiction_Name"
 #: "no one voted early" for a county that did not answer the question.
 NOT_A_COUNT = frozenset({"-88", "-99", ""})
 
+#: ⚠️ STATES WHOSE COUNTIES DO NOT AGREE ON WHICH COLUMN AN EARLY BALLOT GOES IN.
+#:
+#: Arizona is the reason this exists. Its early ballot is one ballot however it
+#: comes back (mailed, dropped off, or voted at the recorder's counter), so each
+#: county decides for itself where the in-person and UOCAVA ones land, and they
+#: decided differently. Their own F1Comments, 2022 and 2024 releases:
+#:
+#:     MARICOPA 2022  F1f = -99, "EARLY BALLOTS/MAIL BALLOTS WERE COMBINED IN F1D"
+#:     PINAL    2022  F1f = 0,   in-person early "INCLUDED IN ... F1D"
+#:     MOHAVE   2022  F1d "INCLUDES MAIL, IN PERSON AND UOCAVA"
+#:     APACHE   2022  UOCAVA "TABULATED WITH EARLY BALLOTS"
+#:     NAVAJO   2024  F1f = 0
+#:     APACHE   2024  C1b 21,608 + F1f 16,601 against 32,685 total voters
+#:
+#: So C1b + F1f double-counts in some counties and drops a column in others.
+#: What every Arizona county DOES agree on is section F as a PARTITION of F1a:
+#: F1b..F1h sum to F1a in 28 of 30 county-cycles, and the other two (Mohave and
+#: Santa Cruz 2024) miss by 33 and 4 ballots -- canvass vs. voting-history drift,
+#: which Mohave's own comment describes. The early vote is therefore read as
+#: every F1 ballot that is NOT a polling-place (F1b) or provisional (F1e) one:
+#:
+#:     F1c UOCAVA + F1d mail + F1f in-person early (+ F1g, F1h if answered)
+#:
+#: which is the same number wherever a county filed its in-person and UOCAVA
+#: ballots. The mode split is NOT published for these states -- `mail_returned`
+#: and `inperson` stay blank, because the column a ballot sits in is exactly
+#: the thing their counties do not agree on.
+BY_METHOD = frozenset({"AZ"})
+BY_METHOD_EARLY = ("F1c", "F1d", "F1f", "F1g", "F1h")
+BY_METHOD_NOT_EARLY = ("F1b", "F1e")
+
+#: How far section F may miss F1a before it is drift rather than drift-in-time.
+#: Mohave 2024 is 0.03%; this is ten times that.
+BY_METHOD_TOLERANCE = 0.003
+
 #: What these rows are stamped with. Never a state's own `<st>-sos`.
 NAME = "eac-eavs"
 
@@ -171,6 +206,29 @@ def count(raw: str | None, what: str) -> int | None:
     return value
 
 
+def early_by_method(row: dict[str, str], state: str, name: str) -> int | None:
+    """One BY_METHOD county's early vote, from section F. See BY_METHOD.
+
+    `None` when F1a or F1d is unanswered: the partition cannot be checked, and
+    F1d is where most of the early vote lives. An unanswered F1c/F1f/F1g/F1h is
+    a column the county folded into F1d, which is what the partition check is
+    there to prove rather than assume.
+    """
+    voted = count(row.get(TOTAL_VOTERS), f"{state} {name} {TOTAL_VOTERS}")
+    parts = {c: count(row.get(c), f"{state} {name} {c}")
+             for c in BY_METHOD_EARLY + BY_METHOD_NOT_EARLY}
+    if voted is None or parts["F1d"] is None:
+        return None
+    early = sum(parts[c] or 0 for c in BY_METHOD_EARLY)
+    whole = early + sum(parts[c] or 0 for c in BY_METHOD_NOT_EARLY)
+    if abs(whole - voted) > voted * BY_METHOD_TOLERANCE:
+        raise SchemaDrift(
+            f"{state}: {name} section F sums to {whole} against {voted} total "
+            "voters; it is no longer a partition, so the early share is unknown"
+        )
+    return early
+
+
 def _counties(state: str) -> dict[str, str]:
     """{5-digit FIPS: canonical county name} for one state."""
     table: dict[str, str] = {}
@@ -182,7 +240,7 @@ def _counties(state: str) -> dict[str, str]:
 
 
 def parse(records: list[dict[str, str]], state: str, cycle: int,
-          day: date) -> FetchResult:
+          day: date, by_method: bool | None = None) -> FetchResult:
     """One state's county FINAL for one cycle. ONE ROW PER COUNTY, dated Election Day.
 
     ⚠️ JURISDICTIONS ARE MATCHED BY FIPS, NOT BY NAME, and that is not a style
@@ -204,7 +262,12 @@ def parse(records: list[dict[str, str]], state: str, cycle: int,
       Kansas City still counts toward that sum, so Missouri gets a statewide
       total and no counties. Montana, where all 56 counties leave in-person
       blank, gets neither.
+
+    A BY_METHOD state (default: `state in BY_METHOD`) is read from section F
+    instead, and carries a total with no mode split -- see BY_METHOD.
     """
+    if by_method is None:
+        by_method = state in BY_METHOD
     result = FetchResult()
     known = _counties(state)
     totals = {"mail": 0, "inperson": 0, "voted": 0}
@@ -218,13 +281,16 @@ def parse(records: list[dict[str, str]], state: str, cycle: int,
         name = (row.get(JURISDICTION) or "").strip()
         fips = code[:5]
 
-        mail = count(row.get(MAIL_RETURNED), f"{state} {name} {MAIL_RETURNED}")
-        early = count(row.get(INPERSON), f"{state} {name} {INPERSON}")
         voted = count(row.get(TOTAL_VOTERS), f"{state} {name} {TOTAL_VOTERS}")
-
-        # ⚠️ NOT `(mail or 0) + (early or 0)`. A jurisdiction that did not report
-        # one half has an UNKNOWN early vote, not a half-sized one.
-        total = None if mail is None or early is None else mail + early
+        if by_method:
+            mail = early = None
+            total = early_by_method(row, state, name)
+        else:
+            mail = count(row.get(MAIL_RETURNED), f"{state} {name} {MAIL_RETURNED}")
+            early = count(row.get(INPERSON), f"{state} {name} {INPERSON}")
+            # ⚠️ NOT `(mail or 0) + (early or 0)`. A jurisdiction that did not
+            # report one half has an UNKNOWN early vote, not a half-sized one.
+            total = None if mail is None or early is None else mail + early
         if total is None:
             every_column_answered = False
         else:
@@ -236,8 +302,8 @@ def parse(records: list[dict[str, str]], state: str, cycle: int,
                     f"{state}: {name} reports {mail} mail + {early} early = "
                     f"{total} against {voted} total voters"
                 )
-            totals["mail"] += mail          # type: ignore[operator]
-            totals["inperson"] += early     # type: ignore[operator]
+            totals["mail"] += mail or 0
+            totals["inperson"] += early or 0
             totals["voted"] += total
 
         canonical = known.get(fips)
@@ -301,7 +367,8 @@ def parse(records: list[dict[str, str]], state: str, cycle: int,
                     state)
         return result
 
-    if totals["inperson"] == 0 and totals["mail"] > 0 and len(records) > 1:
+    if (not by_method and totals["inperson"] == 0 and totals["mail"] > 0
+            and len(records) > 1):
         # Not an error and not refused: a state can legitimately be all-mail
         # (Washington reports 171 in-person early votes statewide). But a column
         # that is exactly 0 in EVERY jurisdiction of a state that runs in-person
@@ -319,8 +386,8 @@ def parse(records: list[dict[str, str]], state: str, cycle: int,
         # the gap. A number that cannot be reconciled against the state that
         # reported it is a blank, not a row.
         mail_requested=None,
-        mail_returned=totals["mail"],
-        inperson=totals["inperson"],
+        mail_returned=None if by_method else totals["mail"],
+        inperson=None if by_method else totals["inperson"],
         party_dem=None, party_rep=None, party_oth=None, party_npa=None,
     ))
     return result

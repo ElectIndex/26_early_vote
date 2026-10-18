@@ -47,8 +47,11 @@ The survey is offered to EVERY state rather than an allowlist, because it is the
 better judge of which ones it can answer for — `eavs.parse` refuses a statewide
 total unless every jurisdiction answered both columns, refuses county rows it
 cannot place inside a county, and raises `SchemaDrift` when a state's mail and
-in-person columns sum past its own total voters (Arizona, Indiana and Nebraska
-all do). A state it cannot answer for produces nothing and the walk continues.
+in-person columns sum past its own total voters (Indiana and Nebraska do).
+Arizona did too, and is now read from section F instead (`eavs.BY_METHOD`: its
+counties file the same early ballot in different columns, but F1b..F1h still
+partition F1a), with a total and no mode split. A state it cannot answer for
+produces nothing and the walk continues.
 `docs/coverage-research.md` has the per-state results; `schema.py` has the
 reasoning for the rung.
 

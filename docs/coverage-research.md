@@ -2591,6 +2591,27 @@ mistaken for it:**
   in-person early votes). Where a national post-election source belongs on the
   ladder is a decision about the ladder, not about Arizona.
 
+**UPDATE 2026-10-18 — the EAVS county finals now ship for 2022 AND 2024.**
+The provenance objection was answered by `schema.TIER_SURVEY` (rows stamp
+`eac-eavs`, never `az-sos`); the mode-split objection by `eavs.BY_METHOD`.
+Arizona's counties disagree on which F column an in-person or UOCAVA early
+ballot goes in (Maricopa 2022 `F1f = -99` "combined in F1D"; Pinal 2022 and
+Navajo 2024 `F1f = 0`; Mohave 2022 F1d "includes mail, in person and UOCAVA";
+Apache 2024 C1b 21,608 + F1f 16,601 > F1a 32,685), but section F still
+partitions F1a in 28 of 30 county-cycles (Mohave / Santa Cruz 2024 miss by 33
+and 4). So the early vote is F1c + F1d + F1f (+F1g/F1h): **2,965,552 in 2024**
+(of 3,477,975 voters) and **2,110,799 in 2022** (of 2,592,375), all 15 counties
+both cycles, no mail/in-person split. UF's 2024-11-03 statewide point
+(2,338,279, with party) stays alongside.
+
+**Still no daily 2022/2024 curve, re-checked 2026-10-18:** UF's `2024/US.csv`
+has Wayback captures on 10-08 (before AZ ballots went out) and then only
+11-03 → 11-08; UF's Arizona HTML pages render from that CSV and hold no numbers;
+TargetSmart's TargetEarly (`targetearly.targetsmart.com/data/g20XX/…`) is gone
+live (every path now serves the TargetSmart WordPress homepage as 200
+text/html) and the Archive holds no `AZ_TS_Data.csv` or `AZ_EV_Numbers*` for
+2022 or 2024 (captured g2024 time-series: MA, PA only).
+
 **Live bot-wall status, re-tested 2026-09-09 rather than trusted:** plain
 `requests` → `azsos.gov` election-information page = 403 with a 5,824-byte
 "Just a moment" interstitial; `curl_cffi` with `impersonate="chrome"` = 200,

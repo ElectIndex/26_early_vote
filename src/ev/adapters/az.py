@@ -510,6 +510,13 @@ class AZScraper(Adapter):
           (Navajo reports zero in-person early votes). Wiring it in is a decision
           about what a national post-election source is worth and where it sits
           on the ladder, which is not this adapter's to make alone.
+
+          UPDATE 2026-10-18: it IS wired in now, and not here -- through the
+          EAVS rung (`schema.TIER_SURVEY`, stamped `eac-eavs`), which settled
+          the provenance question. The inconsistent mode split is handled by
+          `eavs.BY_METHOD`: Arizona is read from section F as one early total
+          per county, 2022 and 2024, with mail/in-person left blank. This
+          method still refuses; the walk falls through to the survey.
         """
         if cycle >= date.today().year:
             raise NotYetPublished(f"AZ: {cycle} is not an archived cycle")
