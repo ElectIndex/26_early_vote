@@ -24,6 +24,7 @@ cycle,state,cd_code,date,days_to_election,ballots_total,ballots_new,mail_returne
 2026,IN,IN-01,2026-10-16,18,22138,,22138,,,,,,apportioned,2,civicapi,2026-10-16T15:04:04+00:00
 2026,IN,IN-01,2026-10-17,17,22138,,22138,,,,,,apportioned,2,civicapi,2026-10-17T04:34:14+00:00
 2026,IN,IN-01,2026-10-18,16,22138,,22138,,,,,,apportioned,2,civicapi,2026-10-18T04:41:05+00:00
+2026,IN,IN-01,2026-10-19,15,22138,,22138,,,,,,apportioned,2,civicapi,2026-10-19T16:34:51+00:00
 2026,IN,IN-02,2026-09-22,42,10,,10,,,,,,apportioned,2,civicapi,2026-09-22T17:58:53+00:00
 2026,IN,IN-02,2026-09-23,41,18,,18,,,,,,apportioned,2,civicapi,2026-09-23T16:09:31+00:00
 2026,IN,IN-02,2026-09-24,40,43,,43,,,,,,apportioned,2,civicapi,2026-09-24T23:06:00+00:00
@@ -51,6 +52,7 @@ cycle,state,cd_code,date,days_to_election,ballots_total,ballots_new,mail_returne
 2026,IN,IN-02,2026-10-16,18,16000,,16000,,,,,,apportioned,2,civicapi,2026-10-16T15:04:04+00:00
 2026,IN,IN-02,2026-10-17,17,16000,,16000,,,,,,apportioned,2,civicapi,2026-10-17T04:34:14+00:00
 2026,IN,IN-02,2026-10-18,16,16000,,16000,,,,,,apportioned,2,civicapi,2026-10-18T04:41:05+00:00
+2026,IN,IN-02,2026-10-19,15,16000,,16000,,,,,,apportioned,2,civicapi,2026-10-19T16:34:51+00:00
 2026,IN,IN-03,2026-09-22,42,29,,29,,,,,,apportioned,2,civicapi,2026-09-22T17:58:53+00:00
 2026,IN,IN-03,2026-09-23,41,53,,53,,,,,,apportioned,2,civicapi,2026-09-23T16:09:31+00:00
 2026,IN,IN-03,2026-09-24,40,116,,116,,,,,,apportioned,2,civicapi,2026-09-24T23:06:00+00:00
@@ -76,6 +78,7 @@ cycle,state,cd_code,date,days_to_election,ballots_total,ballots_new,mail_returne
 2026,IN,IN-03,2026-10-16,18,13150,,13150,,,,,,apportioned,2,civicapi,2026-10-16T15:04:04+00:00
 2026,IN,IN-03,2026-10-17,17,13150,,13150,,,,,,apportioned,2,civicapi,2026-10-17T04:34:14+00:00
 2026,IN,IN-03,2026-10-18,16,13150,,13150,,,,,,apportioned,2,civicapi,2026-10-18T04:41:05+00:00
+2026,IN,IN-03,2026-10-19,15,13150,,13150,,,,,,apportioned,2,civicapi,2026-10-19T16:34:51+00:00
 2026,IN,IN-04,2026-09-22,42,6,,6,,,,,,apportioned,2,civicapi,2026-09-22T17:58:53+00:00
 2026,IN,IN-04,2026-09-23,41,32,,32,,,,,,apportioned,2,civicapi,2026-09-23T16:09:31+00:00
 2026,IN,IN-04,2026-09-24,40,94,,94,,,,,,apportioned,2,civicapi,2026-09-24T23:06:00+00:00
@@ -103,6 +106,7 @@ cycle,state,cd_code,date,days_to_election,ballots_total,ballots_new,mail_returne
 2026,IN,IN-04,2026-10-16,18,15166,,15166,,,,,,apportioned,2,civicapi,2026-10-16T15:04:04+00:00
 2026,IN,IN-04,2026-10-17,17,15166,,15166,,,,,,apportioned,2,civicapi,2026-10-17T04:34:14+00:00
 2026,IN,IN-04,2026-10-18,16,15166,,15166,,,,,,apportioned,2,civicapi,2026-10-18T04:41:05+00:00
+2026,IN,IN-04,2026-10-19,15,15166,,15166,,,,,,apportioned,2,civicapi,2026-10-19T16:34:51+00:00
 2026,IN,IN-05,2026-09-22,42,88,,88,,,,,,apportioned,2,civicapi,2026-09-22T17:58:53+00:00
 2026,IN,IN-05,2026-09-23,41,147,,147,,,,,,apportioned,2,civicapi,2026-09-23T16:09:31+00:00
 2026,IN,IN-05,2026-09-24,40,281,,281,,,,,,apportioned,2,civicapi,2026-09-24T23:06:00+00:00
@@ -130,6 +134,7 @@ cycle,state,cd_code,date,days_to_election,ballots_total,ballots_new,mail_returne
 2026,IN,IN-05,2026-10-16,18,22169,,22169,,,,,,apportioned,2,civicapi,2026-10-16T15:04:04+00:00
 2026,IN,IN-05,2026-10-17,17,22169,,22169,,,,,,apportioned,2,civicapi,2026-10-17T04:34:14+00:00
 2026,IN,IN-05,2026-10-18,16,22169,,22169,,,,,,apportioned,2,civicapi,2026-10-18T04:41:05+00:00
+2026,IN,IN-05,2026-10-19,15,22169,,22169,,,,,,apportioned,2,civicapi,2026-10-19T16:34:51+00:00
 2026,IN,IN-06,2026-09-22,42,8,,8,,,,,,apportioned,2,civicapi,2026-09-22T17:58:53+00:00
 2026,IN,IN-06,2026-09-23,41,57,,57,,,,,,apportioned,2,civicapi,2026-09-23T16:09:31+00:00
 2026,IN,IN-06,2026-09-24,40,105,,105,,,,,,apportioned,2,civicapi,2026-09-24T18:13:59+00:00
@@ -157,6 +162,7 @@ cycle,state,cd_code,date,days_to_election,ballots_total,ballots_new,mail_returne
 2026,IN,IN-06,2026-10-16,18,12336,,12336,,,,,,apportioned,2,civicapi,2026-10-16T15:04:04+00:00
 2026,IN,IN-06,2026-10-17,17,12336,,12336,,,,,,apportioned,2,civicapi,2026-10-17T04:34:14+00:00
 2026,IN,IN-06,2026-10-18,16,12336,,12336,,,,,,apportioned,2,civicapi,2026-10-18T04:41:05+00:00
+2026,IN,IN-06,2026-10-19,15,12336,,12336,,,,,,apportioned,2,civicapi,2026-10-19T16:34:51+00:00
 2026,IN,IN-07,2026-09-23,41,59,,59,,,,,,apportioned,2,civicapi,2026-09-23T16:09:31+00:00
 2026,IN,IN-07,2026-09-24,40,71,,71,,,,,,apportioned,2,civicapi,2026-09-24T23:06:00+00:00
 2026,IN,IN-07,2026-09-25,39,71,,71,,,,,,apportioned,2,civicapi,2026-09-25T09:25:24+00:00
@@ -181,6 +187,7 @@ cycle,state,cd_code,date,days_to_election,ballots_total,ballots_new,mail_returne
 2026,IN,IN-07,2026-10-16,18,6654,,6654,,,,,,apportioned,2,civicapi,2026-10-16T15:04:04+00:00
 2026,IN,IN-07,2026-10-17,17,6654,,6654,,,,,,apportioned,2,civicapi,2026-10-17T04:34:14+00:00
 2026,IN,IN-07,2026-10-18,16,6654,,6654,,,,,,apportioned,2,civicapi,2026-10-18T04:41:05+00:00
+2026,IN,IN-07,2026-10-19,15,6654,,6654,,,,,,apportioned,2,civicapi,2026-10-19T16:34:51+00:00
 2026,IN,IN-08,2026-09-22,42,16,,16,,,,,,apportioned,2,civicapi,2026-09-22T17:58:53+00:00
 2026,IN,IN-08,2026-09-23,41,42,,42,,,,,,apportioned,2,civicapi,2026-09-23T16:09:31+00:00
 2026,IN,IN-08,2026-09-24,40,76,,76,,,,,,apportioned,2,civicapi,2026-09-24T18:13:59+00:00
@@ -208,6 +215,7 @@ cycle,state,cd_code,date,days_to_election,ballots_total,ballots_new,mail_returne
 2026,IN,IN-08,2026-10-16,18,17489,,17489,,,,,,apportioned,2,civicapi,2026-10-16T15:04:04+00:00
 2026,IN,IN-08,2026-10-17,17,17489,,17489,,,,,,apportioned,2,civicapi,2026-10-17T04:34:14+00:00
 2026,IN,IN-08,2026-10-18,16,17489,,17489,,,,,,apportioned,2,civicapi,2026-10-18T04:41:05+00:00
+2026,IN,IN-08,2026-10-19,15,17489,,17489,,,,,,apportioned,2,civicapi,2026-10-19T16:34:51+00:00
 2026,IN,IN-09,2026-09-22,42,6,,6,,,,,,apportioned,2,civicapi,2026-09-22T17:58:53+00:00
 2026,IN,IN-09,2026-09-23,41,43,,43,,,,,,apportioned,2,civicapi,2026-09-23T16:09:31+00:00
 2026,IN,IN-09,2026-09-24,40,96,,96,,,,,,apportioned,2,civicapi,2026-09-24T18:13:59+00:00
@@ -235,3 +243,4 @@ cycle,state,cd_code,date,days_to_election,ballots_total,ballots_new,mail_returne
 2026,IN,IN-09,2026-10-16,18,19569,,19569,,,,,,apportioned,2,civicapi,2026-10-16T15:04:04+00:00
 2026,IN,IN-09,2026-10-17,17,19569,,19569,,,,,,apportioned,2,civicapi,2026-10-17T04:34:14+00:00
 2026,IN,IN-09,2026-10-18,16,19569,,19569,,,,,,apportioned,2,civicapi,2026-10-18T04:41:05+00:00
+2026,IN,IN-09,2026-10-19,15,19569,,19569,,,,,,apportioned,2,civicapi,2026-10-19T16:34:51+00:00

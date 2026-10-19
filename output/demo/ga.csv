@@ -202,3 +202,12 @@ cycle,state,date,days_to_election,dimension,bucket,ballots_total,source_tier,sou
 2026,GA,2026-10-18,16,sex,female,438338,1,ga-datahub,2026-10-18T04:37:49+00:00
 2026,GA,2026-10-18,16,sex,male,360328,1,ga-datahub,2026-10-18T04:37:49+00:00
 2026,GA,2026-10-18,16,sex,unknown,38773,1,ga-datahub,2026-10-18T04:37:49+00:00
+2026,GA,2026-10-19,15,race,asian,20120,4,uf-election-lab,2026-10-19T16:31:00+00:00
+2026,GA,2026-10-19,15,race,black,301911,4,uf-election-lab,2026-10-19T16:31:00+00:00
+2026,GA,2026-10-19,15,race,hispanic,24134,4,uf-election-lab,2026-10-19T16:31:00+00:00
+2026,GA,2026-10-19,15,race,native,4717,4,uf-election-lab,2026-10-19T16:31:00+00:00
+2026,GA,2026-10-19,15,race,other,69352,4,uf-election-lab,2026-10-19T16:31:00+00:00
+2026,GA,2026-10-19,15,race,white,442496,4,uf-election-lab,2026-10-19T16:31:00+00:00
+2026,GA,2026-10-19,15,sex,female,470857,4,uf-election-lab,2026-10-19T16:31:00+00:00
+2026,GA,2026-10-19,15,sex,male,385035,4,uf-election-lab,2026-10-19T16:31:00+00:00
+2026,GA,2026-10-19,15,sex,unknown,6843,4,uf-election-lab,2026-10-19T16:31:00+00:00
