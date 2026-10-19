@@ -8040,7 +8040,7 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,FL,12039,Gadsden County,2026-10-18,16,inperson,0,,0,0,0,0,1,fl-doe,2026-10-18T13:00:38+00:00
 2026,FL,12039,Gadsden County,2026-10-18,16,mail,1110,,858,183,7,62,1,fl-doe,2026-10-18T13:00:38+00:00
 2026,FL,12039,Gadsden County,2026-10-19,15,inperson,0,,0,0,0,0,1,fl-doe,2026-10-19T13:00:57+00:00
-2026,FL,12039,Gadsden County,2026-10-19,15,mail,1110,,858,183,7,62,1,fl-doe,2026-10-19T13:00:57+00:00
+2026,FL,12039,Gadsden County,2026-10-19,15,mail,1111,,859,183,7,62,1,fl-doe,2026-10-19T15:31:20+00:00
 2026,FL,12041,Gilchrist County,2026-09-18,46,inperson,0,,0,0,0,0,1,fl-doe,2026-09-18T14:05:38+00:00
 2026,FL,12041,Gilchrist County,2026-09-18,46,mail,0,,0,0,0,0,1,fl-doe,2026-09-18T14:05:38+00:00
 2026,FL,12041,Gilchrist County,2026-09-19,45,inperson,0,,0,0,0,0,1,fl-doe,2026-09-19T13:41:22+00:00
@@ -8300,7 +8300,7 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,FL,12047,Hamilton County,2026-10-18,16,inperson,0,,0,0,0,0,1,fl-doe,2026-10-18T13:00:38+00:00
 2026,FL,12047,Hamilton County,2026-10-18,16,mail,265,,108,136,5,16,1,fl-doe,2026-10-18T13:00:38+00:00
 2026,FL,12047,Hamilton County,2026-10-19,15,inperson,0,,0,0,0,0,1,fl-doe,2026-10-19T13:00:57+00:00
-2026,FL,12047,Hamilton County,2026-10-19,15,mail,265,,108,136,5,16,1,fl-doe,2026-10-19T13:00:57+00:00
+2026,FL,12047,Hamilton County,2026-10-19,15,mail,286,,118,145,5,18,1,fl-doe,2026-10-19T15:31:20+00:00
 2026,FL,12049,Hardee County,2026-09-09,55,inperson,0,,0,0,0,0,1,fl-doe,2026-09-09T14:09:29+00:00
 2026,FL,12049,Hardee County,2026-09-09,55,mail,0,,0,0,0,0,1,fl-doe,2026-09-09T14:09:29+00:00
 2026,FL,12049,Hardee County,2026-09-10,54,inperson,0,,0,0,0,0,1,fl-doe,2026-09-10T14:03:21+00:00
@@ -10754,7 +10754,7 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,FL,12119,Sumter County,2026-10-18,16,inperson,0,,0,0,0,0,1,fl-doe,2026-10-18T13:00:38+00:00
 2026,FL,12119,Sumter County,2026-10-18,16,mail,11160,,3853,5092,280,1935,1,fl-doe,2026-10-18T13:00:38+00:00
 2026,FL,12119,Sumter County,2026-10-19,15,inperson,0,,0,0,0,0,1,fl-doe,2026-10-19T13:00:57+00:00
-2026,FL,12119,Sumter County,2026-10-19,15,mail,11160,,3853,5092,280,1935,1,fl-doe,2026-10-19T13:00:57+00:00
+2026,FL,12119,Sumter County,2026-10-19,15,mail,13453,,4596,6198,337,2322,1,fl-doe,2026-10-19T15:31:20+00:00
 2026,FL,12121,Suwannee County,2026-09-09,55,inperson,0,,0,0,0,0,1,fl-doe,2026-09-09T14:09:29+00:00
 2026,FL,12121,Suwannee County,2026-09-09,55,mail,0,,0,0,0,0,1,fl-doe,2026-09-09T14:09:29+00:00
 2026,FL,12121,Suwannee County,2026-09-10,54,inperson,0,,0,0,0,0,1,fl-doe,2026-09-10T14:03:21+00:00
