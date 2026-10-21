@@ -293,3 +293,6 @@ cycle,state,date,days_to_election,dimension,bucket,ballots_total,source_tier,sou
 2024,WA,2024-11-05,0,sex,female,1817574,1,wa-sos,2026-09-08T14:21:52+00:00
 2024,WA,2024-11-05,0,sex,male,1664689,1,wa-sos,2026-09-08T14:21:52+00:00
 2024,WA,2024-11-05,0,sex,unknown,100950,1,wa-sos,2026-09-08T14:21:52+00:00
+2026,WA,2026-10-21,13,sex,female,154465,4,uf-election-lab,2026-10-21T20:33:42+00:00
+2026,WA,2026-10-21,13,sex,male,152010,4,uf-election-lab,2026-10-21T20:33:42+00:00
+2026,WA,2026-10-21,13,sex,unknown,6044,4,uf-election-lab,2026-10-21T20:33:42+00:00
