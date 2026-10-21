@@ -160,3 +160,9 @@ cycle,state,date,days_to_election,dimension,bucket,ballots_total,source_tier,sou
 2024,SC,2024-10-18,18,race,other,196,1,sc-sec,2026-09-06T15:28:42+00:00
 2024,SC,2024-10-18,18,race,unknown,213,1,sc-sec,2026-09-06T15:28:42+00:00
 2024,SC,2024-10-18,18,race,white,21739,1,sc-sec,2026-09-06T15:28:42+00:00
+2026,SC,2026-10-21,13,race,asian,175,4,uf-election-lab,2026-10-21T16:32:23+00:00
+2026,SC,2026-10-21,13,race,black,5820,4,uf-election-lab,2026-10-21T16:32:23+00:00
+2026,SC,2026-10-21,13,race,hispanic,149,4,uf-election-lab,2026-10-21T16:32:23+00:00
+2026,SC,2026-10-21,13,race,native,24,4,uf-election-lab,2026-10-21T16:32:23+00:00
+2026,SC,2026-10-21,13,race,other,278,4,uf-election-lab,2026-10-21T16:32:23+00:00
+2026,SC,2026-10-21,13,race,white,15055,4,uf-election-lab,2026-10-21T16:32:23+00:00
