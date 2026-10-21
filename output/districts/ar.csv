@@ -1,0 +1,5 @@
+cycle,state,cd_code,date,days_to_election,ballots_total,ballots_new,mail_returned,inperson,party_dem,party_rep,party_oth,party_npa,basis,source_tier,source_name,retrieved_at
+2026,AR,AR-01,2026-10-21,13,23883,,,23001,1451,2367,20065,,apportioned,2,civicapi,2026-10-21T17:20:38+00:00
+2026,AR,AR-02,2026-10-21,13,36860,,1106,35754,3837,2519,30505,,apportioned,2,civicapi,2026-10-21T17:20:38+00:00
+2026,AR,AR-03,2026-10-21,13,29715,,1056,28658,2419,3286,24010,,apportioned,2,civicapi,2026-10-21T17:20:38+00:00
+2026,AR,AR-04,2026-10-21,13,25045,,,24241,,1883,22053,,apportioned,2,civicapi,2026-10-21T17:20:38+00:00
