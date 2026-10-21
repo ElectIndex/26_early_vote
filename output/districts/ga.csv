@@ -668,6 +668,7 @@ cycle,state,cd_code,date,days_to_election,ballots_total,ballots_new,mail_returne
 2026,GA,GA-01,2026-10-18,16,54422,,3183,51239,,,,,apportioned,1,ga-datahub,2026-10-18T04:37:49+00:00
 2026,GA,GA-01,2026-10-19,15,55171,,3359,51812,,,,,apportioned,2,civicapi,2026-10-19T17:00:42+00:00
 2026,GA,GA-01,2026-10-20,14,65871,,4231,61640,,,,,apportioned,2,civicapi,2026-10-20T11:01:01+00:00
+2026,GA,GA-01,2026-10-21,13,75609,,4679,70931,,,,,apportioned,2,civicapi,2026-10-21T13:01:09+00:00
 2026,GA,GA-02,2026-10-02,32,17,,17,,,,,,apportioned,2,civicapi,2026-10-02T21:49:03+00:00
 2026,GA,GA-02,2026-10-03,31,17,,17,,,,,,apportioned,2,civicapi,2026-10-03T13:01:49+00:00
 2026,GA,GA-02,2026-10-04,30,18,,18,,,,,,apportioned,2,civicapi,2026-10-04T17:58:30+00:00
@@ -687,6 +688,7 @@ cycle,state,cd_code,date,days_to_election,ballots_total,ballots_new,mail_returne
 2026,GA,GA-02,2026-10-18,16,47838,,2939,44899,,,,,apportioned,1,ga-datahub,2026-10-18T04:37:49+00:00
 2026,GA,GA-02,2026-10-19,15,48592,,2967,45624,,,,,apportioned,2,civicapi,2026-10-19T17:00:42+00:00
 2026,GA,GA-02,2026-10-20,14,58329,,3875,54454,,,,,apportioned,2,civicapi,2026-10-20T11:01:01+00:00
+2026,GA,GA-02,2026-10-21,13,67382,,4429,62954,,,,,apportioned,2,civicapi,2026-10-21T13:01:09+00:00
 2026,GA,GA-03,2026-10-02,32,29,,29,,,,,,apportioned,2,civicapi,2026-10-02T21:49:03+00:00
 2026,GA,GA-03,2026-10-03,31,35,,35,,,,,,apportioned,2,civicapi,2026-10-03T13:01:49+00:00
 2026,GA,GA-03,2026-10-04,30,35,,35,,,,,,apportioned,2,civicapi,2026-10-04T17:58:30+00:00
@@ -706,6 +708,7 @@ cycle,state,cd_code,date,days_to_election,ballots_total,ballots_new,mail_returne
 2026,GA,GA-03,2026-10-18,16,63364,,4147,59217,,,,,apportioned,1,ga-datahub,2026-10-18T04:37:49+00:00
 2026,GA,GA-03,2026-10-19,15,63726,,4210,59516,,,,,apportioned,2,civicapi,2026-10-19T17:00:42+00:00
 2026,GA,GA-03,2026-10-20,14,76240,,4914,71326,,,,,apportioned,2,civicapi,2026-10-20T11:01:01+00:00
+2026,GA,GA-03,2026-10-21,13,88056,,5421,82635,,,,,apportioned,2,civicapi,2026-10-21T13:01:09+00:00
 2026,GA,GA-04,2026-10-02,32,54,,54,,,,,,apportioned,2,civicapi,2026-10-02T21:49:03+00:00
 2026,GA,GA-04,2026-10-03,31,55,,55,,,,,,apportioned,2,civicapi,2026-10-03T13:01:49+00:00
 2026,GA,GA-04,2026-10-04,30,55,,55,,,,,,apportioned,2,civicapi,2026-10-04T17:58:30+00:00
@@ -725,6 +728,7 @@ cycle,state,cd_code,date,days_to_election,ballots_total,ballots_new,mail_returne
 2026,GA,GA-04,2026-10-18,16,56204,,1026,55179,,,,,apportioned,1,ga-datahub,2026-10-18T04:37:49+00:00
 2026,GA,GA-04,2026-10-19,15,59974,,1062,58912,,,,,apportioned,2,civicapi,2026-10-19T17:00:42+00:00
 2026,GA,GA-04,2026-10-20,14,70961,,1769,69192,,,,,apportioned,2,civicapi,2026-10-20T11:01:01+00:00
+2026,GA,GA-04,2026-10-21,13,81622,,2404,79217,,,,,apportioned,2,civicapi,2026-10-21T13:01:09+00:00
 2026,GA,GA-05,2026-10-02,32,69,,69,,,,,,apportioned,2,civicapi,2026-10-02T21:49:03+00:00
 2026,GA,GA-05,2026-10-03,31,78,,78,,,,,,apportioned,2,civicapi,2026-10-03T13:01:49+00:00
 2026,GA,GA-05,2026-10-04,30,78,,78,,,,,,apportioned,2,civicapi,2026-10-04T17:58:30+00:00
@@ -744,6 +748,7 @@ cycle,state,cd_code,date,days_to_election,ballots_total,ballots_new,mail_returne
 2026,GA,GA-05,2026-10-18,16,68413,,1887,66527,,,,,apportioned,1,ga-datahub,2026-10-18T04:37:49+00:00
 2026,GA,GA-05,2026-10-19,15,72488,,1930,70558,,,,,apportioned,2,civicapi,2026-10-19T17:00:42+00:00
 2026,GA,GA-05,2026-10-20,14,85327,,2605,82722,,,,,apportioned,2,civicapi,2026-10-20T11:01:01+00:00
+2026,GA,GA-05,2026-10-21,13,97466,,3107,94360,,,,,apportioned,2,civicapi,2026-10-21T13:01:09+00:00
 2026,GA,GA-06,2026-10-02,32,74,,74,,,,,,apportioned,2,civicapi,2026-10-02T21:49:03+00:00
 2026,GA,GA-06,2026-10-03,31,88,,88,,,,,,apportioned,2,civicapi,2026-10-03T13:01:49+00:00
 2026,GA,GA-06,2026-10-04,30,88,,88,,,,,,apportioned,2,civicapi,2026-10-04T17:58:30+00:00
@@ -763,6 +768,7 @@ cycle,state,cd_code,date,days_to_election,ballots_total,ballots_new,mail_returne
 2026,GA,GA-06,2026-10-18,16,68933,,1708,67225,,,,,apportioned,1,ga-datahub,2026-10-18T04:37:49+00:00
 2026,GA,GA-06,2026-10-19,15,71895,,1739,70156,,,,,apportioned,2,civicapi,2026-10-19T17:00:42+00:00
 2026,GA,GA-06,2026-10-20,14,84491,,2098,82392,,,,,apportioned,2,civicapi,2026-10-20T11:01:01+00:00
+2026,GA,GA-06,2026-10-21,13,97852,,2965,94888,,,,,apportioned,2,civicapi,2026-10-21T13:01:09+00:00
 2026,GA,GA-07,2026-10-02,32,75,,75,,,,,,apportioned,2,civicapi,2026-10-02T21:49:03+00:00
 2026,GA,GA-07,2026-10-03,31,88,,88,,,,,,apportioned,2,civicapi,2026-10-03T13:01:49+00:00
 2026,GA,GA-07,2026-10-04,30,88,,88,,,,,,apportioned,2,civicapi,2026-10-04T17:58:30+00:00
@@ -782,6 +788,7 @@ cycle,state,cd_code,date,days_to_election,ballots_total,ballots_new,mail_returne
 2026,GA,GA-07,2026-10-18,16,73925,,3094,70831,,,,,apportioned,1,ga-datahub,2026-10-18T04:37:49+00:00
 2026,GA,GA-07,2026-10-19,15,76835,,3134,73701,,,,,apportioned,2,civicapi,2026-10-19T17:00:42+00:00
 2026,GA,GA-07,2026-10-20,14,91126,,3953,87174,,,,,apportioned,2,civicapi,2026-10-20T11:01:01+00:00
+2026,GA,GA-07,2026-10-21,13,104710,,4359,100351,,,,,apportioned,2,civicapi,2026-10-21T13:01:09+00:00
 2026,GA,GA-08,2026-10-02,32,13,,13,,,,,,apportioned,2,civicapi,2026-10-02T21:49:03+00:00
 2026,GA,GA-08,2026-10-03,31,14,,14,,,,,,apportioned,2,civicapi,2026-10-03T13:01:49+00:00
 2026,GA,GA-08,2026-10-04,30,14,,14,,,,,,apportioned,2,civicapi,2026-10-04T17:58:30+00:00
@@ -801,6 +808,7 @@ cycle,state,cd_code,date,days_to_election,ballots_total,ballots_new,mail_returne
 2026,GA,GA-08,2026-10-18,16,51854,,2315,49539,,,,,apportioned,1,ga-datahub,2026-10-18T04:37:49+00:00
 2026,GA,GA-08,2026-10-19,15,52401,,,50075,,,,,apportioned,2,civicapi,2026-10-19T17:00:42+00:00
 2026,GA,GA-08,2026-10-20,14,62909,,3111,59798,,,,,apportioned,2,civicapi,2026-10-20T11:01:01+00:00
+2026,GA,GA-08,2026-10-21,13,72794,,3571,69222,,,,,apportioned,2,civicapi,2026-10-21T13:01:09+00:00
 2026,GA,GA-09,2026-10-02,32,35,,35,,,,,,apportioned,2,civicapi,2026-10-02T21:49:03+00:00
 2026,GA,GA-09,2026-10-03,31,42,,42,,,,,,apportioned,2,civicapi,2026-10-03T13:01:49+00:00
 2026,GA,GA-09,2026-10-04,30,42,,42,,,,,,apportioned,2,civicapi,2026-10-04T17:58:30+00:00
@@ -820,6 +828,7 @@ cycle,state,cd_code,date,days_to_election,ballots_total,ballots_new,mail_returne
 2026,GA,GA-09,2026-10-18,16,61927,,3098,58829,,,,,apportioned,1,ga-datahub,2026-10-18T04:37:49+00:00
 2026,GA,GA-09,2026-10-19,15,63840,,3134,60706,,,,,apportioned,2,civicapi,2026-10-19T17:00:42+00:00
 2026,GA,GA-09,2026-10-20,14,75943,,4070,71873,,,,,apportioned,2,civicapi,2026-10-20T11:01:01+00:00
+2026,GA,GA-09,2026-10-21,13,88143,,4680,83464,,,,,apportioned,2,civicapi,2026-10-21T13:01:09+00:00
 2026,GA,GA-10,2026-10-02,32,21,,21,,,,,,apportioned,2,civicapi,2026-10-02T21:49:03+00:00
 2026,GA,GA-10,2026-10-03,31,23,,23,,,,,,apportioned,2,civicapi,2026-10-03T13:01:49+00:00
 2026,GA,GA-10,2026-10-04,30,23,,23,,,,,,apportioned,2,civicapi,2026-10-04T17:58:30+00:00
@@ -839,6 +848,7 @@ cycle,state,cd_code,date,days_to_election,ballots_total,ballots_new,mail_returne
 2026,GA,GA-10,2026-10-18,16,62342,,3259,59082,,,,,apportioned,1,ga-datahub,2026-10-18T04:37:49+00:00
 2026,GA,GA-10,2026-10-19,15,63677,,3263,60414,,,,,apportioned,2,civicapi,2026-10-19T17:00:42+00:00
 2026,GA,GA-10,2026-10-20,14,77916,,3948,73967,,,,,apportioned,2,civicapi,2026-10-20T11:01:01+00:00
+2026,GA,GA-10,2026-10-21,13,91508,,4617,86890,,,,,apportioned,2,civicapi,2026-10-21T13:01:09+00:00
 2026,GA,GA-11,2026-10-02,32,70,,70,,,,,,apportioned,2,civicapi,2026-10-02T21:49:03+00:00
 2026,GA,GA-11,2026-10-03,31,81,,81,,,,,,apportioned,2,civicapi,2026-10-03T13:01:49+00:00
 2026,GA,GA-11,2026-10-04,30,81,,81,,,,,,apportioned,2,civicapi,2026-10-04T17:58:30+00:00
@@ -858,6 +868,7 @@ cycle,state,cd_code,date,days_to_election,ballots_total,ballots_new,mail_returne
 2026,GA,GA-11,2026-10-18,16,64533,,2193,62340,,,,,apportioned,1,ga-datahub,2026-10-18T04:37:49+00:00
 2026,GA,GA-11,2026-10-19,15,65720,,2193,63527,,,,,apportioned,2,civicapi,2026-10-19T17:00:42+00:00
 2026,GA,GA-11,2026-10-20,14,78188,,2765,75422,,,,,apportioned,2,civicapi,2026-10-20T11:01:01+00:00
+2026,GA,GA-11,2026-10-21,13,91277,,3935,87341,,,,,apportioned,2,civicapi,2026-10-21T13:01:09+00:00
 2026,GA,GA-12,2026-10-02,32,29,,29,,,,,,apportioned,2,civicapi,2026-10-02T21:49:03+00:00
 2026,GA,GA-12,2026-10-03,31,38,,38,,,,,,apportioned,2,civicapi,2026-10-03T13:01:49+00:00
 2026,GA,GA-12,2026-10-04,30,38,,38,,,,,,apportioned,2,civicapi,2026-10-04T17:58:30+00:00
@@ -877,6 +888,7 @@ cycle,state,cd_code,date,days_to_election,ballots_total,ballots_new,mail_returne
 2026,GA,GA-12,2026-10-18,16,49993,,3182,46811,,,,,apportioned,1,ga-datahub,2026-10-18T04:37:49+00:00
 2026,GA,GA-12,2026-10-19,15,49993,,,46811,,,,,apportioned,2,civicapi,2026-10-19T17:00:42+00:00
 2026,GA,GA-12,2026-10-20,14,59644,,3888,55757,,,,,apportioned,2,civicapi,2026-10-20T11:01:01+00:00
+2026,GA,GA-12,2026-10-21,13,68896,,4609,64286,,,,,apportioned,2,civicapi,2026-10-21T13:01:09+00:00
 2026,GA,GA-13,2026-10-02,32,29,,29,,,,,,apportioned,2,civicapi,2026-10-02T21:49:03+00:00
 2026,GA,GA-13,2026-10-03,31,35,,35,,,,,,apportioned,2,civicapi,2026-10-03T13:01:49+00:00
 2026,GA,GA-13,2026-10-04,30,35,,35,,,,,,apportioned,2,civicapi,2026-10-04T17:58:30+00:00
@@ -896,6 +908,7 @@ cycle,state,cd_code,date,days_to_election,ballots_total,ballots_new,mail_returne
 2026,GA,GA-13,2026-10-18,16,62554,,1988,60565,,,,,apportioned,1,ga-datahub,2026-10-18T04:37:49+00:00
 2026,GA,GA-13,2026-10-19,15,66763,,2081,64682,,,,,apportioned,2,civicapi,2026-10-19T17:00:42+00:00
 2026,GA,GA-13,2026-10-20,14,78673,,2581,76093,,,,,apportioned,2,civicapi,2026-10-20T11:01:01+00:00
+2026,GA,GA-13,2026-10-21,13,90513,,3209,87304,,,,,apportioned,2,civicapi,2026-10-21T13:01:09+00:00
 2026,GA,GA-14,2026-10-02,32,28,,28,,,,,,apportioned,2,civicapi,2026-10-02T21:49:03+00:00
 2026,GA,GA-14,2026-10-03,31,32,,32,,,,,,apportioned,2,civicapi,2026-10-03T13:01:49+00:00
 2026,GA,GA-14,2026-10-04,30,32,,32,,,,,,apportioned,2,civicapi,2026-10-04T17:58:30+00:00
@@ -915,3 +928,4 @@ cycle,state,cd_code,date,days_to_election,ballots_total,ballots_new,mail_returne
 2026,GA,GA-14,2026-10-18,16,51137,,2232,48905,,,,,apportioned,1,ga-datahub,2026-10-18T04:37:49+00:00
 2026,GA,GA-14,2026-10-19,15,51681,,2232,49449,,,,,apportioned,2,civicapi,2026-10-19T17:00:42+00:00
 2026,GA,GA-14,2026-10-20,14,61379,,2819,58560,,,,,apportioned,2,civicapi,2026-10-20T11:01:01+00:00
+2026,GA,GA-14,2026-10-21,13,71012,,3485,67527,,,,,apportioned,2,civicapi,2026-10-21T13:01:09+00:00
