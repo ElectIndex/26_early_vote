@@ -2,7 +2,7 @@
  "as_of": "2026-10-21",
  "cycle": 2026,
  "days_to_election": 13,
- "generated_at": "2026-10-21T11:05:12+00:00",
+ "generated_at": "2026-10-21T11:58:07+00:00",
  "states": {
   "AK": {
    "attempts": [
@@ -25,7 +25,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-10-21T11:05:12+00:00",
+   "retrieved_at": "2026-10-21T11:58:07+00:00",
    "rows": 1,
    "source": "uf-election-lab",
    "status": "ok",
@@ -46,7 +46,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-10-21T11:05:12+00:00",
+   "retrieved_at": "2026-10-21T11:58:07+00:00",
    "rows": 1,
    "source": "uf-election-lab",
    "status": "ok",
@@ -67,7 +67,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-10-21T11:05:12+00:00",
+   "retrieved_at": "2026-10-21T11:58:07+00:00",
    "rows": 16,
    "source": "civicapi",
    "status": "ok",
@@ -88,7 +88,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-10-21T11:05:12+00:00",
+   "retrieved_at": "2026-10-21T11:58:07+00:00",
    "rows": 59,
    "source": "civicapi",
    "status": "ok",
@@ -109,7 +109,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-10-21T11:05:12+00:00",
+   "retrieved_at": "2026-10-21T11:58:07+00:00",
    "rows": 68,
    "source": "civicapi",
    "status": "ok",
@@ -130,7 +130,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-10-21T11:05:12+00:00",
+   "retrieved_at": "2026-10-21T11:58:07+00:00",
    "rows": 1,
    "source": "civicapi",
    "status": "ok",
@@ -151,7 +151,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-10-21T11:05:12+00:00",
+   "retrieved_at": "2026-10-21T11:58:07+00:00",
    "rows": 1,
    "source": "uf-election-lab",
    "status": "ok",
@@ -172,7 +172,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-10-21T11:05:12+00:00",
+   "retrieved_at": "2026-10-21T11:58:07+00:00",
    "rows": 4,
    "source": "civicapi",
    "status": "ok",
@@ -187,7 +187,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-10-21T11:05:12+00:00",
+   "retrieved_at": "2026-10-21T11:58:07+00:00",
    "rows": 202,
    "source": "fl-doe",
    "status": "ok",
@@ -202,23 +202,17 @@
      "tier": 1
     },
     {
-     "detail": "GA: https://civicapi.org/api/v2/early-vote/GA/capabilities returned HTTP 503",
      "name": "civicapi",
-     "result": "SourceError",
-     "tier": 2
-    },
-    {
-     "name": "uf-election-lab",
      "result": "ok",
-     "tier": 4
+     "tier": 2
     }
    ],
    "message": "",
-   "retrieved_at": "2026-10-21T11:05:12+00:00",
-   "rows": 10,
-   "source": "uf-election-lab",
+   "retrieved_at": "2026-10-21T11:58:07+00:00",
+   "rows": 163,
+   "source": "civicapi",
    "status": "ok",
-   "tier": 4
+   "tier": 2
   },
   "HI": {
    "attempts": [
@@ -229,7 +223,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-10-21T11:05:12+00:00",
+   "retrieved_at": "2026-10-21T11:58:07+00:00",
    "rows": 5,
    "source": "hi-oe",
    "status": "ok",
@@ -250,7 +244,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-10-21T11:05:12+00:00",
+   "retrieved_at": "2026-10-21T11:58:07+00:00",
    "rows": 100,
    "source": "civicapi",
    "status": "ok",
@@ -277,7 +271,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-10-21T11:05:12+00:00",
+   "retrieved_at": "2026-10-21T11:58:07+00:00",
    "rows": 4,
    "source": "uf-election-lab",
    "status": "ok",
@@ -292,7 +286,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-10-21T11:05:12+00:00",
+   "retrieved_at": "2026-10-21T11:58:07+00:00",
    "rows": 103,
    "source": "il-sbe",
    "status": "ok",
@@ -307,7 +301,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-10-21T11:05:12+00:00",
+   "retrieved_at": "2026-10-21T11:58:07+00:00",
    "rows": 93,
    "source": "civicapi",
    "status": "ok",
@@ -328,7 +322,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-10-21T11:05:12+00:00",
+   "retrieved_at": "2026-10-21T11:58:07+00:00",
    "rows": 100,
    "source": "civicapi",
    "status": "ok",
@@ -343,7 +337,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-10-21T11:05:12+00:00",
+   "retrieved_at": "2026-10-21T11:58:07+00:00",
    "rows": 241,
    "source": "ky-sbe",
    "status": "ok",
@@ -358,7 +352,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-10-21T11:05:12+00:00",
+   "retrieved_at": "2026-10-21T11:58:07+00:00",
    "rows": 195,
    "source": "la-sos",
    "status": "ok",
@@ -379,7 +373,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-10-21T11:05:12+00:00",
+   "retrieved_at": "2026-10-21T11:58:07+00:00",
    "rows": 1,
    "source": "uf-election-lab",
    "status": "ok",
@@ -406,7 +400,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-10-21T11:05:12+00:00",
+   "retrieved_at": "2026-10-21T11:58:07+00:00",
    "rows": 1,
    "source": "uf-election-lab",
    "status": "ok",
@@ -421,7 +415,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-10-21T11:05:12+00:00",
+   "retrieved_at": "2026-10-21T11:58:07+00:00",
    "rows": 14012,
    "source": "me-sos",
    "status": "ok",
@@ -442,7 +436,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-10-21T11:05:12+00:00",
+   "retrieved_at": "2026-10-21T11:58:07+00:00",
    "rows": 84,
    "source": "civicapi",
    "status": "ok",
@@ -457,7 +451,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-10-21T11:05:12+00:00",
+   "retrieved_at": "2026-10-21T11:58:07+00:00",
    "rows": 88,
    "source": "mn-sos",
    "status": "ok",
@@ -485,7 +479,7 @@
     }
    ],
    "message": "UF tracker reports no ballots cast in MO as of 2026-08-12",
-   "retrieved_at": "2026-10-21T11:05:12+00:00",
+   "retrieved_at": "2026-10-21T11:58:07+00:00",
    "rows": 0,
    "source": null,
    "status": "pending",
@@ -500,7 +494,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-10-21T11:05:12+00:00",
+   "retrieved_at": "2026-10-21T11:58:07+00:00",
    "rows": 83,
    "source": "civicapi",
    "status": "ok",
@@ -515,7 +509,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-10-21T11:05:12+00:00",
+   "retrieved_at": "2026-10-21T11:58:07+00:00",
    "rows": 57,
    "source": "mt-sos",
    "status": "ok",
@@ -530,7 +524,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-10-21T11:05:12+00:00",
+   "retrieved_at": "2026-10-21T11:58:07+00:00",
    "rows": 10448,
    "source": "nc-sbe",
    "status": "ok",
@@ -545,7 +539,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-10-21T11:05:12+00:00",
+   "retrieved_at": "2026-10-21T11:58:07+00:00",
    "rows": 54,
    "source": "nd-sos",
    "status": "ok",
@@ -560,7 +554,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-10-21T11:05:12+00:00",
+   "retrieved_at": "2026-10-21T11:58:07+00:00",
    "rows": 94,
    "source": "civicapi",
    "status": "ok",
@@ -575,7 +569,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-10-21T11:05:12+00:00",
+   "retrieved_at": "2026-10-21T11:58:07+00:00",
    "rows": 22,
    "source": "civicapi",
    "status": "ok",
@@ -590,7 +584,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-10-21T11:05:12+00:00",
+   "retrieved_at": "2026-10-21T11:58:07+00:00",
    "rows": 34,
    "source": "civicapi",
    "status": "ok",
@@ -611,7 +605,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-10-21T11:05:12+00:00",
+   "retrieved_at": "2026-10-21T11:58:07+00:00",
    "rows": 18,
    "source": "civicapi",
    "status": "ok",
@@ -645,7 +639,7 @@
     }
    ],
    "message": "NY: the New York City Board's check-in page has not opened its 2026 general-election section yet",
-   "retrieved_at": "2026-10-21T11:05:12+00:00",
+   "retrieved_at": "2026-10-21T11:58:07+00:00",
    "rows": 0,
    "source": null,
    "status": "pending",
@@ -660,7 +654,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-10-21T11:05:12+00:00",
+   "retrieved_at": "2026-10-21T11:58:07+00:00",
    "rows": 89,
    "source": "oh-sos",
    "status": "ok",
@@ -675,7 +669,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-10-21T11:05:12+00:00",
+   "retrieved_at": "2026-10-21T11:58:07+00:00",
    "rows": 78,
    "source": "ok-seb",
    "status": "ok",
@@ -696,7 +690,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-10-21T11:05:12+00:00",
+   "retrieved_at": "2026-10-21T11:58:07+00:00",
    "rows": 34,
    "source": "civicapi",
    "status": "ok",
@@ -711,7 +705,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-10-21T11:05:12+00:00",
+   "retrieved_at": "2026-10-21T11:58:07+00:00",
    "rows": 2633,
    "source": "pa-dos",
    "status": "ok",
@@ -726,7 +720,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-10-21T11:05:12+00:00",
+   "retrieved_at": "2026-10-21T11:58:07+00:00",
    "rows": 1,
    "source": "civicapi",
    "status": "ok",
@@ -760,7 +754,7 @@
     }
    ],
    "message": "SC: no 2026 general-election absentee workbook posted by 2026-10-21 (SC: 'RP00010 Absentee Statistics by Race for Primary 08/11/2026  22760  US Senate Special Repub' is a primary, not the general)",
-   "retrieved_at": "2026-10-21T11:05:12+00:00",
+   "retrieved_at": "2026-10-21T11:58:07+00:00",
    "rows": 0,
    "source": null,
    "status": "pending",
@@ -775,7 +769,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-10-21T11:05:12+00:00",
+   "retrieved_at": "2026-10-21T11:58:07+00:00",
    "rows": 3,
    "source": "sd-sos",
    "status": "ok",
@@ -796,7 +790,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-10-21T11:05:12+00:00",
+   "retrieved_at": "2026-10-21T11:58:07+00:00",
    "rows": 96,
    "source": "civicapi",
    "status": "ok",
@@ -817,7 +811,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-10-21T11:05:12+00:00",
+   "retrieved_at": "2026-10-21T11:58:07+00:00",
    "rows": 251,
    "source": "civicapi",
    "status": "ok",
@@ -832,7 +826,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-10-21T11:05:12+00:00",
+   "retrieved_at": "2026-10-21T11:58:07+00:00",
    "rows": 16,
    "source": "civicapi",
    "status": "ok",
@@ -847,7 +841,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-10-21T11:05:12+00:00",
+   "retrieved_at": "2026-10-21T11:58:07+00:00",
    "rows": 145,
    "source": "va-elect",
    "status": "ok",
@@ -862,7 +856,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-10-21T11:05:12+00:00",
+   "retrieved_at": "2026-10-21T11:58:07+00:00",
    "rows": 1,
    "source": "civicapi",
    "status": "ok",
@@ -896,7 +890,7 @@
     }
    ],
    "message": "WA: no daily ballot status report posted in the 7 days to 2026-10-21 (WA: https://www.sos.wa.gov/sites/default/files/current_election/Statewide2026-10-21.zip returned 404)",
-   "retrieved_at": "2026-10-21T11:05:12+00:00",
+   "retrieved_at": "2026-10-21T11:58:07+00:00",
    "rows": 0,
    "source": null,
    "status": "pending",
@@ -917,7 +911,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-10-21T11:05:12+00:00",
+   "retrieved_at": "2026-10-21T11:58:07+00:00",
    "rows": 73,
    "source": "civicapi",
    "status": "ok",
@@ -945,7 +939,7 @@
     }
    ],
    "message": "UF tracker reports no ballots cast in WV as of 2026-08-12",
-   "retrieved_at": "2026-10-21T11:05:12+00:00",
+   "retrieved_at": "2026-10-21T11:58:07+00:00",
    "rows": 0,
    "source": null,
    "status": "pending",
@@ -960,7 +954,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-10-21T11:05:12+00:00",
+   "retrieved_at": "2026-10-21T11:58:07+00:00",
    "rows": 24,
    "source": "civicapi",
    "status": "ok",
@@ -971,11 +965,11 @@
   "failed": 0,
   "files": [
    {
-    "added": 1,
+    "added": 0,
     "file": "ev_state_daily.csv",
-    "kept_better_tier": 2,
+    "kept_better_tier": 1,
     "kept_richer": 3,
-    "replaced": 33,
+    "replaced": 0,
     "rows": 2453
    },
    {
@@ -1017,6 +1011,14 @@
     "kept_richer": 0,
     "replaced": 0,
     "rows": 5894
+   },
+   {
+    "added": 0,
+    "file": "ga.csv",
+    "kept_better_tier": 0,
+    "kept_richer": 0,
+    "replaced": 0,
+    "rows": 7822
    },
    {
     "added": 0,
@@ -1071,7 +1073,7 @@
     "file": "la.csv",
     "kept_better_tier": 0,
     "kept_richer": 0,
-    "replaced": 128,
+    "replaced": 0,
     "rows": 320
    },
    {
@@ -1107,7 +1109,7 @@
     "rows": 323
    },
    {
-    "added": 56,
+    "added": 0,
     "file": "mt.csv",
     "kept_better_tier": 0,
     "kept_richer": 0,
@@ -1119,7 +1121,7 @@
     "file": "nc.csv",
     "kept_better_tier": 0,
     "kept_richer": 0,
-    "replaced": 628,
+    "replaced": 0,
     "rows": 13973
    },
    {
@@ -1279,7 +1281,7 @@
     "file": "nc.csv",
     "kept_better_tier": 0,
     "kept_richer": 0,
-    "replaced": 889,
+    "replaced": 0,
     "rows": 18631
    },
    {
@@ -1293,7 +1295,7 @@
    {
     "added": 0,
     "file": "ga.csv",
-    "kept_better_tier": 3,
+    "kept_better_tier": 0,
     "kept_richer": 0,
     "replaced": 0,
     "rows": 221
@@ -1319,7 +1321,7 @@
     "file": "nc.csv",
     "kept_better_tier": 0,
     "kept_richer": 0,
-    "replaced": 295,
+    "replaced": 0,
     "rows": 2331
    },
    {
@@ -1361,6 +1363,14 @@
     "kept_richer": 0,
     "replaced": 0,
     "rows": 2537
+   },
+   {
+    "added": 0,
+    "file": "ga.csv",
+    "kept_better_tier": 0,
+    "kept_richer": 0,
+    "replaced": 0,
+    "rows": 916
    },
    {
     "added": 0,
@@ -1451,7 +1461,7 @@
     "rows": 16
    },
    {
-    "added": 2,
+    "added": 0,
     "file": "mt.csv",
     "kept_better_tier": 0,
     "kept_richer": 0,
