@@ -1,0 +1,7 @@
+name: tick
+on: push
+permissions:
+  contents: write
+jobs:
+  ingest:
+    uses: ElectIndex/26_early_vote/.github/workflows/ingest.yml@main
