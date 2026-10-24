@@ -34,6 +34,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MT,30001,Beaverhead County,2026-10-21,13,792,,792,,,,,,1,mt-sos,2026-10-21T20:33:45+00:00
 2026,MT,30001,Beaverhead County,2026-10-22,12,957,,957,,,,,,1,mt-sos,2026-10-22T21:03:34+00:00
 2026,MT,30001,Beaverhead County,2026-10-23,11,1161,,1161,,,,,,1,mt-sos,2026-10-23T20:34:23+00:00
+2026,MT,30001,Beaverhead County,2026-10-24,10,1161,,1161,,,,,,1,mt-sos,2026-10-24T11:04:51+00:00
 2026,MT,30003,Big Horn County,2026-09-19,45,0,,0,,,,,,1,mt-sos,2026-09-19T13:43:19+00:00
 2026,MT,30003,Big Horn County,2026-09-20,44,0,,0,,,,,,1,mt-sos,2026-09-20T13:58:18+00:00
 2026,MT,30003,Big Horn County,2026-09-21,43,0,,0,,,,,,1,mt-sos,2026-09-21T16:13:47+00:00
@@ -65,6 +66,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MT,30003,Big Horn County,2026-10-21,13,284,,284,,,,,,1,mt-sos,2026-10-21T11:03:05+00:00
 2026,MT,30003,Big Horn County,2026-10-22,12,586,,586,,,,,,1,mt-sos,2026-10-22T11:03:56+00:00
 2026,MT,30003,Big Horn County,2026-10-23,11,756,,756,,,,,,1,mt-sos,2026-10-23T20:34:23+00:00
+2026,MT,30003,Big Horn County,2026-10-24,10,756,,756,,,,,,1,mt-sos,2026-10-24T11:04:51+00:00
 2026,MT,30005,Blaine County,2026-09-19,45,0,,0,,,,,,1,mt-sos,2026-09-19T13:43:19+00:00
 2026,MT,30005,Blaine County,2026-09-20,44,0,,0,,,,,,1,mt-sos,2026-09-20T13:58:18+00:00
 2026,MT,30005,Blaine County,2026-09-21,43,0,,0,,,,,,1,mt-sos,2026-09-21T16:13:47+00:00
@@ -100,6 +102,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MT,30005,Blaine County,2026-10-21,13,406,,406,,,,,,1,mt-sos,2026-10-21T20:33:45+00:00
 2026,MT,30005,Blaine County,2026-10-22,12,545,,545,,,,,,1,mt-sos,2026-10-22T21:03:34+00:00
 2026,MT,30005,Blaine County,2026-10-23,11,584,,584,,,,,,1,mt-sos,2026-10-23T20:34:23+00:00
+2026,MT,30005,Blaine County,2026-10-24,10,584,,584,,,,,,1,mt-sos,2026-10-24T11:04:51+00:00
 2026,MT,30007,Broadwater County,2026-09-19,45,0,,0,,,,,,1,mt-sos,2026-09-19T13:43:19+00:00
 2026,MT,30007,Broadwater County,2026-09-20,44,0,,0,,,,,,1,mt-sos,2026-09-20T13:58:18+00:00
 2026,MT,30007,Broadwater County,2026-09-21,43,0,,0,,,,,,1,mt-sos,2026-09-21T16:13:47+00:00
@@ -131,6 +134,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MT,30007,Broadwater County,2026-10-21,13,1000,,1000,,,,,,1,mt-sos,2026-10-21T20:33:45+00:00
 2026,MT,30007,Broadwater County,2026-10-22,12,1125,,1125,,,,,,1,mt-sos,2026-10-22T21:03:34+00:00
 2026,MT,30007,Broadwater County,2026-10-23,11,1225,,1225,,,,,,1,mt-sos,2026-10-23T20:34:23+00:00
+2026,MT,30007,Broadwater County,2026-10-24,10,1225,,1225,,,,,,1,mt-sos,2026-10-24T11:04:51+00:00
 2026,MT,30009,Carbon County,2026-09-19,45,0,,0,,,,,,1,mt-sos,2026-09-19T13:43:19+00:00
 2026,MT,30009,Carbon County,2026-09-20,44,0,,0,,,,,,1,mt-sos,2026-09-20T13:58:18+00:00
 2026,MT,30009,Carbon County,2026-09-21,43,0,,0,,,,,,1,mt-sos,2026-09-21T16:13:47+00:00
@@ -166,6 +170,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MT,30009,Carbon County,2026-10-21,13,1075,,1075,,,,,,1,mt-sos,2026-10-21T11:03:05+00:00
 2026,MT,30009,Carbon County,2026-10-22,12,1538,,1538,,,,,,1,mt-sos,2026-10-22T21:03:34+00:00
 2026,MT,30009,Carbon County,2026-10-23,11,1750,,1750,,,,,,1,mt-sos,2026-10-23T20:34:23+00:00
+2026,MT,30009,Carbon County,2026-10-24,10,1750,,1750,,,,,,1,mt-sos,2026-10-24T11:04:51+00:00
 2026,MT,30011,Carter County,2026-09-25,39,1,,1,,,,,,1,mt-sos,2026-09-25T15:02:16+00:00
 2026,MT,30011,Carter County,2026-09-26,38,1,,1,,,,,,1,mt-sos,2026-09-26T14:07:39+00:00
 2026,MT,30011,Carter County,2026-09-27,37,1,,1,,,,,,1,mt-sos,2026-09-27T15:01:17+00:00
@@ -195,6 +200,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MT,30011,Carter County,2026-10-21,13,105,,105,,,,,,1,mt-sos,2026-10-21T20:33:45+00:00
 2026,MT,30011,Carter County,2026-10-22,12,119,,119,,,,,,1,mt-sos,2026-10-22T21:03:34+00:00
 2026,MT,30011,Carter County,2026-10-23,11,130,,130,,,,,,1,mt-sos,2026-10-23T11:03:57+00:00
+2026,MT,30011,Carter County,2026-10-24,10,130,,130,,,,,,1,mt-sos,2026-10-24T11:04:51+00:00
 2026,MT,30013,Cascade County,2026-09-19,45,0,,0,,,,,,1,mt-sos,2026-09-19T13:43:19+00:00
 2026,MT,30013,Cascade County,2026-09-20,44,0,,0,,,,,,1,mt-sos,2026-09-20T13:58:18+00:00
 2026,MT,30013,Cascade County,2026-09-21,43,0,,0,,,,,,1,mt-sos,2026-09-21T16:13:47+00:00
@@ -230,6 +236,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MT,30013,Cascade County,2026-10-21,13,8753,,8753,,,,,,1,mt-sos,2026-10-21T11:03:05+00:00
 2026,MT,30013,Cascade County,2026-10-22,12,10216,,10216,,,,,,1,mt-sos,2026-10-22T11:03:56+00:00
 2026,MT,30013,Cascade County,2026-10-23,11,10845,,10845,,,,,,1,mt-sos,2026-10-23T20:34:23+00:00
+2026,MT,30013,Cascade County,2026-10-24,10,10845,,10845,,,,,,1,mt-sos,2026-10-24T11:04:51+00:00
 2026,MT,30015,Chouteau County,2026-09-19,45,0,,0,,,,,,1,mt-sos,2026-09-19T13:43:19+00:00
 2026,MT,30015,Chouteau County,2026-09-20,44,0,,0,,,,,,1,mt-sos,2026-09-20T13:58:18+00:00
 2026,MT,30015,Chouteau County,2026-09-21,43,0,,0,,,,,,1,mt-sos,2026-09-21T16:13:47+00:00
@@ -265,6 +272,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MT,30015,Chouteau County,2026-10-21,13,615,,615,,,,,,1,mt-sos,2026-10-21T20:33:45+00:00
 2026,MT,30015,Chouteau County,2026-10-22,12,666,,666,,,,,,1,mt-sos,2026-10-22T21:03:34+00:00
 2026,MT,30015,Chouteau County,2026-10-23,11,704,,704,,,,,,1,mt-sos,2026-10-23T20:34:23+00:00
+2026,MT,30015,Chouteau County,2026-10-24,10,704,,704,,,,,,1,mt-sos,2026-10-24T11:04:51+00:00
 2026,MT,30017,Custer County,2026-09-19,45,1,,1,,,,,,1,mt-sos,2026-09-19T13:43:19+00:00
 2026,MT,30017,Custer County,2026-09-20,44,1,,1,,,,,,1,mt-sos,2026-09-20T13:58:18+00:00
 2026,MT,30017,Custer County,2026-09-21,43,1,,1,,,,,,1,mt-sos,2026-09-21T16:13:47+00:00
@@ -300,6 +308,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MT,30017,Custer County,2026-10-21,13,958,,958,,,,,,1,mt-sos,2026-10-21T20:33:45+00:00
 2026,MT,30017,Custer County,2026-10-22,12,1137,,1137,,,,,,1,mt-sos,2026-10-22T21:03:34+00:00
 2026,MT,30017,Custer County,2026-10-23,11,1292,,1292,,,,,,1,mt-sos,2026-10-23T20:34:23+00:00
+2026,MT,30017,Custer County,2026-10-24,10,1292,,1292,,,,,,1,mt-sos,2026-10-24T11:04:51+00:00
 2026,MT,30019,Daniels County,2026-09-19,45,0,,0,,,,,,1,mt-sos,2026-09-19T13:43:19+00:00
 2026,MT,30019,Daniels County,2026-09-20,44,0,,0,,,,,,1,mt-sos,2026-09-20T13:58:18+00:00
 2026,MT,30019,Daniels County,2026-09-21,43,0,,0,,,,,,1,mt-sos,2026-09-21T16:13:47+00:00
@@ -334,6 +343,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MT,30019,Daniels County,2026-10-21,13,145,,145,,,,,,1,mt-sos,2026-10-21T11:03:05+00:00
 2026,MT,30019,Daniels County,2026-10-22,12,175,,175,,,,,,1,mt-sos,2026-10-22T11:03:56+00:00
 2026,MT,30019,Daniels County,2026-10-23,11,190,,190,,,,,,1,mt-sos,2026-10-23T11:03:57+00:00
+2026,MT,30019,Daniels County,2026-10-24,10,190,,190,,,,,,1,mt-sos,2026-10-24T11:04:51+00:00
 2026,MT,30021,Dawson County,2026-09-19,45,0,,0,,,,,,1,mt-sos,2026-09-19T13:43:19+00:00
 2026,MT,30021,Dawson County,2026-09-20,44,0,,0,,,,,,1,mt-sos,2026-09-20T13:58:18+00:00
 2026,MT,30021,Dawson County,2026-09-21,43,0,,0,,,,,,1,mt-sos,2026-09-21T16:13:47+00:00
@@ -369,6 +379,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MT,30021,Dawson County,2026-10-21,13,800,,800,,,,,,1,mt-sos,2026-10-21T20:33:45+00:00
 2026,MT,30021,Dawson County,2026-10-22,12,820,,820,,,,,,1,mt-sos,2026-10-22T11:03:56+00:00
 2026,MT,30021,Dawson County,2026-10-23,11,1035,,1035,,,,,,1,mt-sos,2026-10-23T20:34:23+00:00
+2026,MT,30021,Dawson County,2026-10-24,10,1035,,1035,,,,,,1,mt-sos,2026-10-24T11:04:51+00:00
 2026,MT,30023,Deer Lodge County,2026-09-19,45,0,,0,,,,,,1,mt-sos,2026-09-19T13:43:19+00:00
 2026,MT,30023,Deer Lodge County,2026-09-20,44,0,,0,,,,,,1,mt-sos,2026-09-20T13:58:18+00:00
 2026,MT,30023,Deer Lodge County,2026-09-21,43,0,,0,,,,,,1,mt-sos,2026-09-21T16:13:47+00:00
@@ -404,6 +415,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MT,30023,Deer Lodge County,2026-10-21,13,1159,,1159,,,,,,1,mt-sos,2026-10-21T20:33:45+00:00
 2026,MT,30023,Deer Lodge County,2026-10-22,12,1357,,1357,,,,,,1,mt-sos,2026-10-22T21:03:34+00:00
 2026,MT,30023,Deer Lodge County,2026-10-23,11,1527,,1527,,,,,,1,mt-sos,2026-10-23T20:34:23+00:00
+2026,MT,30023,Deer Lodge County,2026-10-24,10,1527,,1527,,,,,,1,mt-sos,2026-10-24T11:04:51+00:00
 2026,MT,30025,Fallon County,2026-09-19,45,0,,0,,,,,,1,mt-sos,2026-09-19T13:43:19+00:00
 2026,MT,30025,Fallon County,2026-09-20,44,0,,0,,,,,,1,mt-sos,2026-09-20T13:58:18+00:00
 2026,MT,30025,Fallon County,2026-09-21,43,0,,0,,,,,,1,mt-sos,2026-09-21T16:13:47+00:00
@@ -438,6 +450,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MT,30025,Fallon County,2026-10-21,13,245,,245,,,,,,1,mt-sos,2026-10-21T20:33:45+00:00
 2026,MT,30025,Fallon County,2026-10-22,12,287,,287,,,,,,1,mt-sos,2026-10-22T21:03:34+00:00
 2026,MT,30025,Fallon County,2026-10-23,11,333,,333,,,,,,1,mt-sos,2026-10-23T20:34:23+00:00
+2026,MT,30025,Fallon County,2026-10-24,10,333,,333,,,,,,1,mt-sos,2026-10-24T11:04:51+00:00
 2026,MT,30027,Fergus County,2026-09-19,45,0,,0,,,,,,1,mt-sos,2026-09-19T13:43:19+00:00
 2026,MT,30027,Fergus County,2026-09-20,44,0,,0,,,,,,1,mt-sos,2026-09-20T13:58:18+00:00
 2026,MT,30027,Fergus County,2026-09-21,43,0,,0,,,,,,1,mt-sos,2026-09-21T16:13:47+00:00
@@ -472,6 +485,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MT,30027,Fergus County,2026-10-21,13,1580,,1580,,,,,,1,mt-sos,2026-10-21T20:33:45+00:00
 2026,MT,30027,Fergus County,2026-10-22,12,1696,,1696,,,,,,1,mt-sos,2026-10-22T21:03:34+00:00
 2026,MT,30027,Fergus County,2026-10-23,11,1872,,1872,,,,,,1,mt-sos,2026-10-23T20:34:23+00:00
+2026,MT,30027,Fergus County,2026-10-24,10,1872,,1872,,,,,,1,mt-sos,2026-10-24T11:04:51+00:00
 2026,MT,30029,Flathead County,2026-09-19,45,13,,13,,,,,,1,mt-sos,2026-09-19T13:43:19+00:00
 2026,MT,30029,Flathead County,2026-09-20,44,13,,13,,,,,,1,mt-sos,2026-09-20T13:58:18+00:00
 2026,MT,30029,Flathead County,2026-09-21,43,13,,13,,,,,,1,mt-sos,2026-09-21T16:13:47+00:00
@@ -507,6 +521,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MT,30029,Flathead County,2026-10-21,13,13117,,13117,,,,,,1,mt-sos,2026-10-21T20:33:45+00:00
 2026,MT,30029,Flathead County,2026-10-22,12,15870,,15870,,,,,,1,mt-sos,2026-10-22T21:03:34+00:00
 2026,MT,30029,Flathead County,2026-10-23,11,18047,,18047,,,,,,1,mt-sos,2026-10-23T20:34:23+00:00
+2026,MT,30029,Flathead County,2026-10-24,10,18047,,18047,,,,,,1,mt-sos,2026-10-24T11:04:51+00:00
 2026,MT,30031,Gallatin County,2026-09-19,45,0,,0,,,,,,1,mt-sos,2026-09-19T13:43:19+00:00
 2026,MT,30031,Gallatin County,2026-09-20,44,0,,0,,,,,,1,mt-sos,2026-09-20T13:58:18+00:00
 2026,MT,30031,Gallatin County,2026-09-21,43,0,,0,,,,,,1,mt-sos,2026-09-21T16:13:47+00:00
@@ -542,6 +557,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MT,30031,Gallatin County,2026-10-21,13,9614,,9614,,,,,,1,mt-sos,2026-10-21T20:33:45+00:00
 2026,MT,30031,Gallatin County,2026-10-22,12,13467,,13467,,,,,,1,mt-sos,2026-10-22T21:03:34+00:00
 2026,MT,30031,Gallatin County,2026-10-23,11,16924,,16924,,,,,,1,mt-sos,2026-10-23T20:34:23+00:00
+2026,MT,30031,Gallatin County,2026-10-24,10,16924,,16924,,,,,,1,mt-sos,2026-10-24T11:04:51+00:00
 2026,MT,30033,Garfield County,2026-10-10,24,0,,0,,,,,,1,mt-sos,2026-10-10T11:57:00+00:00
 2026,MT,30033,Garfield County,2026-10-11,23,0,,0,,,,,,1,mt-sos,2026-10-11T16:10:59+00:00
 2026,MT,30033,Garfield County,2026-10-12,22,0,,0,,,,,,1,mt-sos,2026-10-12T15:54:14+00:00
@@ -556,6 +572,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MT,30033,Garfield County,2026-10-21,13,88,,88,,,,,,1,mt-sos,2026-10-21T11:03:05+00:00
 2026,MT,30033,Garfield County,2026-10-22,12,100,,100,,,,,,1,mt-sos,2026-10-22T11:03:56+00:00
 2026,MT,30033,Garfield County,2026-10-23,11,123,,123,,,,,,1,mt-sos,2026-10-23T11:03:57+00:00
+2026,MT,30033,Garfield County,2026-10-24,10,123,,123,,,,,,1,mt-sos,2026-10-24T11:04:51+00:00
 2026,MT,30035,Glacier County,2026-09-19,45,0,,0,,,,,,1,mt-sos,2026-09-19T13:43:19+00:00
 2026,MT,30035,Glacier County,2026-09-20,44,0,,0,,,,,,1,mt-sos,2026-09-20T13:58:18+00:00
 2026,MT,30035,Glacier County,2026-09-21,43,0,,0,,,,,,1,mt-sos,2026-09-21T16:13:47+00:00
@@ -587,6 +604,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MT,30035,Glacier County,2026-10-21,13,772,,772,,,,,,1,mt-sos,2026-10-21T20:33:45+00:00
 2026,MT,30035,Glacier County,2026-10-22,12,901,,901,,,,,,1,mt-sos,2026-10-22T21:03:34+00:00
 2026,MT,30035,Glacier County,2026-10-23,11,981,,981,,,,,,1,mt-sos,2026-10-23T20:34:23+00:00
+2026,MT,30035,Glacier County,2026-10-24,10,981,,981,,,,,,1,mt-sos,2026-10-24T11:04:51+00:00
 2026,MT,30037,Golden Valley County,2026-09-19,45,0,,0,,,,,,1,mt-sos,2026-09-19T13:43:19+00:00
 2026,MT,30037,Golden Valley County,2026-09-20,44,0,,0,,,,,,1,mt-sos,2026-09-20T13:58:18+00:00
 2026,MT,30037,Golden Valley County,2026-09-21,43,0,,0,,,,,,1,mt-sos,2026-09-21T16:13:47+00:00
@@ -618,6 +636,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MT,30037,Golden Valley County,2026-10-21,13,114,,114,,,,,,1,mt-sos,2026-10-21T11:03:05+00:00
 2026,MT,30037,Golden Valley County,2026-10-22,12,143,,143,,,,,,1,mt-sos,2026-10-22T21:03:34+00:00
 2026,MT,30037,Golden Valley County,2026-10-23,11,159,,159,,,,,,1,mt-sos,2026-10-23T20:34:23+00:00
+2026,MT,30037,Golden Valley County,2026-10-24,10,159,,159,,,,,,1,mt-sos,2026-10-24T11:04:51+00:00
 2026,MT,30039,Granite County,2026-09-19,45,0,,0,,,,,,1,mt-sos,2026-09-19T13:43:19+00:00
 2026,MT,30039,Granite County,2026-09-20,44,0,,0,,,,,,1,mt-sos,2026-09-20T13:58:18+00:00
 2026,MT,30039,Granite County,2026-09-21,43,0,,0,,,,,,1,mt-sos,2026-09-21T16:13:47+00:00
@@ -653,6 +672,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MT,30039,Granite County,2026-10-21,13,342,,342,,,,,,1,mt-sos,2026-10-21T20:33:45+00:00
 2026,MT,30039,Granite County,2026-10-22,12,405,,405,,,,,,1,mt-sos,2026-10-22T21:03:34+00:00
 2026,MT,30039,Granite County,2026-10-23,11,441,,441,,,,,,1,mt-sos,2026-10-23T11:03:57+00:00
+2026,MT,30039,Granite County,2026-10-24,10,441,,441,,,,,,1,mt-sos,2026-10-24T11:04:51+00:00
 2026,MT,30041,Hill County,2026-09-19,45,0,,0,,,,,,1,mt-sos,2026-09-19T13:43:19+00:00
 2026,MT,30041,Hill County,2026-09-20,44,0,,0,,,,,,1,mt-sos,2026-09-20T13:58:18+00:00
 2026,MT,30041,Hill County,2026-09-21,43,0,,0,,,,,,1,mt-sos,2026-09-21T16:13:47+00:00
@@ -688,6 +708,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MT,30041,Hill County,2026-10-21,13,1785,,1785,,,,,,1,mt-sos,2026-10-21T20:33:45+00:00
 2026,MT,30041,Hill County,2026-10-22,12,1908,,1908,,,,,,1,mt-sos,2026-10-22T21:03:34+00:00
 2026,MT,30041,Hill County,2026-10-23,11,2120,,2120,,,,,,1,mt-sos,2026-10-23T20:34:23+00:00
+2026,MT,30041,Hill County,2026-10-24,10,2120,,2120,,,,,,1,mt-sos,2026-10-24T11:04:51+00:00
 2026,MT,30043,Jefferson County,2026-09-19,45,0,,0,,,,,,1,mt-sos,2026-09-19T13:43:19+00:00
 2026,MT,30043,Jefferson County,2026-09-20,44,0,,0,,,,,,1,mt-sos,2026-09-20T13:58:18+00:00
 2026,MT,30043,Jefferson County,2026-09-21,43,0,,0,,,,,,1,mt-sos,2026-09-21T16:13:47+00:00
@@ -723,6 +744,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MT,30043,Jefferson County,2026-10-21,13,1466,,1466,,,,,,1,mt-sos,2026-10-21T20:33:45+00:00
 2026,MT,30043,Jefferson County,2026-10-22,12,1727,,1727,,,,,,1,mt-sos,2026-10-22T21:03:34+00:00
 2026,MT,30043,Jefferson County,2026-10-23,11,1947,,1947,,,,,,1,mt-sos,2026-10-23T20:34:23+00:00
+2026,MT,30043,Jefferson County,2026-10-24,10,1947,,1947,,,,,,1,mt-sos,2026-10-24T11:04:51+00:00
 2026,MT,30045,Judith Basin County,2026-09-19,45,0,,0,,,,,,1,mt-sos,2026-09-19T13:43:19+00:00
 2026,MT,30045,Judith Basin County,2026-09-20,44,0,,0,,,,,,1,mt-sos,2026-09-20T13:58:18+00:00
 2026,MT,30045,Judith Basin County,2026-09-21,43,0,,0,,,,,,1,mt-sos,2026-09-21T16:13:47+00:00
@@ -758,6 +780,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MT,30045,Judith Basin County,2026-10-21,13,229,,229,,,,,,1,mt-sos,2026-10-21T11:03:05+00:00
 2026,MT,30045,Judith Basin County,2026-10-22,12,293,,293,,,,,,1,mt-sos,2026-10-22T21:03:34+00:00
 2026,MT,30045,Judith Basin County,2026-10-23,11,305,,305,,,,,,1,mt-sos,2026-10-23T11:03:57+00:00
+2026,MT,30045,Judith Basin County,2026-10-24,10,305,,305,,,,,,1,mt-sos,2026-10-24T11:04:51+00:00
 2026,MT,30047,Lake County,2026-09-19,45,4,,4,,,,,,1,mt-sos,2026-09-19T13:43:19+00:00
 2026,MT,30047,Lake County,2026-09-20,44,4,,4,,,,,,1,mt-sos,2026-09-20T13:58:18+00:00
 2026,MT,30047,Lake County,2026-09-21,43,4,,4,,,,,,1,mt-sos,2026-09-21T16:13:47+00:00
@@ -793,6 +816,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MT,30047,Lake County,2026-10-21,13,3759,,3759,,,,,,1,mt-sos,2026-10-21T20:33:45+00:00
 2026,MT,30047,Lake County,2026-10-22,12,4716,,4716,,,,,,1,mt-sos,2026-10-22T21:03:34+00:00
 2026,MT,30047,Lake County,2026-10-23,11,5065,,5065,,,,,,1,mt-sos,2026-10-23T20:34:23+00:00
+2026,MT,30047,Lake County,2026-10-24,10,5065,,5065,,,,,,1,mt-sos,2026-10-24T11:04:51+00:00
 2026,MT,30049,Lewis and Clark County,2026-09-19,45,1,,1,,,,,,1,mt-sos,2026-09-19T13:43:19+00:00
 2026,MT,30049,Lewis and Clark County,2026-09-20,44,1,,1,,,,,,1,mt-sos,2026-09-20T13:58:18+00:00
 2026,MT,30049,Lewis and Clark County,2026-09-21,43,1,,1,,,,,,1,mt-sos,2026-09-21T16:13:47+00:00
@@ -828,6 +852,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MT,30049,Lewis and Clark County,2026-10-21,13,11498,,11498,,,,,,1,mt-sos,2026-10-21T20:33:45+00:00
 2026,MT,30049,Lewis and Clark County,2026-10-22,12,12395,,12395,,,,,,1,mt-sos,2026-10-22T21:03:34+00:00
 2026,MT,30049,Lewis and Clark County,2026-10-23,11,13823,,13823,,,,,,1,mt-sos,2026-10-23T20:34:23+00:00
+2026,MT,30049,Lewis and Clark County,2026-10-24,10,13823,,13823,,,,,,1,mt-sos,2026-10-24T11:04:51+00:00
 2026,MT,30051,Liberty County,2026-09-19,45,0,,0,,,,,,1,mt-sos,2026-09-19T13:43:19+00:00
 2026,MT,30051,Liberty County,2026-09-20,44,0,,0,,,,,,1,mt-sos,2026-09-20T13:58:18+00:00
 2026,MT,30051,Liberty County,2026-09-21,43,0,,0,,,,,,1,mt-sos,2026-09-21T16:13:47+00:00
@@ -859,6 +884,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MT,30051,Liberty County,2026-10-21,13,173,,173,,,,,,1,mt-sos,2026-10-21T11:03:05+00:00
 2026,MT,30051,Liberty County,2026-10-22,12,203,,203,,,,,,1,mt-sos,2026-10-22T11:03:56+00:00
 2026,MT,30051,Liberty County,2026-10-23,11,223,,223,,,,,,1,mt-sos,2026-10-23T11:03:57+00:00
+2026,MT,30051,Liberty County,2026-10-24,10,223,,223,,,,,,1,mt-sos,2026-10-24T11:04:51+00:00
 2026,MT,30053,Lincoln County,2026-09-19,45,0,,0,,,,,,1,mt-sos,2026-09-19T13:43:19+00:00
 2026,MT,30053,Lincoln County,2026-09-20,44,0,,0,,,,,,1,mt-sos,2026-09-20T13:58:18+00:00
 2026,MT,30053,Lincoln County,2026-09-21,43,0,,0,,,,,,1,mt-sos,2026-09-21T16:13:47+00:00
@@ -890,6 +916,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MT,30053,Lincoln County,2026-10-21,13,650,,650,,,,,,1,mt-sos,2026-10-21T20:33:45+00:00
 2026,MT,30053,Lincoln County,2026-10-22,12,2100,,2100,,,,,,1,mt-sos,2026-10-22T21:03:34+00:00
 2026,MT,30053,Lincoln County,2026-10-23,11,2145,,2145,,,,,,1,mt-sos,2026-10-23T20:34:23+00:00
+2026,MT,30053,Lincoln County,2026-10-24,10,2145,,2145,,,,,,1,mt-sos,2026-10-24T11:04:51+00:00
 2026,MT,30055,McCone County,2026-09-19,45,0,,0,,,,,,1,mt-sos,2026-09-19T13:43:19+00:00
 2026,MT,30055,McCone County,2026-09-20,44,0,,0,,,,,,1,mt-sos,2026-09-20T13:58:18+00:00
 2026,MT,30055,McCone County,2026-09-21,43,0,,0,,,,,,1,mt-sos,2026-09-21T16:13:47+00:00
@@ -922,6 +949,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MT,30055,McCone County,2026-10-21,13,143,,143,,,,,,1,mt-sos,2026-10-21T20:33:45+00:00
 2026,MT,30055,McCone County,2026-10-22,12,163,,163,,,,,,1,mt-sos,2026-10-22T21:03:34+00:00
 2026,MT,30055,McCone County,2026-10-23,11,196,,196,,,,,,1,mt-sos,2026-10-23T20:34:23+00:00
+2026,MT,30055,McCone County,2026-10-24,10,196,,196,,,,,,1,mt-sos,2026-10-24T11:04:51+00:00
 2026,MT,30057,Madison County,2026-09-19,45,0,,0,,,,,,1,mt-sos,2026-09-19T13:43:19+00:00
 2026,MT,30057,Madison County,2026-09-20,44,0,,0,,,,,,1,mt-sos,2026-09-20T13:58:18+00:00
 2026,MT,30057,Madison County,2026-09-21,43,0,,0,,,,,,1,mt-sos,2026-09-21T16:13:47+00:00
@@ -957,6 +985,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MT,30057,Madison County,2026-10-21,13,819,,819,,,,,,1,mt-sos,2026-10-21T20:33:45+00:00
 2026,MT,30057,Madison County,2026-10-22,12,985,,985,,,,,,1,mt-sos,2026-10-22T21:03:34+00:00
 2026,MT,30057,Madison County,2026-10-23,11,1055,,1055,,,,,,1,mt-sos,2026-10-23T20:34:23+00:00
+2026,MT,30057,Madison County,2026-10-24,10,1055,,1055,,,,,,1,mt-sos,2026-10-24T11:04:51+00:00
 2026,MT,30059,Meagher County,2026-09-19,45,0,,0,,,,,,1,mt-sos,2026-09-19T13:43:19+00:00
 2026,MT,30059,Meagher County,2026-09-20,44,0,,0,,,,,,1,mt-sos,2026-09-20T13:58:18+00:00
 2026,MT,30059,Meagher County,2026-09-21,43,0,,0,,,,,,1,mt-sos,2026-09-21T16:13:47+00:00
@@ -992,6 +1021,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MT,30059,Meagher County,2026-10-21,13,226,,226,,,,,,1,mt-sos,2026-10-21T20:33:45+00:00
 2026,MT,30059,Meagher County,2026-10-22,12,226,,226,,,,,,1,mt-sos,2026-10-22T11:03:56+00:00
 2026,MT,30059,Meagher County,2026-10-23,11,301,,301,,,,,,1,mt-sos,2026-10-23T20:34:23+00:00
+2026,MT,30059,Meagher County,2026-10-24,10,301,,301,,,,,,1,mt-sos,2026-10-24T11:04:51+00:00
 2026,MT,30061,Mineral County,2026-09-19,45,0,,0,,,,,,1,mt-sos,2026-09-19T13:43:19+00:00
 2026,MT,30061,Mineral County,2026-09-20,44,0,,0,,,,,,1,mt-sos,2026-09-20T13:58:18+00:00
 2026,MT,30061,Mineral County,2026-09-21,43,0,,0,,,,,,1,mt-sos,2026-09-21T16:13:47+00:00
@@ -1023,6 +1053,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MT,30061,Mineral County,2026-10-21,13,410,,410,,,,,,1,mt-sos,2026-10-21T11:03:05+00:00
 2026,MT,30061,Mineral County,2026-10-22,12,612,,612,,,,,,1,mt-sos,2026-10-22T21:03:34+00:00
 2026,MT,30061,Mineral County,2026-10-23,11,671,,671,,,,,,1,mt-sos,2026-10-23T11:03:57+00:00
+2026,MT,30061,Mineral County,2026-10-24,10,671,,671,,,,,,1,mt-sos,2026-10-24T11:04:51+00:00
 2026,MT,30063,Missoula County,2026-09-19,45,0,,0,,,,,,1,mt-sos,2026-09-19T13:43:19+00:00
 2026,MT,30063,Missoula County,2026-09-20,44,0,,0,,,,,,1,mt-sos,2026-09-20T13:58:18+00:00
 2026,MT,30063,Missoula County,2026-09-21,43,0,,0,,,,,,1,mt-sos,2026-09-21T16:13:47+00:00
@@ -1058,6 +1089,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MT,30063,Missoula County,2026-10-21,13,20123,,20123,,,,,,1,mt-sos,2026-10-21T20:33:45+00:00
 2026,MT,30063,Missoula County,2026-10-22,12,20641,,20641,,,,,,1,mt-sos,2026-10-22T21:03:34+00:00
 2026,MT,30063,Missoula County,2026-10-23,11,24636,,24636,,,,,,1,mt-sos,2026-10-23T20:34:23+00:00
+2026,MT,30063,Missoula County,2026-10-24,10,24636,,24636,,,,,,1,mt-sos,2026-10-24T11:04:51+00:00
 2026,MT,30065,Musselshell County,2026-09-19,45,0,,0,,,,,,1,mt-sos,2026-09-19T13:43:19+00:00
 2026,MT,30065,Musselshell County,2026-09-20,44,0,,0,,,,,,1,mt-sos,2026-09-20T13:58:18+00:00
 2026,MT,30065,Musselshell County,2026-09-21,43,0,,0,,,,,,1,mt-sos,2026-09-21T16:13:47+00:00
@@ -1093,6 +1125,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MT,30065,Musselshell County,2026-10-21,13,532,,532,,,,,,1,mt-sos,2026-10-21T20:33:45+00:00
 2026,MT,30065,Musselshell County,2026-10-22,12,618,,618,,,,,,1,mt-sos,2026-10-22T21:03:34+00:00
 2026,MT,30065,Musselshell County,2026-10-23,11,697,,697,,,,,,1,mt-sos,2026-10-23T20:34:23+00:00
+2026,MT,30065,Musselshell County,2026-10-24,10,697,,697,,,,,,1,mt-sos,2026-10-24T11:04:51+00:00
 2026,MT,30067,Park County,2026-09-19,45,0,,0,,,,,,1,mt-sos,2026-09-19T13:43:19+00:00
 2026,MT,30067,Park County,2026-09-20,44,0,,0,,,,,,1,mt-sos,2026-09-20T13:58:18+00:00
 2026,MT,30067,Park County,2026-09-21,43,0,,0,,,,,,1,mt-sos,2026-09-21T16:13:47+00:00
@@ -1128,6 +1161,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MT,30067,Park County,2026-10-21,13,1952,,1952,,,,,,1,mt-sos,2026-10-21T20:33:45+00:00
 2026,MT,30067,Park County,2026-10-22,12,2302,,2302,,,,,,1,mt-sos,2026-10-22T21:03:34+00:00
 2026,MT,30067,Park County,2026-10-23,11,2815,,2815,,,,,,1,mt-sos,2026-10-23T20:34:23+00:00
+2026,MT,30067,Park County,2026-10-24,10,2815,,2815,,,,,,1,mt-sos,2026-10-24T11:04:51+00:00
 2026,MT,30069,Petroleum County,2026-09-19,45,0,,0,,,,,,1,mt-sos,2026-09-19T13:43:19+00:00
 2026,MT,30069,Petroleum County,2026-09-20,44,0,,0,,,,,,1,mt-sos,2026-09-20T13:58:18+00:00
 2026,MT,30069,Petroleum County,2026-09-21,43,0,,0,,,,,,1,mt-sos,2026-09-21T16:13:47+00:00
@@ -1159,6 +1193,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MT,30069,Petroleum County,2026-10-21,13,44,,44,,,,,,1,mt-sos,2026-10-21T11:03:05+00:00
 2026,MT,30069,Petroleum County,2026-10-22,12,66,,66,,,,,,1,mt-sos,2026-10-22T21:03:34+00:00
 2026,MT,30069,Petroleum County,2026-10-23,11,84,,84,,,,,,1,mt-sos,2026-10-23T20:34:23+00:00
+2026,MT,30069,Petroleum County,2026-10-24,10,84,,84,,,,,,1,mt-sos,2026-10-24T11:04:51+00:00
 2026,MT,30071,Phillips County,2026-09-19,45,0,,0,,,,,,1,mt-sos,2026-09-19T13:43:19+00:00
 2026,MT,30071,Phillips County,2026-09-20,44,0,,0,,,,,,1,mt-sos,2026-09-20T13:58:18+00:00
 2026,MT,30071,Phillips County,2026-09-21,43,0,,0,,,,,,1,mt-sos,2026-09-21T16:13:47+00:00
@@ -1194,6 +1229,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MT,30071,Phillips County,2026-10-21,13,384,,384,,,,,,1,mt-sos,2026-10-21T20:33:45+00:00
 2026,MT,30071,Phillips County,2026-10-22,12,518,,518,,,,,,1,mt-sos,2026-10-22T21:03:34+00:00
 2026,MT,30071,Phillips County,2026-10-23,11,563,,563,,,,,,1,mt-sos,2026-10-23T20:34:23+00:00
+2026,MT,30071,Phillips County,2026-10-24,10,563,,563,,,,,,1,mt-sos,2026-10-24T11:04:51+00:00
 2026,MT,30073,Pondera County,2026-09-19,45,0,,0,,,,,,1,mt-sos,2026-09-19T13:43:19+00:00
 2026,MT,30073,Pondera County,2026-09-20,44,0,,0,,,,,,1,mt-sos,2026-09-20T13:58:18+00:00
 2026,MT,30073,Pondera County,2026-09-21,43,0,,0,,,,,,1,mt-sos,2026-09-21T16:13:47+00:00
@@ -1229,6 +1265,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MT,30073,Pondera County,2026-10-21,13,754,,754,,,,,,1,mt-sos,2026-10-21T20:33:45+00:00
 2026,MT,30073,Pondera County,2026-10-22,12,819,,819,,,,,,1,mt-sos,2026-10-22T21:03:34+00:00
 2026,MT,30073,Pondera County,2026-10-23,11,870,,870,,,,,,1,mt-sos,2026-10-23T20:34:23+00:00
+2026,MT,30073,Pondera County,2026-10-24,10,870,,870,,,,,,1,mt-sos,2026-10-24T11:04:51+00:00
 2026,MT,30075,Powder River County,2026-09-19,45,0,,0,,,,,,1,mt-sos,2026-09-19T13:43:19+00:00
 2026,MT,30075,Powder River County,2026-09-20,44,0,,0,,,,,,1,mt-sos,2026-09-20T13:58:18+00:00
 2026,MT,30075,Powder River County,2026-09-21,43,0,,0,,,,,,1,mt-sos,2026-09-21T16:13:47+00:00
@@ -1260,6 +1297,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MT,30075,Powder River County,2026-10-21,13,108,,108,,,,,,1,mt-sos,2026-10-21T11:03:05+00:00
 2026,MT,30075,Powder River County,2026-10-22,12,123,,123,,,,,,1,mt-sos,2026-10-22T11:03:56+00:00
 2026,MT,30075,Powder River County,2026-10-23,11,155,,155,,,,,,1,mt-sos,2026-10-23T11:03:57+00:00
+2026,MT,30075,Powder River County,2026-10-24,10,155,,155,,,,,,1,mt-sos,2026-10-24T11:04:51+00:00
 2026,MT,30077,Powell County,2026-09-19,45,0,,0,,,,,,1,mt-sos,2026-09-19T13:43:19+00:00
 2026,MT,30077,Powell County,2026-09-20,44,0,,0,,,,,,1,mt-sos,2026-09-20T13:58:18+00:00
 2026,MT,30077,Powell County,2026-09-21,43,0,,0,,,,,,1,mt-sos,2026-09-21T16:13:47+00:00
@@ -1295,6 +1333,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MT,30077,Powell County,2026-10-21,13,547,,547,,,,,,1,mt-sos,2026-10-21T20:33:45+00:00
 2026,MT,30077,Powell County,2026-10-22,12,547,,547,,,,,,1,mt-sos,2026-10-22T11:03:56+00:00
 2026,MT,30077,Powell County,2026-10-23,11,656,,656,,,,,,1,mt-sos,2026-10-23T20:34:23+00:00
+2026,MT,30077,Powell County,2026-10-24,10,656,,656,,,,,,1,mt-sos,2026-10-24T11:04:51+00:00
 2026,MT,30079,Prairie County,2026-09-19,45,1,,1,,,,,,1,mt-sos,2026-09-19T13:43:19+00:00
 2026,MT,30079,Prairie County,2026-09-20,44,1,,1,,,,,,1,mt-sos,2026-09-20T13:58:18+00:00
 2026,MT,30079,Prairie County,2026-09-21,43,1,,1,,,,,,1,mt-sos,2026-09-21T16:13:47+00:00
@@ -1330,6 +1369,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MT,30079,Prairie County,2026-10-21,13,97,,97,,,,,,1,mt-sos,2026-10-21T11:03:05+00:00
 2026,MT,30079,Prairie County,2026-10-22,12,119,,119,,,,,,1,mt-sos,2026-10-22T11:03:56+00:00
 2026,MT,30079,Prairie County,2026-10-23,11,137,,137,,,,,,1,mt-sos,2026-10-23T11:03:57+00:00
+2026,MT,30079,Prairie County,2026-10-24,10,137,,137,,,,,,1,mt-sos,2026-10-24T11:04:51+00:00
 2026,MT,30081,Ravalli County,2026-09-19,45,0,,0,,,,,,1,mt-sos,2026-09-19T13:43:19+00:00
 2026,MT,30081,Ravalli County,2026-09-20,44,0,,0,,,,,,1,mt-sos,2026-09-20T13:58:18+00:00
 2026,MT,30081,Ravalli County,2026-09-21,43,0,,0,,,,,,1,mt-sos,2026-09-21T16:13:47+00:00
@@ -1365,6 +1405,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MT,30081,Ravalli County,2026-10-21,13,6186,,6186,,,,,,1,mt-sos,2026-10-21T20:33:45+00:00
 2026,MT,30081,Ravalli County,2026-10-22,12,7440,,7440,,,,,,1,mt-sos,2026-10-22T21:03:34+00:00
 2026,MT,30081,Ravalli County,2026-10-23,11,8460,,8460,,,,,,1,mt-sos,2026-10-23T20:34:23+00:00
+2026,MT,30081,Ravalli County,2026-10-24,10,8460,,8460,,,,,,1,mt-sos,2026-10-24T11:04:51+00:00
 2026,MT,30083,Richland County,2026-09-19,45,0,,0,,,,,,1,mt-sos,2026-09-19T13:43:19+00:00
 2026,MT,30083,Richland County,2026-09-20,44,0,,0,,,,,,1,mt-sos,2026-09-20T13:58:18+00:00
 2026,MT,30083,Richland County,2026-09-21,43,0,,0,,,,,,1,mt-sos,2026-09-21T16:13:47+00:00
@@ -1400,6 +1441,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MT,30083,Richland County,2026-10-21,13,589,,589,,,,,,1,mt-sos,2026-10-21T20:33:45+00:00
 2026,MT,30083,Richland County,2026-10-22,12,650,,650,,,,,,1,mt-sos,2026-10-22T21:03:34+00:00
 2026,MT,30083,Richland County,2026-10-23,11,761,,761,,,,,,1,mt-sos,2026-10-23T20:34:23+00:00
+2026,MT,30083,Richland County,2026-10-24,10,761,,761,,,,,,1,mt-sos,2026-10-24T11:04:51+00:00
 2026,MT,30085,Roosevelt County,2026-09-19,45,0,,0,,,,,,1,mt-sos,2026-09-19T13:43:19+00:00
 2026,MT,30085,Roosevelt County,2026-09-20,44,0,,0,,,,,,1,mt-sos,2026-09-20T13:58:18+00:00
 2026,MT,30085,Roosevelt County,2026-09-21,43,0,,0,,,,,,1,mt-sos,2026-09-21T16:13:47+00:00
@@ -1432,6 +1474,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MT,30085,Roosevelt County,2026-10-21,13,468,,468,,,,,,1,mt-sos,2026-10-21T20:33:45+00:00
 2026,MT,30085,Roosevelt County,2026-10-22,12,549,,549,,,,,,1,mt-sos,2026-10-22T21:03:34+00:00
 2026,MT,30085,Roosevelt County,2026-10-23,11,644,,644,,,,,,1,mt-sos,2026-10-23T20:34:23+00:00
+2026,MT,30085,Roosevelt County,2026-10-24,10,644,,644,,,,,,1,mt-sos,2026-10-24T11:04:51+00:00
 2026,MT,30087,Rosebud County,2026-09-19,45,0,,0,,,,,,1,mt-sos,2026-09-19T13:43:19+00:00
 2026,MT,30087,Rosebud County,2026-09-20,44,0,,0,,,,,,1,mt-sos,2026-09-20T13:58:18+00:00
 2026,MT,30087,Rosebud County,2026-09-21,43,0,,0,,,,,,1,mt-sos,2026-09-21T16:13:47+00:00
@@ -1467,6 +1510,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MT,30087,Rosebud County,2026-10-21,13,516,,516,,,,,,1,mt-sos,2026-10-21T20:33:45+00:00
 2026,MT,30087,Rosebud County,2026-10-22,12,666,,666,,,,,,1,mt-sos,2026-10-22T21:03:34+00:00
 2026,MT,30087,Rosebud County,2026-10-23,11,782,,782,,,,,,1,mt-sos,2026-10-23T20:34:23+00:00
+2026,MT,30087,Rosebud County,2026-10-24,10,782,,782,,,,,,1,mt-sos,2026-10-24T11:04:51+00:00
 2026,MT,30089,Sanders County,2026-09-19,45,0,,0,,,,,,1,mt-sos,2026-09-19T13:43:19+00:00
 2026,MT,30089,Sanders County,2026-09-20,44,0,,0,,,,,,1,mt-sos,2026-09-20T13:58:18+00:00
 2026,MT,30089,Sanders County,2026-09-21,43,0,,0,,,,,,1,mt-sos,2026-09-21T16:13:47+00:00
@@ -1502,6 +1546,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MT,30089,Sanders County,2026-10-21,13,1505,,1505,,,,,,1,mt-sos,2026-10-21T20:33:45+00:00
 2026,MT,30089,Sanders County,2026-10-22,12,1900,,1900,,,,,,1,mt-sos,2026-10-22T21:03:34+00:00
 2026,MT,30089,Sanders County,2026-10-23,11,2171,,2171,,,,,,1,mt-sos,2026-10-23T20:34:23+00:00
+2026,MT,30089,Sanders County,2026-10-24,10,2171,,2171,,,,,,1,mt-sos,2026-10-24T11:04:51+00:00
 2026,MT,30091,Sheridan County,2026-09-19,45,0,,0,,,,,,1,mt-sos,2026-09-19T13:43:19+00:00
 2026,MT,30091,Sheridan County,2026-09-20,44,0,,0,,,,,,1,mt-sos,2026-09-20T13:58:18+00:00
 2026,MT,30091,Sheridan County,2026-09-21,43,0,,0,,,,,,1,mt-sos,2026-09-21T16:13:47+00:00
@@ -1537,6 +1582,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MT,30091,Sheridan County,2026-10-21,13,410,,410,,,,,,1,mt-sos,2026-10-21T20:33:45+00:00
 2026,MT,30091,Sheridan County,2026-10-22,12,498,,498,,,,,,1,mt-sos,2026-10-22T21:03:34+00:00
 2026,MT,30091,Sheridan County,2026-10-23,11,565,,565,,,,,,1,mt-sos,2026-10-23T20:34:23+00:00
+2026,MT,30091,Sheridan County,2026-10-24,10,565,,565,,,,,,1,mt-sos,2026-10-24T11:04:51+00:00
 2026,MT,30093,Silver Bow County,2026-09-19,45,0,,0,,,,,,1,mt-sos,2026-09-19T13:43:19+00:00
 2026,MT,30093,Silver Bow County,2026-09-20,44,0,,0,,,,,,1,mt-sos,2026-09-20T13:58:18+00:00
 2026,MT,30093,Silver Bow County,2026-09-21,43,0,,0,,,,,,1,mt-sos,2026-09-21T16:13:47+00:00
@@ -1572,6 +1618,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MT,30093,Silver Bow County,2026-10-21,13,3181,,3181,,,,,,1,mt-sos,2026-10-21T20:33:45+00:00
 2026,MT,30093,Silver Bow County,2026-10-22,12,3964,,3964,,,,,,1,mt-sos,2026-10-22T21:03:34+00:00
 2026,MT,30093,Silver Bow County,2026-10-23,11,4518,,4518,,,,,,1,mt-sos,2026-10-23T20:34:23+00:00
+2026,MT,30093,Silver Bow County,2026-10-24,10,4518,,4518,,,,,,1,mt-sos,2026-10-24T11:04:51+00:00
 2026,MT,30095,Stillwater County,2026-09-19,45,0,,0,,,,,,1,mt-sos,2026-09-19T13:43:19+00:00
 2026,MT,30095,Stillwater County,2026-09-20,44,0,,0,,,,,,1,mt-sos,2026-09-20T13:58:18+00:00
 2026,MT,30095,Stillwater County,2026-09-21,43,0,,0,,,,,,1,mt-sos,2026-09-21T16:13:47+00:00
@@ -1607,6 +1654,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MT,30095,Stillwater County,2026-10-21,13,987,,987,,,,,,1,mt-sos,2026-10-21T20:33:45+00:00
 2026,MT,30095,Stillwater County,2026-10-22,12,1210,,1210,,,,,,1,mt-sos,2026-10-22T21:03:34+00:00
 2026,MT,30095,Stillwater County,2026-10-23,11,1418,,1418,,,,,,1,mt-sos,2026-10-23T20:34:23+00:00
+2026,MT,30095,Stillwater County,2026-10-24,10,1418,,1418,,,,,,1,mt-sos,2026-10-24T11:04:51+00:00
 2026,MT,30097,Sweet Grass County,2026-09-19,45,0,,0,,,,,,1,mt-sos,2026-09-19T13:43:19+00:00
 2026,MT,30097,Sweet Grass County,2026-09-20,44,0,,0,,,,,,1,mt-sos,2026-09-20T13:58:18+00:00
 2026,MT,30097,Sweet Grass County,2026-09-21,43,0,,0,,,,,,1,mt-sos,2026-09-21T16:13:47+00:00
@@ -1642,6 +1690,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MT,30097,Sweet Grass County,2026-10-21,13,593,,593,,,,,,1,mt-sos,2026-10-21T20:33:45+00:00
 2026,MT,30097,Sweet Grass County,2026-10-22,12,655,,655,,,,,,1,mt-sos,2026-10-22T21:03:34+00:00
 2026,MT,30097,Sweet Grass County,2026-10-23,11,721,,721,,,,,,1,mt-sos,2026-10-23T20:34:23+00:00
+2026,MT,30097,Sweet Grass County,2026-10-24,10,721,,721,,,,,,1,mt-sos,2026-10-24T11:04:51+00:00
 2026,MT,30099,Teton County,2026-09-19,45,0,,0,,,,,,1,mt-sos,2026-09-19T13:43:19+00:00
 2026,MT,30099,Teton County,2026-09-20,44,0,,0,,,,,,1,mt-sos,2026-09-20T13:58:18+00:00
 2026,MT,30099,Teton County,2026-09-21,43,0,,0,,,,,,1,mt-sos,2026-09-21T16:13:47+00:00
@@ -1677,6 +1726,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MT,30099,Teton County,2026-10-21,13,745,,745,,,,,,1,mt-sos,2026-10-21T20:33:45+00:00
 2026,MT,30099,Teton County,2026-10-22,12,932,,932,,,,,,1,mt-sos,2026-10-22T21:03:34+00:00
 2026,MT,30099,Teton County,2026-10-23,11,1005,,1005,,,,,,1,mt-sos,2026-10-23T20:34:23+00:00
+2026,MT,30099,Teton County,2026-10-24,10,1005,,1005,,,,,,1,mt-sos,2026-10-24T11:04:51+00:00
 2026,MT,30101,Toole County,2026-09-19,45,0,,0,,,,,,1,mt-sos,2026-09-19T13:43:19+00:00
 2026,MT,30101,Toole County,2026-09-20,44,0,,0,,,,,,1,mt-sos,2026-09-20T13:58:18+00:00
 2026,MT,30101,Toole County,2026-09-21,43,0,,0,,,,,,1,mt-sos,2026-09-21T16:13:47+00:00
@@ -1712,6 +1762,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MT,30101,Toole County,2026-10-21,13,406,,406,,,,,,1,mt-sos,2026-10-21T11:03:05+00:00
 2026,MT,30101,Toole County,2026-10-22,12,468,,468,,,,,,1,mt-sos,2026-10-22T11:03:56+00:00
 2026,MT,30101,Toole County,2026-10-23,11,484,,484,,,,,,1,mt-sos,2026-10-23T11:03:57+00:00
+2026,MT,30101,Toole County,2026-10-24,10,484,,484,,,,,,1,mt-sos,2026-10-24T11:04:51+00:00
 2026,MT,30103,Treasure County,2026-10-10,24,0,,0,,,,,,1,mt-sos,2026-10-10T11:57:00+00:00
 2026,MT,30103,Treasure County,2026-10-11,23,0,,0,,,,,,1,mt-sos,2026-10-11T16:10:59+00:00
 2026,MT,30103,Treasure County,2026-10-12,22,0,,0,,,,,,1,mt-sos,2026-10-12T15:54:14+00:00
@@ -1726,6 +1777,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MT,30103,Treasure County,2026-10-21,13,72,,72,,,,,,1,mt-sos,2026-10-21T11:03:05+00:00
 2026,MT,30103,Treasure County,2026-10-22,12,83,,83,,,,,,1,mt-sos,2026-10-22T11:03:56+00:00
 2026,MT,30103,Treasure County,2026-10-23,11,95,,95,,,,,,1,mt-sos,2026-10-23T11:03:57+00:00
+2026,MT,30103,Treasure County,2026-10-24,10,95,,95,,,,,,1,mt-sos,2026-10-24T11:04:51+00:00
 2026,MT,30105,Valley County,2026-09-19,45,0,,0,,,,,,1,mt-sos,2026-09-19T13:43:19+00:00
 2026,MT,30105,Valley County,2026-09-20,44,0,,0,,,,,,1,mt-sos,2026-09-20T13:58:18+00:00
 2026,MT,30105,Valley County,2026-09-21,43,0,,0,,,,,,1,mt-sos,2026-09-21T16:13:47+00:00
@@ -1761,6 +1813,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MT,30105,Valley County,2026-10-21,13,970,,970,,,,,,1,mt-sos,2026-10-21T20:33:45+00:00
 2026,MT,30105,Valley County,2026-10-22,12,1085,,1085,,,,,,1,mt-sos,2026-10-22T21:03:34+00:00
 2026,MT,30105,Valley County,2026-10-23,11,1328,,1328,,,,,,1,mt-sos,2026-10-23T20:34:23+00:00
+2026,MT,30105,Valley County,2026-10-24,10,1328,,1328,,,,,,1,mt-sos,2026-10-24T11:04:51+00:00
 2026,MT,30107,Wheatland County,2026-09-19,45,0,,0,,,,,,1,mt-sos,2026-09-19T13:43:19+00:00
 2026,MT,30107,Wheatland County,2026-09-20,44,0,,0,,,,,,1,mt-sos,2026-09-20T13:58:18+00:00
 2026,MT,30107,Wheatland County,2026-09-21,43,0,,0,,,,,,1,mt-sos,2026-09-21T16:13:47+00:00
@@ -1796,6 +1849,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MT,30107,Wheatland County,2026-10-21,13,178,,178,,,,,,1,mt-sos,2026-10-21T20:33:45+00:00
 2026,MT,30107,Wheatland County,2026-10-22,12,234,,234,,,,,,1,mt-sos,2026-10-22T21:03:34+00:00
 2026,MT,30107,Wheatland County,2026-10-23,11,262,,262,,,,,,1,mt-sos,2026-10-23T20:34:23+00:00
+2026,MT,30107,Wheatland County,2026-10-24,10,262,,262,,,,,,1,mt-sos,2026-10-24T11:04:51+00:00
 2026,MT,30109,Wibaux County,2026-09-29,35,0,,0,,,,,,1,mt-sos,2026-09-29T13:16:05+00:00
 2026,MT,30109,Wibaux County,2026-09-30,34,1,,1,,,,,,1,mt-sos,2026-09-30T14:04:46+00:00
 2026,MT,30109,Wibaux County,2026-10-01,33,1,,1,,,,,,1,mt-sos,2026-10-01T16:54:50+00:00
@@ -1821,6 +1875,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MT,30109,Wibaux County,2026-10-21,13,57,,57,,,,,,1,mt-sos,2026-10-21T11:03:05+00:00
 2026,MT,30109,Wibaux County,2026-10-22,12,67,,67,,,,,,1,mt-sos,2026-10-22T11:03:56+00:00
 2026,MT,30109,Wibaux County,2026-10-23,11,77,,77,,,,,,1,mt-sos,2026-10-23T11:03:57+00:00
+2026,MT,30109,Wibaux County,2026-10-24,10,77,,77,,,,,,1,mt-sos,2026-10-24T11:04:51+00:00
 2026,MT,30111,Yellowstone County,2026-09-19,45,0,,0,,,,,,1,mt-sos,2026-09-19T13:43:19+00:00
 2026,MT,30111,Yellowstone County,2026-09-20,44,0,,0,,,,,,1,mt-sos,2026-09-20T13:58:18+00:00
 2026,MT,30111,Yellowstone County,2026-09-21,43,0,,0,,,,,,1,mt-sos,2026-09-21T16:13:47+00:00
@@ -1856,3 +1911,4 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,MT,30111,Yellowstone County,2026-10-21,13,23905,,23905,,,,,,1,mt-sos,2026-10-21T20:33:45+00:00
 2026,MT,30111,Yellowstone County,2026-10-22,12,26335,,26335,,,,,,1,mt-sos,2026-10-22T21:03:34+00:00
 2026,MT,30111,Yellowstone County,2026-10-23,11,30147,,30147,,,,,,1,mt-sos,2026-10-23T20:34:23+00:00
+2026,MT,30111,Yellowstone County,2026-10-24,10,30147,,30147,,,,,,1,mt-sos,2026-10-24T11:04:51+00:00
