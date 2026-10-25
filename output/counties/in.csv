@@ -26,6 +26,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,IN,18001,Adams County,2026-10-22,12,1573,,1573,,,,,,2,civicapi,2026-10-22T15:06:37+00:00
 2026,IN,18001,Adams County,2026-10-23,11,1708,,1708,,,,,,2,civicapi,2026-10-23T15:07:09+00:00
 2026,IN,18001,Adams County,2026-10-24,10,1708,,1708,,,,,,2,civicapi,2026-10-24T04:46:58+00:00
+2026,IN,18001,Adams County,2026-10-25,9,1708,,1708,,,,,,2,civicapi,2026-10-25T04:51:49+00:00
 2026,IN,18003,Allen County,2026-09-22,42,12,,12,,,,,,2,civicapi,2026-09-22T17:58:53+00:00
 2026,IN,18003,Allen County,2026-09-23,41,21,,21,,,,,,2,civicapi,2026-09-23T16:09:31+00:00
 2026,IN,18003,Allen County,2026-09-24,40,52,,52,,,,,,2,civicapi,2026-09-24T23:06:00+00:00
@@ -57,6 +58,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,IN,18003,Allen County,2026-10-22,12,11007,,11007,,,,,,2,civicapi,2026-10-22T15:06:37+00:00
 2026,IN,18003,Allen County,2026-10-23,11,11516,,11516,,,,,,2,civicapi,2026-10-23T15:07:09+00:00
 2026,IN,18003,Allen County,2026-10-24,10,11516,,11516,,,,,,2,civicapi,2026-10-24T04:46:58+00:00
+2026,IN,18003,Allen County,2026-10-25,9,11516,,11516,,,,,,2,civicapi,2026-10-25T04:51:49+00:00
 2026,IN,18005,Bartholomew County,2026-09-23,41,8,,8,,,,,,2,civicapi,2026-09-23T16:09:31+00:00
 2026,IN,18005,Bartholomew County,2026-09-24,40,8,,8,,,,,,2,civicapi,2026-09-24T18:13:59+00:00
 2026,IN,18005,Bartholomew County,2026-09-25,39,8,,8,,,,,,2,civicapi,2026-09-25T09:25:24+00:00
@@ -87,6 +89,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,IN,18005,Bartholomew County,2026-10-22,12,4751,,4751,,,,,,2,civicapi,2026-10-22T15:06:37+00:00
 2026,IN,18005,Bartholomew County,2026-10-23,11,5299,,5299,,,,,,2,civicapi,2026-10-23T15:07:09+00:00
 2026,IN,18005,Bartholomew County,2026-10-24,10,5299,,5299,,,,,,2,civicapi,2026-10-24T04:46:58+00:00
+2026,IN,18005,Bartholomew County,2026-10-25,9,5299,,5299,,,,,,2,civicapi,2026-10-25T04:51:49+00:00
 2026,IN,18007,Benton County,2026-10-05,29,1,,1,,,,,,2,civicapi,2026-10-05T19:07:06+00:00
 2026,IN,18007,Benton County,2026-10-06,28,3,,3,,,,,,2,civicapi,2026-10-06T16:33:16+00:00
 2026,IN,18007,Benton County,2026-10-07,27,3,,3,,,,,,2,civicapi,2026-10-07T19:46:56+00:00
@@ -107,6 +110,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,IN,18007,Benton County,2026-10-22,12,187,,187,,,,,,2,civicapi,2026-10-22T15:06:37+00:00
 2026,IN,18007,Benton County,2026-10-23,11,201,,201,,,,,,2,civicapi,2026-10-23T15:07:09+00:00
 2026,IN,18007,Benton County,2026-10-24,10,201,,201,,,,,,2,civicapi,2026-10-24T04:46:58+00:00
+2026,IN,18007,Benton County,2026-10-25,9,201,,201,,,,,,2,civicapi,2026-10-25T04:51:49+00:00
 2026,IN,18009,Blackford County,2026-09-22,42,1,,1,,,,,,2,civicapi,2026-09-22T17:58:53+00:00
 2026,IN,18009,Blackford County,2026-09-23,41,1,,1,,,,,,2,civicapi,2026-09-23T16:09:31+00:00
 2026,IN,18009,Blackford County,2026-09-24,40,1,,1,,,,,,2,civicapi,2026-09-24T18:13:59+00:00
@@ -138,6 +142,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,IN,18009,Blackford County,2026-10-22,12,666,,666,,,,,,2,civicapi,2026-10-22T15:06:37+00:00
 2026,IN,18009,Blackford County,2026-10-23,11,717,,717,,,,,,2,civicapi,2026-10-23T15:07:09+00:00
 2026,IN,18009,Blackford County,2026-10-24,10,717,,717,,,,,,2,civicapi,2026-10-24T04:46:58+00:00
+2026,IN,18009,Blackford County,2026-10-25,9,717,,717,,,,,,2,civicapi,2026-10-25T04:51:49+00:00
 2026,IN,18011,Boone County,2026-09-22,42,2,,2,,,,,,2,civicapi,2026-09-22T17:58:53+00:00
 2026,IN,18011,Boone County,2026-09-23,41,5,,5,,,,,,2,civicapi,2026-09-23T16:09:31+00:00
 2026,IN,18011,Boone County,2026-09-24,40,6,,6,,,,,,2,civicapi,2026-09-24T23:06:00+00:00
@@ -169,6 +174,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,IN,18011,Boone County,2026-10-22,12,2939,,2939,,,,,,2,civicapi,2026-10-22T15:06:37+00:00
 2026,IN,18011,Boone County,2026-10-23,11,3242,,3242,,,,,,2,civicapi,2026-10-23T15:07:09+00:00
 2026,IN,18011,Boone County,2026-10-24,10,3242,,3242,,,,,,2,civicapi,2026-10-24T04:46:58+00:00
+2026,IN,18011,Boone County,2026-10-25,9,3242,,3242,,,,,,2,civicapi,2026-10-25T04:51:49+00:00
 2026,IN,18013,Brown County,2026-09-29,35,6,,6,,,,,,2,civicapi,2026-09-29T14:39:58+00:00
 2026,IN,18013,Brown County,2026-09-30,34,13,,13,,,,,,2,civicapi,2026-09-30T14:49:28+00:00
 2026,IN,18013,Brown County,2026-10-01,33,15,,15,,,,,,2,civicapi,2026-10-01T16:55:52+00:00
@@ -195,6 +201,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,IN,18013,Brown County,2026-10-22,12,1340,,1340,,,,,,2,civicapi,2026-10-22T15:06:37+00:00
 2026,IN,18013,Brown County,2026-10-23,11,1481,,1481,,,,,,2,civicapi,2026-10-23T15:07:09+00:00
 2026,IN,18013,Brown County,2026-10-24,10,1481,,1481,,,,,,2,civicapi,2026-10-24T04:46:58+00:00
+2026,IN,18013,Brown County,2026-10-25,9,1481,,1481,,,,,,2,civicapi,2026-10-25T04:51:49+00:00
 2026,IN,18015,Carroll County,2026-09-29,35,14,,14,,,,,,2,civicapi,2026-09-29T14:39:58+00:00
 2026,IN,18015,Carroll County,2026-09-30,34,21,,21,,,,,,2,civicapi,2026-09-30T14:49:28+00:00
 2026,IN,18015,Carroll County,2026-10-01,33,21,,21,,,,,,2,civicapi,2026-10-01T08:21:23+00:00
@@ -221,6 +228,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,IN,18015,Carroll County,2026-10-22,12,621,,621,,,,,,2,civicapi,2026-10-22T15:06:37+00:00
 2026,IN,18015,Carroll County,2026-10-23,11,649,,649,,,,,,2,civicapi,2026-10-23T15:07:09+00:00
 2026,IN,18015,Carroll County,2026-10-24,10,649,,649,,,,,,2,civicapi,2026-10-24T04:46:58+00:00
+2026,IN,18015,Carroll County,2026-10-25,9,649,,649,,,,,,2,civicapi,2026-10-25T04:51:49+00:00
 2026,IN,18017,Cass County,2026-09-22,42,1,,1,,,,,,2,civicapi,2026-09-22T17:58:53+00:00
 2026,IN,18017,Cass County,2026-09-23,41,12,,12,,,,,,2,civicapi,2026-09-23T16:09:31+00:00
 2026,IN,18017,Cass County,2026-09-24,40,17,,17,,,,,,2,civicapi,2026-09-24T23:06:00+00:00
@@ -252,6 +260,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,IN,18017,Cass County,2026-10-22,12,2054,,2054,,,,,,2,civicapi,2026-10-22T15:06:37+00:00
 2026,IN,18017,Cass County,2026-10-23,11,2071,,2071,,,,,,2,civicapi,2026-10-23T15:07:09+00:00
 2026,IN,18017,Cass County,2026-10-24,10,2071,,2071,,,,,,2,civicapi,2026-10-24T04:46:58+00:00
+2026,IN,18017,Cass County,2026-10-25,9,2071,,2071,,,,,,2,civicapi,2026-10-25T04:51:49+00:00
 2026,IN,18019,Clark County,2026-09-28,36,74,,74,,,,,,2,civicapi,2026-09-28T17:46:06+00:00
 2026,IN,18019,Clark County,2026-09-29,35,74,,74,,,,,,2,civicapi,2026-09-29T07:55:57+00:00
 2026,IN,18019,Clark County,2026-09-30,34,74,,74,,,,,,2,civicapi,2026-09-30T08:00:51+00:00
@@ -279,6 +288,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,IN,18019,Clark County,2026-10-22,12,3840,,3840,,,,,,2,civicapi,2026-10-22T15:06:37+00:00
 2026,IN,18019,Clark County,2026-10-23,11,4208,,4208,,,,,,2,civicapi,2026-10-23T15:07:09+00:00
 2026,IN,18019,Clark County,2026-10-24,10,4208,,4208,,,,,,2,civicapi,2026-10-24T04:46:58+00:00
+2026,IN,18019,Clark County,2026-10-25,9,4208,,4208,,,,,,2,civicapi,2026-10-25T04:51:49+00:00
 2026,IN,18021,Clay County,2026-09-23,41,1,,1,,,,,,2,civicapi,2026-09-23T16:09:31+00:00
 2026,IN,18021,Clay County,2026-09-24,40,1,,1,,,,,,2,civicapi,2026-09-24T18:13:59+00:00
 2026,IN,18021,Clay County,2026-09-25,39,1,,1,,,,,,2,civicapi,2026-09-25T09:25:24+00:00
@@ -309,6 +319,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,IN,18021,Clay County,2026-10-22,12,781,,781,,,,,,2,civicapi,2026-10-22T15:06:37+00:00
 2026,IN,18021,Clay County,2026-10-23,11,904,,904,,,,,,2,civicapi,2026-10-23T15:07:09+00:00
 2026,IN,18021,Clay County,2026-10-24,10,904,,904,,,,,,2,civicapi,2026-10-24T04:46:58+00:00
+2026,IN,18021,Clay County,2026-10-25,9,904,,904,,,,,,2,civicapi,2026-10-25T04:51:49+00:00
 2026,IN,18023,Clinton County,2026-09-23,41,1,,1,,,,,,2,civicapi,2026-09-23T16:09:31+00:00
 2026,IN,18023,Clinton County,2026-09-24,40,1,,1,,,,,,2,civicapi,2026-09-24T18:13:59+00:00
 2026,IN,18023,Clinton County,2026-09-25,39,1,,1,,,,,,2,civicapi,2026-09-25T09:25:24+00:00
@@ -339,6 +350,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,IN,18023,Clinton County,2026-10-22,12,1259,,1259,,,,,,2,civicapi,2026-10-22T15:06:37+00:00
 2026,IN,18023,Clinton County,2026-10-23,11,1405,,1405,,,,,,2,civicapi,2026-10-23T15:07:09+00:00
 2026,IN,18023,Clinton County,2026-10-24,10,1405,,1405,,,,,,2,civicapi,2026-10-24T04:46:58+00:00
+2026,IN,18023,Clinton County,2026-10-25,9,1405,,1405,,,,,,2,civicapi,2026-10-25T04:51:49+00:00
 2026,IN,18025,Crawford County,2026-09-29,35,6,,6,,,,,,2,civicapi,2026-09-29T14:39:58+00:00
 2026,IN,18025,Crawford County,2026-09-30,34,8,,8,,,,,,2,civicapi,2026-09-30T14:49:28+00:00
 2026,IN,18025,Crawford County,2026-10-01,33,8,,8,,,,,,2,civicapi,2026-10-01T08:21:23+00:00
@@ -365,6 +377,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,IN,18025,Crawford County,2026-10-22,12,284,,284,,,,,,2,civicapi,2026-10-22T04:56:06+00:00
 2026,IN,18025,Crawford County,2026-10-23,11,330,,330,,,,,,2,civicapi,2026-10-23T15:07:09+00:00
 2026,IN,18025,Crawford County,2026-10-24,10,330,,330,,,,,,2,civicapi,2026-10-24T04:46:58+00:00
+2026,IN,18025,Crawford County,2026-10-25,9,330,,330,,,,,,2,civicapi,2026-10-25T04:51:49+00:00
 2026,IN,18027,Daviess County,2026-09-24,40,2,,2,,,,,,2,civicapi,2026-09-24T23:06:00+00:00
 2026,IN,18027,Daviess County,2026-09-25,39,2,,2,,,,,,2,civicapi,2026-09-25T09:25:24+00:00
 2026,IN,18027,Daviess County,2026-09-28,36,5,,5,,,,,,2,civicapi,2026-09-28T17:46:06+00:00
@@ -394,6 +407,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,IN,18027,Daviess County,2026-10-22,12,765,,765,,,,,,2,civicapi,2026-10-22T15:06:37+00:00
 2026,IN,18027,Daviess County,2026-10-23,11,863,,863,,,,,,2,civicapi,2026-10-23T15:07:09+00:00
 2026,IN,18027,Daviess County,2026-10-24,10,863,,863,,,,,,2,civicapi,2026-10-24T04:46:58+00:00
+2026,IN,18027,Daviess County,2026-10-25,9,863,,863,,,,,,2,civicapi,2026-10-25T04:51:49+00:00
 2026,IN,18029,Dearborn County,2026-09-28,36,3,,3,,,,,,2,civicapi,2026-09-28T17:46:06+00:00
 2026,IN,18029,Dearborn County,2026-09-29,35,3,,3,,,,,,2,civicapi,2026-09-29T07:55:57+00:00
 2026,IN,18029,Dearborn County,2026-09-30,34,3,,3,,,,,,2,civicapi,2026-09-30T08:00:51+00:00
@@ -421,6 +435,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,IN,18029,Dearborn County,2026-10-22,12,1423,,1423,,,,,,2,civicapi,2026-10-22T15:06:37+00:00
 2026,IN,18029,Dearborn County,2026-10-23,11,1599,,1599,,,,,,2,civicapi,2026-10-23T15:07:09+00:00
 2026,IN,18029,Dearborn County,2026-10-24,10,1599,,1599,,,,,,2,civicapi,2026-10-24T04:46:58+00:00
+2026,IN,18029,Dearborn County,2026-10-25,9,1599,,1599,,,,,,2,civicapi,2026-10-25T04:51:49+00:00
 2026,IN,18031,Decatur County,2026-09-28,36,11,,11,,,,,,2,civicapi,2026-09-28T17:46:06+00:00
 2026,IN,18031,Decatur County,2026-09-29,35,11,,11,,,,,,2,civicapi,2026-09-29T07:55:57+00:00
 2026,IN,18031,Decatur County,2026-09-30,34,11,,11,,,,,,2,civicapi,2026-09-30T08:00:51+00:00
@@ -448,6 +463,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,IN,18031,Decatur County,2026-10-22,12,740,,740,,,,,,2,civicapi,2026-10-22T15:06:37+00:00
 2026,IN,18031,Decatur County,2026-10-23,11,851,,851,,,,,,2,civicapi,2026-10-23T15:07:09+00:00
 2026,IN,18031,Decatur County,2026-10-24,10,851,,851,,,,,,2,civicapi,2026-10-24T04:46:58+00:00
+2026,IN,18031,Decatur County,2026-10-25,9,851,,851,,,,,,2,civicapi,2026-10-25T04:51:49+00:00
 2026,IN,18033,DeKalb County,2026-09-22,42,11,,11,,,,,,2,civicapi,2026-09-22T17:58:53+00:00
 2026,IN,18033,DeKalb County,2026-09-23,41,11,,11,,,,,,2,civicapi,2026-09-23T16:09:31+00:00
 2026,IN,18033,DeKalb County,2026-09-24,40,17,,17,,,,,,2,civicapi,2026-09-24T23:06:00+00:00
@@ -479,6 +495,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,IN,18033,DeKalb County,2026-10-22,12,1650,,1650,,,,,,2,civicapi,2026-10-22T15:06:37+00:00
 2026,IN,18033,DeKalb County,2026-10-23,11,1798,,1798,,,,,,2,civicapi,2026-10-23T15:07:09+00:00
 2026,IN,18033,DeKalb County,2026-10-24,10,1798,,1798,,,,,,2,civicapi,2026-10-24T04:46:58+00:00
+2026,IN,18033,DeKalb County,2026-10-25,9,1798,,1798,,,,,,2,civicapi,2026-10-25T04:51:49+00:00
 2026,IN,18035,Delaware County,2026-09-22,42,8,,8,,,,,,2,civicapi,2026-09-22T17:58:53+00:00
 2026,IN,18035,Delaware County,2026-09-23,41,8,,8,,,,,,2,civicapi,2026-09-23T16:09:31+00:00
 2026,IN,18035,Delaware County,2026-09-24,40,31,,31,,,,,,2,civicapi,2026-09-24T23:06:00+00:00
@@ -512,6 +529,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,IN,18035,Delaware County,2026-10-22,12,4489,,4489,,,,,,2,civicapi,2026-10-22T15:06:37+00:00
 2026,IN,18035,Delaware County,2026-10-23,11,4931,,4931,,,,,,2,civicapi,2026-10-23T15:07:09+00:00
 2026,IN,18035,Delaware County,2026-10-24,10,4931,,4931,,,,,,2,civicapi,2026-10-24T04:46:58+00:00
+2026,IN,18035,Delaware County,2026-10-25,9,4931,,4931,,,,,,2,civicapi,2026-10-25T04:51:49+00:00
 2026,IN,18037,Dubois County,2026-09-24,40,9,,9,,,,,,2,civicapi,2026-09-24T23:06:00+00:00
 2026,IN,18037,Dubois County,2026-09-25,39,9,,9,,,,,,2,civicapi,2026-09-25T09:25:24+00:00
 2026,IN,18037,Dubois County,2026-09-28,36,11,,11,,,,,,2,civicapi,2026-09-28T17:46:06+00:00
@@ -541,6 +559,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,IN,18037,Dubois County,2026-10-22,12,2792,,2792,,,,,,2,civicapi,2026-10-22T15:06:37+00:00
 2026,IN,18037,Dubois County,2026-10-23,11,3183,,3183,,,,,,2,civicapi,2026-10-23T15:07:09+00:00
 2026,IN,18037,Dubois County,2026-10-24,10,3183,,3183,,,,,,2,civicapi,2026-10-24T04:46:58+00:00
+2026,IN,18037,Dubois County,2026-10-25,9,3183,,3183,,,,,,2,civicapi,2026-10-25T04:51:49+00:00
 2026,IN,18039,Elkhart County,2026-10-01,33,135,,135,,,,,,2,civicapi,2026-10-01T16:55:52+00:00
 2026,IN,18039,Elkhart County,2026-10-02,32,160,,160,,,,,,2,civicapi,2026-10-02T17:30:35+00:00
 2026,IN,18039,Elkhart County,2026-10-03,31,160,,160,,,,,,2,civicapi,2026-10-03T07:37:45+00:00
@@ -565,6 +584,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,IN,18039,Elkhart County,2026-10-22,12,6363,,6363,,,,,,2,civicapi,2026-10-22T15:06:37+00:00
 2026,IN,18039,Elkhart County,2026-10-23,11,6981,,6981,,,,,,2,civicapi,2026-10-23T15:07:09+00:00
 2026,IN,18039,Elkhart County,2026-10-24,10,6981,,6981,,,,,,2,civicapi,2026-10-24T04:46:58+00:00
+2026,IN,18039,Elkhart County,2026-10-25,9,6981,,6981,,,,,,2,civicapi,2026-10-25T04:51:49+00:00
 2026,IN,18041,Fayette County,2026-09-29,35,2,,2,,,,,,2,civicapi,2026-09-29T14:39:58+00:00
 2026,IN,18041,Fayette County,2026-09-30,34,3,,3,,,,,,2,civicapi,2026-09-30T14:49:28+00:00
 2026,IN,18041,Fayette County,2026-10-01,33,4,,4,,,,,,2,civicapi,2026-10-01T16:55:52+00:00
@@ -591,6 +611,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,IN,18041,Fayette County,2026-10-22,12,907,,907,,,,,,2,civicapi,2026-10-22T15:06:37+00:00
 2026,IN,18041,Fayette County,2026-10-23,11,1018,,1018,,,,,,2,civicapi,2026-10-23T15:07:09+00:00
 2026,IN,18041,Fayette County,2026-10-24,10,1018,,1018,,,,,,2,civicapi,2026-10-24T04:46:58+00:00
+2026,IN,18041,Fayette County,2026-10-25,9,1018,,1018,,,,,,2,civicapi,2026-10-25T04:51:49+00:00
 2026,IN,18043,Floyd County,2026-09-22,42,2,,2,,,,,,2,civicapi,2026-09-22T17:58:53+00:00
 2026,IN,18043,Floyd County,2026-09-23,41,12,,12,,,,,,2,civicapi,2026-09-23T16:09:31+00:00
 2026,IN,18043,Floyd County,2026-09-24,40,34,,34,,,,,,2,civicapi,2026-09-24T23:06:00+00:00
@@ -624,6 +645,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,IN,18043,Floyd County,2026-10-22,12,5978,,5978,,,,,,2,civicapi,2026-10-22T15:06:37+00:00
 2026,IN,18043,Floyd County,2026-10-23,11,6689,,6689,,,,,,2,civicapi,2026-10-23T15:07:09+00:00
 2026,IN,18043,Floyd County,2026-10-24,10,6689,,6689,,,,,,2,civicapi,2026-10-24T04:46:58+00:00
+2026,IN,18043,Floyd County,2026-10-25,9,6689,,6689,,,,,,2,civicapi,2026-10-25T04:51:49+00:00
 2026,IN,18045,Fountain County,2026-09-28,36,2,,2,,,,,,2,civicapi,2026-09-28T17:46:06+00:00
 2026,IN,18045,Fountain County,2026-09-29,35,11,,11,,,,,,2,civicapi,2026-09-29T14:39:58+00:00
 2026,IN,18045,Fountain County,2026-09-30,34,11,,11,,,,,,2,civicapi,2026-09-30T08:00:51+00:00
@@ -651,6 +673,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,IN,18045,Fountain County,2026-10-22,12,280,,280,,,,,,2,civicapi,2026-10-22T15:06:37+00:00
 2026,IN,18045,Fountain County,2026-10-23,11,344,,344,,,,,,2,civicapi,2026-10-23T15:07:09+00:00
 2026,IN,18045,Fountain County,2026-10-24,10,344,,344,,,,,,2,civicapi,2026-10-24T04:46:58+00:00
+2026,IN,18045,Fountain County,2026-10-25,9,344,,344,,,,,,2,civicapi,2026-10-25T04:51:49+00:00
 2026,IN,18047,Franklin County,2026-09-24,40,5,,5,,,,,,2,civicapi,2026-09-24T23:06:00+00:00
 2026,IN,18047,Franklin County,2026-09-25,39,5,,5,,,,,,2,civicapi,2026-09-25T09:25:24+00:00
 2026,IN,18047,Franklin County,2026-09-28,36,8,,8,,,,,,2,civicapi,2026-09-28T17:46:06+00:00
@@ -680,6 +703,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,IN,18047,Franklin County,2026-10-22,12,816,,816,,,,,,2,civicapi,2026-10-22T15:06:37+00:00
 2026,IN,18047,Franklin County,2026-10-23,11,914,,914,,,,,,2,civicapi,2026-10-23T15:07:09+00:00
 2026,IN,18047,Franklin County,2026-10-24,10,914,,914,,,,,,2,civicapi,2026-10-24T04:46:58+00:00
+2026,IN,18047,Franklin County,2026-10-25,9,914,,914,,,,,,2,civicapi,2026-10-25T04:51:49+00:00
 2026,IN,18049,Fulton County,2026-09-28,36,3,,3,,,,,,2,civicapi,2026-09-28T17:46:06+00:00
 2026,IN,18049,Fulton County,2026-09-29,35,8,,8,,,,,,2,civicapi,2026-09-29T14:39:58+00:00
 2026,IN,18049,Fulton County,2026-09-30,34,10,,10,,,,,,2,civicapi,2026-09-30T14:49:28+00:00
@@ -707,6 +731,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,IN,18049,Fulton County,2026-10-22,12,847,,847,,,,,,2,civicapi,2026-10-22T15:06:37+00:00
 2026,IN,18049,Fulton County,2026-10-23,11,927,,927,,,,,,2,civicapi,2026-10-23T15:07:09+00:00
 2026,IN,18049,Fulton County,2026-10-24,10,927,,927,,,,,,2,civicapi,2026-10-24T04:46:58+00:00
+2026,IN,18049,Fulton County,2026-10-25,9,927,,927,,,,,,2,civicapi,2026-10-25T04:51:49+00:00
 2026,IN,18051,Gibson County,2026-09-22,42,1,,1,,,,,,2,civicapi,2026-09-22T17:58:53+00:00
 2026,IN,18051,Gibson County,2026-09-23,41,2,,2,,,,,,2,civicapi,2026-09-23T16:09:31+00:00
 2026,IN,18051,Gibson County,2026-09-24,40,3,,3,,,,,,2,civicapi,2026-09-24T23:06:00+00:00
@@ -740,6 +765,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,IN,18051,Gibson County,2026-10-22,12,903,,903,,,,,,2,civicapi,2026-10-22T15:06:37+00:00
 2026,IN,18051,Gibson County,2026-10-23,11,1045,,1045,,,,,,2,civicapi,2026-10-23T15:07:09+00:00
 2026,IN,18051,Gibson County,2026-10-24,10,1045,,1045,,,,,,2,civicapi,2026-10-24T04:46:58+00:00
+2026,IN,18051,Gibson County,2026-10-25,9,1045,,1045,,,,,,2,civicapi,2026-10-25T04:51:49+00:00
 2026,IN,18053,Grant County,2026-09-22,42,1,,1,,,,,,2,civicapi,2026-09-22T17:58:53+00:00
 2026,IN,18053,Grant County,2026-09-23,41,4,,4,,,,,,2,civicapi,2026-09-23T16:09:31+00:00
 2026,IN,18053,Grant County,2026-09-24,40,8,,8,,,,,,2,civicapi,2026-09-24T23:06:00+00:00
@@ -771,6 +797,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,IN,18053,Grant County,2026-10-22,12,2470,,2470,,,,,,2,civicapi,2026-10-22T15:06:37+00:00
 2026,IN,18053,Grant County,2026-10-23,11,2693,,2693,,,,,,2,civicapi,2026-10-23T15:07:09+00:00
 2026,IN,18053,Grant County,2026-10-24,10,2693,,2693,,,,,,2,civicapi,2026-10-24T04:46:58+00:00
+2026,IN,18053,Grant County,2026-10-25,9,2693,,2693,,,,,,2,civicapi,2026-10-25T04:51:49+00:00
 2026,IN,18055,Greene County,2026-09-22,42,2,,2,,,,,,2,civicapi,2026-09-22T17:58:53+00:00
 2026,IN,18055,Greene County,2026-09-23,41,2,,2,,,,,,2,civicapi,2026-09-23T16:09:31+00:00
 2026,IN,18055,Greene County,2026-09-24,40,2,,2,,,,,,2,civicapi,2026-09-24T18:13:59+00:00
@@ -802,6 +829,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,IN,18055,Greene County,2026-10-22,12,1063,,1063,,,,,,2,civicapi,2026-10-22T15:06:37+00:00
 2026,IN,18055,Greene County,2026-10-23,11,1211,,1211,,,,,,2,civicapi,2026-10-23T15:07:09+00:00
 2026,IN,18055,Greene County,2026-10-24,10,1211,,1211,,,,,,2,civicapi,2026-10-24T04:46:58+00:00
+2026,IN,18055,Greene County,2026-10-25,9,1211,,1211,,,,,,2,civicapi,2026-10-25T04:51:49+00:00
 2026,IN,18057,Hamilton County,2026-09-22,42,69,,69,,,,,,2,civicapi,2026-09-22T17:58:53+00:00
 2026,IN,18057,Hamilton County,2026-09-23,41,85,,85,,,,,,2,civicapi,2026-09-23T16:09:31+00:00
 2026,IN,18057,Hamilton County,2026-09-24,40,142,,142,,,,,,2,civicapi,2026-09-24T23:06:00+00:00
@@ -835,6 +863,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,IN,18057,Hamilton County,2026-10-22,12,24707,,24707,,,,,,2,civicapi,2026-10-22T15:06:37+00:00
 2026,IN,18057,Hamilton County,2026-10-23,11,29217,,29217,,,,,,2,civicapi,2026-10-23T15:07:09+00:00
 2026,IN,18057,Hamilton County,2026-10-24,10,29217,,29217,,,,,,2,civicapi,2026-10-24T04:46:58+00:00
+2026,IN,18057,Hamilton County,2026-10-25,9,29217,,29217,,,,,,2,civicapi,2026-10-25T04:51:49+00:00
 2026,IN,18059,Hancock County,2026-09-22,42,2,,2,,,,,,2,civicapi,2026-09-22T17:58:53+00:00
 2026,IN,18059,Hancock County,2026-09-23,41,10,,10,,,,,,2,civicapi,2026-09-23T16:09:31+00:00
 2026,IN,18059,Hancock County,2026-09-24,40,12,,12,,,,,,2,civicapi,2026-09-24T23:06:00+00:00
@@ -866,6 +895,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,IN,18059,Hancock County,2026-10-22,12,3876,,3876,,,,,,2,civicapi,2026-10-22T15:06:37+00:00
 2026,IN,18059,Hancock County,2026-10-23,11,4731,,4731,,,,,,2,civicapi,2026-10-23T15:07:09+00:00
 2026,IN,18059,Hancock County,2026-10-24,10,4731,,4731,,,,,,2,civicapi,2026-10-24T04:46:58+00:00
+2026,IN,18059,Hancock County,2026-10-25,9,4731,,4731,,,,,,2,civicapi,2026-10-25T04:51:49+00:00
 2026,IN,18061,Harrison County,2026-10-08,26,195,,195,,,,,,2,civicapi,2026-10-08T17:14:43+00:00
 2026,IN,18061,Harrison County,2026-10-09,25,301,,301,,,,,,2,civicapi,2026-10-09T19:18:15+00:00
 2026,IN,18061,Harrison County,2026-10-10,24,301,,301,,,,,,2,civicapi,2026-10-10T04:22:40+00:00
@@ -883,6 +913,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,IN,18061,Harrison County,2026-10-22,12,1446,,1446,,,,,,2,civicapi,2026-10-22T04:56:06+00:00
 2026,IN,18061,Harrison County,2026-10-23,11,1710,,1710,,,,,,2,civicapi,2026-10-23T15:07:09+00:00
 2026,IN,18061,Harrison County,2026-10-24,10,1710,,1710,,,,,,2,civicapi,2026-10-24T04:46:58+00:00
+2026,IN,18061,Harrison County,2026-10-25,9,1710,,1710,,,,,,2,civicapi,2026-10-25T04:51:49+00:00
 2026,IN,18063,Hendricks County,2026-09-23,41,7,,7,,,,,,2,civicapi,2026-09-23T16:09:31+00:00
 2026,IN,18063,Hendricks County,2026-09-24,40,21,,21,,,,,,2,civicapi,2026-09-24T23:06:00+00:00
 2026,IN,18063,Hendricks County,2026-09-25,39,21,,21,,,,,,2,civicapi,2026-09-25T09:25:24+00:00
@@ -913,6 +944,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,IN,18063,Hendricks County,2026-10-22,12,7979,,7979,,,,,,2,civicapi,2026-10-22T15:06:37+00:00
 2026,IN,18063,Hendricks County,2026-10-23,11,9797,,9797,,,,,,2,civicapi,2026-10-23T15:07:09+00:00
 2026,IN,18063,Hendricks County,2026-10-24,10,9797,,9797,,,,,,2,civicapi,2026-10-24T04:46:58+00:00
+2026,IN,18063,Hendricks County,2026-10-25,9,9797,,9797,,,,,,2,civicapi,2026-10-25T04:51:49+00:00
 2026,IN,18065,Henry County,2026-09-23,41,5,,5,,,,,,2,civicapi,2026-09-23T16:09:31+00:00
 2026,IN,18065,Henry County,2026-09-24,40,11,,11,,,,,,2,civicapi,2026-09-24T23:06:00+00:00
 2026,IN,18065,Henry County,2026-09-25,39,11,,11,,,,,,2,civicapi,2026-09-25T09:25:24+00:00
@@ -943,6 +975,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,IN,18065,Henry County,2026-10-22,12,1267,,1267,,,,,,2,civicapi,2026-10-22T15:06:37+00:00
 2026,IN,18065,Henry County,2026-10-23,11,1433,,1433,,,,,,2,civicapi,2026-10-23T15:07:09+00:00
 2026,IN,18065,Henry County,2026-10-24,10,1433,,1433,,,,,,2,civicapi,2026-10-24T04:46:58+00:00
+2026,IN,18065,Henry County,2026-10-25,9,1433,,1433,,,,,,2,civicapi,2026-10-25T04:51:49+00:00
 2026,IN,18067,Howard County,2026-09-22,42,7,,7,,,,,,2,civicapi,2026-09-22T17:58:53+00:00
 2026,IN,18067,Howard County,2026-09-23,41,17,,17,,,,,,2,civicapi,2026-09-23T16:09:31+00:00
 2026,IN,18067,Howard County,2026-09-24,40,28,,28,,,,,,2,civicapi,2026-09-24T23:06:00+00:00
@@ -976,6 +1009,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,IN,18067,Howard County,2026-10-22,12,3198,,3198,,,,,,2,civicapi,2026-10-22T15:06:37+00:00
 2026,IN,18067,Howard County,2026-10-23,11,3545,,3545,,,,,,2,civicapi,2026-10-23T15:07:09+00:00
 2026,IN,18067,Howard County,2026-10-24,10,3545,,3545,,,,,,2,civicapi,2026-10-24T04:46:58+00:00
+2026,IN,18067,Howard County,2026-10-25,9,3545,,3545,,,,,,2,civicapi,2026-10-25T04:51:49+00:00
 2026,IN,18069,Huntington County,2026-09-23,41,13,,13,,,,,,2,civicapi,2026-09-23T16:09:31+00:00
 2026,IN,18069,Huntington County,2026-09-24,40,24,,24,,,,,,2,civicapi,2026-09-24T23:06:00+00:00
 2026,IN,18069,Huntington County,2026-09-25,39,24,,24,,,,,,2,civicapi,2026-09-25T09:25:24+00:00
@@ -1006,6 +1040,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,IN,18069,Huntington County,2026-10-22,12,1571,,1571,,,,,,2,civicapi,2026-10-22T15:06:37+00:00
 2026,IN,18069,Huntington County,2026-10-23,11,1764,,1764,,,,,,2,civicapi,2026-10-23T15:07:09+00:00
 2026,IN,18069,Huntington County,2026-10-24,10,1764,,1764,,,,,,2,civicapi,2026-10-24T04:46:58+00:00
+2026,IN,18069,Huntington County,2026-10-25,9,1764,,1764,,,,,,2,civicapi,2026-10-25T04:51:49+00:00
 2026,IN,18071,Jackson County,2026-09-23,41,1,,1,,,,,,2,civicapi,2026-09-23T16:09:31+00:00
 2026,IN,18071,Jackson County,2026-09-24,40,1,,1,,,,,,2,civicapi,2026-09-24T18:13:59+00:00
 2026,IN,18071,Jackson County,2026-09-25,39,1,,1,,,,,,2,civicapi,2026-09-25T09:25:24+00:00
@@ -1036,6 +1071,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,IN,18071,Jackson County,2026-10-22,12,1984,,1984,,,,,,2,civicapi,2026-10-22T15:06:37+00:00
 2026,IN,18071,Jackson County,2026-10-23,11,2276,,2276,,,,,,2,civicapi,2026-10-23T15:07:09+00:00
 2026,IN,18071,Jackson County,2026-10-24,10,2276,,2276,,,,,,2,civicapi,2026-10-24T04:46:58+00:00
+2026,IN,18071,Jackson County,2026-10-25,9,2276,,2276,,,,,,2,civicapi,2026-10-25T04:51:49+00:00
 2026,IN,18073,Jasper County,2026-09-23,41,3,,3,,,,,,2,civicapi,2026-09-23T16:09:31+00:00
 2026,IN,18073,Jasper County,2026-09-24,40,5,,5,,,,,,2,civicapi,2026-09-24T23:06:00+00:00
 2026,IN,18073,Jasper County,2026-09-25,39,5,,5,,,,,,2,civicapi,2026-09-25T09:25:24+00:00
@@ -1066,6 +1102,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,IN,18073,Jasper County,2026-10-22,12,1255,,1255,,,,,,2,civicapi,2026-10-22T15:06:37+00:00
 2026,IN,18073,Jasper County,2026-10-23,11,1341,,1341,,,,,,2,civicapi,2026-10-23T15:07:09+00:00
 2026,IN,18073,Jasper County,2026-10-24,10,1341,,1341,,,,,,2,civicapi,2026-10-24T04:46:58+00:00
+2026,IN,18073,Jasper County,2026-10-25,9,1341,,1341,,,,,,2,civicapi,2026-10-25T04:51:49+00:00
 2026,IN,18075,Jay County,2026-09-24,40,1,,1,,,,,,2,civicapi,2026-09-24T23:06:00+00:00
 2026,IN,18075,Jay County,2026-09-25,39,1,,1,,,,,,2,civicapi,2026-09-25T09:25:24+00:00
 2026,IN,18075,Jay County,2026-09-28,36,2,,2,,,,,,2,civicapi,2026-09-28T17:46:06+00:00
@@ -1095,6 +1132,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,IN,18075,Jay County,2026-10-22,12,888,,888,,,,,,2,civicapi,2026-10-22T15:06:37+00:00
 2026,IN,18075,Jay County,2026-10-23,11,996,,996,,,,,,2,civicapi,2026-10-23T15:07:09+00:00
 2026,IN,18075,Jay County,2026-10-24,10,996,,996,,,,,,2,civicapi,2026-10-24T04:46:58+00:00
+2026,IN,18075,Jay County,2026-10-25,9,996,,996,,,,,,2,civicapi,2026-10-25T04:51:49+00:00
 2026,IN,18077,Jefferson County,2026-09-23,41,7,,7,,,,,,2,civicapi,2026-09-23T16:09:31+00:00
 2026,IN,18077,Jefferson County,2026-09-24,40,7,,7,,,,,,2,civicapi,2026-09-24T18:13:59+00:00
 2026,IN,18077,Jefferson County,2026-09-25,39,7,,7,,,,,,2,civicapi,2026-09-25T09:25:24+00:00
@@ -1125,6 +1163,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,IN,18077,Jefferson County,2026-10-22,12,1290,,1290,,,,,,2,civicapi,2026-10-22T15:06:37+00:00
 2026,IN,18077,Jefferson County,2026-10-23,11,1533,,1533,,,,,,2,civicapi,2026-10-23T15:07:09+00:00
 2026,IN,18077,Jefferson County,2026-10-24,10,1533,,1533,,,,,,2,civicapi,2026-10-24T04:46:58+00:00
+2026,IN,18077,Jefferson County,2026-10-25,9,1533,,1533,,,,,,2,civicapi,2026-10-25T04:51:49+00:00
 2026,IN,18079,Jennings County,2026-10-05,29,15,,15,,,,,,2,civicapi,2026-10-05T19:07:06+00:00
 2026,IN,18079,Jennings County,2026-10-06,28,30,,30,,,,,,2,civicapi,2026-10-06T16:33:16+00:00
 2026,IN,18079,Jennings County,2026-10-07,27,30,,30,,,,,,2,civicapi,2026-10-07T19:46:56+00:00
@@ -1145,6 +1184,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,IN,18079,Jennings County,2026-10-22,12,703,,703,,,,,,2,civicapi,2026-10-22T15:06:37+00:00
 2026,IN,18079,Jennings County,2026-10-23,11,776,,776,,,,,,2,civicapi,2026-10-23T15:07:09+00:00
 2026,IN,18079,Jennings County,2026-10-24,10,776,,776,,,,,,2,civicapi,2026-10-24T04:46:58+00:00
+2026,IN,18079,Jennings County,2026-10-25,9,776,,776,,,,,,2,civicapi,2026-10-25T04:51:49+00:00
 2026,IN,18081,Johnson County,2026-09-22,42,3,,3,,,,,,2,civicapi,2026-09-22T17:58:53+00:00
 2026,IN,18081,Johnson County,2026-09-23,41,3,,3,,,,,,2,civicapi,2026-09-23T16:09:31+00:00
 2026,IN,18081,Johnson County,2026-09-24,40,31,,31,,,,,,2,civicapi,2026-09-24T23:06:00+00:00
@@ -1176,6 +1216,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,IN,18081,Johnson County,2026-10-22,12,4842,,4842,,,,,,2,civicapi,2026-10-22T15:06:37+00:00
 2026,IN,18081,Johnson County,2026-10-23,11,5314,,5314,,,,,,2,civicapi,2026-10-23T15:07:09+00:00
 2026,IN,18081,Johnson County,2026-10-24,10,5314,,5314,,,,,,2,civicapi,2026-10-24T04:46:58+00:00
+2026,IN,18081,Johnson County,2026-10-25,9,5314,,5314,,,,,,2,civicapi,2026-10-25T04:51:49+00:00
 2026,IN,18083,Knox County,2026-09-23,41,6,,6,,,,,,2,civicapi,2026-09-23T16:09:31+00:00
 2026,IN,18083,Knox County,2026-09-24,40,6,,6,,,,,,2,civicapi,2026-09-24T18:13:59+00:00
 2026,IN,18083,Knox County,2026-09-25,39,6,,6,,,,,,2,civicapi,2026-09-25T09:25:24+00:00
@@ -1206,6 +1247,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,IN,18083,Knox County,2026-10-22,12,1367,,1367,,,,,,2,civicapi,2026-10-22T15:06:37+00:00
 2026,IN,18083,Knox County,2026-10-23,11,1546,,1546,,,,,,2,civicapi,2026-10-23T15:07:09+00:00
 2026,IN,18083,Knox County,2026-10-24,10,1546,,1546,,,,,,2,civicapi,2026-10-24T04:46:58+00:00
+2026,IN,18083,Knox County,2026-10-25,9,1546,,1546,,,,,,2,civicapi,2026-10-25T04:51:49+00:00
 2026,IN,18085,Kosciusko County,2026-09-22,42,10,,10,,,,,,2,civicapi,2026-09-22T17:58:53+00:00
 2026,IN,18085,Kosciusko County,2026-09-23,41,10,,10,,,,,,2,civicapi,2026-09-23T16:09:31+00:00
 2026,IN,18085,Kosciusko County,2026-09-24,40,31,,31,,,,,,2,civicapi,2026-09-24T23:06:00+00:00
@@ -1237,6 +1279,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,IN,18085,Kosciusko County,2026-10-22,12,1982,,1982,,,,,,2,civicapi,2026-10-22T15:06:37+00:00
 2026,IN,18085,Kosciusko County,2026-10-23,11,2215,,2215,,,,,,2,civicapi,2026-10-23T15:07:09+00:00
 2026,IN,18085,Kosciusko County,2026-10-24,10,2215,,2215,,,,,,2,civicapi,2026-10-24T04:46:58+00:00
+2026,IN,18085,Kosciusko County,2026-10-25,9,2215,,2215,,,,,,2,civicapi,2026-10-25T04:51:49+00:00
 2026,IN,18087,LaGrange County,2026-09-29,35,1,,1,,,,,,2,civicapi,2026-09-29T14:39:58+00:00
 2026,IN,18087,LaGrange County,2026-09-30,34,4,,4,,,,,,2,civicapi,2026-09-30T14:49:28+00:00
 2026,IN,18087,LaGrange County,2026-10-01,33,4,,4,,,,,,2,civicapi,2026-10-01T08:21:23+00:00
@@ -1263,6 +1306,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,IN,18087,LaGrange County,2026-10-22,12,545,,545,,,,,,2,civicapi,2026-10-22T15:06:37+00:00
 2026,IN,18087,LaGrange County,2026-10-23,11,635,,635,,,,,,2,civicapi,2026-10-23T15:07:09+00:00
 2026,IN,18087,LaGrange County,2026-10-24,10,635,,635,,,,,,2,civicapi,2026-10-24T04:46:58+00:00
+2026,IN,18087,LaGrange County,2026-10-25,9,635,,635,,,,,,2,civicapi,2026-10-25T04:51:49+00:00
 2026,IN,18089,Lake County,2026-09-23,41,6,,6,,,,,,2,civicapi,2026-09-23T16:09:31+00:00
 2026,IN,18089,Lake County,2026-09-24,40,13,,13,,,,,,2,civicapi,2026-09-24T23:06:00+00:00
 2026,IN,18089,Lake County,2026-09-25,39,13,,13,,,,,,2,civicapi,2026-09-25T09:25:24+00:00
@@ -1293,6 +1337,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,IN,18089,Lake County,2026-10-22,12,23036,,23036,,,,,,2,civicapi,2026-10-22T15:06:37+00:00
 2026,IN,18089,Lake County,2026-10-23,11,25317,,25317,,,,,,2,civicapi,2026-10-23T15:07:09+00:00
 2026,IN,18089,Lake County,2026-10-24,10,25317,,25317,,,,,,2,civicapi,2026-10-24T04:46:58+00:00
+2026,IN,18089,Lake County,2026-10-25,9,25317,,25317,,,,,,2,civicapi,2026-10-25T04:51:49+00:00
 2026,IN,18091,LaPorte County,2026-09-24,40,4,,4,,,,,,2,civicapi,2026-09-24T23:06:00+00:00
 2026,IN,18091,LaPorte County,2026-09-25,39,4,,4,,,,,,2,civicapi,2026-09-25T09:25:24+00:00
 2026,IN,18091,LaPorte County,2026-09-28,36,16,,16,,,,,,2,civicapi,2026-09-28T17:46:06+00:00
@@ -1322,6 +1367,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,IN,18091,LaPorte County,2026-10-22,12,5606,,5606,,,,,,2,civicapi,2026-10-22T15:06:37+00:00
 2026,IN,18091,LaPorte County,2026-10-23,11,6268,,6268,,,,,,2,civicapi,2026-10-23T15:07:09+00:00
 2026,IN,18091,LaPorte County,2026-10-24,10,6268,,6268,,,,,,2,civicapi,2026-10-24T04:46:58+00:00
+2026,IN,18091,LaPorte County,2026-10-25,9,6268,,6268,,,,,,2,civicapi,2026-10-25T04:51:49+00:00
 2026,IN,18093,Lawrence County,2026-09-23,41,16,,16,,,,,,2,civicapi,2026-09-23T16:09:31+00:00
 2026,IN,18093,Lawrence County,2026-09-24,40,25,,25,,,,,,2,civicapi,2026-09-24T23:06:00+00:00
 2026,IN,18093,Lawrence County,2026-09-25,39,25,,25,,,,,,2,civicapi,2026-09-25T09:25:24+00:00
@@ -1352,6 +1398,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,IN,18093,Lawrence County,2026-10-22,12,2302,,2302,,,,,,2,civicapi,2026-10-22T15:06:37+00:00
 2026,IN,18093,Lawrence County,2026-10-23,11,2555,,2555,,,,,,2,civicapi,2026-10-23T15:07:09+00:00
 2026,IN,18093,Lawrence County,2026-10-24,10,2555,,2555,,,,,,2,civicapi,2026-10-24T04:46:58+00:00
+2026,IN,18093,Lawrence County,2026-10-25,9,2555,,2555,,,,,,2,civicapi,2026-10-25T04:51:49+00:00
 2026,IN,18095,Madison County,2026-09-22,42,3,,3,,,,,,2,civicapi,2026-09-22T17:58:53+00:00
 2026,IN,18095,Madison County,2026-09-23,41,33,,33,,,,,,2,civicapi,2026-09-23T16:09:31+00:00
 2026,IN,18095,Madison County,2026-09-24,40,72,,72,,,,,,2,civicapi,2026-09-24T23:06:00+00:00
@@ -1383,6 +1430,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,IN,18095,Madison County,2026-10-22,12,3677,,3677,,,,,,2,civicapi,2026-10-22T15:06:37+00:00
 2026,IN,18095,Madison County,2026-10-23,11,4026,,4026,,,,,,2,civicapi,2026-10-23T15:07:09+00:00
 2026,IN,18095,Madison County,2026-10-24,10,4026,,4026,,,,,,2,civicapi,2026-10-24T04:46:58+00:00
+2026,IN,18095,Madison County,2026-10-25,9,4026,,4026,,,,,,2,civicapi,2026-10-25T04:51:49+00:00
 2026,IN,18097,Marion County,2026-09-23,41,77,,77,,,,,,2,civicapi,2026-09-23T16:09:31+00:00
 2026,IN,18097,Marion County,2026-09-24,40,92,,92,,,,,,2,civicapi,2026-09-24T23:06:00+00:00
 2026,IN,18097,Marion County,2026-09-25,39,92,,92,,,,,,2,civicapi,2026-09-25T09:25:24+00:00
@@ -1413,6 +1461,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,IN,18097,Marion County,2026-10-22,12,14046,,14046,,,,,,2,civicapi,2026-10-22T15:06:37+00:00
 2026,IN,18097,Marion County,2026-10-23,11,15309,,15309,,,,,,2,civicapi,2026-10-23T15:07:09+00:00
 2026,IN,18097,Marion County,2026-10-24,10,15309,,15309,,,,,,2,civicapi,2026-10-24T04:46:58+00:00
+2026,IN,18097,Marion County,2026-10-25,9,15309,,15309,,,,,,2,civicapi,2026-10-25T04:51:49+00:00
 2026,IN,18099,Marshall County,2026-09-23,41,2,,2,,,,,,2,civicapi,2026-09-23T16:09:31+00:00
 2026,IN,18099,Marshall County,2026-09-24,40,2,,2,,,,,,2,civicapi,2026-09-24T18:13:59+00:00
 2026,IN,18099,Marshall County,2026-09-25,39,2,,2,,,,,,2,civicapi,2026-09-25T09:25:24+00:00
@@ -1443,6 +1492,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,IN,18099,Marshall County,2026-10-22,12,1717,,1717,,,,,,2,civicapi,2026-10-22T15:06:37+00:00
 2026,IN,18099,Marshall County,2026-10-23,11,1899,,1899,,,,,,2,civicapi,2026-10-23T15:07:09+00:00
 2026,IN,18099,Marshall County,2026-10-24,10,1899,,1899,,,,,,2,civicapi,2026-10-24T04:46:58+00:00
+2026,IN,18099,Marshall County,2026-10-25,9,1899,,1899,,,,,,2,civicapi,2026-10-25T04:51:49+00:00
 2026,IN,18101,Martin County,2026-10-05,29,14,,14,,,,,,2,civicapi,2026-10-05T19:07:06+00:00
 2026,IN,18101,Martin County,2026-10-06,28,15,,15,,,,,,2,civicapi,2026-10-06T16:33:16+00:00
 2026,IN,18101,Martin County,2026-10-07,27,21,,21,,,,,,2,civicapi,2026-10-07T19:46:56+00:00
@@ -1463,6 +1513,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,IN,18101,Martin County,2026-10-22,12,390,,390,,,,,,2,civicapi,2026-10-22T15:06:37+00:00
 2026,IN,18101,Martin County,2026-10-23,11,467,,467,,,,,,2,civicapi,2026-10-23T15:07:09+00:00
 2026,IN,18101,Martin County,2026-10-24,10,467,,467,,,,,,2,civicapi,2026-10-24T04:46:58+00:00
+2026,IN,18101,Martin County,2026-10-25,9,467,,467,,,,,,2,civicapi,2026-10-25T04:51:49+00:00
 2026,IN,18103,Miami County,2026-10-08,26,128,,128,,,,,,2,civicapi,2026-10-08T17:14:43+00:00
 2026,IN,18103,Miami County,2026-10-09,25,230,,230,,,,,,2,civicapi,2026-10-09T19:18:15+00:00
 2026,IN,18103,Miami County,2026-10-10,24,230,,230,,,,,,2,civicapi,2026-10-10T04:22:40+00:00
@@ -1480,6 +1531,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,IN,18103,Miami County,2026-10-22,12,1647,,1647,,,,,,2,civicapi,2026-10-22T15:06:37+00:00
 2026,IN,18103,Miami County,2026-10-23,11,1855,,1855,,,,,,2,civicapi,2026-10-23T15:07:09+00:00
 2026,IN,18103,Miami County,2026-10-24,10,1855,,1855,,,,,,2,civicapi,2026-10-24T04:46:58+00:00
+2026,IN,18103,Miami County,2026-10-25,9,1855,,1855,,,,,,2,civicapi,2026-10-25T04:51:49+00:00
 2026,IN,18105,Monroe County,2026-09-28,36,64,,64,,,,,,2,civicapi,2026-09-28T17:46:06+00:00
 2026,IN,18105,Monroe County,2026-09-29,35,132,,132,,,,,,2,civicapi,2026-09-29T14:39:58+00:00
 2026,IN,18105,Monroe County,2026-09-30,34,208,,208,,,,,,2,civicapi,2026-09-30T14:49:28+00:00
@@ -1507,6 +1559,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,IN,18105,Monroe County,2026-10-22,12,8167,,8167,,,,,,2,civicapi,2026-10-22T15:06:37+00:00
 2026,IN,18105,Monroe County,2026-10-23,11,9053,,9053,,,,,,2,civicapi,2026-10-23T15:07:09+00:00
 2026,IN,18105,Monroe County,2026-10-24,10,9053,,9053,,,,,,2,civicapi,2026-10-24T04:46:58+00:00
+2026,IN,18105,Monroe County,2026-10-25,9,9053,,9053,,,,,,2,civicapi,2026-10-25T04:51:49+00:00
 2026,IN,18107,Montgomery County,2026-09-23,41,3,,3,,,,,,2,civicapi,2026-09-23T16:09:31+00:00
 2026,IN,18107,Montgomery County,2026-09-24,40,17,,17,,,,,,2,civicapi,2026-09-24T23:06:00+00:00
 2026,IN,18107,Montgomery County,2026-09-25,39,17,,17,,,,,,2,civicapi,2026-09-25T09:25:24+00:00
@@ -1537,6 +1590,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,IN,18107,Montgomery County,2026-10-22,12,1515,,1515,,,,,,2,civicapi,2026-10-22T15:06:37+00:00
 2026,IN,18107,Montgomery County,2026-10-23,11,1699,,1699,,,,,,2,civicapi,2026-10-23T15:07:09+00:00
 2026,IN,18107,Montgomery County,2026-10-24,10,1699,,1699,,,,,,2,civicapi,2026-10-24T04:46:58+00:00
+2026,IN,18107,Montgomery County,2026-10-25,9,1699,,1699,,,,,,2,civicapi,2026-10-25T04:51:49+00:00
 2026,IN,18109,Morgan County,2026-09-23,41,2,,2,,,,,,2,civicapi,2026-09-23T16:09:31+00:00
 2026,IN,18109,Morgan County,2026-09-24,40,3,,3,,,,,,2,civicapi,2026-09-24T23:06:00+00:00
 2026,IN,18109,Morgan County,2026-09-25,39,3,,3,,,,,,2,civicapi,2026-09-25T09:25:24+00:00
@@ -1567,6 +1621,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,IN,18109,Morgan County,2026-10-22,12,2733,,2733,,,,,,2,civicapi,2026-10-22T15:06:37+00:00
 2026,IN,18109,Morgan County,2026-10-23,11,3330,,3330,,,,,,2,civicapi,2026-10-23T15:07:09+00:00
 2026,IN,18109,Morgan County,2026-10-24,10,3330,,3330,,,,,,2,civicapi,2026-10-24T04:46:58+00:00
+2026,IN,18109,Morgan County,2026-10-25,9,3330,,3330,,,,,,2,civicapi,2026-10-25T04:51:49+00:00
 2026,IN,18111,Newton County,2026-10-02,32,6,,6,,,,,,2,civicapi,2026-10-02T17:30:35+00:00
 2026,IN,18111,Newton County,2026-10-03,31,6,,6,,,,,,2,civicapi,2026-10-03T07:37:45+00:00
 2026,IN,18111,Newton County,2026-10-04,30,6,,6,,,,,,2,civicapi,2026-10-04T18:01:45+00:00
@@ -1590,6 +1645,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,IN,18111,Newton County,2026-10-22,12,244,,244,,,,,,2,civicapi,2026-10-22T15:06:37+00:00
 2026,IN,18111,Newton County,2026-10-23,11,276,,276,,,,,,2,civicapi,2026-10-23T15:07:09+00:00
 2026,IN,18111,Newton County,2026-10-24,10,276,,276,,,,,,2,civicapi,2026-10-24T04:46:58+00:00
+2026,IN,18111,Newton County,2026-10-25,9,276,,276,,,,,,2,civicapi,2026-10-25T04:51:49+00:00
 2026,IN,18113,Noble County,2026-09-23,41,1,,1,,,,,,2,civicapi,2026-09-23T16:09:31+00:00
 2026,IN,18113,Noble County,2026-09-24,40,7,,7,,,,,,2,civicapi,2026-09-24T23:06:00+00:00
 2026,IN,18113,Noble County,2026-09-25,39,7,,7,,,,,,2,civicapi,2026-09-25T09:25:24+00:00
@@ -1620,6 +1676,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,IN,18113,Noble County,2026-10-22,12,1271,,1271,,,,,,2,civicapi,2026-10-22T15:06:37+00:00
 2026,IN,18113,Noble County,2026-10-23,11,1496,,1496,,,,,,2,civicapi,2026-10-23T15:07:09+00:00
 2026,IN,18113,Noble County,2026-10-24,10,1496,,1496,,,,,,2,civicapi,2026-10-24T04:46:58+00:00
+2026,IN,18113,Noble County,2026-10-25,9,1496,,1496,,,,,,2,civicapi,2026-10-25T04:51:49+00:00
 2026,IN,18115,Ohio County,2026-09-28,36,2,,2,,,,,,2,civicapi,2026-09-28T17:46:06+00:00
 2026,IN,18115,Ohio County,2026-09-29,35,3,,3,,,,,,2,civicapi,2026-09-29T14:39:58+00:00
 2026,IN,18115,Ohio County,2026-09-30,34,3,,3,,,,,,2,civicapi,2026-09-30T08:00:51+00:00
@@ -1647,6 +1704,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,IN,18115,Ohio County,2026-10-22,12,233,,233,,,,,,2,civicapi,2026-10-22T15:06:37+00:00
 2026,IN,18115,Ohio County,2026-10-23,11,233,,233,,,,,,2,civicapi,2026-10-23T04:59:44+00:00
 2026,IN,18115,Ohio County,2026-10-24,10,233,,233,,,,,,2,civicapi,2026-10-24T04:46:58+00:00
+2026,IN,18115,Ohio County,2026-10-25,9,233,,233,,,,,,2,civicapi,2026-10-25T04:51:49+00:00
 2026,IN,18117,Orange County,2026-09-24,40,2,,2,,,,,,2,civicapi,2026-09-24T23:06:00+00:00
 2026,IN,18117,Orange County,2026-09-25,39,2,,2,,,,,,2,civicapi,2026-09-25T09:25:24+00:00
 2026,IN,18117,Orange County,2026-09-28,36,2,,2,,,,,,2,civicapi,2026-09-28T17:46:06+00:00
@@ -1676,6 +1734,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,IN,18117,Orange County,2026-10-22,12,515,,515,,,,,,2,civicapi,2026-10-22T15:06:37+00:00
 2026,IN,18117,Orange County,2026-10-23,11,585,,585,,,,,,2,civicapi,2026-10-23T15:07:09+00:00
 2026,IN,18117,Orange County,2026-10-24,10,585,,585,,,,,,2,civicapi,2026-10-24T04:46:58+00:00
+2026,IN,18117,Orange County,2026-10-25,9,585,,585,,,,,,2,civicapi,2026-10-25T04:51:49+00:00
 2026,IN,18119,Owen County,2026-09-23,41,1,,1,,,,,,2,civicapi,2026-09-23T16:09:31+00:00
 2026,IN,18119,Owen County,2026-09-24,40,2,,2,,,,,,2,civicapi,2026-09-24T23:06:00+00:00
 2026,IN,18119,Owen County,2026-09-25,39,2,,2,,,,,,2,civicapi,2026-09-25T09:25:24+00:00
@@ -1706,6 +1765,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,IN,18119,Owen County,2026-10-22,12,988,,988,,,,,,2,civicapi,2026-10-22T15:06:37+00:00
 2026,IN,18119,Owen County,2026-10-23,11,1117,,1117,,,,,,2,civicapi,2026-10-23T15:07:09+00:00
 2026,IN,18119,Owen County,2026-10-24,10,1117,,1117,,,,,,2,civicapi,2026-10-24T04:46:58+00:00
+2026,IN,18119,Owen County,2026-10-25,9,1117,,1117,,,,,,2,civicapi,2026-10-25T04:51:49+00:00
 2026,IN,18121,Parke County,2026-09-23,41,3,,3,,,,,,2,civicapi,2026-09-23T16:09:31+00:00
 2026,IN,18121,Parke County,2026-09-24,40,3,,3,,,,,,2,civicapi,2026-09-24T18:13:59+00:00
 2026,IN,18121,Parke County,2026-09-25,39,3,,3,,,,,,2,civicapi,2026-09-25T09:25:24+00:00
@@ -1736,6 +1796,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,IN,18121,Parke County,2026-10-22,12,405,,405,,,,,,2,civicapi,2026-10-22T15:06:37+00:00
 2026,IN,18121,Parke County,2026-10-23,11,467,,467,,,,,,2,civicapi,2026-10-23T15:07:09+00:00
 2026,IN,18121,Parke County,2026-10-24,10,467,,467,,,,,,2,civicapi,2026-10-24T04:46:58+00:00
+2026,IN,18121,Parke County,2026-10-25,9,467,,467,,,,,,2,civicapi,2026-10-25T04:51:49+00:00
 2026,IN,18123,Perry County,2026-09-30,34,11,,11,,,,,,2,civicapi,2026-09-30T14:49:28+00:00
 2026,IN,18123,Perry County,2026-10-01,33,29,,29,,,,,,2,civicapi,2026-10-01T16:55:52+00:00
 2026,IN,18123,Perry County,2026-10-02,32,33,,33,,,,,,2,civicapi,2026-10-02T17:30:35+00:00
@@ -1761,6 +1822,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,IN,18123,Perry County,2026-10-22,12,1885,,1885,,,,,,2,civicapi,2026-10-22T15:06:37+00:00
 2026,IN,18123,Perry County,2026-10-23,11,2014,,2014,,,,,,2,civicapi,2026-10-23T15:07:09+00:00
 2026,IN,18123,Perry County,2026-10-24,10,2014,,2014,,,,,,2,civicapi,2026-10-24T04:46:58+00:00
+2026,IN,18123,Perry County,2026-10-25,9,2014,,2014,,,,,,2,civicapi,2026-10-25T04:51:49+00:00
 2026,IN,18125,Pike County,2026-10-02,32,4,,4,,,,,,2,civicapi,2026-10-02T17:30:35+00:00
 2026,IN,18125,Pike County,2026-10-03,31,4,,4,,,,,,2,civicapi,2026-10-03T07:37:45+00:00
 2026,IN,18125,Pike County,2026-10-04,30,4,,4,,,,,,2,civicapi,2026-10-04T18:01:45+00:00
@@ -1784,6 +1846,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,IN,18125,Pike County,2026-10-22,12,607,,607,,,,,,2,civicapi,2026-10-22T15:06:37+00:00
 2026,IN,18125,Pike County,2026-10-23,11,681,,681,,,,,,2,civicapi,2026-10-23T15:07:09+00:00
 2026,IN,18125,Pike County,2026-10-24,10,681,,681,,,,,,2,civicapi,2026-10-24T04:46:58+00:00
+2026,IN,18125,Pike County,2026-10-25,9,681,,681,,,,,,2,civicapi,2026-10-25T04:51:49+00:00
 2026,IN,18127,Porter County,2026-09-22,42,9,,9,,,,,,2,civicapi,2026-09-22T17:58:53+00:00
 2026,IN,18127,Porter County,2026-09-23,41,32,,32,,,,,,2,civicapi,2026-09-23T16:09:31+00:00
 2026,IN,18127,Porter County,2026-09-24,40,54,,54,,,,,,2,civicapi,2026-09-24T23:06:00+00:00
@@ -1815,6 +1878,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,IN,18127,Porter County,2026-10-22,12,11979,,11979,,,,,,2,civicapi,2026-10-22T15:06:37+00:00
 2026,IN,18127,Porter County,2026-10-23,11,13087,,13087,,,,,,2,civicapi,2026-10-23T15:07:09+00:00
 2026,IN,18127,Porter County,2026-10-24,10,13087,,13087,,,,,,2,civicapi,2026-10-24T04:46:58+00:00
+2026,IN,18127,Porter County,2026-10-25,9,13087,,13087,,,,,,2,civicapi,2026-10-25T04:51:49+00:00
 2026,IN,18129,Posey County,2026-09-22,42,2,,2,,,,,,2,civicapi,2026-09-22T17:58:53+00:00
 2026,IN,18129,Posey County,2026-09-23,41,8,,8,,,,,,2,civicapi,2026-09-23T16:09:31+00:00
 2026,IN,18129,Posey County,2026-09-24,40,10,,10,,,,,,2,civicapi,2026-09-24T23:06:00+00:00
@@ -1846,6 +1910,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,IN,18129,Posey County,2026-10-22,12,867,,867,,,,,,2,civicapi,2026-10-22T15:06:37+00:00
 2026,IN,18129,Posey County,2026-10-23,11,979,,979,,,,,,2,civicapi,2026-10-23T15:07:09+00:00
 2026,IN,18129,Posey County,2026-10-24,10,979,,979,,,,,,2,civicapi,2026-10-24T04:46:58+00:00
+2026,IN,18129,Posey County,2026-10-25,9,979,,979,,,,,,2,civicapi,2026-10-25T04:51:49+00:00
 2026,IN,18131,Pulaski County,2026-09-24,40,1,,1,,,,,,2,civicapi,2026-09-24T23:06:00+00:00
 2026,IN,18131,Pulaski County,2026-09-25,39,1,,1,,,,,,2,civicapi,2026-09-25T09:25:24+00:00
 2026,IN,18131,Pulaski County,2026-09-28,36,3,,3,,,,,,2,civicapi,2026-09-28T17:46:06+00:00
@@ -1875,6 +1940,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,IN,18131,Pulaski County,2026-10-22,12,560,,560,,,,,,2,civicapi,2026-10-22T15:06:37+00:00
 2026,IN,18131,Pulaski County,2026-10-23,11,612,,612,,,,,,2,civicapi,2026-10-23T15:07:09+00:00
 2026,IN,18131,Pulaski County,2026-10-24,10,612,,612,,,,,,2,civicapi,2026-10-24T04:46:58+00:00
+2026,IN,18131,Pulaski County,2026-10-25,9,612,,612,,,,,,2,civicapi,2026-10-25T04:51:49+00:00
 2026,IN,18133,Putnam County,2026-09-22,42,3,,3,,,,,,2,civicapi,2026-09-22T17:58:53+00:00
 2026,IN,18133,Putnam County,2026-09-23,41,3,,3,,,,,,2,civicapi,2026-09-23T16:09:31+00:00
 2026,IN,18133,Putnam County,2026-09-24,40,9,,9,,,,,,2,civicapi,2026-09-24T23:06:00+00:00
@@ -1908,6 +1974,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,IN,18133,Putnam County,2026-10-22,12,1471,,1471,,,,,,2,civicapi,2026-10-22T15:06:37+00:00
 2026,IN,18133,Putnam County,2026-10-23,11,1529,,1529,,,,,,2,civicapi,2026-10-23T15:07:09+00:00
 2026,IN,18133,Putnam County,2026-10-24,10,1529,,1529,,,,,,2,civicapi,2026-10-24T04:46:58+00:00
+2026,IN,18133,Putnam County,2026-10-25,9,1529,,1529,,,,,,2,civicapi,2026-10-25T04:51:49+00:00
 2026,IN,18135,Randolph County,2026-09-24,40,1,,1,,,,,,2,civicapi,2026-09-24T23:06:00+00:00
 2026,IN,18135,Randolph County,2026-09-25,39,1,,1,,,,,,2,civicapi,2026-09-25T09:25:24+00:00
 2026,IN,18135,Randolph County,2026-09-28,36,5,,5,,,,,,2,civicapi,2026-09-28T17:46:06+00:00
@@ -1937,6 +2004,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,IN,18135,Randolph County,2026-10-22,12,708,,708,,,,,,2,civicapi,2026-10-22T15:06:37+00:00
 2026,IN,18135,Randolph County,2026-10-23,11,801,,801,,,,,,2,civicapi,2026-10-23T15:07:09+00:00
 2026,IN,18135,Randolph County,2026-10-24,10,801,,801,,,,,,2,civicapi,2026-10-24T04:46:58+00:00
+2026,IN,18135,Randolph County,2026-10-25,9,801,,801,,,,,,2,civicapi,2026-10-25T04:51:49+00:00
 2026,IN,18137,Ripley County,2026-09-24,40,1,,1,,,,,,2,civicapi,2026-09-24T23:06:00+00:00
 2026,IN,18137,Ripley County,2026-09-25,39,1,,1,,,,,,2,civicapi,2026-09-25T09:25:24+00:00
 2026,IN,18137,Ripley County,2026-09-28,36,8,,8,,,,,,2,civicapi,2026-09-28T17:46:06+00:00
@@ -1966,6 +2034,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,IN,18137,Ripley County,2026-10-22,12,776,,776,,,,,,2,civicapi,2026-10-22T15:06:37+00:00
 2026,IN,18137,Ripley County,2026-10-23,11,867,,867,,,,,,2,civicapi,2026-10-23T15:07:09+00:00
 2026,IN,18137,Ripley County,2026-10-24,10,867,,867,,,,,,2,civicapi,2026-10-24T04:46:58+00:00
+2026,IN,18137,Ripley County,2026-10-25,9,867,,867,,,,,,2,civicapi,2026-10-25T04:51:49+00:00
 2026,IN,18139,Rush County,2026-09-22,42,1,,1,,,,,,2,civicapi,2026-09-22T17:58:53+00:00
 2026,IN,18139,Rush County,2026-09-23,41,1,,1,,,,,,2,civicapi,2026-09-23T16:09:31+00:00
 2026,IN,18139,Rush County,2026-09-24,40,1,,1,,,,,,2,civicapi,2026-09-24T18:13:59+00:00
@@ -1999,6 +2068,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,IN,18139,Rush County,2026-10-22,12,445,,445,,,,,,2,civicapi,2026-10-22T15:06:37+00:00
 2026,IN,18139,Rush County,2026-10-23,11,516,,516,,,,,,2,civicapi,2026-10-23T15:07:09+00:00
 2026,IN,18139,Rush County,2026-10-24,10,516,,516,,,,,,2,civicapi,2026-10-24T04:46:58+00:00
+2026,IN,18139,Rush County,2026-10-25,9,516,,516,,,,,,2,civicapi,2026-10-25T04:51:49+00:00
 2026,IN,18141,St. Joseph County,2026-09-29,35,2,,2,,,,,,2,civicapi,2026-09-29T14:39:58+00:00
 2026,IN,18141,St. Joseph County,2026-09-30,34,36,,36,,,,,,2,civicapi,2026-09-30T14:49:28+00:00
 2026,IN,18141,St. Joseph County,2026-10-01,33,298,,298,,,,,,2,civicapi,2026-10-01T16:55:52+00:00
@@ -2025,6 +2095,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,IN,18141,St. Joseph County,2026-10-22,12,11731,,11731,,,,,,2,civicapi,2026-10-22T15:06:37+00:00
 2026,IN,18141,St. Joseph County,2026-10-23,11,13153,,13153,,,,,,2,civicapi,2026-10-23T15:07:09+00:00
 2026,IN,18141,St. Joseph County,2026-10-24,10,13153,,13153,,,,,,2,civicapi,2026-10-24T04:46:58+00:00
+2026,IN,18141,St. Joseph County,2026-10-25,9,13153,,13153,,,,,,2,civicapi,2026-10-25T04:51:49+00:00
 2026,IN,18143,Scott County,2026-09-24,40,2,,2,,,,,,2,civicapi,2026-09-24T23:06:00+00:00
 2026,IN,18143,Scott County,2026-09-25,39,2,,2,,,,,,2,civicapi,2026-09-25T09:25:24+00:00
 2026,IN,18143,Scott County,2026-09-28,36,27,,27,,,,,,2,civicapi,2026-09-28T17:46:06+00:00
@@ -2054,6 +2125,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,IN,18143,Scott County,2026-10-22,12,1034,,1034,,,,,,2,civicapi,2026-10-22T15:06:37+00:00
 2026,IN,18143,Scott County,2026-10-23,11,1126,,1126,,,,,,2,civicapi,2026-10-23T15:07:09+00:00
 2026,IN,18143,Scott County,2026-10-24,10,1126,,1126,,,,,,2,civicapi,2026-10-24T04:46:58+00:00
+2026,IN,18143,Scott County,2026-10-25,9,1126,,1126,,,,,,2,civicapi,2026-10-25T04:51:49+00:00
 2026,IN,18145,Shelby County,2026-09-22,42,1,,1,,,,,,2,civicapi,2026-09-22T17:58:53+00:00
 2026,IN,18145,Shelby County,2026-09-23,41,1,,1,,,,,,2,civicapi,2026-09-23T16:09:31+00:00
 2026,IN,18145,Shelby County,2026-09-24,40,10,,10,,,,,,2,civicapi,2026-09-24T23:06:00+00:00
@@ -2087,6 +2159,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,IN,18145,Shelby County,2026-10-22,12,1546,,1546,,,,,,2,civicapi,2026-10-22T15:06:37+00:00
 2026,IN,18145,Shelby County,2026-10-23,11,1734,,1734,,,,,,2,civicapi,2026-10-23T15:07:09+00:00
 2026,IN,18145,Shelby County,2026-10-24,10,1734,,1734,,,,,,2,civicapi,2026-10-24T04:46:58+00:00
+2026,IN,18145,Shelby County,2026-10-25,9,1734,,1734,,,,,,2,civicapi,2026-10-25T04:51:49+00:00
 2026,IN,18147,Spencer County,2026-09-22,42,3,,3,,,,,,2,civicapi,2026-09-22T17:58:53+00:00
 2026,IN,18147,Spencer County,2026-09-23,41,3,,3,,,,,,2,civicapi,2026-09-23T16:09:31+00:00
 2026,IN,18147,Spencer County,2026-09-24,40,3,,3,,,,,,2,civicapi,2026-09-24T18:13:59+00:00
@@ -2120,6 +2193,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,IN,18147,Spencer County,2026-10-22,12,806,,806,,,,,,2,civicapi,2026-10-22T15:06:37+00:00
 2026,IN,18147,Spencer County,2026-10-23,11,892,,892,,,,,,2,civicapi,2026-10-23T15:07:09+00:00
 2026,IN,18147,Spencer County,2026-10-24,10,892,,892,,,,,,2,civicapi,2026-10-24T04:46:58+00:00
+2026,IN,18147,Spencer County,2026-10-25,9,892,,892,,,,,,2,civicapi,2026-10-25T04:51:49+00:00
 2026,IN,18149,Starke County,2026-09-24,40,5,,5,,,,,,2,civicapi,2026-09-24T23:06:00+00:00
 2026,IN,18149,Starke County,2026-09-25,39,5,,5,,,,,,2,civicapi,2026-09-25T09:25:24+00:00
 2026,IN,18149,Starke County,2026-09-28,36,8,,8,,,,,,2,civicapi,2026-09-28T17:46:06+00:00
@@ -2149,6 +2223,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,IN,18149,Starke County,2026-10-22,12,855,,855,,,,,,2,civicapi,2026-10-22T15:06:37+00:00
 2026,IN,18149,Starke County,2026-10-23,11,929,,929,,,,,,2,civicapi,2026-10-23T15:07:09+00:00
 2026,IN,18149,Starke County,2026-10-24,10,929,,929,,,,,,2,civicapi,2026-10-24T04:46:58+00:00
+2026,IN,18149,Starke County,2026-10-25,9,929,,929,,,,,,2,civicapi,2026-10-25T04:51:49+00:00
 2026,IN,18151,Steuben County,2026-09-28,36,17,,17,,,,,,2,civicapi,2026-09-28T17:46:06+00:00
 2026,IN,18151,Steuben County,2026-09-29,35,29,,29,,,,,,2,civicapi,2026-09-29T14:39:58+00:00
 2026,IN,18151,Steuben County,2026-09-30,34,35,,35,,,,,,2,civicapi,2026-09-30T14:49:28+00:00
@@ -2176,6 +2251,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,IN,18151,Steuben County,2026-10-22,12,1674,,1674,,,,,,2,civicapi,2026-10-22T15:06:37+00:00
 2026,IN,18151,Steuben County,2026-10-23,11,1881,,1881,,,,,,2,civicapi,2026-10-23T15:07:09+00:00
 2026,IN,18151,Steuben County,2026-10-24,10,1881,,1881,,,,,,2,civicapi,2026-10-24T04:46:58+00:00
+2026,IN,18151,Steuben County,2026-10-25,9,1881,,1881,,,,,,2,civicapi,2026-10-25T04:51:49+00:00
 2026,IN,18153,Sullivan County,2026-09-24,40,4,,4,,,,,,2,civicapi,2026-09-24T23:06:00+00:00
 2026,IN,18153,Sullivan County,2026-09-25,39,4,,4,,,,,,2,civicapi,2026-09-25T09:25:24+00:00
 2026,IN,18153,Sullivan County,2026-09-28,36,8,,8,,,,,,2,civicapi,2026-09-28T17:46:06+00:00
@@ -2205,6 +2281,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,IN,18153,Sullivan County,2026-10-22,12,713,,713,,,,,,2,civicapi,2026-10-22T15:06:37+00:00
 2026,IN,18153,Sullivan County,2026-10-23,11,780,,780,,,,,,2,civicapi,2026-10-23T15:07:09+00:00
 2026,IN,18153,Sullivan County,2026-10-24,10,780,,780,,,,,,2,civicapi,2026-10-24T04:46:58+00:00
+2026,IN,18153,Sullivan County,2026-10-25,9,780,,780,,,,,,2,civicapi,2026-10-25T04:51:49+00:00
 2026,IN,18155,Switzerland County,2026-09-22,42,2,,2,,,,,,2,civicapi,2026-09-22T17:58:53+00:00
 2026,IN,18155,Switzerland County,2026-09-23,41,2,,2,,,,,,2,civicapi,2026-09-23T16:09:31+00:00
 2026,IN,18155,Switzerland County,2026-09-24,40,3,,3,,,,,,2,civicapi,2026-09-24T23:06:00+00:00
@@ -2236,6 +2313,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,IN,18155,Switzerland County,2026-10-22,12,508,,508,,,,,,2,civicapi,2026-10-22T15:06:37+00:00
 2026,IN,18155,Switzerland County,2026-10-23,11,512,,512,,,,,,2,civicapi,2026-10-23T15:07:09+00:00
 2026,IN,18155,Switzerland County,2026-10-24,10,512,,512,,,,,,2,civicapi,2026-10-24T04:46:58+00:00
+2026,IN,18155,Switzerland County,2026-10-25,9,512,,512,,,,,,2,civicapi,2026-10-25T04:51:49+00:00
 2026,IN,18157,Tippecanoe County,2026-09-24,40,20,,20,,,,,,2,civicapi,2026-09-24T23:06:00+00:00
 2026,IN,18157,Tippecanoe County,2026-09-25,39,20,,20,,,,,,2,civicapi,2026-09-25T09:25:24+00:00
 2026,IN,18157,Tippecanoe County,2026-09-28,36,35,,35,,,,,,2,civicapi,2026-09-28T17:46:06+00:00
@@ -2265,6 +2343,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,IN,18157,Tippecanoe County,2026-10-22,12,7598,,7598,,,,,,2,civicapi,2026-10-22T15:06:37+00:00
 2026,IN,18157,Tippecanoe County,2026-10-23,11,8186,,8186,,,,,,2,civicapi,2026-10-23T15:07:09+00:00
 2026,IN,18157,Tippecanoe County,2026-10-24,10,8186,,8186,,,,,,2,civicapi,2026-10-24T04:46:58+00:00
+2026,IN,18157,Tippecanoe County,2026-10-25,9,8186,,8186,,,,,,2,civicapi,2026-10-25T04:51:49+00:00
 2026,IN,18159,Tipton County,2026-09-28,36,4,,4,,,,,,2,civicapi,2026-09-28T17:46:06+00:00
 2026,IN,18159,Tipton County,2026-09-29,35,7,,7,,,,,,2,civicapi,2026-09-29T14:39:58+00:00
 2026,IN,18159,Tipton County,2026-09-30,34,8,,8,,,,,,2,civicapi,2026-09-30T14:49:28+00:00
@@ -2292,6 +2371,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,IN,18159,Tipton County,2026-10-22,12,988,,988,,,,,,2,civicapi,2026-10-22T15:06:37+00:00
 2026,IN,18159,Tipton County,2026-10-23,11,1077,,1077,,,,,,2,civicapi,2026-10-23T15:07:09+00:00
 2026,IN,18159,Tipton County,2026-10-24,10,1077,,1077,,,,,,2,civicapi,2026-10-24T04:46:58+00:00
+2026,IN,18159,Tipton County,2026-10-25,9,1077,,1077,,,,,,2,civicapi,2026-10-25T04:51:49+00:00
 2026,IN,18161,Union County,2026-10-08,26,8,,8,,,,,,2,civicapi,2026-10-08T17:14:43+00:00
 2026,IN,18161,Union County,2026-10-09,25,17,,17,,,,,,2,civicapi,2026-10-09T19:18:15+00:00
 2026,IN,18161,Union County,2026-10-10,24,17,,17,,,,,,2,civicapi,2026-10-10T04:22:40+00:00
@@ -2309,6 +2389,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,IN,18161,Union County,2026-10-22,12,225,,225,,,,,,2,civicapi,2026-10-22T15:06:37+00:00
 2026,IN,18161,Union County,2026-10-23,11,260,,260,,,,,,2,civicapi,2026-10-23T15:07:09+00:00
 2026,IN,18161,Union County,2026-10-24,10,260,,260,,,,,,2,civicapi,2026-10-24T04:46:58+00:00
+2026,IN,18161,Union County,2026-10-25,9,260,,260,,,,,,2,civicapi,2026-10-25T04:51:49+00:00
 2026,IN,18163,Vanderburgh County,2026-09-22,42,6,,6,,,,,,2,civicapi,2026-09-22T17:58:53+00:00
 2026,IN,18163,Vanderburgh County,2026-09-23,41,13,,13,,,,,,2,civicapi,2026-09-23T16:09:31+00:00
 2026,IN,18163,Vanderburgh County,2026-09-24,40,23,,23,,,,,,2,civicapi,2026-09-24T23:06:00+00:00
@@ -2340,6 +2421,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,IN,18163,Vanderburgh County,2026-10-22,12,8430,,8430,,,,,,2,civicapi,2026-10-22T15:06:37+00:00
 2026,IN,18163,Vanderburgh County,2026-10-23,11,10164,,10164,,,,,,2,civicapi,2026-10-23T15:07:09+00:00
 2026,IN,18163,Vanderburgh County,2026-10-24,10,10164,,10164,,,,,,2,civicapi,2026-10-24T04:46:58+00:00
+2026,IN,18163,Vanderburgh County,2026-10-25,9,10164,,10164,,,,,,2,civicapi,2026-10-25T04:51:49+00:00
 2026,IN,18165,Vermillion County,2026-09-23,41,1,,1,,,,,,2,civicapi,2026-09-23T16:09:31+00:00
 2026,IN,18165,Vermillion County,2026-09-24,40,4,,4,,,,,,2,civicapi,2026-09-24T23:06:00+00:00
 2026,IN,18165,Vermillion County,2026-09-25,39,4,,4,,,,,,2,civicapi,2026-09-25T09:25:24+00:00
@@ -2370,6 +2452,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,IN,18165,Vermillion County,2026-10-22,12,752,,752,,,,,,2,civicapi,2026-10-22T15:06:37+00:00
 2026,IN,18165,Vermillion County,2026-10-23,11,838,,838,,,,,,2,civicapi,2026-10-23T15:07:09+00:00
 2026,IN,18165,Vermillion County,2026-10-24,10,838,,838,,,,,,2,civicapi,2026-10-24T04:46:58+00:00
+2026,IN,18165,Vermillion County,2026-10-25,9,838,,838,,,,,,2,civicapi,2026-10-25T04:51:49+00:00
 2026,IN,18167,Vigo County,2026-09-28,36,41,,41,,,,,,2,civicapi,2026-09-28T17:46:06+00:00
 2026,IN,18167,Vigo County,2026-09-29,35,42,,42,,,,,,2,civicapi,2026-09-29T14:39:58+00:00
 2026,IN,18167,Vigo County,2026-09-30,34,80,,80,,,,,,2,civicapi,2026-09-30T14:49:28+00:00
@@ -2397,6 +2480,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,IN,18167,Vigo County,2026-10-22,12,5371,,5371,,,,,,2,civicapi,2026-10-22T15:06:37+00:00
 2026,IN,18167,Vigo County,2026-10-23,11,5963,,5963,,,,,,2,civicapi,2026-10-23T15:07:09+00:00
 2026,IN,18167,Vigo County,2026-10-24,10,5963,,5963,,,,,,2,civicapi,2026-10-24T04:46:58+00:00
+2026,IN,18167,Vigo County,2026-10-25,9,5963,,5963,,,,,,2,civicapi,2026-10-25T04:51:49+00:00
 2026,IN,18169,Wabash County,2026-09-22,42,3,,3,,,,,,2,civicapi,2026-09-22T17:58:53+00:00
 2026,IN,18169,Wabash County,2026-09-23,41,4,,4,,,,,,2,civicapi,2026-09-23T16:09:31+00:00
 2026,IN,18169,Wabash County,2026-09-24,40,4,,4,,,,,,2,civicapi,2026-09-24T18:13:59+00:00
@@ -2430,6 +2514,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,IN,18169,Wabash County,2026-10-22,12,1104,,1104,,,,,,2,civicapi,2026-10-22T15:06:37+00:00
 2026,IN,18169,Wabash County,2026-10-23,11,1234,,1234,,,,,,2,civicapi,2026-10-23T15:07:09+00:00
 2026,IN,18169,Wabash County,2026-10-24,10,1234,,1234,,,,,,2,civicapi,2026-10-24T04:46:58+00:00
+2026,IN,18169,Wabash County,2026-10-25,9,1234,,1234,,,,,,2,civicapi,2026-10-25T04:51:49+00:00
 2026,IN,18171,Warren County,2026-10-08,26,24,,24,,,,,,2,civicapi,2026-10-08T17:14:43+00:00
 2026,IN,18171,Warren County,2026-10-09,25,38,,38,,,,,,2,civicapi,2026-10-09T19:18:15+00:00
 2026,IN,18171,Warren County,2026-10-10,24,38,,38,,,,,,2,civicapi,2026-10-10T04:22:40+00:00
@@ -2447,6 +2532,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,IN,18171,Warren County,2026-10-22,12,273,,273,,,,,,2,civicapi,2026-10-22T15:06:37+00:00
 2026,IN,18171,Warren County,2026-10-23,11,297,,297,,,,,,2,civicapi,2026-10-23T15:07:09+00:00
 2026,IN,18171,Warren County,2026-10-24,10,297,,297,,,,,,2,civicapi,2026-10-24T04:46:58+00:00
+2026,IN,18171,Warren County,2026-10-25,9,297,,297,,,,,,2,civicapi,2026-10-25T04:51:49+00:00
 2026,IN,18173,Warrick County,2026-09-22,42,2,,2,,,,,,2,civicapi,2026-09-22T17:58:53+00:00
 2026,IN,18173,Warrick County,2026-09-23,41,2,,2,,,,,,2,civicapi,2026-09-23T16:09:31+00:00
 2026,IN,18173,Warrick County,2026-09-24,40,2,,2,,,,,,2,civicapi,2026-09-24T18:13:59+00:00
@@ -2478,6 +2564,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,IN,18173,Warrick County,2026-10-22,12,2033,,2033,,,,,,2,civicapi,2026-10-22T15:06:37+00:00
 2026,IN,18173,Warrick County,2026-10-23,11,2238,,2238,,,,,,2,civicapi,2026-10-23T15:07:09+00:00
 2026,IN,18173,Warrick County,2026-10-24,10,2238,,2238,,,,,,2,civicapi,2026-10-24T04:46:58+00:00
+2026,IN,18173,Warrick County,2026-10-25,9,2238,,2238,,,,,,2,civicapi,2026-10-25T04:51:49+00:00
 2026,IN,18175,Washington County,2026-09-22,42,2,,2,,,,,,2,civicapi,2026-09-22T17:58:53+00:00
 2026,IN,18175,Washington County,2026-09-23,41,4,,4,,,,,,2,civicapi,2026-09-23T16:09:31+00:00
 2026,IN,18175,Washington County,2026-09-24,40,17,,17,,,,,,2,civicapi,2026-09-24T23:06:00+00:00
@@ -2509,6 +2596,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,IN,18175,Washington County,2026-10-22,12,955,,955,,,,,,2,civicapi,2026-10-22T15:06:37+00:00
 2026,IN,18175,Washington County,2026-10-23,11,1097,,1097,,,,,,2,civicapi,2026-10-23T15:07:09+00:00
 2026,IN,18175,Washington County,2026-10-24,10,1097,,1097,,,,,,2,civicapi,2026-10-24T04:46:58+00:00
+2026,IN,18175,Washington County,2026-10-25,9,1097,,1097,,,,,,2,civicapi,2026-10-25T04:51:49+00:00
 2026,IN,18177,Wayne County,2026-09-22,42,1,,1,,,,,,2,civicapi,2026-09-22T17:58:53+00:00
 2026,IN,18177,Wayne County,2026-09-23,41,12,,12,,,,,,2,civicapi,2026-09-23T16:09:31+00:00
 2026,IN,18177,Wayne County,2026-09-24,40,12,,12,,,,,,2,civicapi,2026-09-24T18:13:59+00:00
@@ -2540,6 +2628,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,IN,18177,Wayne County,2026-10-22,12,1428,,1428,,,,,,2,civicapi,2026-10-22T15:06:37+00:00
 2026,IN,18177,Wayne County,2026-10-23,11,1585,,1585,,,,,,2,civicapi,2026-10-23T15:07:09+00:00
 2026,IN,18177,Wayne County,2026-10-24,10,1585,,1585,,,,,,2,civicapi,2026-10-24T04:46:58+00:00
+2026,IN,18177,Wayne County,2026-10-25,9,1585,,1585,,,,,,2,civicapi,2026-10-25T04:51:49+00:00
 2026,IN,18179,Wells County,2026-09-23,41,1,,1,,,,,,2,civicapi,2026-09-23T16:09:31+00:00
 2026,IN,18179,Wells County,2026-09-24,40,3,,3,,,,,,2,civicapi,2026-09-24T23:06:00+00:00
 2026,IN,18179,Wells County,2026-09-25,39,3,,3,,,,,,2,civicapi,2026-09-25T09:25:24+00:00
@@ -2570,6 +2659,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,IN,18179,Wells County,2026-10-22,12,1032,,1032,,,,,,2,civicapi,2026-10-22T15:06:37+00:00
 2026,IN,18179,Wells County,2026-10-23,11,1177,,1177,,,,,,2,civicapi,2026-10-23T15:07:09+00:00
 2026,IN,18179,Wells County,2026-10-24,10,1177,,1177,,,,,,2,civicapi,2026-10-24T04:46:58+00:00
+2026,IN,18179,Wells County,2026-10-25,9,1177,,1177,,,,,,2,civicapi,2026-10-25T04:51:49+00:00
 2026,IN,18181,White County,2026-09-23,41,1,,1,,,,,,2,civicapi,2026-09-23T16:09:31+00:00
 2026,IN,18181,White County,2026-09-24,40,2,,2,,,,,,2,civicapi,2026-09-24T23:06:00+00:00
 2026,IN,18181,White County,2026-09-25,39,2,,2,,,,,,2,civicapi,2026-09-25T09:25:24+00:00
@@ -2600,6 +2690,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,IN,18181,White County,2026-10-22,12,1045,,1045,,,,,,2,civicapi,2026-10-22T15:06:37+00:00
 2026,IN,18181,White County,2026-10-23,11,1165,,1165,,,,,,2,civicapi,2026-10-23T15:07:09+00:00
 2026,IN,18181,White County,2026-10-24,10,1165,,1165,,,,,,2,civicapi,2026-10-24T04:46:58+00:00
+2026,IN,18181,White County,2026-10-25,9,1165,,1165,,,,,,2,civicapi,2026-10-25T04:51:49+00:00
 2026,IN,18183,Whitley County,2026-09-22,42,2,,2,,,,,,2,civicapi,2026-09-22T17:58:53+00:00
 2026,IN,18183,Whitley County,2026-09-23,41,2,,2,,,,,,2,civicapi,2026-09-23T16:09:31+00:00
 2026,IN,18183,Whitley County,2026-09-24,40,2,,2,,,,,,2,civicapi,2026-09-24T18:13:59+00:00
@@ -2631,3 +2722,4 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,IN,18183,Whitley County,2026-10-22,12,1515,,1515,,,,,,2,civicapi,2026-10-22T15:06:37+00:00
 2026,IN,18183,Whitley County,2026-10-23,11,1683,,1683,,,,,,2,civicapi,2026-10-23T15:07:09+00:00
 2026,IN,18183,Whitley County,2026-10-24,10,1683,,1683,,,,,,2,civicapi,2026-10-24T04:46:58+00:00
+2026,IN,18183,Whitley County,2026-10-25,9,1683,,1683,,,,,,2,civicapi,2026-10-25T04:51:49+00:00
