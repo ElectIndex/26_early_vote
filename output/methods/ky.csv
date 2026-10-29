@@ -3282,6 +3282,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,KY,21001,Adair County,2026-10-26,8,mail,118,,31,83,,,1,ky-sbe,2026-10-27T13:33:09+00:00
 2026,KY,21001,Adair County,2026-10-27,7,inperson,31,,1,28,,,1,ky-sbe,2026-10-28T14:34:21+00:00
 2026,KY,21001,Adair County,2026-10-27,7,mail,127,,33,90,,,1,ky-sbe,2026-10-28T14:34:21+00:00
+2026,KY,21001,Adair County,2026-10-28,6,inperson,35,,1,32,,,1,ky-sbe,2026-10-29T13:03:23+00:00
+2026,KY,21001,Adair County,2026-10-28,6,mail,132,,34,93,,,1,ky-sbe,2026-10-29T13:03:23+00:00
 2026,KY,21003,Allen County,2026-09-20,44,mail,0,,,,,,1,ky-sbe,2026-09-21T16:12:18+00:00
 2026,KY,21003,Allen County,2026-09-21,43,mail,0,,0,0,,,1,ky-sbe,2026-09-22T17:56:28+00:00
 2026,KY,21003,Allen County,2026-09-22,42,mail,0,,0,0,,,1,ky-sbe,2026-09-23T16:07:10+00:00
@@ -3325,6 +3327,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,KY,21003,Allen County,2026-10-26,8,mail,129,,59,56,,,1,ky-sbe,2026-10-27T13:33:09+00:00
 2026,KY,21003,Allen County,2026-10-27,7,inperson,54,,15,37,,,1,ky-sbe,2026-10-28T14:34:21+00:00
 2026,KY,21003,Allen County,2026-10-27,7,mail,135,,59,62,,,1,ky-sbe,2026-10-28T14:34:21+00:00
+2026,KY,21003,Allen County,2026-10-28,6,inperson,68,,18,48,,,1,ky-sbe,2026-10-29T13:03:23+00:00
+2026,KY,21003,Allen County,2026-10-28,6,mail,138,,59,65,,,1,ky-sbe,2026-10-29T13:03:23+00:00
 2026,KY,21005,Anderson County,2026-09-20,44,mail,0,,,,,,1,ky-sbe,2026-09-21T16:12:18+00:00
 2026,KY,21005,Anderson County,2026-09-21,43,mail,4,,4,0,,,1,ky-sbe,2026-09-22T17:56:28+00:00
 2026,KY,21005,Anderson County,2026-09-22,42,mail,4,,4,0,,,1,ky-sbe,2026-09-23T16:07:10+00:00
@@ -3368,6 +3372,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,KY,21005,Anderson County,2026-10-26,8,mail,130,,65,56,,,1,ky-sbe,2026-10-27T13:33:09+00:00
 2026,KY,21005,Anderson County,2026-10-27,7,inperson,25,,11,13,,,1,ky-sbe,2026-10-28T14:34:21+00:00
 2026,KY,21005,Anderson County,2026-10-27,7,mail,141,,69,60,,,1,ky-sbe,2026-10-28T14:34:21+00:00
+2026,KY,21005,Anderson County,2026-10-28,6,inperson,28,,12,15,,,1,ky-sbe,2026-10-29T13:03:23+00:00
+2026,KY,21005,Anderson County,2026-10-28,6,mail,146,,73,61,,,1,ky-sbe,2026-10-29T13:03:23+00:00
 2026,KY,21007,Ballard County,2026-09-20,44,mail,0,,,,,,1,ky-sbe,2026-09-21T16:12:18+00:00
 2026,KY,21007,Ballard County,2026-09-21,43,mail,0,,0,0,,,1,ky-sbe,2026-09-22T17:56:28+00:00
 2026,KY,21007,Ballard County,2026-09-22,42,mail,0,,0,0,,,1,ky-sbe,2026-09-23T16:07:10+00:00
@@ -3411,6 +3417,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,KY,21007,Ballard County,2026-10-26,8,mail,33,,16,16,,,1,ky-sbe,2026-10-27T13:33:09+00:00
 2026,KY,21007,Ballard County,2026-10-27,7,inperson,14,,5,8,,,1,ky-sbe,2026-10-28T14:34:21+00:00
 2026,KY,21007,Ballard County,2026-10-27,7,mail,34,,17,16,,,1,ky-sbe,2026-10-28T14:34:21+00:00
+2026,KY,21007,Ballard County,2026-10-28,6,inperson,14,,5,8,,,1,ky-sbe,2026-10-29T13:03:23+00:00
+2026,KY,21007,Ballard County,2026-10-28,6,mail,42,,22,19,,,1,ky-sbe,2026-10-29T13:03:23+00:00
 2026,KY,21009,Barren County,2026-09-20,44,mail,0,,,,,,1,ky-sbe,2026-09-21T16:12:18+00:00
 2026,KY,21009,Barren County,2026-09-21,43,mail,0,,0,0,,,1,ky-sbe,2026-09-22T17:56:28+00:00
 2026,KY,21009,Barren County,2026-09-22,42,mail,0,,0,0,,,1,ky-sbe,2026-09-23T16:07:10+00:00
@@ -3454,6 +3462,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,KY,21009,Barren County,2026-10-26,8,mail,160,,91,61,,,1,ky-sbe,2026-10-27T13:33:09+00:00
 2026,KY,21009,Barren County,2026-10-27,7,inperson,111,,44,62,,,1,ky-sbe,2026-10-28T14:34:21+00:00
 2026,KY,21009,Barren County,2026-10-27,7,mail,205,,118,73,,,1,ky-sbe,2026-10-28T14:34:21+00:00
+2026,KY,21009,Barren County,2026-10-28,6,inperson,121,,50,66,,,1,ky-sbe,2026-10-29T13:03:23+00:00
+2026,KY,21009,Barren County,2026-10-28,6,mail,229,,133,81,,,1,ky-sbe,2026-10-29T13:03:23+00:00
 2026,KY,21011,Bath County,2026-09-20,44,mail,0,,,,,,1,ky-sbe,2026-09-21T16:12:18+00:00
 2026,KY,21011,Bath County,2026-09-21,43,mail,0,,0,0,,,1,ky-sbe,2026-09-22T17:56:28+00:00
 2026,KY,21011,Bath County,2026-09-22,42,mail,0,,0,0,,,1,ky-sbe,2026-09-23T16:07:10+00:00
@@ -3497,6 +3507,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,KY,21011,Bath County,2026-10-26,8,mail,196,,157,36,,,1,ky-sbe,2026-10-27T13:33:09+00:00
 2026,KY,21011,Bath County,2026-10-27,7,inperson,17,,8,9,,,1,ky-sbe,2026-10-28T14:34:21+00:00
 2026,KY,21011,Bath County,2026-10-27,7,mail,206,,167,36,,,1,ky-sbe,2026-10-28T14:34:21+00:00
+2026,KY,21011,Bath County,2026-10-28,6,inperson,19,,10,9,,,1,ky-sbe,2026-10-29T13:03:23+00:00
+2026,KY,21011,Bath County,2026-10-28,6,mail,210,,170,37,,,1,ky-sbe,2026-10-29T13:03:23+00:00
 2026,KY,21013,Bell County,2026-09-20,44,mail,0,,,,,,1,ky-sbe,2026-09-21T16:12:18+00:00
 2026,KY,21013,Bell County,2026-09-21,43,mail,0,,0,0,,,1,ky-sbe,2026-09-22T17:56:28+00:00
 2026,KY,21013,Bell County,2026-09-22,42,mail,0,,0,0,,,1,ky-sbe,2026-09-23T16:07:10+00:00
@@ -3540,6 +3552,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,KY,21013,Bell County,2026-10-26,8,mail,224,,78,141,,,1,ky-sbe,2026-10-27T13:33:09+00:00
 2026,KY,21013,Bell County,2026-10-27,7,inperson,135,,31,97,,,1,ky-sbe,2026-10-28T14:34:21+00:00
 2026,KY,21013,Bell County,2026-10-27,7,mail,245,,89,149,,,1,ky-sbe,2026-10-28T14:34:21+00:00
+2026,KY,21013,Bell County,2026-10-28,6,inperson,178,,39,131,,,1,ky-sbe,2026-10-29T13:03:23+00:00
+2026,KY,21013,Bell County,2026-10-28,6,mail,256,,92,157,,,1,ky-sbe,2026-10-29T13:03:23+00:00
 2026,KY,21015,Boone County,2026-09-20,44,mail,0,,,,,,1,ky-sbe,2026-09-21T16:12:18+00:00
 2026,KY,21015,Boone County,2026-09-21,43,mail,0,,0,0,,,1,ky-sbe,2026-09-22T17:56:28+00:00
 2026,KY,21015,Boone County,2026-09-22,42,mail,1,,0,1,,,1,ky-sbe,2026-09-23T16:07:10+00:00
@@ -3583,6 +3597,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,KY,21015,Boone County,2026-10-26,8,mail,1040,,409,475,,,1,ky-sbe,2026-10-27T13:33:09+00:00
 2026,KY,21015,Boone County,2026-10-27,7,inperson,587,,167,363,,,1,ky-sbe,2026-10-28T14:34:21+00:00
 2026,KY,21015,Boone County,2026-10-27,7,mail,1138,,446,523,,,1,ky-sbe,2026-10-28T14:34:21+00:00
+2026,KY,21015,Boone County,2026-10-28,6,inperson,667,,185,412,,,1,ky-sbe,2026-10-29T13:03:23+00:00
+2026,KY,21015,Boone County,2026-10-28,6,mail,1216,,481,555,,,1,ky-sbe,2026-10-29T13:03:23+00:00
 2026,KY,21017,Bourbon County,2026-09-20,44,mail,0,,,,,,1,ky-sbe,2026-09-21T16:12:18+00:00
 2026,KY,21017,Bourbon County,2026-09-21,43,mail,0,,0,0,,,1,ky-sbe,2026-09-22T17:56:28+00:00
 2026,KY,21017,Bourbon County,2026-09-22,42,mail,0,,0,0,,,1,ky-sbe,2026-09-23T16:07:10+00:00
@@ -3626,6 +3642,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,KY,21017,Bourbon County,2026-10-26,8,mail,135,,88,32,,,1,ky-sbe,2026-10-27T13:33:09+00:00
 2026,KY,21017,Bourbon County,2026-10-27,7,inperson,68,,29,35,,,1,ky-sbe,2026-10-28T14:34:21+00:00
 2026,KY,21017,Bourbon County,2026-10-27,7,mail,135,,88,32,,,1,ky-sbe,2026-10-28T14:34:21+00:00
+2026,KY,21017,Bourbon County,2026-10-28,6,inperson,83,,35,44,,,1,ky-sbe,2026-10-29T13:03:23+00:00
+2026,KY,21017,Bourbon County,2026-10-28,6,mail,135,,88,32,,,1,ky-sbe,2026-10-29T13:03:23+00:00
 2026,KY,21019,Boyd County,2026-09-20,44,mail,0,,,,,,1,ky-sbe,2026-09-21T16:12:18+00:00
 2026,KY,21019,Boyd County,2026-09-21,43,mail,0,,0,0,,,1,ky-sbe,2026-09-22T17:56:28+00:00
 2026,KY,21019,Boyd County,2026-09-22,42,mail,0,,0,0,,,1,ky-sbe,2026-09-23T16:07:10+00:00
@@ -3669,6 +3687,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,KY,21019,Boyd County,2026-10-26,8,mail,414,,228,163,,,1,ky-sbe,2026-10-27T13:33:09+00:00
 2026,KY,21019,Boyd County,2026-10-27,7,inperson,102,,36,59,,,1,ky-sbe,2026-10-28T14:34:21+00:00
 2026,KY,21019,Boyd County,2026-10-27,7,mail,441,,244,172,,,1,ky-sbe,2026-10-28T14:34:21+00:00
+2026,KY,21019,Boyd County,2026-10-28,6,inperson,107,,37,63,,,1,ky-sbe,2026-10-29T13:03:23+00:00
+2026,KY,21019,Boyd County,2026-10-28,6,mail,474,,267,180,,,1,ky-sbe,2026-10-29T13:03:23+00:00
 2026,KY,21021,Boyle County,2026-09-20,44,mail,0,,,,,,1,ky-sbe,2026-09-21T16:12:18+00:00
 2026,KY,21021,Boyle County,2026-09-21,43,mail,0,,0,0,,,1,ky-sbe,2026-09-22T17:56:28+00:00
 2026,KY,21021,Boyle County,2026-09-22,42,mail,0,,0,0,,,1,ky-sbe,2026-09-23T16:07:10+00:00
@@ -3712,6 +3732,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,KY,21021,Boyle County,2026-10-26,8,mail,287,,167,98,,,1,ky-sbe,2026-10-27T13:33:09+00:00
 2026,KY,21021,Boyle County,2026-10-27,7,inperson,95,,31,61,,,1,ky-sbe,2026-10-28T14:34:21+00:00
 2026,KY,21021,Boyle County,2026-10-27,7,mail,307,,182,102,,,1,ky-sbe,2026-10-28T14:34:21+00:00
+2026,KY,21021,Boyle County,2026-10-28,6,inperson,96,,32,61,,,1,ky-sbe,2026-10-29T13:03:23+00:00
+2026,KY,21021,Boyle County,2026-10-28,6,mail,322,,193,106,,,1,ky-sbe,2026-10-29T13:03:23+00:00
 2026,KY,21023,Bracken County,2026-09-20,44,mail,0,,,,,,1,ky-sbe,2026-09-21T16:12:18+00:00
 2026,KY,21023,Bracken County,2026-09-21,43,mail,0,,0,0,,,1,ky-sbe,2026-09-22T17:56:28+00:00
 2026,KY,21023,Bracken County,2026-09-22,42,mail,0,,0,0,,,1,ky-sbe,2026-09-23T16:07:10+00:00
@@ -3755,6 +3777,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,KY,21023,Bracken County,2026-10-26,8,mail,84,,50,32,,,1,ky-sbe,2026-10-27T13:33:09+00:00
 2026,KY,21023,Bracken County,2026-10-27,7,inperson,44,,12,32,,,1,ky-sbe,2026-10-28T14:34:21+00:00
 2026,KY,21023,Bracken County,2026-10-27,7,mail,86,,52,32,,,1,ky-sbe,2026-10-28T14:34:21+00:00
+2026,KY,21023,Bracken County,2026-10-28,6,inperson,54,,20,34,,,1,ky-sbe,2026-10-29T13:03:23+00:00
+2026,KY,21023,Bracken County,2026-10-28,6,mail,98,,58,34,,,1,ky-sbe,2026-10-29T13:03:23+00:00
 2026,KY,21025,Breathitt County,2026-09-20,44,mail,0,,,,,,1,ky-sbe,2026-09-21T16:12:18+00:00
 2026,KY,21025,Breathitt County,2026-09-21,43,mail,0,,0,0,,,1,ky-sbe,2026-09-22T17:56:28+00:00
 2026,KY,21025,Breathitt County,2026-09-22,42,mail,0,,0,0,,,1,ky-sbe,2026-09-23T16:07:10+00:00
@@ -3798,6 +3822,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,KY,21025,Breathitt County,2026-10-26,8,mail,247,,226,17,,,1,ky-sbe,2026-10-27T13:33:09+00:00
 2026,KY,21025,Breathitt County,2026-10-27,7,inperson,25,,16,9,,,1,ky-sbe,2026-10-28T14:34:21+00:00
 2026,KY,21025,Breathitt County,2026-10-27,7,mail,257,,236,17,,,1,ky-sbe,2026-10-28T14:34:21+00:00
+2026,KY,21025,Breathitt County,2026-10-28,6,inperson,25,,16,9,,,1,ky-sbe,2026-10-29T13:03:23+00:00
+2026,KY,21025,Breathitt County,2026-10-28,6,mail,286,,263,19,,,1,ky-sbe,2026-10-29T13:03:23+00:00
 2026,KY,21027,Breckinridge County,2026-09-20,44,mail,0,,,,,,1,ky-sbe,2026-09-21T16:12:18+00:00
 2026,KY,21027,Breckinridge County,2026-09-21,43,mail,0,,0,0,,,1,ky-sbe,2026-09-22T17:56:28+00:00
 2026,KY,21027,Breckinridge County,2026-09-22,42,mail,0,,0,0,,,1,ky-sbe,2026-09-23T16:07:10+00:00
@@ -3841,6 +3867,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,KY,21027,Breckinridge County,2026-10-26,8,mail,48,,26,14,,,1,ky-sbe,2026-10-27T13:33:09+00:00
 2026,KY,21027,Breckinridge County,2026-10-27,7,inperson,94,,31,56,,,1,ky-sbe,2026-10-28T14:34:21+00:00
 2026,KY,21027,Breckinridge County,2026-10-27,7,mail,60,,30,22,,,1,ky-sbe,2026-10-28T14:34:21+00:00
+2026,KY,21027,Breckinridge County,2026-10-28,6,inperson,120,,44,69,,,1,ky-sbe,2026-10-29T13:03:23+00:00
+2026,KY,21027,Breckinridge County,2026-10-28,6,mail,60,,30,22,,,1,ky-sbe,2026-10-29T13:03:23+00:00
 2026,KY,21029,Bullitt County,2026-09-20,44,mail,0,,,,,,1,ky-sbe,2026-09-21T16:12:18+00:00
 2026,KY,21029,Bullitt County,2026-09-21,43,mail,0,,0,0,,,1,ky-sbe,2026-09-22T17:56:28+00:00
 2026,KY,21029,Bullitt County,2026-09-22,42,mail,0,,0,0,,,1,ky-sbe,2026-09-23T16:07:10+00:00
@@ -3884,6 +3912,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,KY,21029,Bullitt County,2026-10-26,8,mail,728,,374,303,,,1,ky-sbe,2026-10-27T13:33:09+00:00
 2026,KY,21029,Bullitt County,2026-10-27,7,inperson,92,,27,61,,,1,ky-sbe,2026-10-28T14:34:21+00:00
 2026,KY,21029,Bullitt County,2026-10-27,7,mail,771,,390,326,,,1,ky-sbe,2026-10-28T14:34:21+00:00
+2026,KY,21029,Bullitt County,2026-10-28,6,inperson,105,,33,67,,,1,ky-sbe,2026-10-29T13:03:23+00:00
+2026,KY,21029,Bullitt County,2026-10-28,6,mail,771,,390,326,,,1,ky-sbe,2026-10-29T13:03:23+00:00
 2026,KY,21031,Butler County,2026-09-20,44,mail,0,,,,,,1,ky-sbe,2026-09-21T16:12:18+00:00
 2026,KY,21031,Butler County,2026-09-21,43,mail,0,,0,0,,,1,ky-sbe,2026-09-22T17:56:28+00:00
 2026,KY,21031,Butler County,2026-09-22,42,mail,0,,0,0,,,1,ky-sbe,2026-09-23T16:07:10+00:00
@@ -3927,6 +3957,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,KY,21031,Butler County,2026-10-26,8,mail,50,,14,31,,,1,ky-sbe,2026-10-27T13:33:09+00:00
 2026,KY,21031,Butler County,2026-10-27,7,inperson,9,,0,9,,,1,ky-sbe,2026-10-28T14:34:21+00:00
 2026,KY,21031,Butler County,2026-10-27,7,mail,56,,16,35,,,1,ky-sbe,2026-10-28T14:34:21+00:00
+2026,KY,21031,Butler County,2026-10-28,6,inperson,9,,0,9,,,1,ky-sbe,2026-10-29T13:03:23+00:00
+2026,KY,21031,Butler County,2026-10-28,6,mail,61,,18,38,,,1,ky-sbe,2026-10-29T13:03:23+00:00
 2026,KY,21033,Caldwell County,2026-09-20,44,mail,0,,,,,,1,ky-sbe,2026-09-21T16:12:18+00:00
 2026,KY,21033,Caldwell County,2026-09-21,43,mail,0,,0,0,,,1,ky-sbe,2026-09-22T17:56:28+00:00
 2026,KY,21033,Caldwell County,2026-09-22,42,mail,0,,0,0,,,1,ky-sbe,2026-09-23T16:07:10+00:00
@@ -3970,6 +4002,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,KY,21033,Caldwell County,2026-10-26,8,mail,94,,55,38,,,1,ky-sbe,2026-10-27T13:33:09+00:00
 2026,KY,21033,Caldwell County,2026-10-27,7,inperson,33,,11,20,,,1,ky-sbe,2026-10-28T14:34:21+00:00
 2026,KY,21033,Caldwell County,2026-10-27,7,mail,106,,64,41,,,1,ky-sbe,2026-10-28T14:34:21+00:00
+2026,KY,21033,Caldwell County,2026-10-28,6,inperson,37,,13,22,,,1,ky-sbe,2026-10-29T13:03:23+00:00
+2026,KY,21033,Caldwell County,2026-10-28,6,mail,106,,64,41,,,1,ky-sbe,2026-10-29T13:03:23+00:00
 2026,KY,21035,Calloway County,2026-09-20,44,mail,0,,,,,,1,ky-sbe,2026-09-21T16:12:18+00:00
 2026,KY,21035,Calloway County,2026-09-21,43,mail,2,,0,0,,,1,ky-sbe,2026-09-22T17:56:28+00:00
 2026,KY,21035,Calloway County,2026-09-22,42,mail,3,,0,0,,,1,ky-sbe,2026-09-23T16:07:10+00:00
@@ -4013,6 +4047,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,KY,21035,Calloway County,2026-10-26,8,mail,311,,163,105,,,1,ky-sbe,2026-10-27T13:33:09+00:00
 2026,KY,21035,Calloway County,2026-10-27,7,inperson,88,,31,46,,,1,ky-sbe,2026-10-28T14:34:21+00:00
 2026,KY,21035,Calloway County,2026-10-27,7,mail,338,,180,114,,,1,ky-sbe,2026-10-28T14:34:21+00:00
+2026,KY,21035,Calloway County,2026-10-28,6,inperson,96,,33,51,,,1,ky-sbe,2026-10-29T13:03:23+00:00
+2026,KY,21035,Calloway County,2026-10-28,6,mail,358,,194,119,,,1,ky-sbe,2026-10-29T13:03:23+00:00
 2026,KY,21037,Campbell County,2026-09-20,44,mail,0,,,,,,1,ky-sbe,2026-09-21T16:12:18+00:00
 2026,KY,21037,Campbell County,2026-09-21,43,mail,0,,0,0,,,1,ky-sbe,2026-09-22T17:56:28+00:00
 2026,KY,21037,Campbell County,2026-09-22,42,mail,0,,0,0,,,1,ky-sbe,2026-09-23T16:07:10+00:00
@@ -4056,6 +4092,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,KY,21037,Campbell County,2026-10-26,8,mail,698,,331,267,,,1,ky-sbe,2026-10-27T13:33:09+00:00
 2026,KY,21037,Campbell County,2026-10-27,7,inperson,429,,188,210,,,1,ky-sbe,2026-10-28T14:34:21+00:00
 2026,KY,21037,Campbell County,2026-10-27,7,mail,748,,357,284,,,1,ky-sbe,2026-10-28T14:34:21+00:00
+2026,KY,21037,Campbell County,2026-10-28,6,inperson,461,,199,230,,,1,ky-sbe,2026-10-29T13:03:23+00:00
+2026,KY,21037,Campbell County,2026-10-28,6,mail,809,,385,304,,,1,ky-sbe,2026-10-29T13:03:23+00:00
 2026,KY,21039,Carlisle County,2026-09-20,44,mail,0,,,,,,1,ky-sbe,2026-09-21T16:12:18+00:00
 2026,KY,21039,Carlisle County,2026-09-21,43,mail,0,,0,0,,,1,ky-sbe,2026-09-22T17:56:28+00:00
 2026,KY,21039,Carlisle County,2026-09-22,42,mail,0,,0,0,,,1,ky-sbe,2026-09-23T16:07:10+00:00
@@ -4099,6 +4137,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,KY,21039,Carlisle County,2026-10-26,8,mail,28,,20,6,,,1,ky-sbe,2026-10-27T13:33:09+00:00
 2026,KY,21039,Carlisle County,2026-10-27,7,inperson,10,,4,6,,,1,ky-sbe,2026-10-28T14:34:21+00:00
 2026,KY,21039,Carlisle County,2026-10-27,7,mail,28,,20,6,,,1,ky-sbe,2026-10-28T14:34:21+00:00
+2026,KY,21039,Carlisle County,2026-10-28,6,inperson,14,,7,7,,,1,ky-sbe,2026-10-29T13:03:23+00:00
+2026,KY,21039,Carlisle County,2026-10-28,6,mail,29,,21,6,,,1,ky-sbe,2026-10-29T13:03:23+00:00
 2026,KY,21041,Carroll County,2026-09-20,44,mail,0,,,,,,1,ky-sbe,2026-09-21T16:12:18+00:00
 2026,KY,21041,Carroll County,2026-09-21,43,mail,0,,0,0,,,1,ky-sbe,2026-09-22T17:56:28+00:00
 2026,KY,21041,Carroll County,2026-09-22,42,mail,0,,0,0,,,1,ky-sbe,2026-09-23T16:07:10+00:00
@@ -4142,6 +4182,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,KY,21041,Carroll County,2026-10-26,8,mail,111,,80,25,,,1,ky-sbe,2026-10-27T13:33:09+00:00
 2026,KY,21041,Carroll County,2026-10-27,7,inperson,128,,74,49,,,1,ky-sbe,2026-10-28T14:34:21+00:00
 2026,KY,21041,Carroll County,2026-10-27,7,mail,118,,84,27,,,1,ky-sbe,2026-10-28T14:34:21+00:00
+2026,KY,21041,Carroll County,2026-10-28,6,inperson,150,,84,60,,,1,ky-sbe,2026-10-29T13:03:23+00:00
+2026,KY,21041,Carroll County,2026-10-28,6,mail,118,,84,27,,,1,ky-sbe,2026-10-29T13:03:23+00:00
 2026,KY,21043,Carter County,2026-09-20,44,mail,0,,,,,,1,ky-sbe,2026-09-21T16:12:18+00:00
 2026,KY,21043,Carter County,2026-09-21,43,mail,0,,0,0,,,1,ky-sbe,2026-09-22T17:56:28+00:00
 2026,KY,21043,Carter County,2026-09-22,42,mail,0,,0,0,,,1,ky-sbe,2026-09-23T16:07:10+00:00
@@ -4185,6 +4227,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,KY,21043,Carter County,2026-10-26,8,mail,162,,80,73,,,1,ky-sbe,2026-10-27T13:33:09+00:00
 2026,KY,21043,Carter County,2026-10-27,7,inperson,61,,28,33,,,1,ky-sbe,2026-10-28T14:34:21+00:00
 2026,KY,21043,Carter County,2026-10-27,7,mail,162,,80,73,,,1,ky-sbe,2026-10-28T14:34:21+00:00
+2026,KY,21043,Carter County,2026-10-28,6,inperson,70,,29,41,,,1,ky-sbe,2026-10-29T13:03:23+00:00
+2026,KY,21043,Carter County,2026-10-28,6,mail,184,,89,84,,,1,ky-sbe,2026-10-29T13:03:23+00:00
 2026,KY,21045,Casey County,2026-09-20,44,mail,0,,,,,,1,ky-sbe,2026-09-21T16:12:18+00:00
 2026,KY,21045,Casey County,2026-09-21,43,mail,0,,0,0,,,1,ky-sbe,2026-09-22T17:56:28+00:00
 2026,KY,21045,Casey County,2026-09-22,42,mail,0,,0,0,,,1,ky-sbe,2026-09-23T16:07:10+00:00
@@ -4228,6 +4272,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,KY,21045,Casey County,2026-10-26,8,mail,57,,19,32,,,1,ky-sbe,2026-10-27T13:33:09+00:00
 2026,KY,21045,Casey County,2026-10-27,7,inperson,28,,2,24,,,1,ky-sbe,2026-10-28T14:34:21+00:00
 2026,KY,21045,Casey County,2026-10-27,7,mail,60,,21,33,,,1,ky-sbe,2026-10-28T14:34:21+00:00
+2026,KY,21045,Casey County,2026-10-28,6,inperson,33,,2,29,,,1,ky-sbe,2026-10-29T13:03:23+00:00
+2026,KY,21045,Casey County,2026-10-28,6,mail,68,,21,40,,,1,ky-sbe,2026-10-29T13:03:23+00:00
 2026,KY,21047,Christian County,2026-09-20,44,mail,0,,,,,,1,ky-sbe,2026-09-21T16:12:18+00:00
 2026,KY,21047,Christian County,2026-09-21,43,mail,0,,0,0,,,1,ky-sbe,2026-09-22T17:56:28+00:00
 2026,KY,21047,Christian County,2026-09-22,42,mail,0,,0,0,,,1,ky-sbe,2026-09-23T16:07:10+00:00
@@ -4271,6 +4317,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,KY,21047,Christian County,2026-10-26,8,mail,202,,119,60,,,1,ky-sbe,2026-10-27T13:33:09+00:00
 2026,KY,21047,Christian County,2026-10-27,7,inperson,57,,19,32,,,1,ky-sbe,2026-10-28T14:34:21+00:00
 2026,KY,21047,Christian County,2026-10-27,7,mail,213,,124,66,,,1,ky-sbe,2026-10-28T14:34:21+00:00
+2026,KY,21047,Christian County,2026-10-28,6,inperson,70,,26,37,,,1,ky-sbe,2026-10-29T13:03:23+00:00
+2026,KY,21047,Christian County,2026-10-28,6,mail,236,,142,71,,,1,ky-sbe,2026-10-29T13:03:23+00:00
 2026,KY,21049,Clark County,2026-09-20,44,mail,0,,,,,,1,ky-sbe,2026-09-21T16:12:18+00:00
 2026,KY,21049,Clark County,2026-09-21,43,mail,0,,0,0,,,1,ky-sbe,2026-09-22T17:56:28+00:00
 2026,KY,21049,Clark County,2026-09-22,42,mail,0,,0,0,,,1,ky-sbe,2026-09-23T16:07:10+00:00
@@ -4314,6 +4362,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,KY,21049,Clark County,2026-10-26,8,mail,318,,181,108,,,1,ky-sbe,2026-10-27T13:33:09+00:00
 2026,KY,21049,Clark County,2026-10-27,7,inperson,89,,32,52,,,1,ky-sbe,2026-10-28T14:34:21+00:00
 2026,KY,21049,Clark County,2026-10-27,7,mail,355,,205,120,,,1,ky-sbe,2026-10-28T14:34:21+00:00
+2026,KY,21049,Clark County,2026-10-28,6,inperson,111,,40,65,,,1,ky-sbe,2026-10-29T13:03:23+00:00
+2026,KY,21049,Clark County,2026-10-28,6,mail,374,,214,130,,,1,ky-sbe,2026-10-29T13:03:23+00:00
 2026,KY,21051,Clay County,2026-09-20,44,mail,0,,,,,,1,ky-sbe,2026-09-21T16:12:18+00:00
 2026,KY,21051,Clay County,2026-09-21,43,mail,0,,0,0,,,1,ky-sbe,2026-09-22T17:56:28+00:00
 2026,KY,21051,Clay County,2026-09-22,42,mail,0,,0,0,,,1,ky-sbe,2026-09-23T16:07:10+00:00
@@ -4357,6 +4407,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,KY,21051,Clay County,2026-10-26,8,mail,113,,30,80,,,1,ky-sbe,2026-10-27T13:33:09+00:00
 2026,KY,21051,Clay County,2026-10-27,7,inperson,49,,8,38,,,1,ky-sbe,2026-10-28T14:34:21+00:00
 2026,KY,21051,Clay County,2026-10-27,7,mail,120,,31,86,,,1,ky-sbe,2026-10-28T14:34:21+00:00
+2026,KY,21051,Clay County,2026-10-28,6,inperson,62,,11,48,,,1,ky-sbe,2026-10-29T13:03:23+00:00
+2026,KY,21051,Clay County,2026-10-28,6,mail,132,,36,93,,,1,ky-sbe,2026-10-29T13:03:23+00:00
 2026,KY,21053,Clinton County,2026-09-20,44,mail,0,,,,,,1,ky-sbe,2026-09-21T16:12:18+00:00
 2026,KY,21053,Clinton County,2026-09-21,43,mail,0,,0,0,,,1,ky-sbe,2026-09-22T17:56:28+00:00
 2026,KY,21053,Clinton County,2026-09-22,42,mail,0,,0,0,,,1,ky-sbe,2026-09-23T16:07:10+00:00
@@ -4400,6 +4452,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,KY,21053,Clinton County,2026-10-26,8,mail,173,,21,146,,,1,ky-sbe,2026-10-27T13:33:09+00:00
 2026,KY,21053,Clinton County,2026-10-27,7,inperson,34,,3,31,,,1,ky-sbe,2026-10-28T14:34:21+00:00
 2026,KY,21053,Clinton County,2026-10-27,7,mail,189,,21,162,,,1,ky-sbe,2026-10-28T14:34:21+00:00
+2026,KY,21053,Clinton County,2026-10-28,6,inperson,34,,3,31,,,1,ky-sbe,2026-10-29T13:03:23+00:00
+2026,KY,21053,Clinton County,2026-10-28,6,mail,203,,22,173,,,1,ky-sbe,2026-10-29T13:03:23+00:00
 2026,KY,21055,Crittenden County,2026-09-20,44,mail,0,,,,,,1,ky-sbe,2026-09-21T16:12:18+00:00
 2026,KY,21055,Crittenden County,2026-09-21,43,mail,0,,0,0,,,1,ky-sbe,2026-09-22T17:56:28+00:00
 2026,KY,21055,Crittenden County,2026-09-22,42,mail,0,,0,0,,,1,ky-sbe,2026-09-23T16:07:10+00:00
@@ -4443,6 +4497,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,KY,21055,Crittenden County,2026-10-26,8,mail,23,,8,11,,,1,ky-sbe,2026-10-27T13:33:09+00:00
 2026,KY,21055,Crittenden County,2026-10-27,7,inperson,12,,2,8,,,1,ky-sbe,2026-10-28T14:34:21+00:00
 2026,KY,21055,Crittenden County,2026-10-27,7,mail,23,,8,11,,,1,ky-sbe,2026-10-28T14:34:21+00:00
+2026,KY,21055,Crittenden County,2026-10-28,6,inperson,20,,4,13,,,1,ky-sbe,2026-10-29T13:03:23+00:00
+2026,KY,21055,Crittenden County,2026-10-28,6,mail,25,,8,13,,,1,ky-sbe,2026-10-29T13:03:23+00:00
 2026,KY,21057,Cumberland County,2026-09-20,44,mail,0,,,,,,1,ky-sbe,2026-09-21T16:12:18+00:00
 2026,KY,21057,Cumberland County,2026-09-21,43,mail,0,,0,0,,,1,ky-sbe,2026-09-22T17:56:28+00:00
 2026,KY,21057,Cumberland County,2026-09-22,42,mail,0,,0,0,,,1,ky-sbe,2026-09-23T16:07:10+00:00
@@ -4486,6 +4542,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,KY,21057,Cumberland County,2026-10-26,8,mail,35,,7,26,,,1,ky-sbe,2026-10-27T13:33:09+00:00
 2026,KY,21057,Cumberland County,2026-10-27,7,inperson,20,,1,17,,,1,ky-sbe,2026-10-28T14:34:21+00:00
 2026,KY,21057,Cumberland County,2026-10-27,7,mail,37,,7,28,,,1,ky-sbe,2026-10-28T14:34:21+00:00
+2026,KY,21057,Cumberland County,2026-10-28,6,inperson,22,,1,18,,,1,ky-sbe,2026-10-29T13:03:23+00:00
+2026,KY,21057,Cumberland County,2026-10-28,6,mail,41,,7,32,,,1,ky-sbe,2026-10-29T13:03:23+00:00
 2026,KY,21059,Daviess County,2026-09-20,44,mail,0,,,,,,1,ky-sbe,2026-09-21T16:12:18+00:00
 2026,KY,21059,Daviess County,2026-09-21,43,mail,0,,0,0,,,1,ky-sbe,2026-09-22T17:56:28+00:00
 2026,KY,21059,Daviess County,2026-09-22,42,mail,3,,3,0,,,1,ky-sbe,2026-09-23T16:07:10+00:00
@@ -4529,6 +4587,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,KY,21059,Daviess County,2026-10-26,8,mail,937,,620,250,,,1,ky-sbe,2026-10-27T13:33:09+00:00
 2026,KY,21059,Daviess County,2026-10-27,7,inperson,291,,124,157,,,1,ky-sbe,2026-10-28T14:34:21+00:00
 2026,KY,21059,Daviess County,2026-10-27,7,mail,984,,647,267,,,1,ky-sbe,2026-10-28T14:34:21+00:00
+2026,KY,21059,Daviess County,2026-10-28,6,inperson,324,,137,177,,,1,ky-sbe,2026-10-29T13:03:23+00:00
+2026,KY,21059,Daviess County,2026-10-28,6,mail,1112,,716,318,,,1,ky-sbe,2026-10-29T13:03:23+00:00
 2026,KY,21061,Edmonson County,2026-09-20,44,mail,0,,,,,,1,ky-sbe,2026-09-21T16:12:18+00:00
 2026,KY,21061,Edmonson County,2026-09-21,43,mail,0,,0,0,,,1,ky-sbe,2026-09-22T17:56:28+00:00
 2026,KY,21061,Edmonson County,2026-09-22,42,mail,0,,0,0,,,1,ky-sbe,2026-09-23T16:07:10+00:00
@@ -4572,6 +4632,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,KY,21061,Edmonson County,2026-10-26,8,mail,39,,9,26,,,1,ky-sbe,2026-10-27T13:33:09+00:00
 2026,KY,21061,Edmonson County,2026-10-27,7,inperson,76,,23,49,,,1,ky-sbe,2026-10-28T14:34:21+00:00
 2026,KY,21061,Edmonson County,2026-10-27,7,mail,42,,10,28,,,1,ky-sbe,2026-10-28T14:34:21+00:00
+2026,KY,21061,Edmonson County,2026-10-28,6,inperson,94,,25,65,,,1,ky-sbe,2026-10-29T13:03:23+00:00
+2026,KY,21061,Edmonson County,2026-10-28,6,mail,42,,10,28,,,1,ky-sbe,2026-10-29T13:03:23+00:00
 2026,KY,21063,Elliott County,2026-09-20,44,mail,0,,,,,,1,ky-sbe,2026-09-21T16:12:18+00:00
 2026,KY,21063,Elliott County,2026-09-21,43,mail,0,,0,0,,,1,ky-sbe,2026-09-22T17:56:28+00:00
 2026,KY,21063,Elliott County,2026-09-22,42,mail,0,,0,0,,,1,ky-sbe,2026-09-23T16:07:10+00:00
@@ -4615,6 +4677,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,KY,21063,Elliott County,2026-10-26,8,mail,55,,44,11,,,1,ky-sbe,2026-10-27T13:33:09+00:00
 2026,KY,21063,Elliott County,2026-10-27,7,inperson,43,,31,12,,,1,ky-sbe,2026-10-28T14:34:21+00:00
 2026,KY,21063,Elliott County,2026-10-27,7,mail,59,,48,11,,,1,ky-sbe,2026-10-28T14:34:21+00:00
+2026,KY,21063,Elliott County,2026-10-28,6,inperson,43,,31,12,,,1,ky-sbe,2026-10-29T13:03:23+00:00
+2026,KY,21063,Elliott County,2026-10-28,6,mail,64,,51,12,,,1,ky-sbe,2026-10-29T13:03:23+00:00
 2026,KY,21065,Estill County,2026-09-20,44,mail,0,,,,,,1,ky-sbe,2026-09-21T16:12:18+00:00
 2026,KY,21065,Estill County,2026-09-21,43,mail,0,,0,0,,,1,ky-sbe,2026-09-22T17:56:28+00:00
 2026,KY,21065,Estill County,2026-09-22,42,mail,0,,0,0,,,1,ky-sbe,2026-09-23T16:07:10+00:00
@@ -4658,6 +4722,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,KY,21065,Estill County,2026-10-26,8,mail,129,,60,64,,,1,ky-sbe,2026-10-27T13:33:09+00:00
 2026,KY,21065,Estill County,2026-10-27,7,inperson,14,,3,11,,,1,ky-sbe,2026-10-28T14:34:21+00:00
 2026,KY,21065,Estill County,2026-10-27,7,mail,138,,62,71,,,1,ky-sbe,2026-10-28T14:34:21+00:00
+2026,KY,21065,Estill County,2026-10-28,6,inperson,17,,5,12,,,1,ky-sbe,2026-10-29T13:03:23+00:00
+2026,KY,21065,Estill County,2026-10-28,6,mail,140,,62,73,,,1,ky-sbe,2026-10-29T13:03:23+00:00
 2026,KY,21067,Fayette County,2026-09-20,44,mail,0,,,,,,1,ky-sbe,2026-09-21T16:12:18+00:00
 2026,KY,21067,Fayette County,2026-09-21,43,mail,2,,1,0,,,1,ky-sbe,2026-09-22T17:56:28+00:00
 2026,KY,21067,Fayette County,2026-09-22,42,mail,6,,3,2,,,1,ky-sbe,2026-09-23T16:07:10+00:00
@@ -4701,6 +4767,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,KY,21067,Fayette County,2026-10-26,8,mail,3754,,2463,884,,,1,ky-sbe,2026-10-27T13:33:09+00:00
 2026,KY,21067,Fayette County,2026-10-27,7,inperson,451,,278,124,,,1,ky-sbe,2026-10-28T14:34:21+00:00
 2026,KY,21067,Fayette County,2026-10-27,7,mail,4187,,2712,1010,,,1,ky-sbe,2026-10-28T14:34:21+00:00
+2026,KY,21067,Fayette County,2026-10-28,6,inperson,493,,305,135,,,1,ky-sbe,2026-10-29T13:03:23+00:00
+2026,KY,21067,Fayette County,2026-10-28,6,mail,4593,,2978,1112,,,1,ky-sbe,2026-10-29T13:03:23+00:00
 2026,KY,21069,Fleming County,2026-09-20,44,mail,0,,,,,,1,ky-sbe,2026-09-21T16:12:18+00:00
 2026,KY,21069,Fleming County,2026-09-21,43,mail,0,,0,0,,,1,ky-sbe,2026-09-22T17:56:28+00:00
 2026,KY,21069,Fleming County,2026-09-22,42,mail,0,,0,0,,,1,ky-sbe,2026-09-23T16:07:10+00:00
@@ -4744,6 +4812,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,KY,21069,Fleming County,2026-10-26,8,mail,117,,69,46,,,1,ky-sbe,2026-10-27T13:33:09+00:00
 2026,KY,21069,Fleming County,2026-10-27,7,inperson,50,,14,32,,,1,ky-sbe,2026-10-28T14:34:21+00:00
 2026,KY,21069,Fleming County,2026-10-27,7,mail,128,,71,54,,,1,ky-sbe,2026-10-28T14:34:21+00:00
+2026,KY,21069,Fleming County,2026-10-28,6,inperson,57,,16,37,,,1,ky-sbe,2026-10-29T13:03:23+00:00
+2026,KY,21069,Fleming County,2026-10-28,6,mail,134,,76,55,,,1,ky-sbe,2026-10-29T13:03:23+00:00
 2026,KY,21071,Floyd County,2026-09-20,44,mail,0,,,,,,1,ky-sbe,2026-09-21T16:12:18+00:00
 2026,KY,21071,Floyd County,2026-09-21,43,mail,0,,0,0,,,1,ky-sbe,2026-09-22T17:56:28+00:00
 2026,KY,21071,Floyd County,2026-09-22,42,mail,0,,0,0,,,1,ky-sbe,2026-09-23T16:07:10+00:00
@@ -4787,6 +4857,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,KY,21071,Floyd County,2026-10-26,8,mail,384,,296,71,,,1,ky-sbe,2026-10-27T13:33:09+00:00
 2026,KY,21071,Floyd County,2026-10-27,7,inperson,100,,46,44,,,1,ky-sbe,2026-10-28T14:34:21+00:00
 2026,KY,21071,Floyd County,2026-10-27,7,mail,404,,308,78,,,1,ky-sbe,2026-10-28T14:34:21+00:00
+2026,KY,21071,Floyd County,2026-10-28,6,inperson,130,,68,51,,,1,ky-sbe,2026-10-29T13:03:23+00:00
+2026,KY,21071,Floyd County,2026-10-28,6,mail,431,,329,84,,,1,ky-sbe,2026-10-29T13:03:23+00:00
 2026,KY,21073,Franklin County,2026-09-20,44,mail,0,,,,,,1,ky-sbe,2026-09-21T16:12:18+00:00
 2026,KY,21073,Franklin County,2026-09-21,43,mail,0,,0,0,,,1,ky-sbe,2026-09-22T17:56:28+00:00
 2026,KY,21073,Franklin County,2026-09-22,42,mail,1,,0,1,,,1,ky-sbe,2026-09-23T16:07:10+00:00
@@ -4830,6 +4902,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,KY,21073,Franklin County,2026-10-26,8,mail,431,,313,81,,,1,ky-sbe,2026-10-27T13:33:09+00:00
 2026,KY,21073,Franklin County,2026-10-27,7,inperson,73,,58,12,,,1,ky-sbe,2026-10-28T14:34:21+00:00
 2026,KY,21073,Franklin County,2026-10-27,7,mail,472,,343,91,,,1,ky-sbe,2026-10-28T14:34:21+00:00
+2026,KY,21073,Franklin County,2026-10-28,6,inperson,80,,62,14,,,1,ky-sbe,2026-10-29T13:03:23+00:00
+2026,KY,21073,Franklin County,2026-10-28,6,mail,518,,384,94,,,1,ky-sbe,2026-10-29T13:03:23+00:00
 2026,KY,21075,Fulton County,2026-09-20,44,mail,0,,,,,,1,ky-sbe,2026-09-21T16:12:18+00:00
 2026,KY,21075,Fulton County,2026-09-21,43,mail,0,,0,0,,,1,ky-sbe,2026-09-22T17:56:28+00:00
 2026,KY,21075,Fulton County,2026-09-22,42,mail,0,,0,0,,,1,ky-sbe,2026-09-23T16:07:10+00:00
@@ -4873,6 +4947,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,KY,21075,Fulton County,2026-10-26,8,mail,41,,25,13,,,1,ky-sbe,2026-10-27T13:33:09+00:00
 2026,KY,21075,Fulton County,2026-10-27,7,inperson,17,,2,14,,,1,ky-sbe,2026-10-28T14:34:21+00:00
 2026,KY,21075,Fulton County,2026-10-27,7,mail,44,,27,14,,,1,ky-sbe,2026-10-28T14:34:21+00:00
+2026,KY,21075,Fulton County,2026-10-28,6,inperson,18,,3,14,,,1,ky-sbe,2026-10-29T13:03:23+00:00
+2026,KY,21075,Fulton County,2026-10-28,6,mail,50,,33,14,,,1,ky-sbe,2026-10-29T13:03:23+00:00
 2026,KY,21077,Gallatin County,2026-09-20,44,mail,0,,,,,,1,ky-sbe,2026-09-21T16:12:18+00:00
 2026,KY,21077,Gallatin County,2026-09-21,43,mail,0,,0,0,,,1,ky-sbe,2026-09-22T17:56:28+00:00
 2026,KY,21077,Gallatin County,2026-09-22,42,mail,0,,0,0,,,1,ky-sbe,2026-09-23T16:07:10+00:00
@@ -4916,6 +4992,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,KY,21077,Gallatin County,2026-10-26,8,mail,51,,21,25,,,1,ky-sbe,2026-10-27T13:33:09+00:00
 2026,KY,21077,Gallatin County,2026-10-27,7,inperson,18,,3,12,,,1,ky-sbe,2026-10-28T14:34:21+00:00
 2026,KY,21077,Gallatin County,2026-10-27,7,mail,51,,21,25,,,1,ky-sbe,2026-10-28T14:34:21+00:00
+2026,KY,21077,Gallatin County,2026-10-28,6,inperson,18,,3,12,,,1,ky-sbe,2026-10-29T13:03:23+00:00
+2026,KY,21077,Gallatin County,2026-10-28,6,mail,51,,21,25,,,1,ky-sbe,2026-10-29T13:03:23+00:00
 2026,KY,21079,Garrard County,2026-09-20,44,mail,0,,,,,,1,ky-sbe,2026-09-21T16:12:18+00:00
 2026,KY,21079,Garrard County,2026-09-21,43,mail,0,,0,0,,,1,ky-sbe,2026-09-22T17:56:28+00:00
 2026,KY,21079,Garrard County,2026-09-22,42,mail,0,,0,0,,,1,ky-sbe,2026-09-23T16:07:10+00:00
@@ -4959,6 +5037,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,KY,21079,Garrard County,2026-10-26,8,mail,145,,50,87,,,1,ky-sbe,2026-10-27T13:33:09+00:00
 2026,KY,21079,Garrard County,2026-10-27,7,inperson,51,,8,40,,,1,ky-sbe,2026-10-28T14:34:21+00:00
 2026,KY,21079,Garrard County,2026-10-27,7,mail,161,,56,96,,,1,ky-sbe,2026-10-28T14:34:21+00:00
+2026,KY,21079,Garrard County,2026-10-28,6,inperson,62,,12,46,,,1,ky-sbe,2026-10-29T13:03:23+00:00
+2026,KY,21079,Garrard County,2026-10-28,6,mail,169,,62,98,,,1,ky-sbe,2026-10-29T13:03:23+00:00
 2026,KY,21081,Grant County,2026-09-20,44,mail,0,,,,,,1,ky-sbe,2026-09-21T16:12:18+00:00
 2026,KY,21081,Grant County,2026-09-21,43,mail,0,,0,0,,,1,ky-sbe,2026-09-22T17:56:28+00:00
 2026,KY,21081,Grant County,2026-09-22,42,mail,0,,0,0,,,1,ky-sbe,2026-09-23T16:07:10+00:00
@@ -5002,6 +5082,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,KY,21081,Grant County,2026-10-26,8,mail,94,,47,43,,,1,ky-sbe,2026-10-27T13:33:09+00:00
 2026,KY,21081,Grant County,2026-10-27,7,inperson,30,,9,21,,,1,ky-sbe,2026-10-28T14:34:21+00:00
 2026,KY,21081,Grant County,2026-10-27,7,mail,97,,50,43,,,1,ky-sbe,2026-10-28T14:34:21+00:00
+2026,KY,21081,Grant County,2026-10-28,6,inperson,37,,12,25,,,1,ky-sbe,2026-10-29T13:03:23+00:00
+2026,KY,21081,Grant County,2026-10-28,6,mail,104,,55,45,,,1,ky-sbe,2026-10-29T13:03:23+00:00
 2026,KY,21083,Graves County,2026-09-20,44,mail,0,,,,,,1,ky-sbe,2026-09-21T16:12:18+00:00
 2026,KY,21083,Graves County,2026-09-21,43,mail,0,,0,0,,,1,ky-sbe,2026-09-22T17:56:28+00:00
 2026,KY,21083,Graves County,2026-09-22,42,mail,0,,0,0,,,1,ky-sbe,2026-09-23T16:07:10+00:00
@@ -5045,6 +5127,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,KY,21083,Graves County,2026-10-26,8,mail,153,,92,52,,,1,ky-sbe,2026-10-27T13:33:09+00:00
 2026,KY,21083,Graves County,2026-10-27,7,inperson,42,,16,25,,,1,ky-sbe,2026-10-28T14:34:21+00:00
 2026,KY,21083,Graves County,2026-10-27,7,mail,164,,100,55,,,1,ky-sbe,2026-10-28T14:34:21+00:00
+2026,KY,21083,Graves County,2026-10-28,6,inperson,47,,18,28,,,1,ky-sbe,2026-10-29T13:03:23+00:00
+2026,KY,21083,Graves County,2026-10-28,6,mail,167,,101,55,,,1,ky-sbe,2026-10-29T13:03:23+00:00
 2026,KY,21085,Grayson County,2026-09-20,44,mail,0,,,,,,1,ky-sbe,2026-09-21T16:12:18+00:00
 2026,KY,21085,Grayson County,2026-09-21,43,mail,0,,0,0,,,1,ky-sbe,2026-09-22T17:56:28+00:00
 2026,KY,21085,Grayson County,2026-09-22,42,mail,0,,0,0,,,1,ky-sbe,2026-09-23T16:07:10+00:00
@@ -5088,6 +5172,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,KY,21085,Grayson County,2026-10-26,8,mail,150,,69,68,,,1,ky-sbe,2026-10-27T13:33:09+00:00
 2026,KY,21085,Grayson County,2026-10-27,7,inperson,50,,22,27,,,1,ky-sbe,2026-10-28T14:34:21+00:00
 2026,KY,21085,Grayson County,2026-10-27,7,mail,162,,73,74,,,1,ky-sbe,2026-10-28T14:34:21+00:00
+2026,KY,21085,Grayson County,2026-10-28,6,inperson,53,,22,30,,,1,ky-sbe,2026-10-29T13:03:23+00:00
+2026,KY,21085,Grayson County,2026-10-28,6,mail,163,,73,75,,,1,ky-sbe,2026-10-29T13:03:23+00:00
 2026,KY,21087,Green County,2026-09-20,44,mail,0,,,,,,1,ky-sbe,2026-09-21T16:12:18+00:00
 2026,KY,21087,Green County,2026-09-21,43,mail,0,,0,0,,,1,ky-sbe,2026-09-22T17:56:28+00:00
 2026,KY,21087,Green County,2026-09-22,42,mail,0,,0,0,,,1,ky-sbe,2026-09-23T16:07:10+00:00
@@ -5131,6 +5217,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,KY,21087,Green County,2026-10-26,8,mail,84,,31,48,,,1,ky-sbe,2026-10-27T13:33:09+00:00
 2026,KY,21087,Green County,2026-10-27,7,inperson,32,,5,22,,,1,ky-sbe,2026-10-28T14:34:21+00:00
 2026,KY,21087,Green County,2026-10-27,7,mail,84,,31,48,,,1,ky-sbe,2026-10-28T14:34:21+00:00
+2026,KY,21087,Green County,2026-10-28,6,inperson,38,,7,26,,,1,ky-sbe,2026-10-29T13:03:23+00:00
+2026,KY,21087,Green County,2026-10-28,6,mail,95,,36,54,,,1,ky-sbe,2026-10-29T13:03:23+00:00
 2026,KY,21089,Greenup County,2026-09-20,44,mail,0,,,,,,1,ky-sbe,2026-09-21T16:12:18+00:00
 2026,KY,21089,Greenup County,2026-09-21,43,mail,0,,0,0,,,1,ky-sbe,2026-09-22T17:56:28+00:00
 2026,KY,21089,Greenup County,2026-09-22,42,mail,0,,0,0,,,1,ky-sbe,2026-09-23T16:07:10+00:00
@@ -5174,6 +5262,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,KY,21089,Greenup County,2026-10-26,8,mail,272,,149,100,,,1,ky-sbe,2026-10-27T13:33:09+00:00
 2026,KY,21089,Greenup County,2026-10-27,7,inperson,292,,99,180,,,1,ky-sbe,2026-10-28T14:34:21+00:00
 2026,KY,21089,Greenup County,2026-10-27,7,mail,304,,159,122,,,1,ky-sbe,2026-10-28T14:34:21+00:00
+2026,KY,21089,Greenup County,2026-10-28,6,inperson,353,,116,220,,,1,ky-sbe,2026-10-29T13:03:23+00:00
+2026,KY,21089,Greenup County,2026-10-28,6,mail,320,,164,130,,,1,ky-sbe,2026-10-29T13:03:23+00:00
 2026,KY,21091,Hancock County,2026-09-20,44,mail,0,,,,,,1,ky-sbe,2026-09-21T16:12:18+00:00
 2026,KY,21091,Hancock County,2026-09-21,43,mail,0,,0,0,,,1,ky-sbe,2026-09-22T17:56:28+00:00
 2026,KY,21091,Hancock County,2026-09-22,42,mail,0,,0,0,,,1,ky-sbe,2026-09-23T16:07:10+00:00
@@ -5217,6 +5307,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,KY,21091,Hancock County,2026-10-26,8,mail,52,,34,15,,,1,ky-sbe,2026-10-27T13:33:09+00:00
 2026,KY,21091,Hancock County,2026-10-27,7,inperson,15,,4,11,,,1,ky-sbe,2026-10-28T14:34:21+00:00
 2026,KY,21091,Hancock County,2026-10-27,7,mail,52,,34,15,,,1,ky-sbe,2026-10-28T14:34:21+00:00
+2026,KY,21091,Hancock County,2026-10-28,6,inperson,19,,7,12,,,1,ky-sbe,2026-10-29T13:03:23+00:00
+2026,KY,21091,Hancock County,2026-10-28,6,mail,57,,36,17,,,1,ky-sbe,2026-10-29T13:03:23+00:00
 2026,KY,21093,Hardin County,2026-09-20,44,mail,0,,,,,,1,ky-sbe,2026-09-21T16:12:18+00:00
 2026,KY,21093,Hardin County,2026-09-21,43,mail,0,,0,0,,,1,ky-sbe,2026-09-22T17:56:28+00:00
 2026,KY,21093,Hardin County,2026-09-22,42,mail,0,,0,0,,,1,ky-sbe,2026-09-23T16:07:10+00:00
@@ -5260,6 +5352,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,KY,21093,Hardin County,2026-10-26,8,mail,1183,,674,394,,,1,ky-sbe,2026-10-27T13:33:09+00:00
 2026,KY,21093,Hardin County,2026-10-27,7,inperson,723,,335,351,,,1,ky-sbe,2026-10-28T14:34:21+00:00
 2026,KY,21093,Hardin County,2026-10-27,7,mail,1268,,725,418,,,1,ky-sbe,2026-10-28T14:34:21+00:00
+2026,KY,21093,Hardin County,2026-10-28,6,inperson,916,,426,441,,,1,ky-sbe,2026-10-29T13:03:23+00:00
+2026,KY,21093,Hardin County,2026-10-28,6,mail,1344,,760,452,,,1,ky-sbe,2026-10-29T13:03:23+00:00
 2026,KY,21095,Harlan County,2026-09-20,44,mail,0,,,,,,1,ky-sbe,2026-09-21T16:12:18+00:00
 2026,KY,21095,Harlan County,2026-09-21,43,mail,0,,0,0,,,1,ky-sbe,2026-09-22T17:56:28+00:00
 2026,KY,21095,Harlan County,2026-09-22,42,mail,0,,0,0,,,1,ky-sbe,2026-09-23T16:07:10+00:00
@@ -5303,6 +5397,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,KY,21095,Harlan County,2026-10-26,8,mail,108,,36,67,,,1,ky-sbe,2026-10-27T13:33:09+00:00
 2026,KY,21095,Harlan County,2026-10-27,7,inperson,10,,4,5,,,1,ky-sbe,2026-10-28T14:34:21+00:00
 2026,KY,21095,Harlan County,2026-10-27,7,mail,111,,37,69,,,1,ky-sbe,2026-10-28T14:34:21+00:00
+2026,KY,21095,Harlan County,2026-10-28,6,inperson,10,,4,5,,,1,ky-sbe,2026-10-29T13:03:23+00:00
+2026,KY,21095,Harlan County,2026-10-28,6,mail,131,,44,82,,,1,ky-sbe,2026-10-29T13:03:23+00:00
 2026,KY,21097,Harrison County,2026-09-20,44,mail,0,,,,,,1,ky-sbe,2026-09-21T16:12:18+00:00
 2026,KY,21097,Harrison County,2026-09-21,43,mail,0,,0,0,,,1,ky-sbe,2026-09-22T17:56:28+00:00
 2026,KY,21097,Harrison County,2026-09-22,42,mail,0,,0,0,,,1,ky-sbe,2026-09-23T16:07:10+00:00
@@ -5346,6 +5442,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,KY,21097,Harrison County,2026-10-26,8,mail,135,,87,37,,,1,ky-sbe,2026-10-27T13:33:09+00:00
 2026,KY,21097,Harrison County,2026-10-27,7,inperson,60,,22,34,,,1,ky-sbe,2026-10-28T14:34:21+00:00
 2026,KY,21097,Harrison County,2026-10-27,7,mail,142,,92,38,,,1,ky-sbe,2026-10-28T14:34:21+00:00
+2026,KY,21097,Harrison County,2026-10-28,6,inperson,71,,28,38,,,1,ky-sbe,2026-10-29T13:03:23+00:00
+2026,KY,21097,Harrison County,2026-10-28,6,mail,155,,104,39,,,1,ky-sbe,2026-10-29T13:03:23+00:00
 2026,KY,21099,Hart County,2026-09-20,44,mail,0,,,,,,1,ky-sbe,2026-09-21T16:12:18+00:00
 2026,KY,21099,Hart County,2026-09-21,43,mail,0,,0,0,,,1,ky-sbe,2026-09-22T17:56:28+00:00
 2026,KY,21099,Hart County,2026-09-22,42,mail,0,,0,0,,,1,ky-sbe,2026-09-23T16:07:10+00:00
@@ -5389,6 +5487,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,KY,21099,Hart County,2026-10-26,8,mail,128,,87,36,,,1,ky-sbe,2026-10-27T13:33:09+00:00
 2026,KY,21099,Hart County,2026-10-27,7,inperson,91,,37,49,,,1,ky-sbe,2026-10-28T14:34:21+00:00
 2026,KY,21099,Hart County,2026-10-27,7,mail,140,,92,43,,,1,ky-sbe,2026-10-28T14:34:21+00:00
+2026,KY,21099,Hart County,2026-10-28,6,inperson,111,,44,62,,,1,ky-sbe,2026-10-29T13:03:23+00:00
+2026,KY,21099,Hart County,2026-10-28,6,mail,147,,97,44,,,1,ky-sbe,2026-10-29T13:03:23+00:00
 2026,KY,21101,Henderson County,2026-09-20,44,mail,0,,,,,,1,ky-sbe,2026-09-21T16:12:18+00:00
 2026,KY,21101,Henderson County,2026-09-21,43,mail,0,,0,0,,,1,ky-sbe,2026-09-22T17:56:28+00:00
 2026,KY,21101,Henderson County,2026-09-22,42,mail,0,,0,0,,,1,ky-sbe,2026-09-23T16:07:10+00:00
@@ -5432,6 +5532,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,KY,21101,Henderson County,2026-10-26,8,mail,219,,154,46,,,1,ky-sbe,2026-10-27T13:33:09+00:00
 2026,KY,21101,Henderson County,2026-10-27,7,inperson,71,,33,37,,,1,ky-sbe,2026-10-28T14:34:21+00:00
 2026,KY,21101,Henderson County,2026-10-27,7,mail,234,,167,48,,,1,ky-sbe,2026-10-28T14:34:21+00:00
+2026,KY,21101,Henderson County,2026-10-28,6,inperson,74,,35,38,,,1,ky-sbe,2026-10-29T13:03:23+00:00
+2026,KY,21101,Henderson County,2026-10-28,6,mail,245,,173,51,,,1,ky-sbe,2026-10-29T13:03:23+00:00
 2026,KY,21103,Henry County,2026-09-20,44,mail,0,,,,,,1,ky-sbe,2026-09-21T16:12:18+00:00
 2026,KY,21103,Henry County,2026-09-21,43,mail,0,,0,0,,,1,ky-sbe,2026-09-22T17:56:28+00:00
 2026,KY,21103,Henry County,2026-09-22,42,mail,0,,0,0,,,1,ky-sbe,2026-09-23T16:07:10+00:00
@@ -5475,6 +5577,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,KY,21103,Henry County,2026-10-26,8,mail,35,,21,13,,,1,ky-sbe,2026-10-27T13:33:09+00:00
 2026,KY,21103,Henry County,2026-10-27,7,inperson,40,,16,21,,,1,ky-sbe,2026-10-28T14:34:21+00:00
 2026,KY,21103,Henry County,2026-10-27,7,mail,47,,28,18,,,1,ky-sbe,2026-10-28T14:34:21+00:00
+2026,KY,21103,Henry County,2026-10-28,6,inperson,46,,18,24,,,1,ky-sbe,2026-10-29T13:03:23+00:00
+2026,KY,21103,Henry County,2026-10-28,6,mail,50,,29,20,,,1,ky-sbe,2026-10-29T13:03:23+00:00
 2026,KY,21105,Hickman County,2026-09-20,44,mail,0,,,,,,1,ky-sbe,2026-09-21T16:12:18+00:00
 2026,KY,21105,Hickman County,2026-09-21,43,mail,0,,0,0,,,1,ky-sbe,2026-09-22T17:56:28+00:00
 2026,KY,21105,Hickman County,2026-09-22,42,mail,0,,0,0,,,1,ky-sbe,2026-09-23T16:07:10+00:00
@@ -5518,6 +5622,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,KY,21105,Hickman County,2026-10-26,8,mail,18,,8,8,,,1,ky-sbe,2026-10-27T13:33:09+00:00
 2026,KY,21105,Hickman County,2026-10-27,7,inperson,0,,0,0,,,1,ky-sbe,2026-10-28T14:34:21+00:00
 2026,KY,21105,Hickman County,2026-10-27,7,mail,18,,8,8,,,1,ky-sbe,2026-10-28T14:34:21+00:00
+2026,KY,21105,Hickman County,2026-10-28,6,inperson,0,,0,0,,,1,ky-sbe,2026-10-29T13:03:23+00:00
+2026,KY,21105,Hickman County,2026-10-28,6,mail,29,,10,16,,,1,ky-sbe,2026-10-29T13:03:23+00:00
 2026,KY,21107,Hopkins County,2026-09-20,44,mail,0,,,,,,1,ky-sbe,2026-09-21T16:12:18+00:00
 2026,KY,21107,Hopkins County,2026-09-21,43,mail,0,,0,0,,,1,ky-sbe,2026-09-22T17:56:28+00:00
 2026,KY,21107,Hopkins County,2026-09-22,42,mail,0,,0,0,,,1,ky-sbe,2026-09-23T16:07:10+00:00
@@ -5561,6 +5667,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,KY,21107,Hopkins County,2026-10-26,8,mail,206,,125,72,,,1,ky-sbe,2026-10-27T13:33:09+00:00
 2026,KY,21107,Hopkins County,2026-10-27,7,inperson,82,,32,43,,,1,ky-sbe,2026-10-28T14:34:21+00:00
 2026,KY,21107,Hopkins County,2026-10-27,7,mail,258,,156,86,,,1,ky-sbe,2026-10-28T14:34:21+00:00
+2026,KY,21107,Hopkins County,2026-10-28,6,inperson,103,,42,51,,,1,ky-sbe,2026-10-29T13:03:23+00:00
+2026,KY,21107,Hopkins County,2026-10-28,6,mail,258,,156,86,,,1,ky-sbe,2026-10-29T13:03:23+00:00
 2026,KY,21109,Jackson County,2026-09-20,44,mail,0,,,,,,1,ky-sbe,2026-09-21T16:12:18+00:00
 2026,KY,21109,Jackson County,2026-09-21,43,mail,0,,0,0,,,1,ky-sbe,2026-09-22T17:56:28+00:00
 2026,KY,21109,Jackson County,2026-09-22,42,mail,0,,0,0,,,1,ky-sbe,2026-09-23T16:07:10+00:00
@@ -5604,6 +5712,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,KY,21109,Jackson County,2026-10-26,8,mail,159,,30,125,,,1,ky-sbe,2026-10-27T13:33:09+00:00
 2026,KY,21109,Jackson County,2026-10-27,7,inperson,28,,1,25,,,1,ky-sbe,2026-10-28T14:34:21+00:00
 2026,KY,21109,Jackson County,2026-10-27,7,mail,173,,31,138,,,1,ky-sbe,2026-10-28T14:34:21+00:00
+2026,KY,21109,Jackson County,2026-10-28,6,inperson,35,,3,30,,,1,ky-sbe,2026-10-29T13:03:23+00:00
+2026,KY,21109,Jackson County,2026-10-28,6,mail,181,,33,141,,,1,ky-sbe,2026-10-29T13:03:23+00:00
 2026,KY,21111,Jefferson County,2026-09-20,44,mail,0,,,,,,1,ky-sbe,2026-09-21T16:12:18+00:00
 2026,KY,21111,Jefferson County,2026-09-21,43,mail,6,,5,1,,,1,ky-sbe,2026-09-22T17:56:28+00:00
 2026,KY,21111,Jefferson County,2026-09-22,42,mail,14,,10,3,,,1,ky-sbe,2026-09-23T16:07:10+00:00
@@ -5647,6 +5757,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,KY,21111,Jefferson County,2026-10-26,8,mail,4772,,2949,1260,,,1,ky-sbe,2026-10-27T13:33:09+00:00
 2026,KY,21111,Jefferson County,2026-10-27,7,inperson,1203,,802,309,,,1,ky-sbe,2026-10-28T14:34:21+00:00
 2026,KY,21111,Jefferson County,2026-10-27,7,mail,5078,,3151,1335,,,1,ky-sbe,2026-10-28T14:34:21+00:00
+2026,KY,21111,Jefferson County,2026-10-28,6,inperson,1309,,869,338,,,1,ky-sbe,2026-10-29T13:03:23+00:00
+2026,KY,21111,Jefferson County,2026-10-28,6,mail,5539,,3437,1464,,,1,ky-sbe,2026-10-29T13:03:23+00:00
 2026,KY,21113,Jessamine County,2026-09-20,44,mail,0,,,,,,1,ky-sbe,2026-09-21T16:12:18+00:00
 2026,KY,21113,Jessamine County,2026-09-21,43,mail,0,,0,0,,,1,ky-sbe,2026-09-22T17:56:28+00:00
 2026,KY,21113,Jessamine County,2026-09-22,42,mail,0,,0,0,,,1,ky-sbe,2026-09-23T16:07:10+00:00
@@ -5690,6 +5802,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,KY,21113,Jessamine County,2026-10-26,8,mail,649,,313,271,,,1,ky-sbe,2026-10-27T13:33:09+00:00
 2026,KY,21113,Jessamine County,2026-10-27,7,inperson,141,,39,90,,,1,ky-sbe,2026-10-28T14:34:21+00:00
 2026,KY,21113,Jessamine County,2026-10-27,7,mail,649,,313,271,,,1,ky-sbe,2026-10-28T14:34:21+00:00
+2026,KY,21113,Jessamine County,2026-10-28,6,inperson,173,,53,107,,,1,ky-sbe,2026-10-29T13:03:23+00:00
+2026,KY,21113,Jessamine County,2026-10-28,6,mail,725,,352,299,,,1,ky-sbe,2026-10-29T13:03:23+00:00
 2026,KY,21115,Johnson County,2026-09-20,44,mail,0,,,,,,1,ky-sbe,2026-09-21T16:12:18+00:00
 2026,KY,21115,Johnson County,2026-09-21,43,mail,0,,0,0,,,1,ky-sbe,2026-09-22T17:56:28+00:00
 2026,KY,21115,Johnson County,2026-09-22,42,mail,0,,0,0,,,1,ky-sbe,2026-09-23T16:07:10+00:00
@@ -5733,6 +5847,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,KY,21115,Johnson County,2026-10-26,8,mail,250,,88,155,,,1,ky-sbe,2026-10-27T13:33:09+00:00
 2026,KY,21115,Johnson County,2026-10-27,7,inperson,223,,41,179,,,1,ky-sbe,2026-10-28T14:34:21+00:00
 2026,KY,21115,Johnson County,2026-10-27,7,mail,258,,90,161,,,1,ky-sbe,2026-10-28T14:34:21+00:00
+2026,KY,21115,Johnson County,2026-10-28,6,inperson,289,,54,232,,,1,ky-sbe,2026-10-29T13:03:23+00:00
+2026,KY,21115,Johnson County,2026-10-28,6,mail,288,,102,176,,,1,ky-sbe,2026-10-29T13:03:23+00:00
 2026,KY,21117,Kenton County,2026-09-20,44,mail,0,,,,,,1,ky-sbe,2026-09-21T16:12:18+00:00
 2026,KY,21117,Kenton County,2026-09-21,43,mail,0,,0,0,,,1,ky-sbe,2026-09-22T17:56:28+00:00
 2026,KY,21117,Kenton County,2026-09-22,42,mail,0,,0,0,,,1,ky-sbe,2026-09-23T16:07:10+00:00
@@ -5776,6 +5892,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,KY,21117,Kenton County,2026-10-26,8,mail,1354,,670,508,,,1,ky-sbe,2026-10-27T13:33:09+00:00
 2026,KY,21117,Kenton County,2026-10-27,7,inperson,308,,123,160,,,1,ky-sbe,2026-10-28T14:34:21+00:00
 2026,KY,21117,Kenton County,2026-10-27,7,mail,1487,,732,566,,,1,ky-sbe,2026-10-28T14:34:21+00:00
+2026,KY,21117,Kenton County,2026-10-28,6,inperson,357,,148,179,,,1,ky-sbe,2026-10-29T13:03:23+00:00
+2026,KY,21117,Kenton County,2026-10-28,6,mail,1581,,776,606,,,1,ky-sbe,2026-10-29T13:03:23+00:00
 2026,KY,21119,Knott County,2026-09-20,44,mail,0,,,,,,1,ky-sbe,2026-09-21T16:12:18+00:00
 2026,KY,21119,Knott County,2026-09-21,43,mail,0,,0,0,,,1,ky-sbe,2026-09-22T17:56:28+00:00
 2026,KY,21119,Knott County,2026-09-22,42,mail,0,,0,0,,,1,ky-sbe,2026-09-23T16:07:10+00:00
@@ -5819,6 +5937,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,KY,21119,Knott County,2026-10-26,8,mail,269,,224,41,,,1,ky-sbe,2026-10-27T13:33:09+00:00
 2026,KY,21119,Knott County,2026-10-27,7,inperson,231,,163,65,,,1,ky-sbe,2026-10-28T14:34:21+00:00
 2026,KY,21119,Knott County,2026-10-27,7,mail,303,,255,43,,,1,ky-sbe,2026-10-28T14:34:21+00:00
+2026,KY,21119,Knott County,2026-10-28,6,inperson,303,,207,92,,,1,ky-sbe,2026-10-29T13:03:23+00:00
+2026,KY,21119,Knott County,2026-10-28,6,mail,323,,272,46,,,1,ky-sbe,2026-10-29T13:03:23+00:00
 2026,KY,21121,Knox County,2026-09-20,44,mail,0,,,,,,1,ky-sbe,2026-09-21T16:12:18+00:00
 2026,KY,21121,Knox County,2026-09-21,43,mail,0,,0,0,,,1,ky-sbe,2026-09-22T17:56:28+00:00
 2026,KY,21121,Knox County,2026-09-22,42,mail,0,,0,0,,,1,ky-sbe,2026-09-23T16:07:10+00:00
@@ -5862,6 +5982,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,KY,21121,Knox County,2026-10-26,8,mail,155,,52,97,,,1,ky-sbe,2026-10-27T13:33:09+00:00
 2026,KY,21121,Knox County,2026-10-27,7,inperson,38,,6,30,,,1,ky-sbe,2026-10-28T14:34:21+00:00
 2026,KY,21121,Knox County,2026-10-27,7,mail,188,,62,118,,,1,ky-sbe,2026-10-28T14:34:21+00:00
+2026,KY,21121,Knox County,2026-10-28,6,inperson,45,,6,37,,,1,ky-sbe,2026-10-29T13:03:23+00:00
+2026,KY,21121,Knox County,2026-10-28,6,mail,211,,72,131,,,1,ky-sbe,2026-10-29T13:03:23+00:00
 2026,KY,21123,Larue County,2026-09-20,44,mail,0,,,,,,1,ky-sbe,2026-09-21T16:12:18+00:00
 2026,KY,21123,Larue County,2026-09-21,43,mail,0,,0,0,,,1,ky-sbe,2026-09-22T17:56:28+00:00
 2026,KY,21123,Larue County,2026-09-22,42,mail,0,,0,0,,,1,ky-sbe,2026-09-23T16:07:10+00:00
@@ -5905,6 +6027,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,KY,21123,Larue County,2026-10-26,8,mail,82,,52,26,,,1,ky-sbe,2026-10-27T13:33:09+00:00
 2026,KY,21123,Larue County,2026-10-27,7,inperson,48,,13,34,,,1,ky-sbe,2026-10-28T14:34:21+00:00
 2026,KY,21123,Larue County,2026-10-27,7,mail,83,,52,27,,,1,ky-sbe,2026-10-28T14:34:21+00:00
+2026,KY,21123,Larue County,2026-10-28,6,inperson,54,,13,40,,,1,ky-sbe,2026-10-29T13:03:23+00:00
+2026,KY,21123,Larue County,2026-10-28,6,mail,89,,57,28,,,1,ky-sbe,2026-10-29T13:03:23+00:00
 2026,KY,21125,Laurel County,2026-09-20,44,mail,0,,,,,,1,ky-sbe,2026-09-21T16:12:18+00:00
 2026,KY,21125,Laurel County,2026-09-21,43,mail,0,,0,0,,,1,ky-sbe,2026-09-22T17:56:28+00:00
 2026,KY,21125,Laurel County,2026-09-22,42,mail,0,,0,0,,,1,ky-sbe,2026-09-23T16:07:10+00:00
@@ -5948,6 +6072,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,KY,21125,Laurel County,2026-10-26,8,mail,641,,167,438,,,1,ky-sbe,2026-10-27T13:33:09+00:00
 2026,KY,21125,Laurel County,2026-10-27,7,inperson,126,,16,106,,,1,ky-sbe,2026-10-28T14:34:21+00:00
 2026,KY,21125,Laurel County,2026-10-27,7,mail,700,,183,474,,,1,ky-sbe,2026-10-28T14:34:21+00:00
+2026,KY,21125,Laurel County,2026-10-28,6,inperson,159,,17,138,,,1,ky-sbe,2026-10-29T13:03:23+00:00
+2026,KY,21125,Laurel County,2026-10-28,6,mail,748,,192,512,,,1,ky-sbe,2026-10-29T13:03:23+00:00
 2026,KY,21127,Lawrence County,2026-09-20,44,mail,0,,,,,,1,ky-sbe,2026-09-21T16:12:18+00:00
 2026,KY,21127,Lawrence County,2026-09-21,43,mail,0,,0,0,,,1,ky-sbe,2026-09-22T17:56:28+00:00
 2026,KY,21127,Lawrence County,2026-09-22,42,mail,0,,0,0,,,1,ky-sbe,2026-09-23T16:07:10+00:00
@@ -5991,6 +6117,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,KY,21127,Lawrence County,2026-10-26,8,mail,120,,60,50,,,1,ky-sbe,2026-10-27T13:33:09+00:00
 2026,KY,21127,Lawrence County,2026-10-27,7,inperson,37,,7,25,,,1,ky-sbe,2026-10-28T14:34:21+00:00
 2026,KY,21127,Lawrence County,2026-10-27,7,mail,126,,60,56,,,1,ky-sbe,2026-10-28T14:34:21+00:00
+2026,KY,21127,Lawrence County,2026-10-28,6,inperson,42,,9,28,,,1,ky-sbe,2026-10-29T13:03:23+00:00
+2026,KY,21127,Lawrence County,2026-10-28,6,mail,139,,63,66,,,1,ky-sbe,2026-10-29T13:03:23+00:00
 2026,KY,21129,Lee County,2026-09-20,44,mail,0,,,,,,1,ky-sbe,2026-09-21T16:12:18+00:00
 2026,KY,21129,Lee County,2026-09-21,43,mail,0,,0,0,,,1,ky-sbe,2026-09-22T17:56:28+00:00
 2026,KY,21129,Lee County,2026-09-22,42,mail,0,,0,0,,,1,ky-sbe,2026-09-23T16:07:10+00:00
@@ -6034,6 +6162,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,KY,21129,Lee County,2026-10-26,8,mail,99,,22,75,,,1,ky-sbe,2026-10-27T13:33:09+00:00
 2026,KY,21129,Lee County,2026-10-27,7,inperson,12,,2,10,,,1,ky-sbe,2026-10-28T14:34:21+00:00
 2026,KY,21129,Lee County,2026-10-27,7,mail,103,,24,77,,,1,ky-sbe,2026-10-28T14:34:21+00:00
+2026,KY,21129,Lee County,2026-10-28,6,inperson,13,,2,11,,,1,ky-sbe,2026-10-29T13:03:23+00:00
+2026,KY,21129,Lee County,2026-10-28,6,mail,103,,24,77,,,1,ky-sbe,2026-10-29T13:03:23+00:00
 2026,KY,21131,Leslie County,2026-09-20,44,mail,0,,,,,,1,ky-sbe,2026-09-21T16:12:18+00:00
 2026,KY,21131,Leslie County,2026-09-21,43,mail,0,,0,0,,,1,ky-sbe,2026-09-22T17:56:28+00:00
 2026,KY,21131,Leslie County,2026-09-22,42,mail,0,,0,0,,,1,ky-sbe,2026-09-23T16:07:10+00:00
@@ -6077,6 +6207,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,KY,21131,Leslie County,2026-10-26,8,mail,73,,7,63,,,1,ky-sbe,2026-10-27T13:33:09+00:00
 2026,KY,21131,Leslie County,2026-10-27,7,inperson,11,,0,11,,,1,ky-sbe,2026-10-28T14:34:21+00:00
 2026,KY,21131,Leslie County,2026-10-27,7,mail,77,,7,66,,,1,ky-sbe,2026-10-28T14:34:21+00:00
+2026,KY,21131,Leslie County,2026-10-28,6,inperson,15,,1,14,,,1,ky-sbe,2026-10-29T13:03:23+00:00
+2026,KY,21131,Leslie County,2026-10-28,6,mail,81,,7,70,,,1,ky-sbe,2026-10-29T13:03:23+00:00
 2026,KY,21133,Letcher County,2026-09-20,44,mail,0,,,,,,1,ky-sbe,2026-09-21T16:12:18+00:00
 2026,KY,21133,Letcher County,2026-09-21,43,mail,0,,0,0,,,1,ky-sbe,2026-09-22T17:56:28+00:00
 2026,KY,21133,Letcher County,2026-09-22,42,mail,0,,0,0,,,1,ky-sbe,2026-09-23T16:07:10+00:00
@@ -6120,6 +6252,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,KY,21133,Letcher County,2026-10-26,8,mail,169,,103,60,,,1,ky-sbe,2026-10-27T13:33:09+00:00
 2026,KY,21133,Letcher County,2026-10-27,7,inperson,28,,18,8,,,1,ky-sbe,2026-10-28T14:34:21+00:00
 2026,KY,21133,Letcher County,2026-10-27,7,mail,178,,111,60,,,1,ky-sbe,2026-10-28T14:34:21+00:00
+2026,KY,21133,Letcher County,2026-10-28,6,inperson,32,,22,8,,,1,ky-sbe,2026-10-29T13:03:23+00:00
+2026,KY,21133,Letcher County,2026-10-28,6,mail,189,,115,67,,,1,ky-sbe,2026-10-29T13:03:23+00:00
 2026,KY,21135,Lewis County,2026-09-20,44,mail,0,,,,,,1,ky-sbe,2026-09-21T16:12:18+00:00
 2026,KY,21135,Lewis County,2026-09-21,43,mail,0,,0,0,,,1,ky-sbe,2026-09-22T17:56:28+00:00
 2026,KY,21135,Lewis County,2026-09-22,42,mail,0,,0,0,,,1,ky-sbe,2026-09-23T16:07:10+00:00
@@ -6163,6 +6297,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,KY,21135,Lewis County,2026-10-26,8,mail,44,,20,20,,,1,ky-sbe,2026-10-27T13:33:09+00:00
 2026,KY,21135,Lewis County,2026-10-27,7,inperson,20,,3,17,,,1,ky-sbe,2026-10-28T14:34:21+00:00
 2026,KY,21135,Lewis County,2026-10-27,7,mail,50,,22,24,,,1,ky-sbe,2026-10-28T14:34:21+00:00
+2026,KY,21135,Lewis County,2026-10-28,6,inperson,23,,3,20,,,1,ky-sbe,2026-10-29T13:03:23+00:00
+2026,KY,21135,Lewis County,2026-10-28,6,mail,54,,24,25,,,1,ky-sbe,2026-10-29T13:03:23+00:00
 2026,KY,21137,Lincoln County,2026-09-20,44,mail,0,,,,,,1,ky-sbe,2026-09-21T16:12:18+00:00
 2026,KY,21137,Lincoln County,2026-09-21,43,mail,0,,0,0,,,1,ky-sbe,2026-09-22T17:56:28+00:00
 2026,KY,21137,Lincoln County,2026-09-22,42,mail,0,,0,0,,,1,ky-sbe,2026-09-23T16:07:10+00:00
@@ -6206,6 +6342,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,KY,21137,Lincoln County,2026-10-26,8,mail,122,,51,64,,,1,ky-sbe,2026-10-27T13:33:09+00:00
 2026,KY,21137,Lincoln County,2026-10-27,7,inperson,247,,82,153,,,1,ky-sbe,2026-10-28T14:34:21+00:00
 2026,KY,21137,Lincoln County,2026-10-27,7,mail,126,,53,66,,,1,ky-sbe,2026-10-28T14:34:21+00:00
+2026,KY,21137,Lincoln County,2026-10-28,6,inperson,298,,97,185,,,1,ky-sbe,2026-10-29T13:03:23+00:00
+2026,KY,21137,Lincoln County,2026-10-28,6,mail,126,,53,66,,,1,ky-sbe,2026-10-29T13:03:23+00:00
 2026,KY,21139,Livingston County,2026-09-20,44,mail,0,,,,,,1,ky-sbe,2026-09-21T16:12:18+00:00
 2026,KY,21139,Livingston County,2026-09-21,43,mail,0,,0,0,,,1,ky-sbe,2026-09-22T17:56:28+00:00
 2026,KY,21139,Livingston County,2026-09-22,42,mail,0,,0,0,,,1,ky-sbe,2026-09-23T16:07:10+00:00
@@ -6249,6 +6387,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,KY,21139,Livingston County,2026-10-26,8,mail,71,,39,31,,,1,ky-sbe,2026-10-27T13:33:09+00:00
 2026,KY,21139,Livingston County,2026-10-27,7,inperson,80,,20,57,,,1,ky-sbe,2026-10-28T14:34:21+00:00
 2026,KY,21139,Livingston County,2026-10-27,7,mail,85,,47,37,,,1,ky-sbe,2026-10-28T14:34:21+00:00
+2026,KY,21139,Livingston County,2026-10-28,6,inperson,96,,20,72,,,1,ky-sbe,2026-10-29T13:03:23+00:00
+2026,KY,21139,Livingston County,2026-10-28,6,mail,91,,49,41,,,1,ky-sbe,2026-10-29T13:03:23+00:00
 2026,KY,21141,Logan County,2026-09-20,44,mail,0,,,,,,1,ky-sbe,2026-09-21T16:12:18+00:00
 2026,KY,21141,Logan County,2026-09-21,43,mail,0,,0,0,,,1,ky-sbe,2026-09-22T17:56:28+00:00
 2026,KY,21141,Logan County,2026-09-22,42,mail,0,,0,0,,,1,ky-sbe,2026-09-23T16:07:10+00:00
@@ -6292,6 +6432,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,KY,21141,Logan County,2026-10-26,8,mail,165,,96,64,,,1,ky-sbe,2026-10-27T13:33:09+00:00
 2026,KY,21141,Logan County,2026-10-27,7,inperson,61,,30,31,,,1,ky-sbe,2026-10-28T14:34:21+00:00
 2026,KY,21141,Logan County,2026-10-27,7,mail,176,,102,69,,,1,ky-sbe,2026-10-28T14:34:21+00:00
+2026,KY,21141,Logan County,2026-10-28,6,inperson,70,,37,32,,,1,ky-sbe,2026-10-29T13:03:23+00:00
+2026,KY,21141,Logan County,2026-10-28,6,mail,191,,112,73,,,1,ky-sbe,2026-10-29T13:03:23+00:00
 2026,KY,21143,Lyon County,2026-09-20,44,mail,0,,,,,,1,ky-sbe,2026-09-21T16:12:18+00:00
 2026,KY,21143,Lyon County,2026-09-21,43,mail,0,,0,0,,,1,ky-sbe,2026-09-22T17:56:28+00:00
 2026,KY,21143,Lyon County,2026-09-22,42,mail,0,,0,0,,,1,ky-sbe,2026-09-23T16:07:10+00:00
@@ -6335,6 +6477,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,KY,21143,Lyon County,2026-10-26,8,mail,49,,25,22,,,1,ky-sbe,2026-10-27T13:33:09+00:00
 2026,KY,21143,Lyon County,2026-10-27,7,inperson,43,,21,21,,,1,ky-sbe,2026-10-28T14:34:21+00:00
 2026,KY,21143,Lyon County,2026-10-27,7,mail,56,,32,22,,,1,ky-sbe,2026-10-28T14:34:21+00:00
+2026,KY,21143,Lyon County,2026-10-28,6,inperson,44,,21,22,,,1,ky-sbe,2026-10-29T13:03:23+00:00
+2026,KY,21143,Lyon County,2026-10-28,6,mail,61,,35,23,,,1,ky-sbe,2026-10-29T13:03:23+00:00
 2026,KY,21145,McCracken County,2026-09-20,44,mail,0,,,,,,1,ky-sbe,2026-09-21T16:12:18+00:00
 2026,KY,21145,McCracken County,2026-09-21,43,mail,0,,0,0,,,1,ky-sbe,2026-09-22T17:56:28+00:00
 2026,KY,21145,McCracken County,2026-09-22,42,mail,0,,0,0,,,1,ky-sbe,2026-09-23T16:07:10+00:00
@@ -6378,6 +6522,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,KY,21145,McCracken County,2026-10-26,8,mail,534,,319,180,,,1,ky-sbe,2026-10-27T13:33:09+00:00
 2026,KY,21145,McCracken County,2026-10-27,7,inperson,228,,95,113,,,1,ky-sbe,2026-10-28T14:34:21+00:00
 2026,KY,21145,McCracken County,2026-10-27,7,mail,567,,345,187,,,1,ky-sbe,2026-10-28T14:34:21+00:00
+2026,KY,21145,McCracken County,2026-10-28,6,inperson,259,,111,126,,,1,ky-sbe,2026-10-29T13:03:23+00:00
+2026,KY,21145,McCracken County,2026-10-28,6,mail,593,,359,196,,,1,ky-sbe,2026-10-29T13:03:23+00:00
 2026,KY,21147,McCreary County,2026-09-20,44,mail,0,,,,,,1,ky-sbe,2026-09-21T16:12:18+00:00
 2026,KY,21147,McCreary County,2026-09-21,43,mail,0,,0,0,,,1,ky-sbe,2026-09-22T17:56:28+00:00
 2026,KY,21147,McCreary County,2026-09-22,42,mail,0,,0,0,,,1,ky-sbe,2026-09-23T16:07:10+00:00
@@ -6421,6 +6567,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,KY,21147,McCreary County,2026-10-26,8,mail,140,,25,112,,,1,ky-sbe,2026-10-27T13:33:09+00:00
 2026,KY,21147,McCreary County,2026-10-27,7,inperson,52,,6,44,,,1,ky-sbe,2026-10-28T14:34:21+00:00
 2026,KY,21147,McCreary County,2026-10-27,7,mail,148,,25,120,,,1,ky-sbe,2026-10-28T14:34:21+00:00
+2026,KY,21147,McCreary County,2026-10-28,6,inperson,61,,6,53,,,1,ky-sbe,2026-10-29T13:03:23+00:00
+2026,KY,21147,McCreary County,2026-10-28,6,mail,164,,27,133,,,1,ky-sbe,2026-10-29T13:03:23+00:00
 2026,KY,21149,McLean County,2026-09-20,44,mail,0,,,,,,1,ky-sbe,2026-09-21T16:12:18+00:00
 2026,KY,21149,McLean County,2026-09-21,43,mail,0,,0,0,,,1,ky-sbe,2026-09-22T17:56:28+00:00
 2026,KY,21149,McLean County,2026-09-22,42,mail,0,,0,0,,,1,ky-sbe,2026-09-23T16:07:10+00:00
@@ -6464,6 +6612,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,KY,21149,McLean County,2026-10-26,8,mail,62,,30,27,,,1,ky-sbe,2026-10-27T13:33:09+00:00
 2026,KY,21149,McLean County,2026-10-27,7,inperson,39,,16,23,,,1,ky-sbe,2026-10-28T14:34:21+00:00
 2026,KY,21149,McLean County,2026-10-27,7,mail,65,,32,28,,,1,ky-sbe,2026-10-28T14:34:21+00:00
+2026,KY,21149,McLean County,2026-10-28,6,inperson,44,,16,28,,,1,ky-sbe,2026-10-29T13:03:23+00:00
+2026,KY,21149,McLean County,2026-10-28,6,mail,71,,35,29,,,1,ky-sbe,2026-10-29T13:03:23+00:00
 2026,KY,21151,Madison County,2026-09-20,44,mail,0,,,,,,1,ky-sbe,2026-09-21T16:12:18+00:00
 2026,KY,21151,Madison County,2026-09-21,43,mail,0,,0,0,,,1,ky-sbe,2026-09-22T17:56:28+00:00
 2026,KY,21151,Madison County,2026-09-22,42,mail,0,,0,0,,,1,ky-sbe,2026-09-23T16:07:10+00:00
@@ -6507,6 +6657,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,KY,21151,Madison County,2026-10-26,8,mail,814,,445,294,,,1,ky-sbe,2026-10-27T13:33:09+00:00
 2026,KY,21151,Madison County,2026-10-27,7,inperson,167,,71,92,,,1,ky-sbe,2026-10-28T14:34:21+00:00
 2026,KY,21151,Madison County,2026-10-27,7,mail,874,,471,326,,,1,ky-sbe,2026-10-28T14:34:21+00:00
+2026,KY,21151,Madison County,2026-10-28,6,inperson,190,,83,102,,,1,ky-sbe,2026-10-29T13:03:23+00:00
+2026,KY,21151,Madison County,2026-10-28,6,mail,1018,,547,384,,,1,ky-sbe,2026-10-29T13:03:23+00:00
 2026,KY,21153,Magoffin County,2026-09-20,44,mail,0,,,,,,1,ky-sbe,2026-09-21T16:12:18+00:00
 2026,KY,21153,Magoffin County,2026-09-21,43,mail,0,,0,0,,,1,ky-sbe,2026-09-22T17:56:28+00:00
 2026,KY,21153,Magoffin County,2026-09-22,42,mail,0,,0,0,,,1,ky-sbe,2026-09-23T16:07:10+00:00
@@ -6550,6 +6702,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,KY,21153,Magoffin County,2026-10-26,8,mail,280,,179,99,,,1,ky-sbe,2026-10-27T13:33:09+00:00
 2026,KY,21153,Magoffin County,2026-10-27,7,inperson,199,,110,88,,,1,ky-sbe,2026-10-28T14:34:21+00:00
 2026,KY,21153,Magoffin County,2026-10-27,7,mail,283,,179,102,,,1,ky-sbe,2026-10-28T14:34:21+00:00
+2026,KY,21153,Magoffin County,2026-10-28,6,inperson,238,,129,105,,,1,ky-sbe,2026-10-29T13:03:23+00:00
+2026,KY,21153,Magoffin County,2026-10-28,6,mail,376,,226,146,,,1,ky-sbe,2026-10-29T13:03:23+00:00
 2026,KY,21155,Marion County,2026-09-20,44,mail,0,,,,,,1,ky-sbe,2026-09-21T16:12:18+00:00
 2026,KY,21155,Marion County,2026-09-21,43,mail,0,,0,0,,,1,ky-sbe,2026-09-22T17:56:28+00:00
 2026,KY,21155,Marion County,2026-09-22,42,mail,0,,0,0,,,1,ky-sbe,2026-09-23T16:07:10+00:00
@@ -6593,6 +6747,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,KY,21155,Marion County,2026-10-26,8,mail,134,,101,24,,,1,ky-sbe,2026-10-27T13:33:09+00:00
 2026,KY,21155,Marion County,2026-10-27,7,inperson,23,,11,11,,,1,ky-sbe,2026-10-28T14:34:21+00:00
 2026,KY,21155,Marion County,2026-10-27,7,mail,143,,109,25,,,1,ky-sbe,2026-10-28T14:34:21+00:00
+2026,KY,21155,Marion County,2026-10-28,6,inperson,24,,12,11,,,1,ky-sbe,2026-10-29T13:03:23+00:00
+2026,KY,21155,Marion County,2026-10-28,6,mail,145,,111,25,,,1,ky-sbe,2026-10-29T13:03:23+00:00
 2026,KY,21157,Marshall County,2026-09-20,44,mail,0,,,,,,1,ky-sbe,2026-09-21T16:12:18+00:00
 2026,KY,21157,Marshall County,2026-09-21,43,mail,0,,0,0,,,1,ky-sbe,2026-09-22T17:56:28+00:00
 2026,KY,21157,Marshall County,2026-09-22,42,mail,0,,0,0,,,1,ky-sbe,2026-09-23T16:07:10+00:00
@@ -6636,6 +6792,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,KY,21157,Marshall County,2026-10-26,8,mail,184,,95,72,,,1,ky-sbe,2026-10-27T13:33:09+00:00
 2026,KY,21157,Marshall County,2026-10-27,7,inperson,76,,20,54,,,1,ky-sbe,2026-10-28T14:34:21+00:00
 2026,KY,21157,Marshall County,2026-10-27,7,mail,213,,106,88,,,1,ky-sbe,2026-10-28T14:34:21+00:00
+2026,KY,21157,Marshall County,2026-10-28,6,inperson,83,,21,60,,,1,ky-sbe,2026-10-29T13:03:23+00:00
+2026,KY,21157,Marshall County,2026-10-28,6,mail,213,,106,88,,,1,ky-sbe,2026-10-29T13:03:23+00:00
 2026,KY,21159,Martin County,2026-09-20,44,mail,0,,,,,,1,ky-sbe,2026-09-21T16:12:18+00:00
 2026,KY,21159,Martin County,2026-09-21,43,mail,0,,0,0,,,1,ky-sbe,2026-09-22T17:56:28+00:00
 2026,KY,21159,Martin County,2026-09-22,42,mail,0,,0,0,,,1,ky-sbe,2026-09-23T16:07:10+00:00
@@ -6679,6 +6837,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,KY,21159,Martin County,2026-10-26,8,mail,59,,9,48,,,1,ky-sbe,2026-10-27T13:33:09+00:00
 2026,KY,21159,Martin County,2026-10-27,7,inperson,71,,2,68,,,1,ky-sbe,2026-10-28T14:34:21+00:00
 2026,KY,21159,Martin County,2026-10-27,7,mail,77,,10,65,,,1,ky-sbe,2026-10-28T14:34:21+00:00
+2026,KY,21159,Martin County,2026-10-28,6,inperson,92,,4,87,,,1,ky-sbe,2026-10-29T13:03:23+00:00
+2026,KY,21159,Martin County,2026-10-28,6,mail,78,,10,66,,,1,ky-sbe,2026-10-29T13:03:23+00:00
 2026,KY,21161,Mason County,2026-09-20,44,mail,0,,,,,,1,ky-sbe,2026-09-21T16:12:18+00:00
 2026,KY,21161,Mason County,2026-09-21,43,mail,0,,0,0,,,1,ky-sbe,2026-09-22T17:56:28+00:00
 2026,KY,21161,Mason County,2026-09-22,42,mail,0,,0,0,,,1,ky-sbe,2026-09-23T16:07:10+00:00
@@ -6722,6 +6882,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,KY,21161,Mason County,2026-10-26,8,mail,189,,107,69,,,1,ky-sbe,2026-10-27T13:33:09+00:00
 2026,KY,21161,Mason County,2026-10-27,7,inperson,22,,15,7,,,1,ky-sbe,2026-10-28T14:34:21+00:00
 2026,KY,21161,Mason County,2026-10-27,7,mail,201,,112,75,,,1,ky-sbe,2026-10-28T14:34:21+00:00
+2026,KY,21161,Mason County,2026-10-28,6,inperson,27,,16,11,,,1,ky-sbe,2026-10-29T13:03:23+00:00
+2026,KY,21161,Mason County,2026-10-28,6,mail,210,,115,80,,,1,ky-sbe,2026-10-29T13:03:23+00:00
 2026,KY,21163,Meade County,2026-09-20,44,mail,0,,,,,,1,ky-sbe,2026-09-21T16:12:18+00:00
 2026,KY,21163,Meade County,2026-09-21,43,mail,0,,0,0,,,1,ky-sbe,2026-09-22T17:56:28+00:00
 2026,KY,21163,Meade County,2026-09-22,42,mail,0,,0,0,,,1,ky-sbe,2026-09-23T16:07:10+00:00
@@ -6765,6 +6927,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,KY,21163,Meade County,2026-10-26,8,mail,176,,104,61,,,1,ky-sbe,2026-10-27T13:33:09+00:00
 2026,KY,21163,Meade County,2026-10-27,7,inperson,69,,30,38,,,1,ky-sbe,2026-10-28T14:34:21+00:00
 2026,KY,21163,Meade County,2026-10-27,7,mail,190,,105,72,,,1,ky-sbe,2026-10-28T14:34:21+00:00
+2026,KY,21163,Meade County,2026-10-28,6,inperson,76,,34,41,,,1,ky-sbe,2026-10-29T13:03:23+00:00
+2026,KY,21163,Meade County,2026-10-28,6,mail,195,,107,75,,,1,ky-sbe,2026-10-29T13:03:23+00:00
 2026,KY,21165,Menifee County,2026-09-20,44,mail,0,,,,,,1,ky-sbe,2026-09-21T16:12:18+00:00
 2026,KY,21165,Menifee County,2026-09-21,43,mail,0,,0,0,,,1,ky-sbe,2026-09-22T17:56:28+00:00
 2026,KY,21165,Menifee County,2026-09-22,42,mail,0,,0,0,,,1,ky-sbe,2026-09-23T16:07:10+00:00
@@ -6808,6 +6972,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,KY,21165,Menifee County,2026-10-26,8,mail,230,,175,50,,,1,ky-sbe,2026-10-27T13:33:09+00:00
 2026,KY,21165,Menifee County,2026-10-27,7,inperson,62,,28,32,,,1,ky-sbe,2026-10-28T14:34:21+00:00
 2026,KY,21165,Menifee County,2026-10-27,7,mail,241,,183,52,,,1,ky-sbe,2026-10-28T14:34:21+00:00
+2026,KY,21165,Menifee County,2026-10-28,6,inperson,68,,32,33,,,1,ky-sbe,2026-10-29T13:03:23+00:00
+2026,KY,21165,Menifee County,2026-10-28,6,mail,256,,193,55,,,1,ky-sbe,2026-10-29T13:03:23+00:00
 2026,KY,21167,Mercer County,2026-09-20,44,mail,0,,,,,,1,ky-sbe,2026-09-21T16:12:18+00:00
 2026,KY,21167,Mercer County,2026-09-21,43,mail,0,,0,0,,,1,ky-sbe,2026-09-22T17:56:28+00:00
 2026,KY,21167,Mercer County,2026-09-22,42,mail,1,,1,0,,,1,ky-sbe,2026-09-23T16:07:10+00:00
@@ -6851,6 +7017,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,KY,21167,Mercer County,2026-10-26,8,mail,169,,98,59,,,1,ky-sbe,2026-10-27T13:33:09+00:00
 2026,KY,21167,Mercer County,2026-10-27,7,inperson,92,,31,51,,,1,ky-sbe,2026-10-28T14:34:21+00:00
 2026,KY,21167,Mercer County,2026-10-27,7,mail,195,,107,72,,,1,ky-sbe,2026-10-28T14:34:21+00:00
+2026,KY,21167,Mercer County,2026-10-28,6,inperson,98,,35,53,,,1,ky-sbe,2026-10-29T13:03:23+00:00
+2026,KY,21167,Mercer County,2026-10-28,6,mail,209,,113,78,,,1,ky-sbe,2026-10-29T13:03:23+00:00
 2026,KY,21169,Metcalfe County,2026-09-20,44,mail,0,,,,,,1,ky-sbe,2026-09-21T16:12:18+00:00
 2026,KY,21169,Metcalfe County,2026-09-21,43,mail,0,,0,0,,,1,ky-sbe,2026-09-22T17:56:28+00:00
 2026,KY,21169,Metcalfe County,2026-09-22,42,mail,0,,0,0,,,1,ky-sbe,2026-09-23T16:07:10+00:00
@@ -6894,6 +7062,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,KY,21169,Metcalfe County,2026-10-26,8,mail,85,,37,41,,,1,ky-sbe,2026-10-27T13:33:09+00:00
 2026,KY,21169,Metcalfe County,2026-10-27,7,inperson,18,,5,11,,,1,ky-sbe,2026-10-28T14:34:21+00:00
 2026,KY,21169,Metcalfe County,2026-10-27,7,mail,92,,42,42,,,1,ky-sbe,2026-10-28T14:34:21+00:00
+2026,KY,21169,Metcalfe County,2026-10-28,6,inperson,24,,9,13,,,1,ky-sbe,2026-10-29T13:03:23+00:00
+2026,KY,21169,Metcalfe County,2026-10-28,6,mail,99,,47,44,,,1,ky-sbe,2026-10-29T13:03:23+00:00
 2026,KY,21171,Monroe County,2026-09-20,44,mail,0,,,,,,1,ky-sbe,2026-09-21T16:12:18+00:00
 2026,KY,21171,Monroe County,2026-09-21,43,mail,0,,0,0,,,1,ky-sbe,2026-09-22T17:56:28+00:00
 2026,KY,21171,Monroe County,2026-09-22,42,mail,0,,0,0,,,1,ky-sbe,2026-09-23T16:07:10+00:00
@@ -6937,6 +7107,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,KY,21171,Monroe County,2026-10-26,8,mail,51,,3,47,,,1,ky-sbe,2026-10-27T13:33:09+00:00
 2026,KY,21171,Monroe County,2026-10-27,7,inperson,30,,2,27,,,1,ky-sbe,2026-10-28T14:34:21+00:00
 2026,KY,21171,Monroe County,2026-10-27,7,mail,51,,3,47,,,1,ky-sbe,2026-10-28T14:34:21+00:00
+2026,KY,21171,Monroe County,2026-10-28,6,inperson,32,,2,29,,,1,ky-sbe,2026-10-29T13:03:23+00:00
+2026,KY,21171,Monroe County,2026-10-28,6,mail,56,,3,52,,,1,ky-sbe,2026-10-29T13:03:23+00:00
 2026,KY,21173,Montgomery County,2026-09-20,44,mail,0,,,,,,1,ky-sbe,2026-09-21T16:12:18+00:00
 2026,KY,21173,Montgomery County,2026-09-21,43,mail,0,,0,0,,,1,ky-sbe,2026-09-22T17:56:28+00:00
 2026,KY,21173,Montgomery County,2026-09-22,42,mail,0,,0,0,,,1,ky-sbe,2026-09-23T16:07:10+00:00
@@ -6980,6 +7152,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,KY,21173,Montgomery County,2026-10-26,8,mail,224,,151,64,,,1,ky-sbe,2026-10-27T13:33:09+00:00
 2026,KY,21173,Montgomery County,2026-10-27,7,inperson,31,,9,16,,,1,ky-sbe,2026-10-28T14:34:21+00:00
 2026,KY,21173,Montgomery County,2026-10-27,7,mail,250,,173,67,,,1,ky-sbe,2026-10-28T14:34:21+00:00
+2026,KY,21173,Montgomery County,2026-10-28,6,inperson,31,,9,16,,,1,ky-sbe,2026-10-29T13:03:23+00:00
+2026,KY,21173,Montgomery County,2026-10-28,6,mail,276,,191,73,,,1,ky-sbe,2026-10-29T13:03:23+00:00
 2026,KY,21175,Morgan County,2026-09-20,44,mail,0,,,,,,1,ky-sbe,2026-09-21T16:12:18+00:00
 2026,KY,21175,Morgan County,2026-09-21,43,mail,0,,0,0,,,1,ky-sbe,2026-09-22T17:56:28+00:00
 2026,KY,21175,Morgan County,2026-09-22,42,mail,0,,0,0,,,1,ky-sbe,2026-09-23T16:07:10+00:00
@@ -7023,6 +7197,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,KY,21175,Morgan County,2026-10-26,8,mail,215,,162,51,,,1,ky-sbe,2026-10-27T13:33:09+00:00
 2026,KY,21175,Morgan County,2026-10-27,7,inperson,58,,42,15,,,1,ky-sbe,2026-10-28T14:34:21+00:00
 2026,KY,21175,Morgan County,2026-10-27,7,mail,221,,168,51,,,1,ky-sbe,2026-10-28T14:34:21+00:00
+2026,KY,21175,Morgan County,2026-10-28,6,inperson,58,,42,15,,,1,ky-sbe,2026-10-29T13:03:23+00:00
+2026,KY,21175,Morgan County,2026-10-28,6,mail,230,,172,56,,,1,ky-sbe,2026-10-29T13:03:23+00:00
 2026,KY,21177,Muhlenberg County,2026-09-20,44,mail,0,,,,,,1,ky-sbe,2026-09-21T16:12:18+00:00
 2026,KY,21177,Muhlenberg County,2026-09-21,43,mail,0,,0,0,,,1,ky-sbe,2026-09-22T17:56:28+00:00
 2026,KY,21177,Muhlenberg County,2026-09-22,42,mail,0,,0,0,,,1,ky-sbe,2026-09-23T16:07:10+00:00
@@ -7066,6 +7242,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,KY,21177,Muhlenberg County,2026-10-26,8,mail,202,,146,51,,,1,ky-sbe,2026-10-27T13:33:09+00:00
 2026,KY,21177,Muhlenberg County,2026-10-27,7,inperson,102,,48,46,,,1,ky-sbe,2026-10-28T14:34:21+00:00
 2026,KY,21177,Muhlenberg County,2026-10-27,7,mail,202,,146,51,,,1,ky-sbe,2026-10-28T14:34:21+00:00
+2026,KY,21177,Muhlenberg County,2026-10-28,6,inperson,116,,55,53,,,1,ky-sbe,2026-10-29T13:03:23+00:00
+2026,KY,21177,Muhlenberg County,2026-10-28,6,mail,259,,182,67,,,1,ky-sbe,2026-10-29T13:03:23+00:00
 2026,KY,21179,Nelson County,2026-09-20,44,mail,0,,,,,,1,ky-sbe,2026-09-21T16:12:18+00:00
 2026,KY,21179,Nelson County,2026-09-21,43,mail,0,,0,0,,,1,ky-sbe,2026-09-22T17:56:28+00:00
 2026,KY,21179,Nelson County,2026-09-22,42,mail,0,,0,0,,,1,ky-sbe,2026-09-23T16:07:10+00:00
@@ -7109,6 +7287,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,KY,21179,Nelson County,2026-10-26,8,mail,464,,308,126,,,1,ky-sbe,2026-10-27T13:33:09+00:00
 2026,KY,21179,Nelson County,2026-10-27,7,inperson,297,,150,127,,,1,ky-sbe,2026-10-28T14:34:21+00:00
 2026,KY,21179,Nelson County,2026-10-27,7,mail,518,,336,147,,,1,ky-sbe,2026-10-28T14:34:21+00:00
+2026,KY,21179,Nelson County,2026-10-28,6,inperson,336,,172,143,,,1,ky-sbe,2026-10-29T13:03:23+00:00
+2026,KY,21179,Nelson County,2026-10-28,6,mail,542,,350,157,,,1,ky-sbe,2026-10-29T13:03:23+00:00
 2026,KY,21181,Nicholas County,2026-09-20,44,mail,0,,,,,,1,ky-sbe,2026-09-21T16:12:18+00:00
 2026,KY,21181,Nicholas County,2026-09-21,43,mail,0,,0,0,,,1,ky-sbe,2026-09-22T17:56:28+00:00
 2026,KY,21181,Nicholas County,2026-09-22,42,mail,0,,0,0,,,1,ky-sbe,2026-09-23T16:07:10+00:00
@@ -7152,6 +7332,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,KY,21181,Nicholas County,2026-10-26,8,mail,161,,122,31,,,1,ky-sbe,2026-10-27T13:33:09+00:00
 2026,KY,21181,Nicholas County,2026-10-27,7,inperson,7,,4,3,,,1,ky-sbe,2026-10-28T14:34:21+00:00
 2026,KY,21181,Nicholas County,2026-10-27,7,mail,169,,128,33,,,1,ky-sbe,2026-10-28T14:34:21+00:00
+2026,KY,21181,Nicholas County,2026-10-28,6,inperson,8,,5,3,,,1,ky-sbe,2026-10-29T13:03:23+00:00
+2026,KY,21181,Nicholas County,2026-10-28,6,mail,178,,135,35,,,1,ky-sbe,2026-10-29T13:03:23+00:00
 2026,KY,21183,Ohio County,2026-09-20,44,mail,0,,,,,,1,ky-sbe,2026-09-21T16:12:18+00:00
 2026,KY,21183,Ohio County,2026-09-21,43,mail,0,,0,0,,,1,ky-sbe,2026-09-22T17:56:28+00:00
 2026,KY,21183,Ohio County,2026-09-22,42,mail,0,,0,0,,,1,ky-sbe,2026-09-23T16:07:10+00:00
@@ -7195,6 +7377,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,KY,21183,Ohio County,2026-10-26,8,mail,104,,49,48,,,1,ky-sbe,2026-10-27T13:33:09+00:00
 2026,KY,21183,Ohio County,2026-10-27,7,inperson,44,,9,33,,,1,ky-sbe,2026-10-28T14:34:21+00:00
 2026,KY,21183,Ohio County,2026-10-27,7,mail,111,,52,52,,,1,ky-sbe,2026-10-28T14:34:21+00:00
+2026,KY,21183,Ohio County,2026-10-28,6,inperson,48,,11,35,,,1,ky-sbe,2026-10-29T13:03:23+00:00
+2026,KY,21183,Ohio County,2026-10-28,6,mail,114,,55,52,,,1,ky-sbe,2026-10-29T13:03:23+00:00
 2026,KY,21185,Oldham County,2026-09-20,44,mail,0,,,,,,1,ky-sbe,2026-09-21T16:12:18+00:00
 2026,KY,21185,Oldham County,2026-09-21,43,mail,0,,0,0,,,1,ky-sbe,2026-09-22T17:56:28+00:00
 2026,KY,21185,Oldham County,2026-09-22,42,mail,0,,0,0,,,1,ky-sbe,2026-09-23T16:07:10+00:00
@@ -7238,6 +7422,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,KY,21185,Oldham County,2026-10-26,8,mail,532,,227,244,,,1,ky-sbe,2026-10-27T13:33:09+00:00
 2026,KY,21185,Oldham County,2026-10-27,7,inperson,167,,56,98,,,1,ky-sbe,2026-10-28T14:34:21+00:00
 2026,KY,21185,Oldham County,2026-10-27,7,mail,585,,255,266,,,1,ky-sbe,2026-10-28T14:34:21+00:00
+2026,KY,21185,Oldham County,2026-10-28,6,inperson,180,,59,108,,,1,ky-sbe,2026-10-29T13:03:23+00:00
+2026,KY,21185,Oldham County,2026-10-28,6,mail,635,,278,289,,,1,ky-sbe,2026-10-29T13:03:23+00:00
 2026,KY,21187,Owen County,2026-09-20,44,mail,0,,,,,,1,ky-sbe,2026-09-21T16:12:18+00:00
 2026,KY,21187,Owen County,2026-09-21,43,mail,0,,0,0,,,1,ky-sbe,2026-09-22T17:56:28+00:00
 2026,KY,21187,Owen County,2026-09-22,42,mail,0,,0,0,,,1,ky-sbe,2026-09-23T16:07:10+00:00
@@ -7281,6 +7467,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,KY,21187,Owen County,2026-10-26,8,mail,82,,45,33,,,1,ky-sbe,2026-10-27T13:33:09+00:00
 2026,KY,21187,Owen County,2026-10-27,7,inperson,37,,8,27,,,1,ky-sbe,2026-10-28T14:34:21+00:00
 2026,KY,21187,Owen County,2026-10-27,7,mail,89,,49,36,,,1,ky-sbe,2026-10-28T14:34:21+00:00
+2026,KY,21187,Owen County,2026-10-28,6,inperson,42,,8,32,,,1,ky-sbe,2026-10-29T13:03:23+00:00
+2026,KY,21187,Owen County,2026-10-28,6,mail,93,,52,37,,,1,ky-sbe,2026-10-29T13:03:23+00:00
 2026,KY,21189,Owsley County,2026-09-20,44,mail,0,,,,,,1,ky-sbe,2026-09-21T16:12:18+00:00
 2026,KY,21189,Owsley County,2026-09-21,43,mail,0,,0,0,,,1,ky-sbe,2026-09-22T17:56:28+00:00
 2026,KY,21189,Owsley County,2026-09-22,42,mail,0,,0,0,,,1,ky-sbe,2026-09-23T16:07:10+00:00
@@ -7324,6 +7512,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,KY,21189,Owsley County,2026-10-26,8,mail,146,,27,117,,,1,ky-sbe,2026-10-27T13:33:09+00:00
 2026,KY,21189,Owsley County,2026-10-27,7,inperson,50,,5,44,,,1,ky-sbe,2026-10-28T14:34:21+00:00
 2026,KY,21189,Owsley County,2026-10-27,7,mail,146,,27,117,,,1,ky-sbe,2026-10-28T14:34:21+00:00
+2026,KY,21189,Owsley County,2026-10-28,6,inperson,60,,7,52,,,1,ky-sbe,2026-10-29T13:03:23+00:00
+2026,KY,21189,Owsley County,2026-10-28,6,mail,146,,27,117,,,1,ky-sbe,2026-10-29T13:03:23+00:00
 2026,KY,21191,Pendleton County,2026-09-20,44,mail,0,,,,,,1,ky-sbe,2026-09-21T16:12:18+00:00
 2026,KY,21191,Pendleton County,2026-09-21,43,mail,0,,0,0,,,1,ky-sbe,2026-09-22T17:56:28+00:00
 2026,KY,21191,Pendleton County,2026-09-22,42,mail,0,,0,0,,,1,ky-sbe,2026-09-23T16:07:10+00:00
@@ -7367,6 +7557,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,KY,21191,Pendleton County,2026-10-26,8,mail,117,,49,65,,,1,ky-sbe,2026-10-27T13:33:09+00:00
 2026,KY,21191,Pendleton County,2026-10-27,7,inperson,87,,12,69,,,1,ky-sbe,2026-10-28T14:34:21+00:00
 2026,KY,21191,Pendleton County,2026-10-27,7,mail,128,,53,72,,,1,ky-sbe,2026-10-28T14:34:21+00:00
+2026,KY,21191,Pendleton County,2026-10-28,6,inperson,112,,19,86,,,1,ky-sbe,2026-10-29T13:03:23+00:00
+2026,KY,21191,Pendleton County,2026-10-28,6,mail,150,,62,84,,,1,ky-sbe,2026-10-29T13:03:23+00:00
 2026,KY,21193,Perry County,2026-09-20,44,mail,0,,,,,,1,ky-sbe,2026-09-21T16:12:18+00:00
 2026,KY,21193,Perry County,2026-09-21,43,mail,1,,1,0,,,1,ky-sbe,2026-09-22T17:56:28+00:00
 2026,KY,21193,Perry County,2026-09-22,42,mail,1,,1,0,,,1,ky-sbe,2026-09-23T16:07:10+00:00
@@ -7410,6 +7602,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,KY,21193,Perry County,2026-10-26,8,mail,223,,149,70,,,1,ky-sbe,2026-10-27T13:33:09+00:00
 2026,KY,21193,Perry County,2026-10-27,7,inperson,31,,20,10,,,1,ky-sbe,2026-10-28T14:34:21+00:00
 2026,KY,21193,Perry County,2026-10-27,7,mail,236,,157,75,,,1,ky-sbe,2026-10-28T14:34:21+00:00
+2026,KY,21193,Perry County,2026-10-28,6,inperson,40,,25,14,,,1,ky-sbe,2026-10-29T13:03:23+00:00
+2026,KY,21193,Perry County,2026-10-28,6,mail,236,,157,75,,,1,ky-sbe,2026-10-29T13:03:23+00:00
 2026,KY,21195,Pike County,2026-09-20,44,mail,0,,,,,,1,ky-sbe,2026-09-21T16:12:18+00:00
 2026,KY,21195,Pike County,2026-09-21,43,mail,0,,0,0,,,1,ky-sbe,2026-09-22T17:56:28+00:00
 2026,KY,21195,Pike County,2026-09-22,42,mail,0,,0,0,,,1,ky-sbe,2026-09-23T16:07:10+00:00
@@ -7453,6 +7647,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,KY,21195,Pike County,2026-10-26,8,mail,313,,192,112,,,1,ky-sbe,2026-10-27T13:33:09+00:00
 2026,KY,21195,Pike County,2026-10-27,7,inperson,146,,62,82,,,1,ky-sbe,2026-10-28T14:34:21+00:00
 2026,KY,21195,Pike County,2026-10-27,7,mail,387,,236,138,,,1,ky-sbe,2026-10-28T14:34:21+00:00
+2026,KY,21195,Pike County,2026-10-28,6,inperson,184,,73,107,,,1,ky-sbe,2026-10-29T13:03:23+00:00
+2026,KY,21195,Pike County,2026-10-28,6,mail,400,,243,144,,,1,ky-sbe,2026-10-29T13:03:23+00:00
 2026,KY,21197,Powell County,2026-09-20,44,mail,0,,,,,,1,ky-sbe,2026-09-21T16:12:18+00:00
 2026,KY,21197,Powell County,2026-09-21,43,mail,0,,0,0,,,1,ky-sbe,2026-09-22T17:56:28+00:00
 2026,KY,21197,Powell County,2026-09-22,42,mail,0,,0,0,,,1,ky-sbe,2026-09-23T16:07:10+00:00
@@ -7496,6 +7692,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,KY,21197,Powell County,2026-10-26,8,mail,283,,136,135,,,1,ky-sbe,2026-10-27T13:33:09+00:00
 2026,KY,21197,Powell County,2026-10-27,7,inperson,12,,4,8,,,1,ky-sbe,2026-10-28T14:34:21+00:00
 2026,KY,21197,Powell County,2026-10-27,7,mail,303,,143,147,,,1,ky-sbe,2026-10-28T14:34:21+00:00
+2026,KY,21197,Powell County,2026-10-28,6,inperson,24,,13,11,,,1,ky-sbe,2026-10-29T13:03:23+00:00
+2026,KY,21197,Powell County,2026-10-28,6,mail,325,,156,155,,,1,ky-sbe,2026-10-29T13:03:23+00:00
 2026,KY,21199,Pulaski County,2026-09-20,44,mail,0,,,,,,1,ky-sbe,2026-09-21T16:12:18+00:00
 2026,KY,21199,Pulaski County,2026-09-21,43,mail,0,,0,0,,,1,ky-sbe,2026-09-22T17:56:28+00:00
 2026,KY,21199,Pulaski County,2026-09-22,42,mail,0,,0,0,,,1,ky-sbe,2026-09-23T16:07:10+00:00
@@ -7539,6 +7737,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,KY,21199,Pulaski County,2026-10-26,8,mail,497,,148,298,,,1,ky-sbe,2026-10-27T13:33:09+00:00
 2026,KY,21199,Pulaski County,2026-10-27,7,inperson,120,,26,87,,,1,ky-sbe,2026-10-28T14:34:21+00:00
 2026,KY,21199,Pulaski County,2026-10-27,7,mail,525,,159,313,,,1,ky-sbe,2026-10-28T14:34:21+00:00
+2026,KY,21199,Pulaski County,2026-10-28,6,inperson,137,,32,96,,,1,ky-sbe,2026-10-29T13:03:23+00:00
+2026,KY,21199,Pulaski County,2026-10-28,6,mail,525,,159,313,,,1,ky-sbe,2026-10-29T13:03:23+00:00
 2026,KY,21201,Robertson County,2026-09-20,44,mail,0,,,,,,1,ky-sbe,2026-09-21T16:12:18+00:00
 2026,KY,21201,Robertson County,2026-09-21,43,mail,0,,0,0,,,1,ky-sbe,2026-09-22T17:56:28+00:00
 2026,KY,21201,Robertson County,2026-09-22,42,mail,0,,0,0,,,1,ky-sbe,2026-09-23T16:07:10+00:00
@@ -7582,6 +7782,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,KY,21201,Robertson County,2026-10-26,8,mail,42,,32,10,,,1,ky-sbe,2026-10-27T13:33:09+00:00
 2026,KY,21201,Robertson County,2026-10-27,7,inperson,0,,0,0,,,1,ky-sbe,2026-10-28T14:34:21+00:00
 2026,KY,21201,Robertson County,2026-10-27,7,mail,43,,33,10,,,1,ky-sbe,2026-10-28T14:34:21+00:00
+2026,KY,21201,Robertson County,2026-10-28,6,inperson,0,,0,0,,,1,ky-sbe,2026-10-29T13:03:23+00:00
+2026,KY,21201,Robertson County,2026-10-28,6,mail,46,,36,10,,,1,ky-sbe,2026-10-29T13:03:23+00:00
 2026,KY,21203,Rockcastle County,2026-09-20,44,mail,0,,,,,,1,ky-sbe,2026-09-21T16:12:18+00:00
 2026,KY,21203,Rockcastle County,2026-09-21,43,mail,0,,0,0,,,1,ky-sbe,2026-09-22T17:56:28+00:00
 2026,KY,21203,Rockcastle County,2026-09-22,42,mail,0,,0,0,,,1,ky-sbe,2026-09-23T16:07:10+00:00
@@ -7625,6 +7827,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,KY,21203,Rockcastle County,2026-10-26,8,mail,114,,23,87,,,1,ky-sbe,2026-10-27T13:33:09+00:00
 2026,KY,21203,Rockcastle County,2026-10-27,7,inperson,22,,1,21,,,1,ky-sbe,2026-10-28T14:34:21+00:00
 2026,KY,21203,Rockcastle County,2026-10-27,7,mail,129,,24,100,,,1,ky-sbe,2026-10-28T14:34:21+00:00
+2026,KY,21203,Rockcastle County,2026-10-28,6,inperson,22,,1,21,,,1,ky-sbe,2026-10-29T13:03:23+00:00
+2026,KY,21203,Rockcastle County,2026-10-28,6,mail,135,,26,104,,,1,ky-sbe,2026-10-29T13:03:23+00:00
 2026,KY,21205,Rowan County,2026-09-20,44,mail,0,,,,,,1,ky-sbe,2026-09-21T16:12:18+00:00
 2026,KY,21205,Rowan County,2026-09-21,43,mail,0,,0,0,,,1,ky-sbe,2026-09-22T17:56:28+00:00
 2026,KY,21205,Rowan County,2026-09-22,42,mail,0,,0,0,,,1,ky-sbe,2026-09-23T16:07:10+00:00
@@ -7668,6 +7872,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,KY,21205,Rowan County,2026-10-26,8,mail,198,,128,59,,,1,ky-sbe,2026-10-27T13:33:09+00:00
 2026,KY,21205,Rowan County,2026-10-27,7,inperson,68,,34,33,,,1,ky-sbe,2026-10-28T14:34:21+00:00
 2026,KY,21205,Rowan County,2026-10-27,7,mail,235,,149,74,,,1,ky-sbe,2026-10-28T14:34:21+00:00
+2026,KY,21205,Rowan County,2026-10-28,6,inperson,74,,38,35,,,1,ky-sbe,2026-10-29T13:03:23+00:00
+2026,KY,21205,Rowan County,2026-10-28,6,mail,253,,163,77,,,1,ky-sbe,2026-10-29T13:03:23+00:00
 2026,KY,21207,Russell County,2026-09-20,44,mail,0,,,,,,1,ky-sbe,2026-09-21T16:12:18+00:00
 2026,KY,21207,Russell County,2026-09-21,43,mail,0,,0,0,,,1,ky-sbe,2026-09-22T17:56:28+00:00
 2026,KY,21207,Russell County,2026-09-22,42,mail,0,,0,0,,,1,ky-sbe,2026-09-23T16:07:10+00:00
@@ -7711,6 +7917,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,KY,21207,Russell County,2026-10-26,8,mail,191,,55,129,,,1,ky-sbe,2026-10-27T13:33:09+00:00
 2026,KY,21207,Russell County,2026-10-27,7,inperson,70,,14,53,,,1,ky-sbe,2026-10-28T14:34:21+00:00
 2026,KY,21207,Russell County,2026-10-27,7,mail,200,,57,136,,,1,ky-sbe,2026-10-28T14:34:21+00:00
+2026,KY,21207,Russell County,2026-10-28,6,inperson,84,,16,64,,,1,ky-sbe,2026-10-29T13:03:23+00:00
+2026,KY,21207,Russell County,2026-10-28,6,mail,200,,57,136,,,1,ky-sbe,2026-10-29T13:03:23+00:00
 2026,KY,21209,Scott County,2026-09-20,44,mail,0,,,,,,1,ky-sbe,2026-09-21T16:12:18+00:00
 2026,KY,21209,Scott County,2026-09-21,43,mail,0,,0,0,,,1,ky-sbe,2026-09-22T17:56:28+00:00
 2026,KY,21209,Scott County,2026-09-22,42,mail,0,,0,0,,,1,ky-sbe,2026-09-23T16:07:10+00:00
@@ -7754,6 +7962,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,KY,21209,Scott County,2026-10-26,8,mail,504,,272,183,,,1,ky-sbe,2026-10-27T13:33:09+00:00
 2026,KY,21209,Scott County,2026-10-27,7,inperson,116,,53,55,,,1,ky-sbe,2026-10-28T14:34:21+00:00
 2026,KY,21209,Scott County,2026-10-27,7,mail,553,,300,199,,,1,ky-sbe,2026-10-28T14:34:21+00:00
+2026,KY,21209,Scott County,2026-10-28,6,inperson,134,,59,65,,,1,ky-sbe,2026-10-29T13:03:23+00:00
+2026,KY,21209,Scott County,2026-10-28,6,mail,593,,323,214,,,1,ky-sbe,2026-10-29T13:03:23+00:00
 2026,KY,21211,Shelby County,2026-09-20,44,mail,0,,,,,,1,ky-sbe,2026-09-21T16:12:18+00:00
 2026,KY,21211,Shelby County,2026-09-21,43,mail,0,,0,0,,,1,ky-sbe,2026-09-22T17:56:28+00:00
 2026,KY,21211,Shelby County,2026-09-22,42,mail,0,,0,0,,,1,ky-sbe,2026-09-23T16:07:10+00:00
@@ -7797,6 +8007,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,KY,21211,Shelby County,2026-10-26,8,mail,392,,211,146,,,1,ky-sbe,2026-10-27T13:33:09+00:00
 2026,KY,21211,Shelby County,2026-10-27,7,inperson,198,,63,124,,,1,ky-sbe,2026-10-28T14:34:21+00:00
 2026,KY,21211,Shelby County,2026-10-27,7,mail,431,,228,166,,,1,ky-sbe,2026-10-28T14:34:21+00:00
+2026,KY,21211,Shelby County,2026-10-28,6,inperson,217,,68,137,,,1,ky-sbe,2026-10-29T13:03:23+00:00
+2026,KY,21211,Shelby County,2026-10-28,6,mail,450,,237,175,,,1,ky-sbe,2026-10-29T13:03:23+00:00
 2026,KY,21213,Simpson County,2026-09-20,44,mail,0,,,,,,1,ky-sbe,2026-09-21T16:12:18+00:00
 2026,KY,21213,Simpson County,2026-09-21,43,mail,0,,0,0,,,1,ky-sbe,2026-09-22T17:56:28+00:00
 2026,KY,21213,Simpson County,2026-09-22,42,mail,0,,0,0,,,1,ky-sbe,2026-09-23T16:07:10+00:00
@@ -7840,6 +8052,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,KY,21213,Simpson County,2026-10-26,8,mail,111,,58,44,,,1,ky-sbe,2026-10-27T13:33:09+00:00
 2026,KY,21213,Simpson County,2026-10-27,7,inperson,48,,11,34,,,1,ky-sbe,2026-10-28T14:34:21+00:00
 2026,KY,21213,Simpson County,2026-10-27,7,mail,114,,61,44,,,1,ky-sbe,2026-10-28T14:34:21+00:00
+2026,KY,21213,Simpson County,2026-10-28,6,inperson,53,,13,37,,,1,ky-sbe,2026-10-29T13:03:23+00:00
+2026,KY,21213,Simpson County,2026-10-28,6,mail,126,,65,50,,,1,ky-sbe,2026-10-29T13:03:23+00:00
 2026,KY,21215,Spencer County,2026-09-20,44,mail,0,,,,,,1,ky-sbe,2026-09-21T16:12:18+00:00
 2026,KY,21215,Spencer County,2026-09-21,43,mail,0,,0,0,,,1,ky-sbe,2026-09-22T17:56:28+00:00
 2026,KY,21215,Spencer County,2026-09-22,42,mail,0,,0,0,,,1,ky-sbe,2026-09-23T16:07:10+00:00
@@ -7883,6 +8097,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,KY,21215,Spencer County,2026-10-26,8,mail,104,,43,46,,,1,ky-sbe,2026-10-27T13:33:09+00:00
 2026,KY,21215,Spencer County,2026-10-27,7,inperson,86,,26,55,,,1,ky-sbe,2026-10-28T14:34:21+00:00
 2026,KY,21215,Spencer County,2026-10-27,7,mail,108,,46,47,,,1,ky-sbe,2026-10-28T14:34:21+00:00
+2026,KY,21215,Spencer County,2026-10-28,6,inperson,97,,28,63,,,1,ky-sbe,2026-10-29T13:03:23+00:00
+2026,KY,21215,Spencer County,2026-10-28,6,mail,111,,48,47,,,1,ky-sbe,2026-10-29T13:03:23+00:00
 2026,KY,21217,Taylor County,2026-09-20,44,mail,0,,,,,,1,ky-sbe,2026-09-21T16:12:18+00:00
 2026,KY,21217,Taylor County,2026-09-21,43,mail,0,,0,0,,,1,ky-sbe,2026-09-22T17:56:28+00:00
 2026,KY,21217,Taylor County,2026-09-22,42,mail,0,,0,0,,,1,ky-sbe,2026-09-23T16:07:10+00:00
@@ -7926,6 +8142,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,KY,21217,Taylor County,2026-10-26,8,mail,173,,65,101,,,1,ky-sbe,2026-10-27T13:33:09+00:00
 2026,KY,21217,Taylor County,2026-10-27,7,inperson,20,,2,18,,,1,ky-sbe,2026-10-28T14:34:21+00:00
 2026,KY,21217,Taylor County,2026-10-27,7,mail,174,,65,102,,,1,ky-sbe,2026-10-28T14:34:21+00:00
+2026,KY,21217,Taylor County,2026-10-28,6,inperson,26,,4,22,,,1,ky-sbe,2026-10-29T13:03:23+00:00
+2026,KY,21217,Taylor County,2026-10-28,6,mail,186,,70,109,,,1,ky-sbe,2026-10-29T13:03:23+00:00
 2026,KY,21219,Todd County,2026-09-20,44,mail,0,,,,,,1,ky-sbe,2026-09-21T16:12:18+00:00
 2026,KY,21219,Todd County,2026-09-21,43,mail,0,,0,0,,,1,ky-sbe,2026-09-22T17:56:28+00:00
 2026,KY,21219,Todd County,2026-09-22,42,mail,0,,0,0,,,1,ky-sbe,2026-09-23T16:07:10+00:00
@@ -7969,6 +8187,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,KY,21219,Todd County,2026-10-26,8,mail,23,,15,6,,,1,ky-sbe,2026-10-27T13:33:09+00:00
 2026,KY,21219,Todd County,2026-10-27,7,inperson,14,,7,6,,,1,ky-sbe,2026-10-28T14:34:21+00:00
 2026,KY,21219,Todd County,2026-10-27,7,mail,23,,15,6,,,1,ky-sbe,2026-10-28T14:34:21+00:00
+2026,KY,21219,Todd County,2026-10-28,6,inperson,18,,9,8,,,1,ky-sbe,2026-10-29T13:03:23+00:00
+2026,KY,21219,Todd County,2026-10-28,6,mail,25,,16,7,,,1,ky-sbe,2026-10-29T13:03:23+00:00
 2026,KY,21221,Trigg County,2026-09-20,44,mail,0,,,,,,1,ky-sbe,2026-09-21T16:12:18+00:00
 2026,KY,21221,Trigg County,2026-09-21,43,mail,0,,0,0,,,1,ky-sbe,2026-09-22T17:56:28+00:00
 2026,KY,21221,Trigg County,2026-09-22,42,mail,0,,0,0,,,1,ky-sbe,2026-09-23T16:07:10+00:00
@@ -8012,6 +8232,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,KY,21221,Trigg County,2026-10-26,8,mail,101,,52,47,,,1,ky-sbe,2026-10-27T13:33:09+00:00
 2026,KY,21221,Trigg County,2026-10-27,7,inperson,36,,10,25,,,1,ky-sbe,2026-10-28T14:34:21+00:00
 2026,KY,21221,Trigg County,2026-10-27,7,mail,113,,59,52,,,1,ky-sbe,2026-10-28T14:34:21+00:00
+2026,KY,21221,Trigg County,2026-10-28,6,inperson,41,,12,27,,,1,ky-sbe,2026-10-29T13:03:23+00:00
+2026,KY,21221,Trigg County,2026-10-28,6,mail,119,,62,55,,,1,ky-sbe,2026-10-29T13:03:23+00:00
 2026,KY,21223,Trimble County,2026-09-20,44,mail,0,,,,,,1,ky-sbe,2026-09-21T16:12:18+00:00
 2026,KY,21223,Trimble County,2026-09-21,43,mail,0,,0,0,,,1,ky-sbe,2026-09-22T17:56:28+00:00
 2026,KY,21223,Trimble County,2026-09-22,42,mail,2,,1,1,,,1,ky-sbe,2026-09-23T16:07:10+00:00
@@ -8055,6 +8277,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,KY,21223,Trimble County,2026-10-26,8,mail,85,,58,24,,,1,ky-sbe,2026-10-27T13:33:09+00:00
 2026,KY,21223,Trimble County,2026-10-27,7,inperson,29,,11,16,,,1,ky-sbe,2026-10-28T14:34:21+00:00
 2026,KY,21223,Trimble County,2026-10-27,7,mail,89,,62,24,,,1,ky-sbe,2026-10-28T14:34:21+00:00
+2026,KY,21223,Trimble County,2026-10-28,6,inperson,31,,13,16,,,1,ky-sbe,2026-10-29T13:03:23+00:00
+2026,KY,21223,Trimble County,2026-10-28,6,mail,90,,63,24,,,1,ky-sbe,2026-10-29T13:03:23+00:00
 2026,KY,21225,Union County,2026-09-20,44,mail,0,,,,,,1,ky-sbe,2026-09-21T16:12:18+00:00
 2026,KY,21225,Union County,2026-09-21,43,mail,0,,0,0,,,1,ky-sbe,2026-09-22T17:56:28+00:00
 2026,KY,21225,Union County,2026-09-22,42,mail,0,,0,0,,,1,ky-sbe,2026-09-23T16:07:10+00:00
@@ -8098,6 +8322,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,KY,21225,Union County,2026-10-26,8,mail,66,,43,20,,,1,ky-sbe,2026-10-27T13:33:09+00:00
 2026,KY,21225,Union County,2026-10-27,7,inperson,38,,13,25,,,1,ky-sbe,2026-10-28T14:34:21+00:00
 2026,KY,21225,Union County,2026-10-27,7,mail,70,,46,21,,,1,ky-sbe,2026-10-28T14:34:21+00:00
+2026,KY,21225,Union County,2026-10-28,6,inperson,42,,15,27,,,1,ky-sbe,2026-10-29T13:03:23+00:00
+2026,KY,21225,Union County,2026-10-28,6,mail,70,,46,21,,,1,ky-sbe,2026-10-29T13:03:23+00:00
 2026,KY,21227,Warren County,2026-09-20,44,mail,0,,,,,,1,ky-sbe,2026-09-21T16:12:18+00:00
 2026,KY,21227,Warren County,2026-09-21,43,mail,0,,0,0,,,1,ky-sbe,2026-09-22T17:56:28+00:00
 2026,KY,21227,Warren County,2026-09-22,42,mail,0,,0,0,,,1,ky-sbe,2026-09-23T16:07:10+00:00
@@ -8141,6 +8367,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,KY,21227,Warren County,2026-10-26,8,mail,525,,297,164,,,1,ky-sbe,2026-10-27T13:33:09+00:00
 2026,KY,21227,Warren County,2026-10-27,7,inperson,177,,70,98,,,1,ky-sbe,2026-10-28T14:34:21+00:00
 2026,KY,21227,Warren County,2026-10-27,7,mail,724,,420,224,,,1,ky-sbe,2026-10-28T14:34:21+00:00
+2026,KY,21227,Warren County,2026-10-28,6,inperson,192,,75,107,,,1,ky-sbe,2026-10-29T13:03:23+00:00
+2026,KY,21227,Warren County,2026-10-28,6,mail,797,,465,246,,,1,ky-sbe,2026-10-29T13:03:23+00:00
 2026,KY,21229,Washington County,2026-09-20,44,mail,0,,,,,,1,ky-sbe,2026-09-21T16:12:18+00:00
 2026,KY,21229,Washington County,2026-09-21,43,mail,0,,0,0,,,1,ky-sbe,2026-09-22T17:56:28+00:00
 2026,KY,21229,Washington County,2026-09-22,42,mail,0,,0,0,,,1,ky-sbe,2026-09-23T16:07:10+00:00
@@ -8184,6 +8412,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,KY,21229,Washington County,2026-10-26,8,mail,114,,72,33,,,1,ky-sbe,2026-10-27T13:33:09+00:00
 2026,KY,21229,Washington County,2026-10-27,7,inperson,13,,3,9,,,1,ky-sbe,2026-10-28T14:34:21+00:00
 2026,KY,21229,Washington County,2026-10-27,7,mail,116,,73,34,,,1,ky-sbe,2026-10-28T14:34:21+00:00
+2026,KY,21229,Washington County,2026-10-28,6,inperson,13,,3,9,,,1,ky-sbe,2026-10-29T13:03:23+00:00
+2026,KY,21229,Washington County,2026-10-28,6,mail,127,,76,40,,,1,ky-sbe,2026-10-29T13:03:23+00:00
 2026,KY,21231,Wayne County,2026-09-20,44,mail,0,,,,,,1,ky-sbe,2026-09-21T16:12:18+00:00
 2026,KY,21231,Wayne County,2026-09-21,43,mail,0,,0,0,,,1,ky-sbe,2026-09-22T17:56:28+00:00
 2026,KY,21231,Wayne County,2026-09-22,42,mail,0,,0,0,,,1,ky-sbe,2026-09-23T16:07:10+00:00
@@ -8227,6 +8457,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,KY,21231,Wayne County,2026-10-26,8,mail,229,,64,159,,,1,ky-sbe,2026-10-27T13:33:09+00:00
 2026,KY,21231,Wayne County,2026-10-27,7,inperson,61,,16,40,,,1,ky-sbe,2026-10-28T14:34:21+00:00
 2026,KY,21231,Wayne County,2026-10-27,7,mail,229,,64,159,,,1,ky-sbe,2026-10-28T14:34:21+00:00
+2026,KY,21231,Wayne County,2026-10-28,6,inperson,65,,16,44,,,1,ky-sbe,2026-10-29T13:03:23+00:00
+2026,KY,21231,Wayne County,2026-10-28,6,mail,251,,70,173,,,1,ky-sbe,2026-10-29T13:03:23+00:00
 2026,KY,21233,Webster County,2026-09-20,44,mail,0,,,,,,1,ky-sbe,2026-09-21T16:12:18+00:00
 2026,KY,21233,Webster County,2026-09-21,43,mail,0,,0,0,,,1,ky-sbe,2026-09-22T17:56:28+00:00
 2026,KY,21233,Webster County,2026-09-22,42,mail,0,,0,0,,,1,ky-sbe,2026-09-23T16:07:10+00:00
@@ -8270,6 +8502,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,KY,21233,Webster County,2026-10-26,8,mail,36,,21,13,,,1,ky-sbe,2026-10-27T13:33:09+00:00
 2026,KY,21233,Webster County,2026-10-27,7,inperson,6,,3,3,,,1,ky-sbe,2026-10-28T14:34:21+00:00
 2026,KY,21233,Webster County,2026-10-27,7,mail,42,,24,15,,,1,ky-sbe,2026-10-28T14:34:21+00:00
+2026,KY,21233,Webster County,2026-10-28,6,inperson,6,,3,3,,,1,ky-sbe,2026-10-29T13:03:23+00:00
+2026,KY,21233,Webster County,2026-10-28,6,mail,42,,24,15,,,1,ky-sbe,2026-10-29T13:03:23+00:00
 2026,KY,21235,Whitley County,2026-09-20,44,mail,0,,,,,,1,ky-sbe,2026-09-21T16:12:18+00:00
 2026,KY,21235,Whitley County,2026-09-21,43,mail,0,,0,0,,,1,ky-sbe,2026-09-22T17:56:28+00:00
 2026,KY,21235,Whitley County,2026-09-22,42,mail,0,,0,0,,,1,ky-sbe,2026-09-23T16:07:10+00:00
@@ -8313,6 +8547,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,KY,21235,Whitley County,2026-10-26,8,mail,253,,63,170,,,1,ky-sbe,2026-10-27T13:33:09+00:00
 2026,KY,21235,Whitley County,2026-10-27,7,inperson,34,,1,30,,,1,ky-sbe,2026-10-28T14:34:21+00:00
 2026,KY,21235,Whitley County,2026-10-27,7,mail,277,,70,184,,,1,ky-sbe,2026-10-28T14:34:21+00:00
+2026,KY,21235,Whitley County,2026-10-28,6,inperson,36,,2,30,,,1,ky-sbe,2026-10-29T13:03:23+00:00
+2026,KY,21235,Whitley County,2026-10-28,6,mail,283,,73,186,,,1,ky-sbe,2026-10-29T13:03:23+00:00
 2026,KY,21237,Wolfe County,2026-09-20,44,mail,0,,,,,,1,ky-sbe,2026-09-21T16:12:18+00:00
 2026,KY,21237,Wolfe County,2026-09-21,43,mail,0,,0,0,,,1,ky-sbe,2026-09-22T17:56:28+00:00
 2026,KY,21237,Wolfe County,2026-09-22,42,mail,0,,0,0,,,1,ky-sbe,2026-09-23T16:07:10+00:00
@@ -8356,6 +8592,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,KY,21237,Wolfe County,2026-10-26,8,mail,46,,37,7,,,1,ky-sbe,2026-10-27T13:33:09+00:00
 2026,KY,21237,Wolfe County,2026-10-27,7,inperson,13,,10,3,,,1,ky-sbe,2026-10-28T14:34:21+00:00
 2026,KY,21237,Wolfe County,2026-10-27,7,mail,55,,46,7,,,1,ky-sbe,2026-10-28T14:34:21+00:00
+2026,KY,21237,Wolfe County,2026-10-28,6,inperson,13,,10,3,,,1,ky-sbe,2026-10-29T13:03:23+00:00
+2026,KY,21237,Wolfe County,2026-10-28,6,mail,55,,46,7,,,1,ky-sbe,2026-10-29T13:03:23+00:00
 2026,KY,21239,Woodford County,2026-09-20,44,mail,0,,,,,,1,ky-sbe,2026-09-21T16:12:18+00:00
 2026,KY,21239,Woodford County,2026-09-21,43,mail,0,,0,0,,,1,ky-sbe,2026-09-22T17:56:28+00:00
 2026,KY,21239,Woodford County,2026-09-22,42,mail,0,,0,0,,,1,ky-sbe,2026-09-23T16:07:10+00:00
@@ -8399,3 +8637,5 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,KY,21239,Woodford County,2026-10-26,8,mail,409,,255,116,,,1,ky-sbe,2026-10-27T13:33:09+00:00
 2026,KY,21239,Woodford County,2026-10-27,7,inperson,109,,46,55,,,1,ky-sbe,2026-10-28T14:34:21+00:00
 2026,KY,21239,Woodford County,2026-10-27,7,mail,436,,271,126,,,1,ky-sbe,2026-10-28T14:34:21+00:00
+2026,KY,21239,Woodford County,2026-10-28,6,inperson,123,,52,60,,,1,ky-sbe,2026-10-29T13:03:23+00:00
+2026,KY,21239,Woodford County,2026-10-28,6,mail,461,,284,135,,,1,ky-sbe,2026-10-29T13:03:23+00:00
