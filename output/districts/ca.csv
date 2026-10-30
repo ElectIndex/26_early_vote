@@ -489,6 +489,7 @@ cycle,state,cd_code,date,days_to_election,ballots_total,ballots_new,mail_returne
 2026,CA,CA-01,2026-10-27,7,93480,,93209,,,,,,apportioned,2,civicapi,2026-10-27T12:20:06+00:00
 2026,CA,CA-01,2026-10-28,6,113148,,112639,,,,,,apportioned,2,civicapi,2026-10-29T03:05:33+00:00
 2026,CA,CA-01,2026-10-29,5,127976,,127360,,,,,,apportioned,2,civicapi,2026-10-30T03:05:08+00:00
+2026,CA,CA-01,2026-10-30,4,130015,,129287,,,,,,apportioned,2,civicapi,2026-10-30T16:06:21+00:00
 2026,CA,CA-02,2026-10-07,27,398,,398,,,,,,apportioned,2,civicapi,2026-10-08T00:03:37+00:00
 2026,CA,CA-02,2026-10-08,26,608,,608,,,,,,apportioned,2,civicapi,2026-10-08T22:55:15+00:00
 2026,CA,CA-02,2026-10-09,25,1151,,1151,,,,,,apportioned,2,civicapi,2026-10-09T19:17:05+00:00
@@ -511,6 +512,7 @@ cycle,state,cd_code,date,days_to_election,ballots_total,ballots_new,mail_returne
 2026,CA,CA-02,2026-10-27,7,92981,,92311,,,,,,apportioned,2,civicapi,2026-10-27T12:20:06+00:00
 2026,CA,CA-02,2026-10-28,6,110788,,109748,,,,,,apportioned,2,civicapi,2026-10-29T03:05:33+00:00
 2026,CA,CA-02,2026-10-29,5,130391,,129171,,,,,,apportioned,2,civicapi,2026-10-30T03:05:08+00:00
+2026,CA,CA-02,2026-10-30,4,137966,,136537,,,,,,apportioned,2,civicapi,2026-10-30T16:06:21+00:00
 2026,CA,CA-03,2026-10-07,27,112,,112,,,,,,apportioned,2,civicapi,2026-10-08T00:03:37+00:00
 2026,CA,CA-03,2026-10-08,26,328,,328,,,,,,apportioned,2,civicapi,2026-10-08T22:55:15+00:00
 2026,CA,CA-03,2026-10-09,25,1269,,1269,,,,,,apportioned,2,civicapi,2026-10-09T19:17:05+00:00
@@ -533,6 +535,7 @@ cycle,state,cd_code,date,days_to_election,ballots_total,ballots_new,mail_returne
 2026,CA,CA-03,2026-10-27,7,85950,,84305,1646,,,,,apportioned,2,civicapi,2026-10-27T12:20:06+00:00
 2026,CA,CA-03,2026-10-28,6,108133,,105033,3101,,,,,apportioned,2,civicapi,2026-10-29T03:05:33+00:00
 2026,CA,CA-03,2026-10-29,5,122457,,118690,3767,,,,,apportioned,2,civicapi,2026-10-30T03:05:08+00:00
+2026,CA,CA-03,2026-10-30,4,123472,,119006,4466,,,,,apportioned,2,civicapi,2026-10-30T16:06:21+00:00
 2026,CA,CA-04,2026-10-07,27,440,,440,,,,,,apportioned,2,civicapi,2026-10-08T00:03:37+00:00
 2026,CA,CA-04,2026-10-08,26,783,,783,,,,,,apportioned,2,civicapi,2026-10-08T22:55:15+00:00
 2026,CA,CA-04,2026-10-09,25,1176,,1176,,,,,,apportioned,2,civicapi,2026-10-09T19:17:05+00:00
@@ -555,6 +558,7 @@ cycle,state,cd_code,date,days_to_election,ballots_total,ballots_new,mail_returne
 2026,CA,CA-04,2026-10-27,7,78361,,77402,,,,,,apportioned,2,civicapi,2026-10-27T12:20:06+00:00
 2026,CA,CA-04,2026-10-28,6,103957,,102169,,,,,,apportioned,2,civicapi,2026-10-28T18:05:38+00:00
 2026,CA,CA-04,2026-10-29,5,117366,,115208,,,,,,apportioned,2,civicapi,2026-10-30T03:05:08+00:00
+2026,CA,CA-04,2026-10-30,4,119119,,116573,,,,,,apportioned,2,civicapi,2026-10-30T16:06:21+00:00
 2026,CA,CA-05,2026-10-07,27,261,,261,,,,,,apportioned,2,civicapi,2026-10-08T00:03:37+00:00
 2026,CA,CA-05,2026-10-08,26,1023,,1023,,,,,,apportioned,2,civicapi,2026-10-08T22:55:15+00:00
 2026,CA,CA-05,2026-10-09,25,1591,,1591,,,,,,apportioned,2,civicapi,2026-10-09T19:17:05+00:00
@@ -577,6 +581,7 @@ cycle,state,cd_code,date,days_to_election,ballots_total,ballots_new,mail_returne
 2026,CA,CA-05,2026-10-27,7,80360,,79560,,,,,,apportioned,2,civicapi,2026-10-27T12:20:06+00:00
 2026,CA,CA-05,2026-10-28,6,106467,,105025,,,,,,apportioned,2,civicapi,2026-10-28T18:05:38+00:00
 2026,CA,CA-05,2026-10-29,5,121956,,120182,,,,,,apportioned,2,civicapi,2026-10-29T19:36:05+00:00
+2026,CA,CA-05,2026-10-30,4,124687,,122542,,,,,,apportioned,2,civicapi,2026-10-30T16:06:21+00:00
 2026,CA,CA-06,2026-10-07,27,106,,106,,,,,,apportioned,2,civicapi,2026-10-08T00:03:37+00:00
 2026,CA,CA-06,2026-10-08,26,430,,430,,,,,,apportioned,2,civicapi,2026-10-08T22:55:15+00:00
 2026,CA,CA-06,2026-10-09,25,1567,,1567,,,,,,apportioned,2,civicapi,2026-10-09T19:17:05+00:00
@@ -599,6 +604,7 @@ cycle,state,cd_code,date,days_to_election,ballots_total,ballots_new,mail_returne
 2026,CA,CA-06,2026-10-27,7,77524,,75515,2009,,,,,apportioned,2,civicapi,2026-10-27T12:20:06+00:00
 2026,CA,CA-06,2026-10-28,6,101472,,97648,3824,,,,,apportioned,2,civicapi,2026-10-29T03:05:33+00:00
 2026,CA,CA-06,2026-10-29,5,113050,,108412,4639,,,,,apportioned,2,civicapi,2026-10-30T03:05:08+00:00
+2026,CA,CA-06,2026-10-30,4,114637,,109173,5464,,,,,apportioned,2,civicapi,2026-10-30T16:06:21+00:00
 2026,CA,CA-07,2026-10-07,27,372,,372,,,,,,apportioned,2,civicapi,2026-10-08T00:03:37+00:00
 2026,CA,CA-07,2026-10-08,26,574,,574,,,,,,apportioned,2,civicapi,2026-10-08T22:55:15+00:00
 2026,CA,CA-07,2026-10-09,25,1543,,1543,,,,,,apportioned,2,civicapi,2026-10-09T19:17:05+00:00
@@ -621,6 +627,7 @@ cycle,state,cd_code,date,days_to_election,ballots_total,ballots_new,mail_returne
 2026,CA,CA-07,2026-10-27,7,80778,,80460,317,,,,,apportioned,2,civicapi,2026-10-27T12:20:06+00:00
 2026,CA,CA-07,2026-10-28,6,106082,,105382,701,,,,,apportioned,2,civicapi,2026-10-29T03:05:33+00:00
 2026,CA,CA-07,2026-10-29,5,119702,,118790,911,,,,,apportioned,2,civicapi,2026-10-30T03:05:08+00:00
+2026,CA,CA-07,2026-10-30,4,120378,,119232,1146,,,,,apportioned,2,civicapi,2026-10-30T16:06:21+00:00
 2026,CA,CA-08,2026-10-07,27,240,,240,,,,,,apportioned,2,civicapi,2026-10-08T00:03:37+00:00
 2026,CA,CA-08,2026-10-08,26,618,,618,,,,,,apportioned,2,civicapi,2026-10-08T22:55:15+00:00
 2026,CA,CA-08,2026-10-09,25,1636,,1636,,,,,,apportioned,2,civicapi,2026-10-09T19:17:05+00:00
@@ -643,6 +650,7 @@ cycle,state,cd_code,date,days_to_election,ballots_total,ballots_new,mail_returne
 2026,CA,CA-08,2026-10-27,7,59471,,59330,141,,,,,apportioned,2,civicapi,2026-10-27T12:20:06+00:00
 2026,CA,CA-08,2026-10-28,6,80271,,80034,235,,,,,apportioned,2,civicapi,2026-10-29T03:05:33+00:00
 2026,CA,CA-08,2026-10-29,5,89442,,89172,269,,,,,apportioned,2,civicapi,2026-10-29T19:36:05+00:00
+2026,CA,CA-08,2026-10-30,4,97600,,97279,320,,,,,apportioned,2,civicapi,2026-10-30T16:06:21+00:00
 2026,CA,CA-09,2026-10-07,27,2051,,2051,,,,,,apportioned,2,civicapi,2026-10-08T00:03:37+00:00
 2026,CA,CA-09,2026-10-08,26,3286,,3286,,,,,,apportioned,2,civicapi,2026-10-08T22:55:15+00:00
 2026,CA,CA-09,2026-10-09,25,5483,,5483,,,,,,apportioned,2,civicapi,2026-10-09T19:17:05+00:00
@@ -665,6 +673,7 @@ cycle,state,cd_code,date,days_to_election,ballots_total,ballots_new,mail_returne
 2026,CA,CA-09,2026-10-27,7,56130,,55994,137,,,,,apportioned,2,civicapi,2026-10-27T12:20:06+00:00
 2026,CA,CA-09,2026-10-28,6,74986,,74774,212,,,,,apportioned,2,civicapi,2026-10-29T03:05:33+00:00
 2026,CA,CA-09,2026-10-29,5,78148,,77901,247,,,,,apportioned,2,civicapi,2026-10-30T03:05:08+00:00
+2026,CA,CA-09,2026-10-30,4,84441,,84150,291,,,,,apportioned,2,civicapi,2026-10-30T16:06:21+00:00
 2026,CA,CA-10,2026-10-07,27,102,,102,,,,,,apportioned,2,civicapi,2026-10-08T00:03:37+00:00
 2026,CA,CA-10,2026-10-08,26,139,,139,,,,,,apportioned,2,civicapi,2026-10-08T22:55:15+00:00
 2026,CA,CA-10,2026-10-09,25,389,,389,,,,,,apportioned,2,civicapi,2026-10-09T19:17:05+00:00
@@ -687,6 +696,7 @@ cycle,state,cd_code,date,days_to_election,ballots_total,ballots_new,mail_returne
 2026,CA,CA-10,2026-10-27,7,77941,,77765,176,,,,,apportioned,2,civicapi,2026-10-27T12:20:06+00:00
 2026,CA,CA-10,2026-10-28,6,104599,,104333,266,,,,,apportioned,2,civicapi,2026-10-29T03:05:33+00:00
 2026,CA,CA-10,2026-10-29,5,119633,,119324,308,,,,,apportioned,2,civicapi,2026-10-29T19:36:05+00:00
+2026,CA,CA-10,2026-10-30,4,129850,,129494,357,,,,,apportioned,2,civicapi,2026-10-30T16:06:21+00:00
 2026,CA,CA-11,2026-10-07,27,1390,,1390,,,,,,apportioned,2,civicapi,2026-10-08T00:03:37+00:00
 2026,CA,CA-11,2026-10-08,26,3856,,3856,,,,,,apportioned,2,civicapi,2026-10-08T22:55:15+00:00
 2026,CA,CA-11,2026-10-09,25,5993,,5993,,,,,,apportioned,2,civicapi,2026-10-09T19:17:05+00:00
@@ -709,6 +719,7 @@ cycle,state,cd_code,date,days_to_election,ballots_total,ballots_new,mail_returne
 2026,CA,CA-11,2026-10-27,7,61228,,61194,34,,,,,apportioned,2,civicapi,2026-10-27T12:20:06+00:00
 2026,CA,CA-11,2026-10-28,6,75631,,75549,82,,,,,apportioned,2,civicapi,2026-10-28T18:05:38+00:00
 2026,CA,CA-11,2026-10-29,5,85850,,85744,106,,,,,apportioned,2,civicapi,2026-10-29T19:36:05+00:00
+2026,CA,CA-11,2026-10-30,4,94640,,94505,134,,,,,apportioned,2,civicapi,2026-10-30T16:06:21+00:00
 2026,CA,CA-12,2026-10-07,27,132,,132,,,,,,apportioned,2,civicapi,2026-10-08T00:03:37+00:00
 2026,CA,CA-12,2026-10-08,26,168,,168,,,,,,apportioned,2,civicapi,2026-10-08T22:55:15+00:00
 2026,CA,CA-12,2026-10-09,25,206,,206,,,,,,apportioned,2,civicapi,2026-10-09T19:17:05+00:00
@@ -731,6 +742,7 @@ cycle,state,cd_code,date,days_to_election,ballots_total,ballots_new,mail_returne
 2026,CA,CA-12,2026-10-27,7,54767,,54446,320,,,,,apportioned,2,civicapi,2026-10-27T12:20:06+00:00
 2026,CA,CA-12,2026-10-28,6,79115,,78436,679,,,,,apportioned,2,civicapi,2026-10-29T03:05:33+00:00
 2026,CA,CA-12,2026-10-29,5,90546,,89682,865,,,,,apportioned,2,civicapi,2026-10-29T19:36:05+00:00
+2026,CA,CA-12,2026-10-30,4,100083,,99018,1065,,,,,apportioned,2,civicapi,2026-10-30T16:06:21+00:00
 2026,CA,CA-13,2026-10-07,27,368,,368,,,,,,apportioned,2,civicapi,2026-10-08T00:03:37+00:00
 2026,CA,CA-13,2026-10-08,26,573,,573,,,,,,apportioned,2,civicapi,2026-10-08T22:55:15+00:00
 2026,CA,CA-13,2026-10-09,25,936,,936,,,,,,apportioned,2,civicapi,2026-10-09T19:17:05+00:00
@@ -753,6 +765,7 @@ cycle,state,cd_code,date,days_to_election,ballots_total,ballots_new,mail_returne
 2026,CA,CA-13,2026-10-27,7,41344,,41144,200,,,,,apportioned,2,civicapi,2026-10-27T12:20:06+00:00
 2026,CA,CA-13,2026-10-28,6,54894,,54482,413,,,,,apportioned,2,civicapi,2026-10-29T03:05:33+00:00
 2026,CA,CA-13,2026-10-29,5,64344,,63831,513,,,,,apportioned,2,civicapi,2026-10-30T03:05:08+00:00
+2026,CA,CA-13,2026-10-30,4,67293,,66656,636,,,,,apportioned,2,civicapi,2026-10-30T16:06:21+00:00
 2026,CA,CA-14,2026-10-07,27,119,,119,,,,,,apportioned,2,civicapi,2026-10-08T00:03:37+00:00
 2026,CA,CA-14,2026-10-08,26,151,,151,,,,,,apportioned,2,civicapi,2026-10-08T22:55:15+00:00
 2026,CA,CA-14,2026-10-09,25,184,,184,,,,,,apportioned,2,civicapi,2026-10-09T19:17:05+00:00
@@ -775,6 +788,7 @@ cycle,state,cd_code,date,days_to_election,ballots_total,ballots_new,mail_returne
 2026,CA,CA-14,2026-10-27,7,49137,,48849,287,,,,,apportioned,2,civicapi,2026-10-27T12:20:06+00:00
 2026,CA,CA-14,2026-10-28,6,70983,,70374,609,,,,,apportioned,2,civicapi,2026-10-29T03:05:33+00:00
 2026,CA,CA-14,2026-10-29,5,81239,,80463,776,,,,,apportioned,2,civicapi,2026-10-29T19:36:05+00:00
+2026,CA,CA-14,2026-10-30,4,89796,,88840,956,,,,,apportioned,2,civicapi,2026-10-30T16:06:21+00:00
 2026,CA,CA-15,2026-10-07,27,335,,335,,,,,,apportioned,2,civicapi,2026-10-08T00:03:37+00:00
 2026,CA,CA-15,2026-10-08,26,743,,743,,,,,,apportioned,2,civicapi,2026-10-08T22:55:15+00:00
 2026,CA,CA-15,2026-10-09,25,1674,,1674,,,,,,apportioned,2,civicapi,2026-10-09T19:17:05+00:00
@@ -797,6 +811,7 @@ cycle,state,cd_code,date,days_to_election,ballots_total,ballots_new,mail_returne
 2026,CA,CA-15,2026-10-27,7,62351,,61523,828,,,,,apportioned,2,civicapi,2026-10-27T12:20:06+00:00
 2026,CA,CA-15,2026-10-28,6,90818,,89600,1218,,,,,apportioned,2,civicapi,2026-10-28T18:05:38+00:00
 2026,CA,CA-15,2026-10-29,5,100071,,98622,1448,,,,,apportioned,2,civicapi,2026-10-29T19:36:05+00:00
+2026,CA,CA-15,2026-10-30,4,101084,,99390,1695,,,,,apportioned,2,civicapi,2026-10-30T16:06:21+00:00
 2026,CA,CA-16,2026-10-07,27,105,,105,,,,,,apportioned,2,civicapi,2026-10-08T00:03:37+00:00
 2026,CA,CA-16,2026-10-08,26,166,,166,,,,,,apportioned,2,civicapi,2026-10-08T22:55:15+00:00
 2026,CA,CA-16,2026-10-09,25,351,,351,,,,,,apportioned,2,civicapi,2026-10-09T19:17:05+00:00
@@ -819,6 +834,7 @@ cycle,state,cd_code,date,days_to_election,ballots_total,ballots_new,mail_returne
 2026,CA,CA-16,2026-10-27,7,75282,,74335,947,,,,,apportioned,2,civicapi,2026-10-27T12:20:06+00:00
 2026,CA,CA-16,2026-10-28,6,98331,,96774,1557,,,,,apportioned,2,civicapi,2026-10-29T03:05:33+00:00
 2026,CA,CA-16,2026-10-29,5,109586,,107670,1917,,,,,apportioned,2,civicapi,2026-10-30T03:05:08+00:00
+2026,CA,CA-16,2026-10-30,4,109586,,107317,2269,,,,,apportioned,2,civicapi,2026-10-30T16:06:21+00:00
 2026,CA,CA-17,2026-10-07,27,65,,65,,,,,,apportioned,2,civicapi,2026-10-08T00:03:37+00:00
 2026,CA,CA-17,2026-10-08,26,94,,94,,,,,,apportioned,2,civicapi,2026-10-08T22:55:15+00:00
 2026,CA,CA-17,2026-10-09,25,107,,107,,,,,,apportioned,2,civicapi,2026-10-09T19:17:05+00:00
@@ -841,6 +857,7 @@ cycle,state,cd_code,date,days_to_election,ballots_total,ballots_new,mail_returne
 2026,CA,CA-17,2026-10-27,7,57638,,56979,659,,,,,apportioned,2,civicapi,2026-10-27T12:20:06+00:00
 2026,CA,CA-17,2026-10-28,6,73956,,72825,1131,,,,,apportioned,2,civicapi,2026-10-29T03:05:33+00:00
 2026,CA,CA-17,2026-10-29,5,82955,,81550,1406,,,,,apportioned,2,civicapi,2026-10-29T19:36:05+00:00
+2026,CA,CA-17,2026-10-30,4,83958,,82285,1673,,,,,apportioned,2,civicapi,2026-10-30T16:06:21+00:00
 2026,CA,CA-18,2026-10-07,27,413,,413,,,,,,apportioned,2,civicapi,2026-10-08T00:03:37+00:00
 2026,CA,CA-18,2026-10-08,26,774,,774,,,,,,apportioned,2,civicapi,2026-10-08T22:55:15+00:00
 2026,CA,CA-18,2026-10-09,25,1573,,1573,,,,,,apportioned,2,civicapi,2026-10-09T19:17:05+00:00
@@ -863,6 +880,7 @@ cycle,state,cd_code,date,days_to_election,ballots_total,ballots_new,mail_returne
 2026,CA,CA-18,2026-10-27,7,53847,,53247,600,,,,,apportioned,2,civicapi,2026-10-27T12:20:06+00:00
 2026,CA,CA-18,2026-10-28,6,66183,,65231,952,,,,,apportioned,2,civicapi,2026-10-29T03:05:33+00:00
 2026,CA,CA-18,2026-10-29,5,72997,,71853,1145,,,,,apportioned,2,civicapi,2026-10-30T03:05:08+00:00
+2026,CA,CA-18,2026-10-30,4,76016,,74650,1365,,,,,apportioned,2,civicapi,2026-10-30T16:06:21+00:00
 2026,CA,CA-19,2026-10-07,27,676,,676,,,,,,apportioned,2,civicapi,2026-10-08T00:03:37+00:00
 2026,CA,CA-19,2026-10-08,26,1411,,1411,,,,,,apportioned,2,civicapi,2026-10-08T22:55:15+00:00
 2026,CA,CA-19,2026-10-09,25,3083,,3083,,,,,,apportioned,2,civicapi,2026-10-09T19:17:05+00:00
@@ -885,6 +903,7 @@ cycle,state,cd_code,date,days_to_election,ballots_total,ballots_new,mail_returne
 2026,CA,CA-19,2026-10-27,7,88359,,87221,1139,,,,,apportioned,2,civicapi,2026-10-27T12:20:06+00:00
 2026,CA,CA-19,2026-10-28,6,109301,,107601,1701,,,,,apportioned,2,civicapi,2026-10-28T18:05:38+00:00
 2026,CA,CA-19,2026-10-29,5,121304,,119292,2012,,,,,apportioned,2,civicapi,2026-10-30T03:05:08+00:00
+2026,CA,CA-19,2026-10-30,4,126033,,123683,2349,,,,,apportioned,2,civicapi,2026-10-30T16:06:21+00:00
 2026,CA,CA-20,2026-10-07,27,39,,39,,,,,,apportioned,2,civicapi,2026-10-08T00:03:37+00:00
 2026,CA,CA-20,2026-10-08,26,56,,56,,,,,,apportioned,2,civicapi,2026-10-08T22:55:15+00:00
 2026,CA,CA-20,2026-10-09,25,205,,205,,,,,,apportioned,2,civicapi,2026-10-09T19:17:05+00:00
@@ -907,6 +926,7 @@ cycle,state,cd_code,date,days_to_election,ballots_total,ballots_new,mail_returne
 2026,CA,CA-20,2026-10-27,7,68411,,68172,240,,,,,apportioned,2,civicapi,2026-10-27T12:20:06+00:00
 2026,CA,CA-20,2026-10-28,6,90688,,90247,440,,,,,apportioned,2,civicapi,2026-10-29T03:05:33+00:00
 2026,CA,CA-20,2026-10-29,5,96121,,95570,551,,,,,apportioned,2,civicapi,2026-10-30T03:05:08+00:00
+2026,CA,CA-20,2026-10-30,4,100090,,99421,669,,,,,apportioned,2,civicapi,2026-10-30T16:06:21+00:00
 2026,CA,CA-21,2026-10-07,27,16,,16,,,,,,apportioned,2,civicapi,2026-10-08T00:03:37+00:00
 2026,CA,CA-21,2026-10-08,26,19,,19,,,,,,apportioned,2,civicapi,2026-10-08T22:55:15+00:00
 2026,CA,CA-21,2026-10-09,25,29,,29,,,,,,apportioned,2,civicapi,2026-10-09T19:17:05+00:00
@@ -929,6 +949,7 @@ cycle,state,cd_code,date,days_to_election,ballots_total,ballots_new,mail_returne
 2026,CA,CA-21,2026-10-27,7,44197,,43659,537,,,,,apportioned,2,civicapi,2026-10-27T12:20:06+00:00
 2026,CA,CA-21,2026-10-28,6,56104,,55077,1027,,,,,apportioned,2,civicapi,2026-10-29T03:05:33+00:00
 2026,CA,CA-21,2026-10-29,5,62133,,60840,1292,,,,,apportioned,2,civicapi,2026-10-30T03:05:08+00:00
+2026,CA,CA-21,2026-10-30,4,62133,,60561,1572,,,,,apportioned,2,civicapi,2026-10-30T16:06:21+00:00
 2026,CA,CA-22,2026-10-07,27,21,,21,,,,,,apportioned,2,civicapi,2026-10-08T00:03:37+00:00
 2026,CA,CA-22,2026-10-08,26,25,,25,,,,,,apportioned,2,civicapi,2026-10-08T22:55:15+00:00
 2026,CA,CA-22,2026-10-09,25,74,,74,,,,,,apportioned,2,civicapi,2026-10-09T19:17:05+00:00
@@ -951,6 +972,7 @@ cycle,state,cd_code,date,days_to_election,ballots_total,ballots_new,mail_returne
 2026,CA,CA-22,2026-10-27,7,37809,,37639,170,,,,,apportioned,2,civicapi,2026-10-27T12:20:06+00:00
 2026,CA,CA-22,2026-10-28,6,49009,,48700,309,,,,,apportioned,2,civicapi,2026-10-29T03:05:33+00:00
 2026,CA,CA-22,2026-10-29,5,51927,,51541,387,,,,,apportioned,2,civicapi,2026-10-30T03:05:08+00:00
+2026,CA,CA-22,2026-10-30,4,54129,,53663,467,,,,,apportioned,2,civicapi,2026-10-30T16:06:21+00:00
 2026,CA,CA-23,2026-10-07,27,30,,30,,,,,,apportioned,2,civicapi,2026-10-08T00:03:37+00:00
 2026,CA,CA-23,2026-10-08,26,65,,65,,,,,,apportioned,2,civicapi,2026-10-08T22:55:15+00:00
 2026,CA,CA-23,2026-10-09,25,592,,592,,,,,,apportioned,2,civicapi,2026-10-09T19:17:05+00:00
@@ -973,6 +995,7 @@ cycle,state,cd_code,date,days_to_election,ballots_total,ballots_new,mail_returne
 2026,CA,CA-23,2026-10-27,7,55268,,55214,,,,,,apportioned,2,civicapi,2026-10-27T12:20:06+00:00
 2026,CA,CA-23,2026-10-28,6,71195,,71092,,,,,,apportioned,2,civicapi,2026-10-29T03:05:33+00:00
 2026,CA,CA-23,2026-10-29,5,77659,,77531,,,,,,apportioned,2,civicapi,2026-10-29T19:36:05+00:00
+2026,CA,CA-23,2026-10-30,4,81243,,81083,,,,,,apportioned,2,civicapi,2026-10-30T16:06:21+00:00
 2026,CA,CA-24,2026-10-07,27,197,,197,,,,,,apportioned,2,civicapi,2026-10-08T00:03:37+00:00
 2026,CA,CA-24,2026-10-08,26,716,,716,,,,,,apportioned,2,civicapi,2026-10-08T22:55:15+00:00
 2026,CA,CA-24,2026-10-09,25,1223,,1223,,,,,,apportioned,2,civicapi,2026-10-09T19:17:05+00:00
@@ -995,6 +1018,7 @@ cycle,state,cd_code,date,days_to_election,ballots_total,ballots_new,mail_returne
 2026,CA,CA-24,2026-10-27,7,89126,,88851,275,,,,,apportioned,2,civicapi,2026-10-27T12:20:06+00:00
 2026,CA,CA-24,2026-10-28,6,106970,,106476,494,,,,,apportioned,2,civicapi,2026-10-29T03:05:33+00:00
 2026,CA,CA-24,2026-10-29,5,120510,,119915,595,,,,,apportioned,2,civicapi,2026-10-29T19:36:05+00:00
+2026,CA,CA-24,2026-10-30,4,126231,,125508,724,,,,,apportioned,2,civicapi,2026-10-30T16:06:21+00:00
 2026,CA,CA-25,2026-10-07,27,0,,0,,,,,,apportioned,2,civicapi,2026-10-08T00:03:37+00:00
 2026,CA,CA-25,2026-10-08,26,1,,1,,,,,,apportioned,2,civicapi,2026-10-08T22:55:15+00:00
 2026,CA,CA-25,2026-10-09,25,12,,12,,,,,,apportioned,2,civicapi,2026-10-09T19:17:05+00:00
@@ -1017,6 +1041,7 @@ cycle,state,cd_code,date,days_to_election,ballots_total,ballots_new,mail_returne
 2026,CA,CA-25,2026-10-27,7,56451,,56062,,,,,,apportioned,2,civicapi,2026-10-27T12:20:06+00:00
 2026,CA,CA-25,2026-10-28,6,69438,,68716,,,,,,apportioned,2,civicapi,2026-10-28T18:05:38+00:00
 2026,CA,CA-25,2026-10-29,5,79605,,78719,,,,,,apportioned,2,civicapi,2026-10-30T03:05:08+00:00
+2026,CA,CA-25,2026-10-30,4,85392,,84299,,,,,,apportioned,2,civicapi,2026-10-30T16:06:21+00:00
 2026,CA,CA-26,2026-10-07,27,186,,186,,,,,,apportioned,2,civicapi,2026-10-08T00:03:37+00:00
 2026,CA,CA-26,2026-10-08,26,518,,518,,,,,,apportioned,2,civicapi,2026-10-08T22:55:15+00:00
 2026,CA,CA-26,2026-10-09,25,1112,,1112,,,,,,apportioned,2,civicapi,2026-10-09T19:17:05+00:00
@@ -1039,6 +1064,7 @@ cycle,state,cd_code,date,days_to_election,ballots_total,ballots_new,mail_returne
 2026,CA,CA-26,2026-10-27,7,70616,,69519,1098,,,,,apportioned,2,civicapi,2026-10-27T12:20:06+00:00
 2026,CA,CA-26,2026-10-28,6,84574,,82414,2158,,,,,apportioned,2,civicapi,2026-10-28T18:05:38+00:00
 2026,CA,CA-26,2026-10-29,5,95573,,92879,2694,,,,,apportioned,2,civicapi,2026-10-29T19:36:05+00:00
+2026,CA,CA-26,2026-10-30,4,104996,,101673,3323,,,,,apportioned,2,civicapi,2026-10-30T16:06:21+00:00
 2026,CA,CA-27,2026-10-07,27,582,,582,,,,,,apportioned,2,civicapi,2026-10-08T00:03:37+00:00
 2026,CA,CA-27,2026-10-08,26,1419,,1419,,,,,,apportioned,2,civicapi,2026-10-08T22:55:15+00:00
 2026,CA,CA-27,2026-10-09,25,3162,,3162,,,,,,apportioned,2,civicapi,2026-10-09T19:17:05+00:00
@@ -1061,6 +1087,7 @@ cycle,state,cd_code,date,days_to_election,ballots_total,ballots_new,mail_returne
 2026,CA,CA-27,2026-10-27,7,51777,,50540,1237,,,,,apportioned,2,civicapi,2026-10-27T12:20:06+00:00
 2026,CA,CA-27,2026-10-28,6,63021,,60425,2596,,,,,apportioned,2,civicapi,2026-10-28T18:05:38+00:00
 2026,CA,CA-27,2026-10-29,5,72996,,69651,3345,,,,,apportioned,2,civicapi,2026-10-29T19:36:05+00:00
+2026,CA,CA-27,2026-10-30,4,80840,,76636,4203,,,,,apportioned,2,civicapi,2026-10-30T16:06:21+00:00
 2026,CA,CA-28,2026-10-07,27,518,,518,,,,,,apportioned,2,civicapi,2026-10-08T00:03:37+00:00
 2026,CA,CA-28,2026-10-08,26,1261,,1261,,,,,,apportioned,2,civicapi,2026-10-08T22:55:15+00:00
 2026,CA,CA-28,2026-10-09,25,2929,,2929,,,,,,apportioned,2,civicapi,2026-10-09T19:17:05+00:00
@@ -1083,6 +1110,7 @@ cycle,state,cd_code,date,days_to_election,ballots_total,ballots_new,mail_returne
 2026,CA,CA-28,2026-10-27,7,58621,,57532,,,,,,apportioned,2,civicapi,2026-10-27T12:20:06+00:00
 2026,CA,CA-28,2026-10-28,6,72386,,70100,,,,,,apportioned,2,civicapi,2026-10-28T18:05:38+00:00
 2026,CA,CA-28,2026-10-29,5,82670,,79724,,,,,,apportioned,2,civicapi,2026-10-29T19:36:05+00:00
+2026,CA,CA-28,2026-10-30,4,90333,,86630,,,,,,apportioned,2,civicapi,2026-10-30T16:06:21+00:00
 2026,CA,CA-29,2026-10-07,27,469,,469,,,,,,apportioned,2,civicapi,2026-10-08T00:03:37+00:00
 2026,CA,CA-29,2026-10-08,26,1143,,1143,,,,,,apportioned,2,civicapi,2026-10-08T22:55:15+00:00
 2026,CA,CA-29,2026-10-09,25,2545,,2545,,,,,,apportioned,2,civicapi,2026-10-09T19:17:05+00:00
@@ -1105,6 +1133,7 @@ cycle,state,cd_code,date,days_to_election,ballots_total,ballots_new,mail_returne
 2026,CA,CA-29,2026-10-27,7,41681,,40686,996,,,,,apportioned,2,civicapi,2026-10-27T12:20:06+00:00
 2026,CA,CA-29,2026-10-28,6,50733,,48643,2090,,,,,apportioned,2,civicapi,2026-10-28T18:05:38+00:00
 2026,CA,CA-29,2026-10-29,5,58763,,56070,2693,,,,,apportioned,2,civicapi,2026-10-29T19:36:05+00:00
+2026,CA,CA-29,2026-10-30,4,65078,,61694,3384,,,,,apportioned,2,civicapi,2026-10-30T16:06:21+00:00
 2026,CA,CA-30,2026-10-07,27,670,,670,,,,,,apportioned,2,civicapi,2026-10-08T00:03:37+00:00
 2026,CA,CA-30,2026-10-08,26,1634,,1634,,,,,,apportioned,2,civicapi,2026-10-08T22:55:15+00:00
 2026,CA,CA-30,2026-10-09,25,3640,,3640,,,,,,apportioned,2,civicapi,2026-10-09T19:17:05+00:00
@@ -1127,6 +1156,7 @@ cycle,state,cd_code,date,days_to_election,ballots_total,ballots_new,mail_returne
 2026,CA,CA-30,2026-10-27,7,59614,,58190,1424,,,,,apportioned,2,civicapi,2026-10-27T12:20:06+00:00
 2026,CA,CA-30,2026-10-28,6,72559,,69570,2989,,,,,apportioned,2,civicapi,2026-10-28T18:05:38+00:00
 2026,CA,CA-30,2026-10-29,5,84044,,80193,3851,,,,,apportioned,2,civicapi,2026-10-29T19:36:05+00:00
+2026,CA,CA-30,2026-10-30,4,93075,,88236,4840,,,,,apportioned,2,civicapi,2026-10-30T16:06:21+00:00
 2026,CA,CA-31,2026-10-07,27,490,,490,,,,,,apportioned,2,civicapi,2026-10-08T00:03:37+00:00
 2026,CA,CA-31,2026-10-08,26,1191,,1191,,,,,,apportioned,2,civicapi,2026-10-08T22:55:15+00:00
 2026,CA,CA-31,2026-10-09,25,2733,,2733,,,,,,apportioned,2,civicapi,2026-10-09T19:17:05+00:00
@@ -1149,6 +1179,7 @@ cycle,state,cd_code,date,days_to_election,ballots_total,ballots_new,mail_returne
 2026,CA,CA-31,2026-10-27,7,51793,,50761,,,,,,apportioned,2,civicapi,2026-10-27T12:20:06+00:00
 2026,CA,CA-31,2026-10-28,6,63723,,61557,,,,,,apportioned,2,civicapi,2026-10-28T18:05:38+00:00
 2026,CA,CA-31,2026-10-29,5,73034,,70243,,,,,,apportioned,2,civicapi,2026-10-29T19:36:05+00:00
+2026,CA,CA-31,2026-10-30,4,80076,,76569,,,,,,apportioned,2,civicapi,2026-10-30T16:06:21+00:00
 2026,CA,CA-32,2026-10-07,27,574,,574,,,,,,apportioned,2,civicapi,2026-10-08T00:03:37+00:00
 2026,CA,CA-32,2026-10-08,26,1416,,1416,,,,,,apportioned,2,civicapi,2026-10-08T22:55:15+00:00
 2026,CA,CA-32,2026-10-09,25,3143,,3143,,,,,,apportioned,2,civicapi,2026-10-09T19:17:05+00:00
@@ -1171,6 +1202,7 @@ cycle,state,cd_code,date,days_to_election,ballots_total,ballots_new,mail_returne
 2026,CA,CA-32,2026-10-27,7,65709,,64299,1409,,,,,apportioned,2,civicapi,2026-10-27T12:20:06+00:00
 2026,CA,CA-32,2026-10-28,6,79603,,76685,2919,,,,,apportioned,2,civicapi,2026-10-28T18:05:38+00:00
 2026,CA,CA-32,2026-10-29,5,91555,,87818,3737,,,,,apportioned,2,civicapi,2026-10-29T19:36:05+00:00
+2026,CA,CA-32,2026-10-30,4,101162,,96483,4679,,,,,apportioned,2,civicapi,2026-10-30T16:06:21+00:00
 2026,CA,CA-33,2026-10-07,27,19,,19,,,,,,apportioned,2,civicapi,2026-10-08T00:03:37+00:00
 2026,CA,CA-33,2026-10-08,26,40,,40,,,,,,apportioned,2,civicapi,2026-10-08T22:55:15+00:00
 2026,CA,CA-33,2026-10-09,25,530,,530,,,,,,apportioned,2,civicapi,2026-10-09T19:17:05+00:00
@@ -1193,6 +1225,7 @@ cycle,state,cd_code,date,days_to_election,ballots_total,ballots_new,mail_returne
 2026,CA,CA-33,2026-10-27,7,49008,,49000,,,,,,apportioned,2,civicapi,2026-10-27T12:20:06+00:00
 2026,CA,CA-33,2026-10-28,6,63462,,63449,,,,,,apportioned,2,civicapi,2026-10-29T03:05:33+00:00
 2026,CA,CA-33,2026-10-29,5,69133,,69115,,,,,,apportioned,2,civicapi,2026-10-30T03:05:08+00:00
+2026,CA,CA-33,2026-10-30,4,72036,,72015,,,,,,apportioned,2,civicapi,2026-10-30T16:06:21+00:00
 2026,CA,CA-34,2026-10-07,27,422,,422,,,,,,apportioned,2,civicapi,2026-10-08T00:03:37+00:00
 2026,CA,CA-34,2026-10-08,26,1029,,1029,,,,,,apportioned,2,civicapi,2026-10-08T22:55:15+00:00
 2026,CA,CA-34,2026-10-09,25,2293,,2293,,,,,,apportioned,2,civicapi,2026-10-09T19:17:05+00:00
@@ -1215,6 +1248,7 @@ cycle,state,cd_code,date,days_to_election,ballots_total,ballots_new,mail_returne
 2026,CA,CA-34,2026-10-27,7,37552,,36655,897,,,,,apportioned,2,civicapi,2026-10-27T12:20:06+00:00
 2026,CA,CA-34,2026-10-28,6,45706,,43824,1883,,,,,apportioned,2,civicapi,2026-10-28T18:05:38+00:00
 2026,CA,CA-34,2026-10-29,5,52941,,50515,2426,,,,,apportioned,2,civicapi,2026-10-29T19:36:05+00:00
+2026,CA,CA-34,2026-10-30,4,58630,,55581,3049,,,,,apportioned,2,civicapi,2026-10-30T16:06:21+00:00
 2026,CA,CA-35,2026-10-07,27,96,,96,,,,,,apportioned,2,civicapi,2026-10-08T00:03:37+00:00
 2026,CA,CA-35,2026-10-08,26,229,,229,,,,,,apportioned,2,civicapi,2026-10-08T22:55:15+00:00
 2026,CA,CA-35,2026-10-09,25,790,,790,,,,,,apportioned,2,civicapi,2026-10-09T19:17:05+00:00
@@ -1237,6 +1271,7 @@ cycle,state,cd_code,date,days_to_election,ballots_total,ballots_new,mail_returne
 2026,CA,CA-35,2026-10-27,7,52072,,51789,,,,,,apportioned,2,civicapi,2026-10-27T12:20:06+00:00
 2026,CA,CA-35,2026-10-28,6,65693,,65127,,,,,,apportioned,2,civicapi,2026-10-28T18:05:38+00:00
 2026,CA,CA-35,2026-10-29,5,72698,,71980,,,,,,apportioned,2,civicapi,2026-10-29T19:36:05+00:00
+2026,CA,CA-35,2026-10-30,4,77330,,76434,,,,,,apportioned,2,civicapi,2026-10-30T16:06:21+00:00
 2026,CA,CA-36,2026-10-07,27,758,,758,,,,,,apportioned,2,civicapi,2026-10-08T00:03:37+00:00
 2026,CA,CA-36,2026-10-08,26,1847,,1847,,,,,,apportioned,2,civicapi,2026-10-08T22:55:15+00:00
 2026,CA,CA-36,2026-10-09,25,4113,,4113,,,,,,apportioned,2,civicapi,2026-10-09T19:17:05+00:00
@@ -1259,6 +1294,7 @@ cycle,state,cd_code,date,days_to_election,ballots_total,ballots_new,mail_returne
 2026,CA,CA-36,2026-10-27,7,67363,,65754,1609,,,,,apportioned,2,civicapi,2026-10-27T12:20:06+00:00
 2026,CA,CA-36,2026-10-28,6,81992,,78614,3377,,,,,apportioned,2,civicapi,2026-10-28T18:05:38+00:00
 2026,CA,CA-36,2026-10-29,5,94969,,90618,4351,,,,,apportioned,2,civicapi,2026-10-29T19:36:05+00:00
+2026,CA,CA-36,2026-10-30,4,105175,,99706,5469,,,,,apportioned,2,civicapi,2026-10-30T16:06:21+00:00
 2026,CA,CA-37,2026-10-07,27,459,,459,,,,,,apportioned,2,civicapi,2026-10-08T00:03:37+00:00
 2026,CA,CA-37,2026-10-08,26,1119,,1119,,,,,,apportioned,2,civicapi,2026-10-08T22:55:15+00:00
 2026,CA,CA-37,2026-10-09,25,2492,,2492,,,,,,apportioned,2,civicapi,2026-10-09T19:17:05+00:00
@@ -1281,6 +1317,7 @@ cycle,state,cd_code,date,days_to_election,ballots_total,ballots_new,mail_returne
 2026,CA,CA-37,2026-10-27,7,40814,,39839,975,,,,,apportioned,2,civicapi,2026-10-27T12:20:06+00:00
 2026,CA,CA-37,2026-10-28,6,49677,,47631,2046,,,,,apportioned,2,civicapi,2026-10-28T18:05:38+00:00
 2026,CA,CA-37,2026-10-29,5,57540,,54904,2636,,,,,apportioned,2,civicapi,2026-10-29T19:36:05+00:00
+2026,CA,CA-37,2026-10-30,4,63723,,60410,3313,,,,,apportioned,2,civicapi,2026-10-30T16:06:21+00:00
 2026,CA,CA-38,2026-10-07,27,398,,398,,,,,,apportioned,2,civicapi,2026-10-08T00:03:37+00:00
 2026,CA,CA-38,2026-10-08,26,1117,,1117,,,,,,apportioned,2,civicapi,2026-10-08T22:55:15+00:00
 2026,CA,CA-38,2026-10-09,25,3199,,3199,,,,,,apportioned,2,civicapi,2026-10-09T19:17:05+00:00
@@ -1303,6 +1340,7 @@ cycle,state,cd_code,date,days_to_election,ballots_total,ballots_new,mail_returne
 2026,CA,CA-38,2026-10-27,7,50864,,49748,1117,,,,,apportioned,2,civicapi,2026-10-27T12:20:06+00:00
 2026,CA,CA-38,2026-10-28,6,62171,,59875,2295,,,,,apportioned,2,civicapi,2026-10-28T18:05:38+00:00
 2026,CA,CA-38,2026-10-29,5,70832,,67908,2924,,,,,apportioned,2,civicapi,2026-10-29T19:36:05+00:00
+2026,CA,CA-38,2026-10-30,4,75931,,72282,3650,,,,,apportioned,2,civicapi,2026-10-30T16:06:21+00:00
 2026,CA,CA-39,2026-10-12,22,12,,12,,,,,,apportioned,2,civicapi,2026-10-13T07:26:46+00:00
 2026,CA,CA-39,2026-10-13,21,17,,17,,,,,,apportioned,2,civicapi,2026-10-14T03:02:29+00:00
 2026,CA,CA-39,2026-10-14,20,99,,99,,,,,,apportioned,2,civicapi,2026-10-15T03:02:44+00:00
@@ -1321,6 +1359,7 @@ cycle,state,cd_code,date,days_to_election,ballots_total,ballots_new,mail_returne
 2026,CA,CA-39,2026-10-27,7,52240,,51855,385,,,,,apportioned,2,civicapi,2026-10-27T12:20:06+00:00
 2026,CA,CA-39,2026-10-28,6,63191,,62478,712,,,,,apportioned,2,civicapi,2026-10-29T03:05:33+00:00
 2026,CA,CA-39,2026-10-29,5,70807,,69935,872,,,,,apportioned,2,civicapi,2026-10-30T03:05:08+00:00
+2026,CA,CA-39,2026-10-30,4,77214,,76140,1074,,,,,apportioned,2,civicapi,2026-10-30T16:06:21+00:00
 2026,CA,CA-40,2026-10-07,27,38,,38,,,,,,apportioned,2,civicapi,2026-10-08T00:03:37+00:00
 2026,CA,CA-40,2026-10-08,26,388,,388,,,,,,apportioned,2,civicapi,2026-10-08T22:55:15+00:00
 2026,CA,CA-40,2026-10-09,25,2286,,2286,,,,,,apportioned,2,civicapi,2026-10-09T19:17:05+00:00
@@ -1343,6 +1382,7 @@ cycle,state,cd_code,date,days_to_election,ballots_total,ballots_new,mail_returne
 2026,CA,CA-40,2026-10-27,7,87906,,86885,1021,,,,,apportioned,2,civicapi,2026-10-27T12:20:06+00:00
 2026,CA,CA-40,2026-10-28,6,107112,,105167,1945,,,,,apportioned,2,civicapi,2026-10-29T03:05:33+00:00
 2026,CA,CA-40,2026-10-29,5,119266,,116872,2394,,,,,apportioned,2,civicapi,2026-10-30T03:05:08+00:00
+2026,CA,CA-40,2026-10-30,4,125830,,122897,2934,,,,,apportioned,2,civicapi,2026-10-30T16:06:21+00:00
 2026,CA,CA-41,2026-10-07,27,501,,501,,,,,,apportioned,2,civicapi,2026-10-08T00:03:37+00:00
 2026,CA,CA-41,2026-10-08,26,1359,,1359,,,,,,apportioned,2,civicapi,2026-10-08T22:55:15+00:00
 2026,CA,CA-41,2026-10-09,25,3697,,3697,,,,,,apportioned,2,civicapi,2026-10-09T19:17:05+00:00
@@ -1365,6 +1405,7 @@ cycle,state,cd_code,date,days_to_election,ballots_total,ballots_new,mail_returne
 2026,CA,CA-41,2026-10-27,7,59099,,57779,1320,,,,,apportioned,2,civicapi,2026-10-27T12:20:06+00:00
 2026,CA,CA-41,2026-10-28,6,72178,,69454,2724,,,,,apportioned,2,civicapi,2026-10-28T18:05:38+00:00
 2026,CA,CA-41,2026-10-29,5,82493,,79015,3478,,,,,apportioned,2,civicapi,2026-10-29T19:36:05+00:00
+2026,CA,CA-41,2026-10-30,4,88995,,84648,4347,,,,,apportioned,2,civicapi,2026-10-30T16:06:21+00:00
 2026,CA,CA-42,2026-10-07,27,319,,319,,,,,,apportioned,2,civicapi,2026-10-08T00:03:37+00:00
 2026,CA,CA-42,2026-10-08,26,1240,,1240,,,,,,apportioned,2,civicapi,2026-10-08T22:55:15+00:00
 2026,CA,CA-42,2026-10-09,25,4991,,4991,,,,,,apportioned,2,civicapi,2026-10-09T19:17:05+00:00
@@ -1387,6 +1428,7 @@ cycle,state,cd_code,date,days_to_election,ballots_total,ballots_new,mail_returne
 2026,CA,CA-42,2026-10-27,7,76953,,75421,1531,,,,,apportioned,2,civicapi,2026-10-27T12:20:06+00:00
 2026,CA,CA-42,2026-10-28,6,94478,,91419,3060,,,,,apportioned,2,civicapi,2026-10-28T18:05:38+00:00
 2026,CA,CA-42,2026-10-29,5,105740,,101900,3840,,,,,apportioned,2,civicapi,2026-10-29T19:36:05+00:00
+2026,CA,CA-42,2026-10-30,4,109232,,104487,4744,,,,,apportioned,2,civicapi,2026-10-30T16:06:21+00:00
 2026,CA,CA-43,2026-10-07,27,440,,440,,,,,,apportioned,2,civicapi,2026-10-08T00:03:37+00:00
 2026,CA,CA-43,2026-10-08,26,1074,,1074,,,,,,apportioned,2,civicapi,2026-10-08T22:55:15+00:00
 2026,CA,CA-43,2026-10-09,25,2391,,2391,,,,,,apportioned,2,civicapi,2026-10-09T19:17:05+00:00
@@ -1409,6 +1451,7 @@ cycle,state,cd_code,date,days_to_election,ballots_total,ballots_new,mail_returne
 2026,CA,CA-43,2026-10-27,7,39159,,38223,935,,,,,apportioned,2,civicapi,2026-10-27T12:20:06+00:00
 2026,CA,CA-43,2026-10-28,6,47662,,45699,1963,,,,,apportioned,2,civicapi,2026-10-28T18:05:38+00:00
 2026,CA,CA-43,2026-10-29,5,55206,,52677,2530,,,,,apportioned,2,civicapi,2026-10-29T19:36:05+00:00
+2026,CA,CA-43,2026-10-30,4,61139,,57960,3179,,,,,apportioned,2,civicapi,2026-10-30T16:06:21+00:00
 2026,CA,CA-44,2026-10-07,27,432,,432,,,,,,apportioned,2,civicapi,2026-10-08T00:03:37+00:00
 2026,CA,CA-44,2026-10-08,26,1053,,1053,,,,,,apportioned,2,civicapi,2026-10-08T22:55:15+00:00
 2026,CA,CA-44,2026-10-09,25,2346,,2346,,,,,,apportioned,2,civicapi,2026-10-09T19:17:05+00:00
@@ -1431,6 +1474,7 @@ cycle,state,cd_code,date,days_to_election,ballots_total,ballots_new,mail_returne
 2026,CA,CA-44,2026-10-27,7,38416,,37498,918,,,,,apportioned,2,civicapi,2026-10-27T12:20:06+00:00
 2026,CA,CA-44,2026-10-28,6,46758,,44832,1926,,,,,apportioned,2,civicapi,2026-10-28T18:05:38+00:00
 2026,CA,CA-44,2026-10-29,5,54159,,51677,2482,,,,,apportioned,2,civicapi,2026-10-29T19:36:05+00:00
+2026,CA,CA-44,2026-10-30,4,59979,,56860,3119,,,,,apportioned,2,civicapi,2026-10-30T16:06:21+00:00
 2026,CA,CA-45,2026-10-07,27,185,,185,,,,,,apportioned,2,civicapi,2026-10-08T00:03:37+00:00
 2026,CA,CA-45,2026-10-08,26,956,,956,,,,,,apportioned,2,civicapi,2026-10-08T22:55:15+00:00
 2026,CA,CA-45,2026-10-09,25,4580,,4580,,,,,,apportioned,2,civicapi,2026-10-09T19:17:05+00:00
@@ -1453,6 +1497,7 @@ cycle,state,cd_code,date,days_to_election,ballots_total,ballots_new,mail_returne
 2026,CA,CA-45,2026-10-27,7,69747,,68417,1329,,,,,apportioned,2,civicapi,2026-10-27T12:20:06+00:00
 2026,CA,CA-45,2026-10-28,6,85788,,83168,2620,,,,,apportioned,2,civicapi,2026-10-28T18:05:38+00:00
 2026,CA,CA-45,2026-10-29,5,95313,,92049,3264,,,,,apportioned,2,civicapi,2026-10-29T19:36:05+00:00
+2026,CA,CA-45,2026-10-30,4,96912,,92900,4012,,,,,apportioned,2,civicapi,2026-10-30T16:06:21+00:00
 2026,CA,CA-46,2026-10-07,27,62,,62,,,,,,apportioned,2,civicapi,2026-10-08T00:03:37+00:00
 2026,CA,CA-46,2026-10-08,26,633,,633,,,,,,apportioned,2,civicapi,2026-10-08T22:55:15+00:00
 2026,CA,CA-46,2026-10-09,25,3732,,3732,,,,,,apportioned,2,civicapi,2026-10-09T19:17:05+00:00
@@ -1475,6 +1520,7 @@ cycle,state,cd_code,date,days_to_election,ballots_total,ballots_new,mail_returne
 2026,CA,CA-46,2026-10-27,7,56136,,55115,1022,,,,,apportioned,2,civicapi,2026-10-27T12:20:06+00:00
 2026,CA,CA-46,2026-10-28,6,69176,,67193,1983,,,,,apportioned,2,civicapi,2026-10-29T03:05:33+00:00
 2026,CA,CA-46,2026-10-29,5,76279,,73831,2448,,,,,apportioned,2,civicapi,2026-10-30T03:05:08+00:00
+2026,CA,CA-46,2026-10-30,4,76279,,73287,2992,,,,,apportioned,2,civicapi,2026-10-30T16:06:21+00:00
 2026,CA,CA-47,2026-10-07,27,98,,98,,,,,,apportioned,2,civicapi,2026-10-08T00:03:37+00:00
 2026,CA,CA-47,2026-10-08,26,1000,,1000,,,,,,apportioned,2,civicapi,2026-10-08T22:55:15+00:00
 2026,CA,CA-47,2026-10-09,25,5895,,5895,,,,,,apportioned,2,civicapi,2026-10-09T19:17:05+00:00
@@ -1497,6 +1543,7 @@ cycle,state,cd_code,date,days_to_election,ballots_total,ballots_new,mail_returne
 2026,CA,CA-47,2026-10-27,7,88676,,87062,1614,,,,,apportioned,2,civicapi,2026-10-27T12:20:06+00:00
 2026,CA,CA-47,2026-10-28,6,109273,,106140,3133,,,,,apportioned,2,civicapi,2026-10-29T03:05:33+00:00
 2026,CA,CA-47,2026-10-29,5,120494,,116627,3868,,,,,apportioned,2,civicapi,2026-10-30T03:05:08+00:00
+2026,CA,CA-47,2026-10-30,4,120494,,115768,4727,,,,,apportioned,2,civicapi,2026-10-30T16:06:21+00:00
 2026,CA,CA-48,2026-10-08,26,6,,6,,,,,,apportioned,2,civicapi,2026-10-08T22:55:15+00:00
 2026,CA,CA-48,2026-10-09,25,2715,,2715,,,,,,apportioned,2,civicapi,2026-10-09T19:17:05+00:00
 2026,CA,CA-48,2026-10-10,24,4636,,4636,,,,,,apportioned,2,civicapi,2026-10-11T00:42:44+00:00
@@ -1518,6 +1565,7 @@ cycle,state,cd_code,date,days_to_election,ballots_total,ballots_new,mail_returne
 2026,CA,CA-48,2026-10-27,7,82910,,82411,499,,,,,apportioned,2,civicapi,2026-10-27T12:20:06+00:00
 2026,CA,CA-48,2026-10-28,6,101025,,100048,979,,,,,apportioned,2,civicapi,2026-10-29T03:05:33+00:00
 2026,CA,CA-48,2026-10-29,5,111012,,109785,1227,,,,,apportioned,2,civicapi,2026-10-30T03:05:08+00:00
+2026,CA,CA-48,2026-10-30,4,115505,,113989,1515,,,,,apportioned,2,civicapi,2026-10-30T16:06:21+00:00
 2026,CA,CA-49,2026-10-07,27,20,,20,,,,,,apportioned,2,civicapi,2026-10-08T00:03:37+00:00
 2026,CA,CA-49,2026-10-08,26,218,,218,,,,,,apportioned,2,civicapi,2026-10-08T22:55:15+00:00
 2026,CA,CA-49,2026-10-09,25,6498,,6498,,,,,,apportioned,2,civicapi,2026-10-09T19:17:05+00:00
@@ -1540,6 +1588,7 @@ cycle,state,cd_code,date,days_to_election,ballots_total,ballots_new,mail_returne
 2026,CA,CA-49,2026-10-27,7,108324,,107546,778,,,,,apportioned,2,civicapi,2026-10-27T12:20:06+00:00
 2026,CA,CA-49,2026-10-28,6,132875,,131298,1577,,,,,apportioned,2,civicapi,2026-10-29T03:05:33+00:00
 2026,CA,CA-49,2026-10-29,5,144226,,142232,1994,,,,,apportioned,2,civicapi,2026-10-30T03:05:08+00:00
+2026,CA,CA-49,2026-10-30,4,144226,,141769,2457,,,,,apportioned,2,civicapi,2026-10-30T16:06:21+00:00
 2026,CA,CA-50,2026-10-08,26,14,,14,,,,,,apportioned,2,civicapi,2026-10-08T22:55:15+00:00
 2026,CA,CA-50,2026-10-09,25,6236,,6236,,,,,,apportioned,2,civicapi,2026-10-09T19:17:05+00:00
 2026,CA,CA-50,2026-10-10,24,10650,,10650,,,,,,apportioned,2,civicapi,2026-10-11T00:42:44+00:00
@@ -1561,6 +1610,7 @@ cycle,state,cd_code,date,days_to_election,ballots_total,ballots_new,mail_returne
 2026,CA,CA-50,2026-10-27,7,106299,,105773,527,,,,,apportioned,2,civicapi,2026-10-27T12:20:06+00:00
 2026,CA,CA-50,2026-10-28,6,130270,,129170,1100,,,,,apportioned,2,civicapi,2026-10-29T03:05:33+00:00
 2026,CA,CA-50,2026-10-29,5,140940,,139526,1413,,,,,apportioned,2,civicapi,2026-10-30T03:05:08+00:00
+2026,CA,CA-50,2026-10-30,4,140940,,139188,1751,,,,,apportioned,2,civicapi,2026-10-30T16:06:21+00:00
 2026,CA,CA-51,2026-10-08,26,14,,14,,,,,,apportioned,2,civicapi,2026-10-08T22:55:15+00:00
 2026,CA,CA-51,2026-10-09,25,5937,,5937,,,,,,apportioned,2,civicapi,2026-10-09T19:17:05+00:00
 2026,CA,CA-51,2026-10-10,24,10138,,10138,,,,,,apportioned,2,civicapi,2026-10-11T00:42:44+00:00
@@ -1582,6 +1632,7 @@ cycle,state,cd_code,date,days_to_election,ballots_total,ballots_new,mail_returne
 2026,CA,CA-51,2026-10-27,7,101198,,100696,501,,,,,apportioned,2,civicapi,2026-10-27T12:20:06+00:00
 2026,CA,CA-51,2026-10-28,6,124019,,122971,1047,,,,,apportioned,2,civicapi,2026-10-29T03:05:33+00:00
 2026,CA,CA-51,2026-10-29,5,134176,,132830,1345,,,,,apportioned,2,civicapi,2026-10-30T03:05:08+00:00
+2026,CA,CA-51,2026-10-30,4,134176,,132509,1667,,,,,apportioned,2,civicapi,2026-10-30T16:06:21+00:00
 2026,CA,CA-52,2026-10-08,26,11,,11,,,,,,apportioned,2,civicapi,2026-10-08T22:55:15+00:00
 2026,CA,CA-52,2026-10-09,25,4605,,4605,,,,,,apportioned,2,civicapi,2026-10-09T19:17:05+00:00
 2026,CA,CA-52,2026-10-10,24,7863,,7863,,,,,,apportioned,2,civicapi,2026-10-11T00:42:44+00:00
@@ -1603,3 +1654,4 @@ cycle,state,cd_code,date,days_to_election,ballots_total,ballots_new,mail_returne
 2026,CA,CA-52,2026-10-27,7,78488,,78099,389,,,,,apportioned,2,civicapi,2026-10-27T12:20:06+00:00
 2026,CA,CA-52,2026-10-28,6,96187,,95375,812,,,,,apportioned,2,civicapi,2026-10-29T03:05:33+00:00
 2026,CA,CA-52,2026-10-29,5,104065,,103022,1044,,,,,apportioned,2,civicapi,2026-10-30T03:05:08+00:00
+2026,CA,CA-52,2026-10-30,4,104065,,102772,1293,,,,,apportioned,2,civicapi,2026-10-30T16:06:21+00:00

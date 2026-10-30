@@ -62,6 +62,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,WY,56001,Albany County,2026-10-27,7,3209,,3209,,955,1891,363,,2,civicapi,2026-10-27T19:10:15+00:00
 2026,WY,56001,Albany County,2026-10-28,6,3775,,3775,,1097,2250,428,,2,civicapi,2026-10-28T18:10:50+00:00
 2026,WY,56001,Albany County,2026-10-29,5,4227,,4227,,1218,2536,473,,2,civicapi,2026-10-29T14:40:17+00:00
+2026,WY,56001,Albany County,2026-10-30,4,4677,,4677,,1325,2825,527,,2,civicapi,2026-10-30T16:12:21+00:00
 2026,WY,56003,Big Horn County,2026-10-07,27,7,,7,,1,6,,,2,civicapi,2026-10-07T19:47:08+00:00
 2026,WY,56003,Big Horn County,2026-10-08,26,7,,7,,1,6,,,2,civicapi,2026-10-08T22:56:34+00:00
 2026,WY,56003,Big Horn County,2026-10-09,25,16,,16,,1,15,,,2,civicapi,2026-10-09T19:18:28+00:00
@@ -79,6 +80,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,WY,56003,Big Horn County,2026-10-27,7,446,,446,,58,374,14,,2,civicapi,2026-10-27T19:10:15+00:00
 2026,WY,56003,Big Horn County,2026-10-28,6,478,,478,,63,397,18,,2,civicapi,2026-10-28T18:10:50+00:00
 2026,WY,56003,Big Horn County,2026-10-29,5,515,,515,,68,427,20,,2,civicapi,2026-10-29T14:40:17+00:00
+2026,WY,56003,Big Horn County,2026-10-30,4,556,,556,,68,466,22,,2,civicapi,2026-10-30T16:12:21+00:00
 2026,WY,56005,Campbell County,2026-09-30,34,1,,1,,,1,,,2,civicapi,2026-09-30T20:35:33+00:00
 2026,WY,56005,Campbell County,2026-10-01,33,1,,1,,,1,,,2,civicapi,2026-10-02T04:06:55+00:00
 2026,WY,56005,Campbell County,2026-10-02,32,1,,1,,,1,,,2,civicapi,2026-10-02T17:30:46+00:00
@@ -101,6 +103,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,WY,56005,Campbell County,2026-10-27,7,2694,,2694,,180,2416,98,,2,civicapi,2026-10-27T19:10:15+00:00
 2026,WY,56005,Campbell County,2026-10-28,6,3047,,3047,,196,2736,115,,2,civicapi,2026-10-28T18:10:50+00:00
 2026,WY,56005,Campbell County,2026-10-29,5,3394,,3394,,213,3044,137,,2,civicapi,2026-10-29T14:40:17+00:00
+2026,WY,56005,Campbell County,2026-10-30,4,3762,,3762,,231,3374,157,,2,civicapi,2026-10-30T16:12:21+00:00
 2026,WY,56007,Carbon County,2026-10-07,27,8,,8,,2,4,2,,2,civicapi,2026-10-07T19:47:08+00:00
 2026,WY,56007,Carbon County,2026-10-08,26,21,,21,,3,16,2,,2,civicapi,2026-10-08T22:56:34+00:00
 2026,WY,56007,Carbon County,2026-10-09,25,34,,34,,4,27,3,,2,civicapi,2026-10-09T19:18:28+00:00
@@ -118,6 +121,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,WY,56007,Carbon County,2026-10-27,7,677,,677,,127,499,51,,2,civicapi,2026-10-27T19:10:15+00:00
 2026,WY,56007,Carbon County,2026-10-28,6,772,,772,,140,576,56,,2,civicapi,2026-10-28T18:10:50+00:00
 2026,WY,56007,Carbon County,2026-10-29,5,848,,848,,153,634,61,,2,civicapi,2026-10-29T14:40:17+00:00
+2026,WY,56007,Carbon County,2026-10-30,4,911,,911,,168,675,68,,2,civicapi,2026-10-30T16:12:21+00:00
 2026,WY,56009,Converse County,2026-10-07,27,20,,20,,1,17,2,,2,civicapi,2026-10-07T19:47:08+00:00
 2026,WY,56009,Converse County,2026-10-08,26,52,,52,,7,41,4,,2,civicapi,2026-10-08T22:56:34+00:00
 2026,WY,56009,Converse County,2026-10-09,25,76,,76,,11,59,6,,2,civicapi,2026-10-09T19:18:28+00:00
@@ -135,6 +139,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,WY,56009,Converse County,2026-10-27,7,879,,879,,63,788,28,,2,civicapi,2026-10-27T19:10:15+00:00
 2026,WY,56009,Converse County,2026-10-28,6,966,,966,,68,867,31,,2,civicapi,2026-10-28T18:10:50+00:00
 2026,WY,56009,Converse County,2026-10-29,5,1074,,1074,,74,962,38,,2,civicapi,2026-10-29T14:40:17+00:00
+2026,WY,56009,Converse County,2026-10-30,4,1185,,1185,,79,1060,46,,2,civicapi,2026-10-30T16:12:21+00:00
 2026,WY,56011,Crook County,2026-10-07,27,12,,12,,1,9,2,,2,civicapi,2026-10-07T19:47:08+00:00
 2026,WY,56011,Crook County,2026-10-08,26,18,,18,,1,15,2,,2,civicapi,2026-10-08T22:56:34+00:00
 2026,WY,56011,Crook County,2026-10-09,25,23,,23,,1,20,2,,2,civicapi,2026-10-09T19:18:28+00:00
@@ -152,6 +157,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,WY,56011,Crook County,2026-10-27,7,374,,374,,27,328,19,,2,civicapi,2026-10-27T19:10:15+00:00
 2026,WY,56011,Crook County,2026-10-28,6,413,,413,,27,364,22,,2,civicapi,2026-10-28T18:10:50+00:00
 2026,WY,56011,Crook County,2026-10-29,5,453,,453,,27,402,24,,2,civicapi,2026-10-29T14:40:17+00:00
+2026,WY,56011,Crook County,2026-10-30,4,512,,512,,28,455,29,,2,civicapi,2026-10-30T16:12:21+00:00
 2026,WY,56013,Fremont County,2026-10-05,29,4,,4,,1,2,1,,2,civicapi,2026-10-05T19:07:18+00:00
 2026,WY,56013,Fremont County,2026-10-06,28,4,,4,,1,2,1,,2,civicapi,2026-10-06T16:33:28+00:00
 2026,WY,56013,Fremont County,2026-10-07,27,52,,52,,3,44,5,,2,civicapi,2026-10-07T19:47:08+00:00
@@ -171,6 +177,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,WY,56013,Fremont County,2026-10-27,7,2644,,2644,,362,2128,154,,2,civicapi,2026-10-27T19:10:15+00:00
 2026,WY,56013,Fremont County,2026-10-28,6,2904,,2904,,397,2338,169,,2,civicapi,2026-10-28T18:10:50+00:00
 2026,WY,56013,Fremont County,2026-10-29,5,3193,,3193,,432,2570,191,,2,civicapi,2026-10-29T14:40:17+00:00
+2026,WY,56013,Fremont County,2026-10-30,4,3476,,3476,,478,2790,208,,2,civicapi,2026-10-30T16:12:21+00:00
 2026,WY,56015,Goshen County,2026-10-06,28,1,,1,,,1,,,2,civicapi,2026-10-06T16:33:28+00:00
 2026,WY,56015,Goshen County,2026-10-07,27,41,,41,,8,31,2,,2,civicapi,2026-10-07T19:47:08+00:00
 2026,WY,56015,Goshen County,2026-10-08,26,77,,77,,15,60,2,,2,civicapi,2026-10-08T22:56:34+00:00
@@ -189,6 +196,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,WY,56015,Goshen County,2026-10-27,7,1009,,1009,,132,822,55,,2,civicapi,2026-10-27T19:10:15+00:00
 2026,WY,56015,Goshen County,2026-10-28,6,1133,,1133,,144,929,60,,2,civicapi,2026-10-28T18:10:50+00:00
 2026,WY,56015,Goshen County,2026-10-29,5,1252,,1252,,159,1025,68,,2,civicapi,2026-10-29T14:40:17+00:00
+2026,WY,56015,Goshen County,2026-10-30,4,1373,,1373,,163,1134,76,,2,civicapi,2026-10-30T16:12:21+00:00
 2026,WY,56017,Hot Springs County,2026-10-07,27,6,,6,,1,5,,,2,civicapi,2026-10-07T19:47:08+00:00
 2026,WY,56017,Hot Springs County,2026-10-08,26,18,,18,,2,13,3,,2,civicapi,2026-10-08T22:56:34+00:00
 2026,WY,56017,Hot Springs County,2026-10-09,25,31,,31,,5,21,5,,2,civicapi,2026-10-09T19:18:28+00:00
@@ -206,6 +214,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,WY,56017,Hot Springs County,2026-10-27,7,329,,329,,55,252,22,,2,civicapi,2026-10-27T19:10:15+00:00
 2026,WY,56017,Hot Springs County,2026-10-28,6,384,,384,,58,297,29,,2,civicapi,2026-10-28T18:10:50+00:00
 2026,WY,56017,Hot Springs County,2026-10-29,5,436,,436,,67,334,35,,2,civicapi,2026-10-29T14:40:17+00:00
+2026,WY,56017,Hot Springs County,2026-10-30,4,465,,465,,72,358,35,,2,civicapi,2026-10-30T16:12:21+00:00
 2026,WY,56019,Johnson County,2026-10-07,27,19,,19,,3,16,,,2,civicapi,2026-10-07T19:47:08+00:00
 2026,WY,56019,Johnson County,2026-10-08,26,27,,27,,4,21,2,,2,civicapi,2026-10-08T22:56:34+00:00
 2026,WY,56019,Johnson County,2026-10-09,25,35,,35,,4,29,2,,2,civicapi,2026-10-09T19:18:28+00:00
@@ -223,6 +232,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,WY,56019,Johnson County,2026-10-27,7,618,,618,,49,537,32,,2,civicapi,2026-10-27T19:10:15+00:00
 2026,WY,56019,Johnson County,2026-10-28,6,692,,692,,53,604,35,,2,civicapi,2026-10-28T18:10:50+00:00
 2026,WY,56019,Johnson County,2026-10-29,5,759,,759,,55,662,42,,2,civicapi,2026-10-29T14:40:17+00:00
+2026,WY,56019,Johnson County,2026-10-30,4,863,,863,,63,756,44,,2,civicapi,2026-10-30T16:12:21+00:00
 2026,WY,56021,Laramie County,2026-09-24,40,2,,2,,,2,,,2,civicapi,2026-09-24T23:06:08+00:00
 2026,WY,56021,Laramie County,2026-09-25,39,3,,3,,,3,,,2,civicapi,2026-09-25T23:07:28+00:00
 2026,WY,56021,Laramie County,2026-09-28,36,3,,3,,,3,,,2,civicapi,2026-09-28T17:46:15+00:00
@@ -249,6 +259,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,WY,56021,Laramie County,2026-10-27,7,10844,,10844,,2174,7634,1036,,2,civicapi,2026-10-27T19:10:15+00:00
 2026,WY,56021,Laramie County,2026-10-28,6,11876,,11876,,2334,8402,1140,,2,civicapi,2026-10-28T18:10:50+00:00
 2026,WY,56021,Laramie County,2026-10-29,5,12957,,12957,,2506,9212,1239,,2,civicapi,2026-10-29T14:40:17+00:00
+2026,WY,56021,Laramie County,2026-10-30,4,14051,,14051,,2685,10023,1343,,2,civicapi,2026-10-30T16:12:21+00:00
 2026,WY,56023,Lincoln County,2026-10-08,26,4,,4,,,4,,,2,civicapi,2026-10-08T22:56:34+00:00
 2026,WY,56023,Lincoln County,2026-10-09,25,6,,6,,,6,,,2,civicapi,2026-10-09T19:18:28+00:00
 2026,WY,56023,Lincoln County,2026-10-12,22,16,,16,,1,15,,,2,civicapi,2026-10-12T19:40:39+00:00
@@ -265,6 +276,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,WY,56023,Lincoln County,2026-10-27,7,718,,718,,88,584,46,,2,civicapi,2026-10-27T19:10:15+00:00
 2026,WY,56023,Lincoln County,2026-10-28,6,797,,797,,98,645,54,,2,civicapi,2026-10-28T18:10:50+00:00
 2026,WY,56023,Lincoln County,2026-10-29,5,834,,834,,101,675,58,,2,civicapi,2026-10-29T14:40:17+00:00
+2026,WY,56023,Lincoln County,2026-10-30,4,923,,923,,112,740,71,,2,civicapi,2026-10-30T16:12:21+00:00
 2026,WY,56025,Natrona County,2026-10-07,27,133,,133,,30,99,4,,2,civicapi,2026-10-07T19:47:08+00:00
 2026,WY,56025,Natrona County,2026-10-08,26,271,,271,,47,210,14,,2,civicapi,2026-10-08T22:56:34+00:00
 2026,WY,56025,Natrona County,2026-10-09,25,416,,416,,76,319,21,,2,civicapi,2026-10-09T19:18:28+00:00
@@ -282,6 +294,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,WY,56025,Natrona County,2026-10-27,7,4558,,4558,,718,3556,284,,2,civicapi,2026-10-27T19:10:15+00:00
 2026,WY,56025,Natrona County,2026-10-28,6,5155,,5155,,782,4063,310,,2,civicapi,2026-10-28T18:10:50+00:00
 2026,WY,56025,Natrona County,2026-10-29,5,5771,,5771,,856,4562,353,,2,civicapi,2026-10-29T14:40:17+00:00
+2026,WY,56025,Natrona County,2026-10-30,4,6406,,6406,,939,5064,403,,2,civicapi,2026-10-30T16:12:21+00:00
 2026,WY,56027,Niobrara County,2026-10-08,26,2,,2,,,1,1,,2,civicapi,2026-10-08T22:56:34+00:00
 2026,WY,56027,Niobrara County,2026-10-09,25,5,,5,,2,2,1,,2,civicapi,2026-10-09T19:18:28+00:00
 2026,WY,56027,Niobrara County,2026-10-12,22,7,,7,,2,4,1,,2,civicapi,2026-10-12T19:40:39+00:00
@@ -298,6 +311,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,WY,56027,Niobrara County,2026-10-27,7,74,,74,,5,65,4,,2,civicapi,2026-10-27T19:10:15+00:00
 2026,WY,56027,Niobrara County,2026-10-28,6,82,,82,,5,72,5,,2,civicapi,2026-10-28T18:10:50+00:00
 2026,WY,56027,Niobrara County,2026-10-29,5,103,,103,,6,92,5,,2,civicapi,2026-10-29T14:40:17+00:00
+2026,WY,56027,Niobrara County,2026-10-30,4,120,,120,,6,107,7,,2,civicapi,2026-10-30T16:12:21+00:00
 2026,WY,56029,Park County,2026-10-07,27,68,,68,,5,60,3,,2,civicapi,2026-10-07T19:47:08+00:00
 2026,WY,56029,Park County,2026-10-08,26,138,,138,,16,114,8,,2,civicapi,2026-10-08T22:56:34+00:00
 2026,WY,56029,Park County,2026-10-09,25,219,,219,,18,188,13,,2,civicapi,2026-10-09T19:18:28+00:00
@@ -315,6 +329,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,WY,56029,Park County,2026-10-27,7,3083,,3083,,297,2622,164,,2,civicapi,2026-10-27T19:10:15+00:00
 2026,WY,56029,Park County,2026-10-28,6,3502,,3502,,327,2978,197,,2,civicapi,2026-10-28T18:10:50+00:00
 2026,WY,56029,Park County,2026-10-29,5,3881,,3881,,361,3302,218,,2,civicapi,2026-10-29T14:40:17+00:00
+2026,WY,56029,Park County,2026-10-30,4,4264,,4264,,390,3625,249,,2,civicapi,2026-10-30T16:12:21+00:00
 2026,WY,56031,Platte County,2026-10-07,27,13,,13,,1,10,2,,2,civicapi,2026-10-07T19:47:08+00:00
 2026,WY,56031,Platte County,2026-10-08,26,20,,20,,5,13,2,,2,civicapi,2026-10-08T22:56:34+00:00
 2026,WY,56031,Platte County,2026-10-09,25,31,,31,,6,23,2,,2,civicapi,2026-10-09T19:18:28+00:00
@@ -332,6 +347,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,WY,56031,Platte County,2026-10-27,7,451,,451,,78,338,35,,2,civicapi,2026-10-27T19:10:15+00:00
 2026,WY,56031,Platte County,2026-10-28,6,516,,516,,82,396,38,,2,civicapi,2026-10-28T18:10:50+00:00
 2026,WY,56031,Platte County,2026-10-29,5,596,,596,,88,466,42,,2,civicapi,2026-10-29T14:40:17+00:00
+2026,WY,56031,Platte County,2026-10-30,4,670,,670,,97,527,46,,2,civicapi,2026-10-30T16:12:21+00:00
 2026,WY,56033,Sheridan County,2026-10-07,27,54,,54,,16,33,5,,2,civicapi,2026-10-07T19:47:08+00:00
 2026,WY,56033,Sheridan County,2026-10-08,26,101,,101,,24,69,8,,2,civicapi,2026-10-08T22:56:34+00:00
 2026,WY,56033,Sheridan County,2026-10-09,25,154,,154,,31,110,13,,2,civicapi,2026-10-09T19:18:28+00:00
@@ -349,6 +365,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,WY,56033,Sheridan County,2026-10-27,7,2324,,2324,,415,1789,120,,2,civicapi,2026-10-27T19:10:15+00:00
 2026,WY,56033,Sheridan County,2026-10-28,6,2649,,2649,,464,2053,132,,2,civicapi,2026-10-28T18:10:50+00:00
 2026,WY,56033,Sheridan County,2026-10-29,5,2945,,2945,,510,2290,145,,2,civicapi,2026-10-29T14:40:17+00:00
+2026,WY,56033,Sheridan County,2026-10-30,4,3281,,3281,,536,2578,167,,2,civicapi,2026-10-30T16:12:21+00:00
 2026,WY,56035,Sublette County,2026-10-07,27,31,,31,,4,25,2,,2,civicapi,2026-10-07T19:47:08+00:00
 2026,WY,56035,Sublette County,2026-10-08,26,58,,58,,8,47,3,,2,civicapi,2026-10-08T22:56:34+00:00
 2026,WY,56035,Sublette County,2026-10-09,25,102,,102,,13,83,6,,2,civicapi,2026-10-09T19:18:28+00:00
@@ -366,6 +383,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,WY,56035,Sublette County,2026-10-27,7,743,,743,,62,625,56,,2,civicapi,2026-10-27T19:10:15+00:00
 2026,WY,56035,Sublette County,2026-10-28,6,835,,835,,70,701,64,,2,civicapi,2026-10-28T18:10:50+00:00
 2026,WY,56035,Sublette County,2026-10-29,5,940,,940,,72,797,71,,2,civicapi,2026-10-29T14:40:17+00:00
+2026,WY,56035,Sublette County,2026-10-30,4,1023,,1023,,78,868,77,,2,civicapi,2026-10-30T16:12:21+00:00
 2026,WY,56037,Sweetwater County,2026-10-07,27,32,,32,,4,26,2,,2,civicapi,2026-10-07T19:47:08+00:00
 2026,WY,56037,Sweetwater County,2026-10-08,26,62,,62,,16,44,2,,2,civicapi,2026-10-08T22:56:34+00:00
 2026,WY,56037,Sweetwater County,2026-10-09,25,89,,89,,25,60,4,,2,civicapi,2026-10-09T19:18:28+00:00
@@ -383,6 +401,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,WY,56037,Sweetwater County,2026-10-27,7,1721,,1721,,491,1127,103,,2,civicapi,2026-10-27T19:10:15+00:00
 2026,WY,56037,Sweetwater County,2026-10-28,6,1934,,1934,,534,1291,109,,2,civicapi,2026-10-28T18:10:50+00:00
 2026,WY,56037,Sweetwater County,2026-10-29,5,2159,,2159,,600,1438,121,,2,civicapi,2026-10-29T14:40:17+00:00
+2026,WY,56037,Sweetwater County,2026-10-30,4,2361,,2361,,641,1586,134,,2,civicapi,2026-10-30T16:12:21+00:00
 2026,WY,56039,Teton County,2026-10-07,27,156,,156,,62,82,12,,2,civicapi,2026-10-07T19:47:08+00:00
 2026,WY,56039,Teton County,2026-10-08,26,273,,273,,92,154,27,,2,civicapi,2026-10-08T22:56:34+00:00
 2026,WY,56039,Teton County,2026-10-09,25,365,,365,,121,208,36,,2,civicapi,2026-10-09T19:18:28+00:00
@@ -400,6 +419,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,WY,56039,Teton County,2026-10-27,7,3184,,3184,,984,1858,342,,2,civicapi,2026-10-27T19:10:15+00:00
 2026,WY,56039,Teton County,2026-10-28,6,3598,,3598,,1124,2078,396,,2,civicapi,2026-10-28T18:10:50+00:00
 2026,WY,56039,Teton County,2026-10-29,5,4041,,4041,,1271,2314,456,,2,civicapi,2026-10-29T14:40:17+00:00
+2026,WY,56039,Teton County,2026-10-30,4,4464,,4464,,1432,2516,516,,2,civicapi,2026-10-30T16:12:21+00:00
 2026,WY,56041,Uinta County,2026-09-29,35,2,,2,,2,,,,2,civicapi,2026-09-30T01:07:25+00:00
 2026,WY,56041,Uinta County,2026-09-30,34,2,,2,,2,,,,2,civicapi,2026-09-30T20:35:33+00:00
 2026,WY,56041,Uinta County,2026-10-01,33,2,,2,,2,,,,2,civicapi,2026-10-02T04:06:55+00:00
@@ -423,6 +443,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,WY,56041,Uinta County,2026-10-27,7,1200,,1200,,183,951,66,,2,civicapi,2026-10-27T19:10:15+00:00
 2026,WY,56041,Uinta County,2026-10-28,6,1355,,1355,,206,1080,69,,2,civicapi,2026-10-28T18:10:50+00:00
 2026,WY,56041,Uinta County,2026-10-29,5,1531,,1531,,228,1222,81,,2,civicapi,2026-10-29T14:40:17+00:00
+2026,WY,56041,Uinta County,2026-10-30,4,1747,,1747,,247,1408,92,,2,civicapi,2026-10-30T16:12:21+00:00
 2026,WY,56043,Washakie County,2026-09-30,34,1,,1,,,1,,,2,civicapi,2026-09-30T20:35:33+00:00
 2026,WY,56043,Washakie County,2026-10-01,33,1,,1,,,1,,,2,civicapi,2026-10-02T04:06:55+00:00
 2026,WY,56043,Washakie County,2026-10-02,32,1,,1,,,1,,,2,civicapi,2026-10-02T17:30:46+00:00
@@ -445,6 +466,7 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,WY,56043,Washakie County,2026-10-27,7,242,,242,,28,203,11,,2,civicapi,2026-10-27T19:10:15+00:00
 2026,WY,56043,Washakie County,2026-10-28,6,282,,282,,36,232,14,,2,civicapi,2026-10-28T18:10:50+00:00
 2026,WY,56043,Washakie County,2026-10-29,5,321,,321,,39,267,15,,2,civicapi,2026-10-29T14:40:17+00:00
+2026,WY,56043,Washakie County,2026-10-30,4,366,,366,,41,309,16,,2,civicapi,2026-10-30T16:12:21+00:00
 2026,WY,56045,Weston County,2026-10-07,27,12,,12,,,12,,,2,civicapi,2026-10-07T19:47:08+00:00
 2026,WY,56045,Weston County,2026-10-08,26,15,,15,,,15,,,2,civicapi,2026-10-08T22:56:34+00:00
 2026,WY,56045,Weston County,2026-10-09,25,19,,19,,,18,1,,2,civicapi,2026-10-09T19:18:28+00:00
@@ -462,3 +484,4 @@ cycle,state,county_fips,county_name,date,days_to_election,ballots_total,ballots_
 2026,WY,56045,Weston County,2026-10-27,7,362,,362,,31,316,15,,2,civicapi,2026-10-27T19:10:15+00:00
 2026,WY,56045,Weston County,2026-10-28,6,408,,408,,33,357,18,,2,civicapi,2026-10-28T18:10:50+00:00
 2026,WY,56045,Weston County,2026-10-29,5,461,,461,,37,405,19,,2,civicapi,2026-10-29T14:40:17+00:00
+2026,WY,56045,Weston County,2026-10-30,4,512,,512,,38,450,24,,2,civicapi,2026-10-30T16:12:21+00:00
