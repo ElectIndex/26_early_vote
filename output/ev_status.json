@@ -1,8 +1,8 @@
 {
- "as_of": "2026-10-31",
+ "as_of": "2026-11-01",
  "cycle": 2026,
- "days_to_election": 3,
- "generated_at": "2026-11-01T03:12:29+00:00",
+ "days_to_election": 2,
+ "generated_at": "2026-11-01T05:12:57+00:00",
  "states": {
   "AK": {
    "attempts": [
@@ -19,7 +19,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-11-01T03:12:29+00:00",
+   "retrieved_at": "2026-11-01T05:12:57+00:00",
    "rows": 1,
    "source": "civicapi",
    "status": "ok",
@@ -34,7 +34,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-11-01T03:12:29+00:00",
+   "retrieved_at": "2026-11-01T05:12:57+00:00",
    "rows": 76,
    "source": "civicapi",
    "status": "ok",
@@ -55,7 +55,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-11-01T03:12:29+00:00",
+   "retrieved_at": "2026-11-01T05:12:57+00:00",
    "rows": 16,
    "source": "civicapi",
    "status": "ok",
@@ -76,7 +76,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-11-01T03:12:29+00:00",
+   "retrieved_at": "2026-11-01T05:12:57+00:00",
    "rows": 59,
    "source": "civicapi",
    "status": "ok",
@@ -85,7 +85,7 @@
   "CO": {
    "attempts": [
     {
-     "detail": "CO: no election activity workbook posted for 2026-10-31",
+     "detail": "CO: no election activity workbook posted for 2026-11-01",
      "name": "co-sos",
      "result": "not_yet_published",
      "tier": 1
@@ -97,7 +97,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-11-01T03:12:29+00:00",
+   "retrieved_at": "2026-11-01T05:12:57+00:00",
    "rows": 68,
    "source": "civicapi",
    "status": "ok",
@@ -118,7 +118,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-11-01T03:12:29+00:00",
+   "retrieved_at": "2026-11-01T05:12:57+00:00",
    "rows": 1,
    "source": "civicapi",
    "status": "ok",
@@ -139,7 +139,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-11-01T03:12:29+00:00",
+   "retrieved_at": "2026-11-01T05:12:57+00:00",
    "rows": 1,
    "source": "uf-election-lab",
    "status": "ok",
@@ -160,7 +160,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-11-01T03:12:29+00:00",
+   "retrieved_at": "2026-11-01T05:12:57+00:00",
    "rows": 4,
    "source": "civicapi",
    "status": "ok",
@@ -175,7 +175,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-11-01T03:12:29+00:00",
+   "retrieved_at": "2026-11-01T05:12:57+00:00",
    "rows": 202,
    "source": "fl-doe",
    "status": "ok",
@@ -196,7 +196,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-11-01T03:12:29+00:00",
+   "retrieved_at": "2026-11-01T05:12:57+00:00",
    "rows": 163,
    "source": "civicapi",
    "status": "ok",
@@ -211,7 +211,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-11-01T03:12:29+00:00",
+   "retrieved_at": "2026-11-01T05:12:57+00:00",
    "rows": 5,
    "source": "hi-oe",
    "status": "ok",
@@ -232,7 +232,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-11-01T03:12:29+00:00",
+   "retrieved_at": "2026-11-01T05:12:57+00:00",
    "rows": 100,
    "source": "civicapi",
    "status": "ok",
@@ -247,7 +247,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-11-01T03:12:29+00:00",
+   "retrieved_at": "2026-11-01T05:12:57+00:00",
    "rows": 45,
    "source": "id-sos",
    "status": "ok",
@@ -262,7 +262,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-11-01T03:12:29+00:00",
+   "retrieved_at": "2026-11-01T05:12:57+00:00",
    "rows": 103,
    "source": "il-sbe",
    "status": "ok",
@@ -277,7 +277,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-11-01T03:12:29+00:00",
+   "retrieved_at": "2026-11-01T05:12:57+00:00",
    "rows": 93,
    "source": "civicapi",
    "status": "ok",
@@ -298,7 +298,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-11-01T03:12:29+00:00",
+   "retrieved_at": "2026-11-01T05:12:57+00:00",
    "rows": 109,
    "source": "civicapi",
    "status": "ok",
@@ -313,7 +313,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-11-01T03:12:29+00:00",
+   "retrieved_at": "2026-11-01T05:12:57+00:00",
    "rows": 361,
    "source": "ky-sbe",
    "status": "ok",
@@ -328,8 +328,8 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-11-01T03:12:29+00:00",
-   "rows": 845,
+   "retrieved_at": "2026-11-01T05:12:57+00:00",
+   "rows": 910,
    "source": "la-sos",
    "status": "ok",
    "tier": 1
@@ -349,7 +349,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-11-01T03:12:29+00:00",
+   "retrieved_at": "2026-11-01T05:12:57+00:00",
    "rows": 1,
    "source": "uf-election-lab",
    "status": "ok",
@@ -376,7 +376,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-11-01T03:12:29+00:00",
+   "retrieved_at": "2026-11-01T05:12:57+00:00",
    "rows": 1,
    "source": "uf-election-lab",
    "status": "ok",
@@ -391,8 +391,8 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-11-01T03:12:29+00:00",
-   "rows": 19253,
+   "retrieved_at": "2026-11-01T05:12:57+00:00",
+   "rows": 19764,
    "source": "me-sos",
    "status": "ok",
    "tier": 1
@@ -412,7 +412,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-11-01T03:12:29+00:00",
+   "retrieved_at": "2026-11-01T05:12:57+00:00",
    "rows": 84,
    "source": "civicapi",
    "status": "ok",
@@ -427,7 +427,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-11-01T03:12:29+00:00",
+   "retrieved_at": "2026-11-01T05:12:57+00:00",
    "rows": 88,
    "source": "mn-sos",
    "status": "ok",
@@ -442,7 +442,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-11-01T03:12:29+00:00",
+   "retrieved_at": "2026-11-01T05:12:57+00:00",
    "rows": 2,
    "source": "civicapi",
    "status": "ok",
@@ -457,7 +457,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-11-01T03:12:29+00:00",
+   "retrieved_at": "2026-11-01T05:12:57+00:00",
    "rows": 83,
    "source": "civicapi",
    "status": "ok",
@@ -472,7 +472,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-11-01T03:12:29+00:00",
+   "retrieved_at": "2026-11-01T05:12:57+00:00",
    "rows": 57,
    "source": "mt-sos",
    "status": "ok",
@@ -487,8 +487,8 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-11-01T03:12:29+00:00",
-   "rows": 13743,
+   "retrieved_at": "2026-11-01T05:12:57+00:00",
+   "rows": 14073,
    "source": "nc-sbe",
    "status": "ok",
    "tier": 1
@@ -502,7 +502,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-11-01T03:12:29+00:00",
+   "retrieved_at": "2026-11-01T05:12:57+00:00",
    "rows": 54,
    "source": "nd-sos",
    "status": "ok",
@@ -517,7 +517,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-11-01T03:12:29+00:00",
+   "retrieved_at": "2026-11-01T05:12:57+00:00",
    "rows": 94,
    "source": "civicapi",
    "status": "ok",
@@ -532,7 +532,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-11-01T03:12:29+00:00",
+   "retrieved_at": "2026-11-01T05:12:57+00:00",
    "rows": 22,
    "source": "civicapi",
    "status": "ok",
@@ -547,7 +547,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-11-01T03:12:29+00:00",
+   "retrieved_at": "2026-11-01T05:12:57+00:00",
    "rows": 34,
    "source": "civicapi",
    "status": "ok",
@@ -568,7 +568,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-11-01T03:12:29+00:00",
+   "retrieved_at": "2026-11-01T05:12:57+00:00",
    "rows": 18,
    "source": "civicapi",
    "status": "ok",
@@ -589,7 +589,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-11-01T03:12:29+00:00",
+   "retrieved_at": "2026-11-01T05:12:57+00:00",
    "rows": 63,
    "source": "civicapi",
    "status": "ok",
@@ -604,7 +604,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-11-01T03:12:29+00:00",
+   "retrieved_at": "2026-11-01T05:12:57+00:00",
    "rows": 89,
    "source": "oh-sos",
    "status": "ok",
@@ -619,7 +619,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-11-01T03:12:29+00:00",
+   "retrieved_at": "2026-11-01T05:12:57+00:00",
    "rows": 78,
    "source": "ok-seb",
    "status": "ok",
@@ -640,7 +640,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-11-01T03:12:29+00:00",
+   "retrieved_at": "2026-11-01T05:12:57+00:00",
    "rows": 37,
    "source": "civicapi",
    "status": "ok",
@@ -655,8 +655,8 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-11-01T03:12:29+00:00",
-   "rows": 3313,
+   "retrieved_at": "2026-11-01T05:12:57+00:00",
+   "rows": 3381,
    "source": "pa-dos",
    "status": "ok",
    "tier": 1
@@ -670,7 +670,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-11-01T03:12:29+00:00",
+   "retrieved_at": "2026-11-01T05:12:57+00:00",
    "rows": 1,
    "source": "civicapi",
    "status": "ok",
@@ -691,7 +691,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-11-01T03:12:29+00:00",
+   "retrieved_at": "2026-11-01T05:12:57+00:00",
    "rows": 47,
    "source": "civicapi",
    "status": "ok",
@@ -712,7 +712,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-11-01T03:12:29+00:00",
+   "retrieved_at": "2026-11-01T05:12:57+00:00",
    "rows": 67,
    "source": "civicapi",
    "status": "ok",
@@ -721,7 +721,7 @@
   "TN": {
    "attempts": [
     {
-     "detail": "TN: no early-voting workbook posted for 2026 in the 10 days to 2026-10-31",
+     "detail": "TN: no early-voting workbook posted for 2026 in the 10 days to 2026-11-01",
      "name": "tn-sos",
      "result": "not_yet_published",
      "tier": 1
@@ -733,7 +733,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-11-01T03:12:29+00:00",
+   "retrieved_at": "2026-11-01T05:12:57+00:00",
    "rows": 96,
    "source": "civicapi",
    "status": "ok",
@@ -754,7 +754,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-11-01T03:12:29+00:00",
+   "retrieved_at": "2026-11-01T05:12:57+00:00",
    "rows": 255,
    "source": "civicapi",
    "status": "ok",
@@ -769,7 +769,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-11-01T03:12:29+00:00",
+   "retrieved_at": "2026-11-01T05:12:57+00:00",
    "rows": 30,
    "source": "civicapi",
    "status": "ok",
@@ -784,7 +784,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-11-01T03:12:29+00:00",
+   "retrieved_at": "2026-11-01T05:12:57+00:00",
    "rows": 145,
    "source": "va-elect",
    "status": "ok",
@@ -799,7 +799,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-11-01T03:12:29+00:00",
+   "retrieved_at": "2026-11-01T05:12:57+00:00",
    "rows": 1,
    "source": "civicapi",
    "status": "ok",
@@ -808,7 +808,7 @@
   "WA": {
    "attempts": [
     {
-     "detail": "WA: no daily ballot status report posted in the 7 days to 2026-10-31 (WA: https://www.sos.wa.gov/sites/default/files/current_election/Statewide2026-10-31.zip returned 404)",
+     "detail": "WA: no daily ballot status report posted in the 7 days to 2026-11-01 (WA: https://www.sos.wa.gov/sites/default/files/current_election/Statewide2026-11-01.zip returned 404)",
      "name": "wa-sos",
      "result": "not_yet_published",
      "tier": 1
@@ -820,7 +820,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-11-01T03:12:29+00:00",
+   "retrieved_at": "2026-11-01T05:12:57+00:00",
    "rows": 40,
    "source": "civicapi",
    "status": "ok",
@@ -829,7 +829,7 @@
   "WI": {
    "attempts": [
     {
-     "detail": "WI: no absentee export posted for the 2026 general as of 2026-10-31",
+     "detail": "WI: no absentee export posted for the 2026 general as of 2026-11-01",
      "name": "wi-wec",
      "result": "not_yet_published",
      "tier": 1
@@ -841,7 +841,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-11-01T03:12:29+00:00",
+   "retrieved_at": "2026-11-01T05:12:57+00:00",
    "rows": 73,
    "source": "civicapi",
    "status": "ok",
@@ -856,7 +856,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-11-01T03:12:29+00:00",
+   "retrieved_at": "2026-11-01T05:12:57+00:00",
    "rows": 56,
    "source": "civicapi",
    "status": "ok",
@@ -871,7 +871,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-11-01T03:12:29+00:00",
+   "retrieved_at": "2026-11-01T05:12:57+00:00",
    "rows": 24,
    "source": "civicapi",
    "status": "ok",
@@ -882,12 +882,12 @@
   "failed": 0,
   "files": [
    {
-    "added": 1,
+    "added": 9,
     "file": "ev_state_daily.csv",
     "kept_better_tier": 0,
     "kept_richer": 0,
-    "replaced": 2,
-    "rows": 2886
+    "replaced": 0,
+    "rows": 2895
    },
    {
     "added": 0,
@@ -914,7 +914,7 @@
     "rows": 1868
    },
    {
-    "added": 64,
+    "added": 0,
     "file": "co.csv",
     "kept_better_tier": 0,
     "kept_richer": 0,
@@ -962,28 +962,28 @@
     "rows": 6044
    },
    {
-    "added": 0,
+    "added": 44,
     "file": "id.csv",
     "kept_better_tier": 0,
     "kept_richer": 0,
     "replaced": 0,
-    "rows": 1840
+    "rows": 1884
    },
    {
-    "added": 0,
+    "added": 102,
     "file": "il.csv",
     "kept_better_tier": 0,
     "kept_richer": 0,
     "replaced": 0,
-    "rows": 5712
+    "rows": 5814
    },
    {
-    "added": 0,
+    "added": 92,
     "file": "in.csv",
     "kept_better_tier": 0,
     "kept_richer": 0,
     "replaced": 0,
-    "rows": 3276
+    "rows": 3368
    },
    {
     "added": 0,
@@ -1002,20 +1002,20 @@
     "rows": 6720
    },
    {
-    "added": 0,
+    "added": 64,
     "file": "la.csv",
     "kept_better_tier": 0,
     "kept_richer": 0,
     "replaced": 0,
-    "rows": 960
+    "rows": 1024
    },
    {
-    "added": 0,
+    "added": 16,
     "file": "me.csv",
     "kept_better_tier": 0,
     "kept_richer": 0,
     "replaced": 0,
-    "rows": 3136
+    "rows": 3152
    },
    {
     "added": 0,
@@ -1058,20 +1058,20 @@
     "rows": 2305
    },
    {
-    "added": 0,
+    "added": 100,
     "file": "nc.csv",
     "kept_better_tier": 0,
     "kept_richer": 0,
     "replaced": 0,
-    "rows": 14973
+    "rows": 15073
    },
    {
-    "added": 0,
+    "added": 53,
     "file": "nd.csv",
     "kept_better_tier": 0,
     "kept_richer": 0,
-    "replaced": 3,
-    "rows": 3074
+    "replaced": 0,
+    "rows": 3127
    },
    {
     "added": 0,
@@ -1122,12 +1122,12 @@
     "rows": 7040
    },
    {
-    "added": 0,
+    "added": 77,
     "file": "ok.csv",
     "kept_better_tier": 0,
     "kept_richer": 0,
-    "replaced": 42,
-    "rows": 5448
+    "replaced": 0,
+    "rows": 5525
    },
    {
     "added": 0,
@@ -1138,12 +1138,12 @@
     "rows": 1356
    },
    {
-    "added": 0,
+    "added": 67,
     "file": "pa.csv",
     "kept_better_tier": 0,
     "kept_richer": 0,
     "replaced": 0,
-    "rows": 11959
+    "rows": 12026
    },
    {
     "added": 0,
@@ -1226,12 +1226,12 @@
     "rows": 486
    },
    {
-    "added": 0,
+    "added": 462,
     "file": "me.csv",
     "kept_better_tier": 0,
     "kept_richer": 0,
     "replaced": 0,
-    "rows": 52805
+    "rows": 53267
    },
    {
     "added": 0,
@@ -1250,23 +1250,23 @@
     "rows": 9120
    },
    {
-    "added": 0,
+    "added": 32,
     "file": "me.csv",
     "kept_better_tier": 0,
     "kept_richer": 0,
     "replaced": 0,
-    "rows": 5242
+    "rows": 5274
    },
    {
-    "added": 0,
+    "added": 200,
     "file": "nc.csv",
     "kept_better_tier": 0,
     "kept_richer": 0,
     "replaced": 0,
-    "rows": 20626
+    "rows": 20826
    },
    {
-    "added": 3,
+    "added": 0,
     "file": "co.csv",
     "kept_better_tier": 0,
     "kept_richer": 0,
@@ -1290,12 +1290,12 @@
     "rows": 42
    },
    {
-    "added": 0,
+    "added": 15,
     "file": "nc.csv",
     "kept_better_tier": 0,
     "kept_richer": 0,
     "replaced": 0,
-    "rows": 2481
+    "rows": 2496
    },
    {
     "added": 0,
@@ -1322,7 +1322,7 @@
     "rows": 1708
    },
    {
-    "added": 8,
+    "added": 0,
     "file": "co.csv",
     "kept_better_tier": 0,
     "kept_richer": 0,
@@ -1370,28 +1370,28 @@
     "rows": 248
    },
    {
-    "added": 0,
+    "added": 2,
     "file": "id.csv",
     "kept_better_tier": 0,
     "kept_richer": 0,
     "replaced": 0,
-    "rows": 84
+    "rows": 86
    },
    {
-    "added": 0,
+    "added": 17,
     "file": "il.csv",
     "kept_better_tier": 0,
     "kept_richer": 0,
     "replaced": 0,
-    "rows": 952
+    "rows": 969
    },
    {
-    "added": 0,
+    "added": 9,
     "file": "in.csv",
     "kept_better_tier": 0,
     "kept_richer": 0,
     "replaced": 0,
-    "rows": 353
+    "rows": 362
    },
    {
     "added": 0,
@@ -1410,20 +1410,20 @@
     "rows": 336
    },
    {
-    "added": 0,
+    "added": 6,
     "file": "la.csv",
     "kept_better_tier": 0,
     "kept_richer": 0,
     "replaced": 0,
-    "rows": 90
+    "rows": 96
    },
    {
-    "added": 0,
+    "added": 2,
     "file": "me.csv",
     "kept_better_tier": 0,
     "kept_richer": 0,
     "replaced": 0,
-    "rows": 620
+    "rows": 622
    },
    {
     "added": 0,
@@ -1466,20 +1466,20 @@
     "rows": 86
    },
    {
-    "added": 0,
+    "added": 14,
     "file": "nc.csv",
     "kept_better_tier": 0,
     "kept_richer": 0,
     "replaced": 0,
-    "rows": 2301
+    "rows": 2315
    },
    {
-    "added": 0,
+    "added": 1,
     "file": "nd.csv",
     "kept_better_tier": 0,
     "kept_richer": 0,
     "replaced": 0,
-    "rows": 58
+    "rows": 59
    },
    {
     "added": 0,
@@ -1530,12 +1530,12 @@
     "rows": 1200
    },
    {
-    "added": 0,
+    "added": 5,
     "file": "ok.csv",
     "kept_better_tier": 0,
     "kept_richer": 0,
     "replaced": 0,
-    "rows": 355
+    "rows": 360
    },
    {
     "added": 0,
@@ -1546,12 +1546,12 @@
     "rows": 228
    },
    {
-    "added": 0,
+    "added": 17,
     "file": "pa.csv",
     "kept_better_tier": 0,
     "kept_richer": 0,
     "replaced": 0,
-    "rows": 4084
+    "rows": 4101
    },
    {
     "added": 0,
