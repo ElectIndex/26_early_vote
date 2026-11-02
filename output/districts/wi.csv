@@ -428,6 +428,7 @@ cycle,state,cd_code,date,days_to_election,ballots_total,ballots_new,mail_returne
 2026,WI,WI-01,2026-10-29,5,130641,,83114,47528,,,,,apportioned,2,civicapi,2026-10-29T13:34:23+00:00
 2026,WI,WI-01,2026-10-30,4,144700,,90662,54038,,,,,apportioned,2,civicapi,2026-10-30T14:03:43+00:00
 2026,WI,WI-01,2026-10-31,3,163563,,100764,62799,,,,,apportioned,2,civicapi,2026-10-31T15:34:28+00:00
+2026,WI,WI-01,2026-11-02,1,166380,,102380,64000,,,,,apportioned,2,civicapi,2026-11-02T15:04:43+00:00
 2026,WI,WI-02,2026-09-23,41,6214,,6214,,,,,,apportioned,2,civicapi,2026-09-24T00:30:30+00:00
 2026,WI,WI-02,2026-09-24,40,6614,,6614,,,,,,apportioned,2,civicapi,2026-09-24T18:11:48+00:00
 2026,WI,WI-02,2026-09-25,39,8292,,8292,,,,,,apportioned,2,civicapi,2026-09-25T15:01:04+00:00
@@ -457,6 +458,7 @@ cycle,state,cd_code,date,days_to_election,ballots_total,ballots_new,mail_returne
 2026,WI,WI-02,2026-10-29,5,160369,,104004,56365,,,,,apportioned,2,civicapi,2026-10-29T13:34:23+00:00
 2026,WI,WI-02,2026-10-30,4,178581,,113986,64595,,,,,apportioned,2,civicapi,2026-10-30T14:03:43+00:00
 2026,WI,WI-02,2026-10-31,3,203694,,127487,76206,,,,,apportioned,2,civicapi,2026-10-31T15:34:28+00:00
+2026,WI,WI-02,2026-11-02,1,210567,,131366,79201,,,,,apportioned,2,civicapi,2026-11-02T15:04:43+00:00
 2026,WI,WI-03,2026-09-23,41,1806,,1806,,,,,,apportioned,2,civicapi,2026-09-24T00:30:30+00:00
 2026,WI,WI-03,2026-09-24,40,2372,,2372,,,,,,apportioned,2,civicapi,2026-09-24T18:11:48+00:00
 2026,WI,WI-03,2026-09-25,39,3245,,3245,,,,,,apportioned,2,civicapi,2026-09-25T15:01:04+00:00
@@ -486,6 +488,7 @@ cycle,state,cd_code,date,days_to_election,ballots_total,ballots_new,mail_returne
 2026,WI,WI-03,2026-10-29,5,90387,,60423,29964,,,,,apportioned,2,civicapi,2026-10-29T13:34:23+00:00
 2026,WI,WI-03,2026-10-30,4,101422,,66556,34869,,,,,apportioned,2,civicapi,2026-10-30T14:03:43+00:00
 2026,WI,WI-03,2026-10-31,3,112168,,72472,39696,,,,,apportioned,2,civicapi,2026-10-31T15:34:28+00:00
+2026,WI,WI-03,2026-11-02,1,112620,,72824,39798,,,,,apportioned,2,civicapi,2026-11-02T15:04:43+00:00
 2026,WI,WI-04,2026-09-23,41,597,,597,,,,,,apportioned,2,civicapi,2026-09-24T00:30:30+00:00
 2026,WI,WI-04,2026-09-24,40,2210,,2210,,,,,,apportioned,2,civicapi,2026-09-24T18:11:48+00:00
 2026,WI,WI-04,2026-09-25,39,3268,,3268,,,,,,apportioned,2,civicapi,2026-09-25T15:01:04+00:00
@@ -515,6 +518,7 @@ cycle,state,cd_code,date,days_to_election,ballots_total,ballots_new,mail_returne
 2026,WI,WI-04,2026-10-29,5,114022,,73133,40888,,,,,apportioned,2,civicapi,2026-10-29T13:34:23+00:00
 2026,WI,WI-04,2026-10-30,4,126480,,79920,46560,,,,,apportioned,2,civicapi,2026-10-30T14:03:43+00:00
 2026,WI,WI-04,2026-10-31,3,141798,,88067,53731,,,,,apportioned,2,civicapi,2026-10-31T15:34:28+00:00
+2026,WI,WI-04,2026-11-02,1,148717,,91878,56839,,,,,apportioned,2,civicapi,2026-11-02T15:04:43+00:00
 2026,WI,WI-05,2026-09-23,41,706,,706,,,,,,apportioned,2,civicapi,2026-09-24T00:30:30+00:00
 2026,WI,WI-05,2026-09-24,40,2086,,2086,,,,,,apportioned,2,civicapi,2026-09-24T18:11:48+00:00
 2026,WI,WI-05,2026-09-25,39,3276,,3276,,,,,,apportioned,2,civicapi,2026-09-25T15:01:04+00:00
@@ -544,6 +548,7 @@ cycle,state,cd_code,date,days_to_election,ballots_total,ballots_new,mail_returne
 2026,WI,WI-05,2026-10-29,5,177137,,109195,67942,,,,,apportioned,2,civicapi,2026-10-29T13:34:23+00:00
 2026,WI,WI-05,2026-10-30,4,197595,,120222,77373,,,,,apportioned,2,civicapi,2026-10-30T14:03:43+00:00
 2026,WI,WI-05,2026-10-31,3,223163,,133976,89187,,,,,apportioned,2,civicapi,2026-10-31T15:34:28+00:00
+2026,WI,WI-05,2026-11-02,1,224672,,134815,89857,,,,,apportioned,2,civicapi,2026-11-02T15:04:43+00:00
 2026,WI,WI-06,2026-09-23,41,669,,669,,,,,,apportioned,2,civicapi,2026-09-24T00:30:30+00:00
 2026,WI,WI-06,2026-09-24,40,1224,,1224,,,,,,apportioned,2,civicapi,2026-09-24T18:11:48+00:00
 2026,WI,WI-06,2026-09-25,39,1986,,1986,,,,,,apportioned,2,civicapi,2026-09-25T15:01:04+00:00
@@ -573,6 +578,7 @@ cycle,state,cd_code,date,days_to_election,ballots_total,ballots_new,mail_returne
 2026,WI,WI-06,2026-10-29,5,108441,,70812,37629,,,,,apportioned,2,civicapi,2026-10-29T13:34:23+00:00
 2026,WI,WI-06,2026-10-30,4,119891,,77225,42665,,,,,apportioned,2,civicapi,2026-10-30T14:03:43+00:00
 2026,WI,WI-06,2026-10-31,3,133644,,84822,48824,,,,,apportioned,2,civicapi,2026-10-31T15:34:28+00:00
+2026,WI,WI-06,2026-11-02,1,135072,,85729,49343,,,,,apportioned,2,civicapi,2026-11-02T15:04:43+00:00
 2026,WI,WI-07,2026-09-23,41,1242,,1242,,,,,,apportioned,2,civicapi,2026-09-24T00:30:30+00:00
 2026,WI,WI-07,2026-09-24,40,1737,,1737,,,,,,apportioned,2,civicapi,2026-09-24T18:11:48+00:00
 2026,WI,WI-07,2026-09-25,39,2589,,2589,,,,,,apportioned,2,civicapi,2026-09-25T15:01:04+00:00
@@ -602,6 +608,7 @@ cycle,state,cd_code,date,days_to_election,ballots_total,ballots_new,mail_returne
 2026,WI,WI-07,2026-10-29,5,86003,,59071,26932,,,,,apportioned,2,civicapi,2026-10-29T13:34:23+00:00
 2026,WI,WI-07,2026-10-30,4,95893,,64626,31264,,,,,apportioned,2,civicapi,2026-10-30T14:03:43+00:00
 2026,WI,WI-07,2026-10-31,3,105604,,70058,35546,,,,,apportioned,2,civicapi,2026-10-31T15:34:28+00:00
+2026,WI,WI-07,2026-11-02,1,106833,,70892,35939,,,,,apportioned,2,civicapi,2026-11-02T15:04:43+00:00
 2026,WI,WI-08,2026-09-23,41,1437,,1437,,,,,,apportioned,2,civicapi,2026-09-24T00:30:30+00:00
 2026,WI,WI-08,2026-09-24,40,2876,,2876,,,,,,apportioned,2,civicapi,2026-09-24T18:11:48+00:00
 2026,WI,WI-08,2026-09-25,39,3783,,3783,,,,,,apportioned,2,civicapi,2026-09-25T15:01:04+00:00
@@ -631,3 +638,4 @@ cycle,state,cd_code,date,days_to_election,ballots_total,ballots_new,mail_returne
 2026,WI,WI-08,2026-10-29,5,110255,,73321,36934,,,,,apportioned,2,civicapi,2026-10-29T13:34:23+00:00
 2026,WI,WI-08,2026-10-30,4,122397,,80137,42261,,,,,apportioned,2,civicapi,2026-10-30T14:03:43+00:00
 2026,WI,WI-08,2026-10-31,3,135950,,87554,48395,,,,,apportioned,2,civicapi,2026-10-31T15:34:28+00:00
+2026,WI,WI-08,2026-11-02,1,136369,,87855,48514,,,,,apportioned,2,civicapi,2026-11-02T15:04:43+00:00
