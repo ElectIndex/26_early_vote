@@ -2,12 +2,12 @@
  "as_of": "2026-11-03",
  "cycle": 2026,
  "days_to_election": 0,
- "generated_at": "2026-11-03T15:16:12+00:00",
+ "generated_at": "2026-11-03T15:44:42+00:00",
  "states": {
   "AK": {
    "attempts": [
     {
-     "detail": "AK: GET https://www.elections.alaska.gov/election-results/e/?id=26genr failed: HTTPSConnectionPool(host='www.elections.alaska.gov', port=443): Max retries exceeded with url: /election-results/e/?id=26genr (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1010)')))",
+     "detail": "AK: GET https://www.elections.alaska.gov/election-results/e/?id=26genr failed: HTTPSConnectionPool(host='www.elections.alaska.gov', port=443): Max retries exceeded with url: /election-results/e/?id=26genr (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1011)')))",
      "name": "ak-doe",
      "result": "SourceError",
      "tier": 1
@@ -19,7 +19,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-11-03T15:16:12+00:00",
+   "retrieved_at": "2026-11-03T15:44:42+00:00",
    "rows": 1,
    "source": "civicapi",
    "status": "ok",
@@ -34,7 +34,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-11-03T15:16:12+00:00",
+   "retrieved_at": "2026-11-03T15:44:42+00:00",
    "rows": 76,
    "source": "civicapi",
    "status": "ok",
@@ -55,7 +55,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-11-03T15:16:12+00:00",
+   "retrieved_at": "2026-11-03T15:44:42+00:00",
    "rows": 16,
    "source": "civicapi",
    "status": "ok",
@@ -76,7 +76,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-11-03T15:16:12+00:00",
+   "retrieved_at": "2026-11-03T15:44:42+00:00",
    "rows": 59,
    "source": "civicapi",
    "status": "ok",
@@ -97,7 +97,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-11-03T15:16:12+00:00",
+   "retrieved_at": "2026-11-03T15:44:42+00:00",
    "rows": 68,
    "source": "civicapi",
    "status": "ok",
@@ -118,7 +118,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-11-03T15:16:12+00:00",
+   "retrieved_at": "2026-11-03T15:44:42+00:00",
    "rows": 1,
    "source": "civicapi",
    "status": "ok",
@@ -139,7 +139,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-11-03T15:16:12+00:00",
+   "retrieved_at": "2026-11-03T15:44:42+00:00",
    "rows": 1,
    "source": "uf-election-lab",
    "status": "ok",
@@ -160,7 +160,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-11-03T15:16:12+00:00",
+   "retrieved_at": "2026-11-03T15:44:42+00:00",
    "rows": 4,
    "source": "civicapi",
    "status": "ok",
@@ -175,7 +175,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-11-03T15:16:12+00:00",
+   "retrieved_at": "2026-11-03T15:44:42+00:00",
    "rows": 202,
    "source": "fl-doe",
    "status": "ok",
@@ -196,7 +196,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-11-03T15:16:12+00:00",
+   "retrieved_at": "2026-11-03T15:44:42+00:00",
    "rows": 163,
    "source": "civicapi",
    "status": "ok",
@@ -211,7 +211,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-11-03T15:16:12+00:00",
+   "retrieved_at": "2026-11-03T15:44:42+00:00",
    "rows": 5,
    "source": "hi-oe",
    "status": "ok",
@@ -232,7 +232,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-11-03T15:16:12+00:00",
+   "retrieved_at": "2026-11-03T15:44:42+00:00",
    "rows": 100,
    "source": "civicapi",
    "status": "ok",
@@ -247,7 +247,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-11-03T15:16:12+00:00",
+   "retrieved_at": "2026-11-03T15:44:42+00:00",
    "rows": 45,
    "source": "id-sos",
    "status": "ok",
@@ -256,17 +256,23 @@
   "IL": {
    "attempts": [
     {
+     "detail": "IL: https://elections.il.gov/VotingAndRegistrationSystems/PreElectionCounts.aspx returned HTTP 403",
      "name": "il-sbe",
-     "result": "ok",
+     "result": "SourceError",
      "tier": 1
+    },
+    {
+     "name": "civicapi",
+     "result": "ok",
+     "tier": 2
     }
    ],
    "message": "",
-   "retrieved_at": "2026-11-03T15:16:12+00:00",
-   "rows": 103,
-   "source": "il-sbe",
+   "retrieved_at": "2026-11-03T15:44:42+00:00",
+   "rows": 1,
+   "source": "civicapi",
    "status": "ok",
-   "tier": 1
+   "tier": 2
   },
   "IN": {
    "attempts": [
@@ -277,7 +283,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-11-03T15:16:12+00:00",
+   "retrieved_at": "2026-11-03T15:44:42+00:00",
    "rows": 93,
    "source": "civicapi",
    "status": "ok",
@@ -298,7 +304,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-11-03T15:16:12+00:00",
+   "retrieved_at": "2026-11-03T15:44:42+00:00",
    "rows": 109,
    "source": "civicapi",
    "status": "ok",
@@ -313,7 +319,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-11-03T15:16:12+00:00",
+   "retrieved_at": "2026-11-03T15:44:42+00:00",
    "rows": 361,
    "source": "ky-sbe",
    "status": "ok",
@@ -328,7 +334,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-11-03T15:16:12+00:00",
+   "retrieved_at": "2026-11-03T15:44:42+00:00",
    "rows": 1040,
    "source": "la-sos",
    "status": "ok",
@@ -349,7 +355,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-11-03T15:16:12+00:00",
+   "retrieved_at": "2026-11-03T15:44:42+00:00",
    "rows": 1,
    "source": "uf-election-lab",
    "status": "ok",
@@ -376,7 +382,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-11-03T15:16:12+00:00",
+   "retrieved_at": "2026-11-03T15:44:42+00:00",
    "rows": 1,
    "source": "uf-election-lab",
    "status": "ok",
@@ -391,7 +397,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-11-03T15:16:12+00:00",
+   "retrieved_at": "2026-11-03T15:44:42+00:00",
    "rows": 20853,
    "source": "me-sos",
    "status": "ok",
@@ -412,7 +418,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-11-03T15:16:12+00:00",
+   "retrieved_at": "2026-11-03T15:44:42+00:00",
    "rows": 84,
    "source": "civicapi",
    "status": "ok",
@@ -427,7 +433,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-11-03T15:16:12+00:00",
+   "retrieved_at": "2026-11-03T15:44:42+00:00",
    "rows": 88,
    "source": "mn-sos",
    "status": "ok",
@@ -442,7 +448,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-11-03T15:16:12+00:00",
+   "retrieved_at": "2026-11-03T15:44:42+00:00",
    "rows": 2,
    "source": "civicapi",
    "status": "ok",
@@ -457,7 +463,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-11-03T15:16:12+00:00",
+   "retrieved_at": "2026-11-03T15:44:42+00:00",
    "rows": 83,
    "source": "civicapi",
    "status": "ok",
@@ -472,7 +478,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-11-03T15:16:12+00:00",
+   "retrieved_at": "2026-11-03T15:44:42+00:00",
    "rows": 57,
    "source": "mt-sos",
    "status": "ok",
@@ -487,7 +493,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-11-03T15:16:12+00:00",
+   "retrieved_at": "2026-11-03T15:44:42+00:00",
    "rows": 14733,
    "source": "nc-sbe",
    "status": "ok",
@@ -502,7 +508,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-11-03T15:16:12+00:00",
+   "retrieved_at": "2026-11-03T15:44:42+00:00",
    "rows": 54,
    "source": "nd-sos",
    "status": "ok",
@@ -517,7 +523,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-11-03T15:16:12+00:00",
+   "retrieved_at": "2026-11-03T15:44:42+00:00",
    "rows": 94,
    "source": "civicapi",
    "status": "ok",
@@ -532,7 +538,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-11-03T15:16:12+00:00",
+   "retrieved_at": "2026-11-03T15:44:42+00:00",
    "rows": 22,
    "source": "civicapi",
    "status": "ok",
@@ -547,7 +553,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-11-03T15:16:12+00:00",
+   "retrieved_at": "2026-11-03T15:44:42+00:00",
    "rows": 34,
    "source": "civicapi",
    "status": "ok",
@@ -568,7 +574,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-11-03T15:16:12+00:00",
+   "retrieved_at": "2026-11-03T15:44:42+00:00",
    "rows": 18,
    "source": "civicapi",
    "status": "ok",
@@ -589,7 +595,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-11-03T15:16:12+00:00",
+   "retrieved_at": "2026-11-03T15:44:42+00:00",
    "rows": 63,
    "source": "civicapi",
    "status": "ok",
@@ -604,7 +610,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-11-03T15:16:12+00:00",
+   "retrieved_at": "2026-11-03T15:44:42+00:00",
    "rows": 89,
    "source": "oh-sos",
    "status": "ok",
@@ -619,7 +625,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-11-03T15:16:12+00:00",
+   "retrieved_at": "2026-11-03T15:44:42+00:00",
    "rows": 78,
    "source": "ok-seb",
    "status": "ok",
@@ -640,7 +646,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-11-03T15:16:12+00:00",
+   "retrieved_at": "2026-11-03T15:44:42+00:00",
    "rows": 37,
    "source": "civicapi",
    "status": "ok",
@@ -655,7 +661,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-11-03T15:16:12+00:00",
+   "retrieved_at": "2026-11-03T15:44:42+00:00",
    "rows": 3517,
    "source": "pa-dos",
    "status": "ok",
@@ -670,7 +676,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-11-03T15:16:12+00:00",
+   "retrieved_at": "2026-11-03T15:44:42+00:00",
    "rows": 1,
    "source": "civicapi",
    "status": "ok",
@@ -691,7 +697,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-11-03T15:16:12+00:00",
+   "retrieved_at": "2026-11-03T15:44:42+00:00",
    "rows": 47,
    "source": "civicapi",
    "status": "ok",
@@ -712,7 +718,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-11-03T15:16:12+00:00",
+   "retrieved_at": "2026-11-03T15:44:42+00:00",
    "rows": 67,
    "source": "civicapi",
    "status": "ok",
@@ -733,7 +739,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-11-03T15:16:12+00:00",
+   "retrieved_at": "2026-11-03T15:44:42+00:00",
    "rows": 96,
    "source": "civicapi",
    "status": "ok",
@@ -754,7 +760,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-11-03T15:16:12+00:00",
+   "retrieved_at": "2026-11-03T15:44:42+00:00",
    "rows": 255,
    "source": "civicapi",
    "status": "ok",
@@ -769,7 +775,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-11-03T15:16:12+00:00",
+   "retrieved_at": "2026-11-03T15:44:42+00:00",
    "rows": 30,
    "source": "civicapi",
    "status": "ok",
@@ -784,7 +790,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-11-03T15:16:12+00:00",
+   "retrieved_at": "2026-11-03T15:44:42+00:00",
    "rows": 145,
    "source": "va-elect",
    "status": "ok",
@@ -799,7 +805,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-11-03T15:16:12+00:00",
+   "retrieved_at": "2026-11-03T15:44:42+00:00",
    "rows": 1,
    "source": "civicapi",
    "status": "ok",
@@ -814,17 +820,23 @@
      "tier": 1
     },
     {
+     "detail": "WA: GET https://civicapi.org/api/v2/early-vote/WA/capabilities failed: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))",
      "name": "civicapi",
-     "result": "ok",
+     "result": "SourceError",
      "tier": 2
+    },
+    {
+     "name": "uf-election-lab",
+     "result": "ok",
+     "tier": 4
     }
    ],
    "message": "",
-   "retrieved_at": "2026-11-03T15:16:12+00:00",
-   "rows": 40,
-   "source": "civicapi",
+   "retrieved_at": "2026-11-03T15:44:42+00:00",
+   "rows": 4,
+   "source": "uf-election-lab",
    "status": "ok",
-   "tier": 2
+   "tier": 4
   },
   "WI": {
    "attempts": [
@@ -841,7 +853,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-11-03T15:16:12+00:00",
+   "retrieved_at": "2026-11-03T15:44:42+00:00",
    "rows": 73,
    "source": "civicapi",
    "status": "ok",
@@ -856,7 +868,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-11-03T15:16:12+00:00",
+   "retrieved_at": "2026-11-03T15:44:42+00:00",
    "rows": 56,
    "source": "civicapi",
    "status": "ok",
@@ -871,7 +883,7 @@
     }
    ],
    "message": "",
-   "retrieved_at": "2026-11-03T15:16:12+00:00",
+   "retrieved_at": "2026-11-03T15:44:42+00:00",
    "rows": 24,
    "source": "civicapi",
    "status": "ok",
@@ -882,12 +894,12 @@
   "failed": 0,
   "files": [
    {
-    "added": 0,
+    "added": 2,
     "file": "ev_state_daily.csv",
-    "kept_better_tier": 0,
+    "kept_better_tier": 2,
     "kept_richer": 0,
-    "replaced": 1,
-    "rows": 2968
+    "replaced": 2,
+    "rows": 2970
    },
    {
     "added": 0,
@@ -968,14 +980,6 @@
     "kept_richer": 0,
     "replaced": 0,
     "rows": 1972
-   },
-   {
-    "added": 0,
-    "file": "il.csv",
-    "kept_better_tier": 0,
-    "kept_richer": 0,
-    "replaced": 0,
-    "rows": 6018
    },
    {
     "added": 0,
@@ -1070,7 +1074,7 @@
     "file": "nd.csv",
     "kept_better_tier": 0,
     "kept_richer": 0,
-    "replaced": 8,
+    "replaced": 15,
     "rows": 3233
    },
    {
@@ -1114,12 +1118,12 @@
     "rows": 482
    },
    {
-    "added": 0,
+    "added": 88,
     "file": "oh.csv",
     "kept_better_tier": 0,
     "kept_richer": 0,
     "replaced": 0,
-    "rows": 7216
+    "rows": 7304
    },
    {
     "added": 0,
@@ -1130,12 +1134,12 @@
     "rows": 5679
    },
    {
-    "added": 0,
+    "added": 36,
     "file": "or.csv",
     "kept_better_tier": 0,
     "kept_richer": 0,
     "replaced": 0,
-    "rows": 1392
+    "rows": 1428
    },
    {
     "added": 0,
@@ -1192,14 +1196,6 @@
     "kept_richer": 0,
     "replaced": 0,
     "rows": 2793
-   },
-   {
-    "added": 0,
-    "file": "wa.csv",
-    "kept_better_tier": 0,
-    "kept_richer": 0,
-    "replaced": 0,
-    "rows": 2637
    },
    {
     "added": 0,
@@ -1298,6 +1294,14 @@
     "rows": 2526
    },
    {
+    "added": 3,
+    "file": "wa.csv",
+    "kept_better_tier": 0,
+    "kept_richer": 0,
+    "replaced": 0,
+    "rows": 312
+   },
+   {
     "added": 0,
     "file": "ar.csv",
     "kept_better_tier": 0,
@@ -1376,14 +1380,6 @@
     "kept_richer": 0,
     "replaced": 0,
     "rows": 90
-   },
-   {
-    "added": 0,
-    "file": "il.csv",
-    "kept_better_tier": 0,
-    "kept_richer": 0,
-    "replaced": 0,
-    "rows": 1003
    },
    {
     "added": 0,
@@ -1522,12 +1518,12 @@
     "rows": 464
    },
    {
-    "added": 0,
+    "added": 15,
     "file": "oh.csv",
     "kept_better_tier": 0,
     "kept_richer": 0,
     "replaced": 0,
-    "rows": 1230
+    "rows": 1245
    },
    {
     "added": 0,
@@ -1538,12 +1534,12 @@
     "rows": 370
    },
    {
-    "added": 0,
+    "added": 6,
     "file": "or.csv",
     "kept_better_tier": 0,
     "kept_richer": 0,
     "replaced": 0,
-    "rows": 234
+    "rows": 240
    },
    {
     "added": 0,
@@ -1600,14 +1596,6 @@
     "kept_richer": 0,
     "replaced": 0,
     "rows": 231
-   },
-   {
-    "added": 0,
-    "file": "wa.csv",
-    "kept_better_tier": 0,
-    "kept_richer": 0,
-    "replaced": 0,
-    "rows": 1007
    },
    {
     "added": 0,
