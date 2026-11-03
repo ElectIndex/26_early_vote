@@ -26,6 +26,7 @@ cycle,state,cd_code,date,days_to_election,ballots_total,ballots_new,mail_returne
 2026,LA,LA-01,2026-10-31,3,97809,167,,,,,,,apportioned,1,la-sos,2026-11-01T12:13:39+00:00
 2026,LA,LA-01,2026-11-01,2,97809,,,,,,,,apportioned,1,la-sos,2026-11-01T05:12:30+00:00
 2026,LA,LA-01,2026-11-02,1,97809,,,,,,,,apportioned,1,la-sos,2026-11-02T06:13:59+00:00
+2026,LA,LA-01,2026-11-03,0,97809,,,,,,,,apportioned,1,la-sos,2026-11-03T06:13:28+00:00
 2026,LA,LA-02,2026-10-19,15,6094,6094,,,,,,,apportioned,1,la-sos,2026-10-20T11:04:35+00:00
 2026,LA,LA-02,2026-10-20,14,16142,10047,,,,,,,apportioned,1,la-sos,2026-10-21T11:04:52+00:00
 2026,LA,LA-02,2026-10-21,13,25882,9741,,,,,,,apportioned,1,la-sos,2026-10-22T11:06:11+00:00
@@ -41,6 +42,7 @@ cycle,state,cd_code,date,days_to_election,ballots_total,ballots_new,mail_returne
 2026,LA,LA-02,2026-10-31,3,88230,128,,,,,,,apportioned,1,la-sos,2026-11-01T12:13:39+00:00
 2026,LA,LA-02,2026-11-01,2,88230,,,,,,,,apportioned,1,la-sos,2026-11-01T05:12:30+00:00
 2026,LA,LA-02,2026-11-02,1,88230,,,,,,,,apportioned,1,la-sos,2026-11-02T06:13:59+00:00
+2026,LA,LA-02,2026-11-03,0,88230,,,,,,,,apportioned,1,la-sos,2026-11-03T06:13:28+00:00
 2026,LA,LA-03,2026-10-19,15,8577,8577,,,,,,,apportioned,1,la-sos,2026-10-20T11:04:35+00:00
 2026,LA,LA-03,2026-10-20,14,17971,9394,,,,,,,apportioned,1,la-sos,2026-10-21T11:04:52+00:00
 2026,LA,LA-03,2026-10-21,13,26712,8741,,,,,,,apportioned,1,la-sos,2026-10-22T11:06:11+00:00
@@ -56,6 +58,7 @@ cycle,state,cd_code,date,days_to_election,ballots_total,ballots_new,mail_returne
 2026,LA,LA-03,2026-10-31,3,78865,17,,,,,,,apportioned,1,la-sos,2026-11-01T12:13:39+00:00
 2026,LA,LA-03,2026-11-01,2,78865,,,,,,,,apportioned,1,la-sos,2026-11-01T05:12:30+00:00
 2026,LA,LA-03,2026-11-02,1,78865,,,,,,,,apportioned,1,la-sos,2026-11-02T06:13:59+00:00
+2026,LA,LA-03,2026-11-03,0,78865,,,,,,,,apportioned,1,la-sos,2026-11-03T06:13:28+00:00
 2026,LA,LA-04,2026-10-19,15,11065,11065,,,,,,,apportioned,1,la-sos,2026-10-20T11:04:35+00:00
 2026,LA,LA-04,2026-10-20,14,21828,10763,,,,,,,apportioned,1,la-sos,2026-10-21T11:04:52+00:00
 2026,LA,LA-04,2026-10-21,13,31803,9975,,,,,,,apportioned,1,la-sos,2026-10-22T11:06:11+00:00
@@ -71,6 +74,7 @@ cycle,state,cd_code,date,days_to_election,ballots_total,ballots_new,mail_returne
 2026,LA,LA-04,2026-10-31,3,84747,6,,,,,,,apportioned,1,la-sos,2026-11-01T12:13:39+00:00
 2026,LA,LA-04,2026-11-01,2,84747,,,,,,,,apportioned,1,la-sos,2026-11-01T05:12:30+00:00
 2026,LA,LA-04,2026-11-02,1,84747,,,,,,,,apportioned,1,la-sos,2026-11-02T06:13:59+00:00
+2026,LA,LA-04,2026-11-03,0,84747,,,,,,,,apportioned,1,la-sos,2026-11-03T06:13:28+00:00
 2026,LA,LA-05,2026-10-19,15,9605,9605,,,,,,,apportioned,1,la-sos,2026-10-20T11:04:35+00:00
 2026,LA,LA-05,2026-10-20,14,20583,10978,,,,,,,apportioned,1,la-sos,2026-10-21T11:04:52+00:00
 2026,LA,LA-05,2026-10-21,13,30543,9960,,,,,,,apportioned,1,la-sos,2026-10-22T11:06:11+00:00
@@ -86,6 +90,7 @@ cycle,state,cd_code,date,days_to_election,ballots_total,ballots_new,mail_returne
 2026,LA,LA-05,2026-10-31,3,84865,12,,,,,,,apportioned,1,la-sos,2026-11-01T12:13:39+00:00
 2026,LA,LA-05,2026-11-01,2,84865,,,,,,,,apportioned,1,la-sos,2026-11-01T05:12:30+00:00
 2026,LA,LA-05,2026-11-02,1,84865,,,,,,,,apportioned,1,la-sos,2026-11-02T06:13:59+00:00
+2026,LA,LA-05,2026-11-03,0,84865,,,,,,,,apportioned,1,la-sos,2026-11-03T06:13:28+00:00
 2026,LA,LA-06,2026-10-19,15,6885,6885,,,,,,,apportioned,1,la-sos,2026-10-20T11:04:35+00:00
 2026,LA,LA-06,2026-10-20,14,16901,10018,,,,,,,apportioned,1,la-sos,2026-10-21T11:04:52+00:00
 2026,LA,LA-06,2026-10-21,13,27475,10572,,,,,,,apportioned,1,la-sos,2026-10-22T11:06:11+00:00
@@ -101,3 +106,4 @@ cycle,state,cd_code,date,days_to_election,ballots_total,ballots_new,mail_returne
 2026,LA,LA-06,2026-10-31,3,93658,7,,,,,,,apportioned,1,la-sos,2026-11-01T12:13:39+00:00
 2026,LA,LA-06,2026-11-01,2,93658,,,,,,,,apportioned,1,la-sos,2026-11-01T05:12:30+00:00
 2026,LA,LA-06,2026-11-02,1,93658,,,,,,,,apportioned,1,la-sos,2026-11-02T06:13:59+00:00
+2026,LA,LA-06,2026-11-03,0,93658,,,,,,,,apportioned,1,la-sos,2026-11-03T06:13:28+00:00

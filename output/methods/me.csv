@@ -3826,6 +3826,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,ME,23001,Androscoggin County,2026-11-01,2,mail,9115,115,4040,2123,428,2524,1,me-sos,2026-11-02T19:32:45+00:00
 2026,ME,23001,Androscoggin County,2026-11-02,1,inperson,11686,9,4591,3457,410,3228,1,me-sos,2026-11-02T19:32:45+00:00
 2026,ME,23001,Androscoggin County,2026-11-02,1,mail,9449,334,4130,2219,453,2647,1,me-sos,2026-11-02T19:32:45+00:00
+2026,ME,23001,Androscoggin County,2026-11-03,0,inperson,11686,0,4591,3457,410,3228,1,me-sos,2026-11-03T06:02:48+00:00
+2026,ME,23001,Androscoggin County,2026-11-03,0,mail,9449,0,4130,2219,453,2647,1,me-sos,2026-11-03T06:02:48+00:00
 2026,ME,23003,Aroostook County,2026-08-11,84,inperson,2,2,0,2,0,0,1,me-sos,2026-10-09T23:48:51+00:00
 2026,ME,23003,Aroostook County,2026-08-12,83,inperson,2,0,0,2,0,0,1,me-sos,2026-10-09T23:48:51+00:00
 2026,ME,23003,Aroostook County,2026-08-13,82,inperson,2,0,0,2,0,0,1,me-sos,2026-10-09T23:48:51+00:00
@@ -3957,6 +3959,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,ME,23003,Aroostook County,2026-11-01,2,mail,3746,1,1540,1098,114,994,1,me-sos,2026-11-02T19:32:45+00:00
 2026,ME,23003,Aroostook County,2026-11-02,1,inperson,4039,26,1403,1577,118,941,1,me-sos,2026-11-02T19:32:45+00:00
 2026,ME,23003,Aroostook County,2026-11-02,1,mail,3859,113,1566,1141,118,1034,1,me-sos,2026-11-02T19:32:45+00:00
+2026,ME,23003,Aroostook County,2026-11-03,0,inperson,4039,0,1403,1577,118,941,1,me-sos,2026-11-03T06:02:48+00:00
+2026,ME,23003,Aroostook County,2026-11-03,0,mail,3859,0,1566,1141,118,1034,1,me-sos,2026-11-03T06:02:48+00:00
 2026,ME,23005,Cumberland County,2026-09-08,56,inperson,1,1,0,1,0,0,1,me-sos,2026-10-06T22:20:04+00:00
 2026,ME,23005,Cumberland County,2026-09-09,55,inperson,1,0,0,1,0,0,1,me-sos,2026-10-06T22:20:04+00:00
 2026,ME,23005,Cumberland County,2026-09-10,54,inperson,1,0,0,1,0,0,1,me-sos,2026-10-06T22:20:04+00:00
@@ -4060,6 +4064,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,ME,23005,Cumberland County,2026-11-01,2,mail,36355,598,19923,5427,920,10085,1,me-sos,2026-11-02T19:32:45+00:00
 2026,ME,23005,Cumberland County,2026-11-02,1,inperson,51808,59,27768,9414,1033,13593,1,me-sos,2026-11-02T19:32:45+00:00
 2026,ME,23005,Cumberland County,2026-11-02,1,mail,38127,1772,20683,5771,988,10685,1,me-sos,2026-11-02T19:32:45+00:00
+2026,ME,23005,Cumberland County,2026-11-03,0,inperson,51808,0,27768,9414,1033,13593,1,me-sos,2026-11-03T06:02:48+00:00
+2026,ME,23005,Cumberland County,2026-11-03,0,mail,38127,0,20683,5771,988,10685,1,me-sos,2026-11-03T06:02:48+00:00
 2026,ME,23007,Franklin County,2026-09-17,47,mail,6,6,5,0,0,1,1,me-sos,2026-10-09T23:48:51+00:00
 2026,ME,23007,Franklin County,2026-09-18,46,mail,10,4,9,0,0,1,1,me-sos,2026-10-19T20:01:10+00:00
 2026,ME,23007,Franklin County,2026-09-19,45,mail,12,2,11,0,0,1,1,me-sos,2026-10-19T20:01:10+00:00
@@ -4148,6 +4154,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,ME,23007,Franklin County,2026-11-01,2,mail,1792,29,726,531,54,481,1,me-sos,2026-11-02T19:32:45+00:00
 2026,ME,23007,Franklin County,2026-11-02,1,inperson,2747,5,1067,818,78,784,1,me-sos,2026-11-02T19:32:45+00:00
 2026,ME,23007,Franklin County,2026-11-02,1,mail,1883,91,759,559,57,508,1,me-sos,2026-11-02T19:32:45+00:00
+2026,ME,23007,Franklin County,2026-11-03,0,inperson,2747,0,1067,818,78,784,1,me-sos,2026-11-03T06:02:48+00:00
+2026,ME,23007,Franklin County,2026-11-03,0,mail,1883,0,759,559,57,508,1,me-sos,2026-11-03T06:02:48+00:00
 2026,ME,23009,Hancock County,2026-08-10,85,inperson,2,2,2,0,0,0,1,me-sos,2026-10-06T22:20:04+00:00
 2026,ME,23009,Hancock County,2026-08-11,84,inperson,2,0,2,0,0,0,1,me-sos,2026-10-06T22:20:04+00:00
 2026,ME,23009,Hancock County,2026-08-12,83,inperson,2,0,2,0,0,0,1,me-sos,2026-10-06T22:20:04+00:00
@@ -4289,6 +4297,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,ME,23009,Hancock County,2026-11-01,2,mail,5164,20,2612,1053,141,1358,1,me-sos,2026-11-02T19:32:45+00:00
 2026,ME,23009,Hancock County,2026-11-02,1,inperson,7076,22,3580,1574,156,1766,1,me-sos,2026-11-02T19:32:45+00:00
 2026,ME,23009,Hancock County,2026-11-02,1,mail,5425,261,2712,1120,148,1445,1,me-sos,2026-11-02T19:32:45+00:00
+2026,ME,23009,Hancock County,2026-11-03,0,inperson,7076,0,3580,1574,156,1766,1,me-sos,2026-11-03T06:02:48+00:00
+2026,ME,23009,Hancock County,2026-11-03,0,mail,5425,0,2712,1120,148,1445,1,me-sos,2026-11-03T06:02:48+00:00
 2026,ME,23011,Kennebec County,2026-09-17,47,inperson,1,1,1,0,0,0,1,me-sos,2026-10-06T22:20:04+00:00
 2026,ME,23011,Kennebec County,2026-09-17,47,mail,15,15,12,1,1,1,1,me-sos,2026-10-09T23:48:51+00:00
 2026,ME,23011,Kennebec County,2026-09-18,46,inperson,1,0,1,0,0,0,1,me-sos,2026-10-06T22:20:04+00:00
@@ -4383,6 +4393,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,ME,23011,Kennebec County,2026-11-01,2,mail,10508,33,4666,2476,353,3013,1,me-sos,2026-11-02T19:32:45+00:00
 2026,ME,23011,Kennebec County,2026-11-02,1,inperson,15412,22,6270,4577,468,4097,1,me-sos,2026-11-02T19:32:45+00:00
 2026,ME,23011,Kennebec County,2026-11-02,1,mail,11217,709,4897,2675,382,3263,1,me-sos,2026-11-02T19:32:45+00:00
+2026,ME,23011,Kennebec County,2026-11-03,0,inperson,15412,0,6270,4577,468,4097,1,me-sos,2026-11-03T06:02:48+00:00
+2026,ME,23011,Kennebec County,2026-11-03,0,mail,11217,0,4897,2675,382,3263,1,me-sos,2026-11-03T06:02:48+00:00
 2026,ME,23013,Knox County,2026-08-06,89,inperson,1,1,1,0,0,0,1,me-sos,2026-10-06T22:20:04+00:00
 2026,ME,23013,Knox County,2026-08-07,88,inperson,1,0,1,0,0,0,1,me-sos,2026-10-06T22:20:04+00:00
 2026,ME,23013,Knox County,2026-08-08,87,inperson,1,0,1,0,0,0,1,me-sos,2026-10-06T22:20:04+00:00
@@ -4519,6 +4531,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,ME,23013,Knox County,2026-11-01,2,mail,4489,3,2341,816,95,1237,1,me-sos,2026-11-02T19:32:45+00:00
 2026,ME,23013,Knox County,2026-11-02,1,inperson,5533,4,3044,1012,131,1346,1,me-sos,2026-11-02T19:32:45+00:00
 2026,ME,23013,Knox County,2026-11-02,1,mail,4778,289,2449,885,100,1344,1,me-sos,2026-11-02T19:32:45+00:00
+2026,ME,23013,Knox County,2026-11-03,0,inperson,5533,0,3044,1012,131,1346,1,me-sos,2026-11-03T06:02:48+00:00
+2026,ME,23013,Knox County,2026-11-03,0,mail,4778,0,2449,885,100,1344,1,me-sos,2026-11-03T06:02:48+00:00
 2026,ME,23015,Lincoln County,2026-09-15,49,inperson,1,1,1,0,0,0,1,me-sos,2026-10-09T23:48:51+00:00
 2026,ME,23015,Lincoln County,2026-09-16,48,inperson,1,0,1,0,0,0,1,me-sos,2026-10-09T23:48:51+00:00
 2026,ME,23015,Lincoln County,2026-09-17,47,inperson,1,0,1,0,0,0,1,me-sos,2026-10-09T23:48:51+00:00
@@ -4615,6 +4629,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,ME,23015,Lincoln County,2026-11-01,2,mail,3902,16,1807,847,114,1134,1,me-sos,2026-11-02T19:32:45+00:00
 2026,ME,23015,Lincoln County,2026-11-02,1,inperson,5518,11,2667,1218,126,1507,1,me-sos,2026-11-02T19:32:45+00:00
 2026,ME,23015,Lincoln County,2026-11-02,1,mail,4152,250,1904,919,125,1204,1,me-sos,2026-11-02T19:32:45+00:00
+2026,ME,23015,Lincoln County,2026-11-03,0,inperson,5518,0,2667,1218,126,1507,1,me-sos,2026-11-03T06:02:48+00:00
+2026,ME,23015,Lincoln County,2026-11-03,0,mail,4152,0,1904,919,125,1204,1,me-sos,2026-11-03T06:02:48+00:00
 2026,ME,23017,Oxford County,2026-09-17,47,inperson,1,1,1,0,0,0,1,me-sos,2026-10-29T19:02:35+00:00
 2026,ME,23017,Oxford County,2026-09-17,47,mail,7,7,5,1,0,1,1,me-sos,2026-10-09T23:48:51+00:00
 2026,ME,23017,Oxford County,2026-09-18,46,inperson,1,0,1,0,0,0,1,me-sos,2026-10-29T19:02:35+00:00
@@ -4709,6 +4725,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,ME,23017,Oxford County,2026-11-01,2,mail,4895,15,1876,1317,166,1536,1,me-sos,2026-11-02T19:32:45+00:00
 2026,ME,23017,Oxford County,2026-11-02,1,inperson,3897,7,1414,1188,128,1167,1,me-sos,2026-11-02T19:32:45+00:00
 2026,ME,23017,Oxford County,2026-11-02,1,mail,5117,222,1937,1371,187,1622,1,me-sos,2026-11-02T19:32:45+00:00
+2026,ME,23017,Oxford County,2026-11-03,0,inperson,3897,0,1414,1188,128,1167,1,me-sos,2026-11-03T06:02:48+00:00
+2026,ME,23017,Oxford County,2026-11-03,0,mail,5117,0,1937,1371,187,1622,1,me-sos,2026-11-03T06:02:48+00:00
 2026,ME,23019,Penobscot County,2026-09-17,47,mail,30,30,21,3,0,6,1,me-sos,2026-10-09T23:48:51+00:00
 2026,ME,23019,Penobscot County,2026-09-18,46,mail,42,12,32,3,0,7,1,me-sos,2026-10-19T20:01:10+00:00
 2026,ME,23019,Penobscot County,2026-09-19,45,mail,54,12,37,4,2,11,1,me-sos,2026-10-19T20:01:10+00:00
@@ -4788,6 +4806,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,ME,23019,Penobscot County,2026-11-01,2,mail,11761,40,5330,2933,366,3132,1,me-sos,2026-11-02T19:32:45+00:00
 2026,ME,23019,Penobscot County,2026-11-02,1,inperson,13041,27,4707,4612,362,3360,1,me-sos,2026-11-02T19:32:45+00:00
 2026,ME,23019,Penobscot County,2026-11-02,1,mail,12288,527,5543,3064,374,3307,1,me-sos,2026-11-02T19:32:45+00:00
+2026,ME,23019,Penobscot County,2026-11-03,0,inperson,13041,0,4707,4612,362,3360,1,me-sos,2026-11-03T06:02:48+00:00
+2026,ME,23019,Penobscot County,2026-11-03,0,mail,12288,0,5543,3064,374,3307,1,me-sos,2026-11-03T06:02:48+00:00
 2026,ME,23021,Piscataquis County,2026-09-17,47,mail,3,3,2,1,0,0,1,me-sos,2026-10-09T23:48:51+00:00
 2026,ME,23021,Piscataquis County,2026-09-18,46,mail,5,2,3,1,0,1,1,me-sos,2026-10-19T20:01:10+00:00
 2026,ME,23021,Piscataquis County,2026-09-19,45,mail,6,1,4,1,0,1,1,me-sos,2026-10-19T20:01:10+00:00
@@ -4864,6 +4884,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,ME,23021,Piscataquis County,2026-11-01,2,mail,921,0,326,281,27,287,1,me-sos,2026-11-02T19:32:45+00:00
 2026,ME,23021,Piscataquis County,2026-11-02,1,inperson,1242,6,346,518,38,340,1,me-sos,2026-11-02T19:32:45+00:00
 2026,ME,23021,Piscataquis County,2026-11-02,1,mail,942,21,334,288,27,293,1,me-sos,2026-11-02T19:32:45+00:00
+2026,ME,23021,Piscataquis County,2026-11-03,0,inperson,1242,0,346,518,38,340,1,me-sos,2026-11-03T06:02:48+00:00
+2026,ME,23021,Piscataquis County,2026-11-03,0,mail,942,0,334,288,27,293,1,me-sos,2026-11-03T06:02:48+00:00
 2026,ME,23023,Sagadahoc County,2026-09-17,47,mail,13,13,10,1,0,2,1,me-sos,2026-10-09T23:48:51+00:00
 2026,ME,23023,Sagadahoc County,2026-09-18,46,mail,22,9,16,1,1,4,1,me-sos,2026-10-19T20:01:10+00:00
 2026,ME,23023,Sagadahoc County,2026-09-19,45,mail,26,4,18,1,1,6,1,me-sos,2026-10-19T20:01:10+00:00
@@ -4944,6 +4966,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,ME,23023,Sagadahoc County,2026-11-01,2,mail,3710,3,1942,656,104,1008,1,me-sos,2026-11-02T19:32:45+00:00
 2026,ME,23023,Sagadahoc County,2026-11-02,1,inperson,6304,1,3145,1292,116,1751,1,me-sos,2026-11-02T19:32:45+00:00
 2026,ME,23023,Sagadahoc County,2026-11-02,1,mail,3994,284,2063,712,115,1104,1,me-sos,2026-11-02T19:32:45+00:00
+2026,ME,23023,Sagadahoc County,2026-11-03,0,inperson,6304,0,3145,1292,116,1751,1,me-sos,2026-11-03T06:02:48+00:00
+2026,ME,23023,Sagadahoc County,2026-11-03,0,mail,3994,0,2063,712,115,1104,1,me-sos,2026-11-03T06:02:48+00:00
 2026,ME,23025,Somerset County,2026-09-17,47,mail,5,5,3,0,0,2,1,me-sos,2026-10-09T23:48:51+00:00
 2026,ME,23025,Somerset County,2026-09-18,46,mail,10,5,7,0,0,3,1,me-sos,2026-10-19T20:01:10+00:00
 2026,ME,23025,Somerset County,2026-09-19,45,mail,13,3,10,0,0,3,1,me-sos,2026-10-20T19:31:08+00:00
@@ -5034,6 +5058,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,ME,23025,Somerset County,2026-11-01,2,mail,3048,1,1253,868,86,841,1,me-sos,2026-11-02T19:32:45+00:00
 2026,ME,23025,Somerset County,2026-11-02,1,inperson,3542,12,1158,1312,104,968,1,me-sos,2026-11-02T19:32:45+00:00
 2026,ME,23025,Somerset County,2026-11-02,1,mail,3159,111,1288,904,91,876,1,me-sos,2026-11-02T19:32:45+00:00
+2026,ME,23025,Somerset County,2026-11-03,0,inperson,3542,0,1158,1312,104,968,1,me-sos,2026-11-03T06:02:48+00:00
+2026,ME,23025,Somerset County,2026-11-03,0,mail,3159,0,1288,904,91,876,1,me-sos,2026-11-03T06:02:48+00:00
 2026,ME,23027,Waldo County,2026-09-17,47,mail,8,8,7,0,0,1,1,me-sos,2026-10-09T23:48:51+00:00
 2026,ME,23027,Waldo County,2026-09-18,46,mail,14,6,13,0,0,1,1,me-sos,2026-10-19T20:01:10+00:00
 2026,ME,23027,Waldo County,2026-09-19,45,mail,20,6,19,0,0,1,1,me-sos,2026-10-20T19:31:08+00:00
@@ -5114,6 +5140,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,ME,23027,Waldo County,2026-11-01,2,mail,3332,7,1555,687,133,957,1,me-sos,2026-11-02T19:32:45+00:00
 2026,ME,23027,Waldo County,2026-11-02,1,inperson,4378,11,2203,870,121,1184,1,me-sos,2026-11-02T19:32:45+00:00
 2026,ME,23027,Waldo County,2026-11-02,1,mail,3462,130,1601,725,138,998,1,me-sos,2026-11-02T19:32:45+00:00
+2026,ME,23027,Waldo County,2026-11-03,0,inperson,4378,0,2203,870,121,1184,1,me-sos,2026-11-03T06:02:48+00:00
+2026,ME,23027,Waldo County,2026-11-03,0,mail,3462,0,1601,725,138,998,1,me-sos,2026-11-03T06:02:48+00:00
 2026,ME,23029,Washington County,2026-09-17,47,mail,7,7,4,0,1,2,1,me-sos,2026-10-20T19:31:08+00:00
 2026,ME,23029,Washington County,2026-09-18,46,mail,15,8,8,2,1,4,1,me-sos,2026-10-20T19:31:08+00:00
 2026,ME,23029,Washington County,2026-09-19,45,mail,20,5,12,3,1,4,1,me-sos,2026-10-19T20:01:10+00:00
@@ -5194,6 +5222,8 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,ME,23029,Washington County,2026-11-01,2,mail,1668,14,685,490,50,443,1,me-sos,2026-11-02T19:32:45+00:00
 2026,ME,23029,Washington County,2026-11-02,1,inperson,2086,17,676,800,48,562,1,me-sos,2026-11-02T19:32:45+00:00
 2026,ME,23029,Washington County,2026-11-02,1,mail,1715,47,695,510,52,458,1,me-sos,2026-11-02T19:32:45+00:00
+2026,ME,23029,Washington County,2026-11-03,0,inperson,2086,0,676,800,48,562,1,me-sos,2026-11-03T06:02:48+00:00
+2026,ME,23029,Washington County,2026-11-03,0,mail,1715,0,695,510,52,458,1,me-sos,2026-11-03T06:02:48+00:00
 2026,ME,23031,York County,2026-08-31,64,inperson,1,1,0,0,0,1,1,me-sos,2026-10-06T22:20:04+00:00
 2026,ME,23031,York County,2026-09-01,63,inperson,1,0,0,0,0,1,1,me-sos,2026-10-06T22:20:04+00:00
 2026,ME,23031,York County,2026-09-02,62,inperson,1,0,0,0,0,1,1,me-sos,2026-10-06T22:20:04+00:00
@@ -5305,3 +5335,5 @@ cycle,state,county_fips,county_name,date,days_to_election,method,ballots_total,b
 2026,ME,23031,York County,2026-11-01,2,mail,28099,178,13369,5515,625,8590,1,me-sos,2026-11-02T19:32:45+00:00
 2026,ME,23031,York County,2026-11-02,1,inperson,22124,20,9815,5222,512,6575,1,me-sos,2026-11-02T19:32:45+00:00
 2026,ME,23031,York County,2026-11-02,1,mail,29714,1615,13955,5917,676,9166,1,me-sos,2026-11-02T19:32:45+00:00
+2026,ME,23031,York County,2026-11-03,0,inperson,22124,0,9815,5222,512,6575,1,me-sos,2026-11-03T06:02:48+00:00
+2026,ME,23031,York County,2026-11-03,0,mail,29714,0,13955,5917,676,9166,1,me-sos,2026-11-03T06:02:48+00:00
